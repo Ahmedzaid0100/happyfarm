@@ -1719,10 +1719,6 @@
             </div>
           </div>
 
-          <!-- Arena Mode Badge (Center) -->
-          <div id="arenaModeBadge" class="bg-amber-950/95 border-2 border-yellow-400 text-yellow-300 font-black text-[10px] px-2.5 py-1 rounded-full shadow-lg whitespace-nowrap">
-            ⚔️ 3 vs 3 Arena
-          </div>
 
           <!-- Close Button (Right) -->
           <button onclick="closeBattleArena()" class="bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 flex items-center justify-center font-black border border-white/30 text-sm shadow active:scale-90 transition-transform">✕</button>
@@ -1746,10 +1742,6 @@
           <!-- Cinema Lighting & Edge Vignette -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none"></div>
 
-          <!-- In-Battle 3D Clash Badge -->
-          <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-amber-950/85 border-2 border-yellow-400/90 rounded-full px-3 py-0.5 shadow-lg flex items-center gap-1 pointer-events-none">
-            <span class="text-[9px] font-black text-yellow-300 tracking-wider">⚡ 3D CLASH ARENA</span>
-          </div>
 
           <!-- Slash Strike VFX Flash Overlay -->
           <div id="slashVfxOverlay" class="absolute inset-0 bg-yellow-300/35 opacity-0 pointer-events-none transition-opacity duration-150"></div>
@@ -2613,7 +2605,7 @@
       if (fightOverlay) fightOverlay.classList.remove('hidden');
       if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
-      if (modeBadge) modeBadge.innerText = '⚔️ ' + mode + ' vs ' + mode + ' Arena (' + mode + ' Animals each)';
+      // Mode badge removed per design
       if (startTitle) startTitle.innerText = mode + ' vs ' + mode + ' Animal Battle';
       
       let rewardHfcText = mode === 3 ? '+10 HFC' : (mode === 5 ? '+20 HFC' : '+50 HFC 💎');
