@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Happy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3021,7 +3022,7 @@
       }
       playSound('fanfare');
       points -= 1000;
-      userLevel += 1;
+      userLevel += 1; queueCloudSave();
       updateDisplays();
       alert(`🎉 Congratulations! Upgraded to Lv. ${userLevel}!\n⚡ Bee Farm mining speed is now: ${userLevel * 24} points/day (${userLevel} pts/hour)!`);
     }
@@ -3185,7 +3186,7 @@
     // Collect Coins Action (For Bee Farm)
     function collectCoins(farmName, amount, btnElement) {
       playSound('coin');
-      points += amount;
+      points += amount; queueCloudSave();
       updateDisplays();
 
       const rect = btnElement.getBoundingClientRect();
@@ -3742,7 +3743,7 @@
             feeNotice + '\n\n' +
             'Processing on TON Network within seconds.');
 
-      hfcBalance -= withdrawAmount;
+      hfcBalance -= withdrawAmount; queueCloudSave();
       updateDisplays();
       syncWalletView();
       showWalletToast('Withdrew ' + withdrawAmount.toLocaleString() + ' HFC (Net: ' + netAmount.toLocaleString() + ' HFC)');
@@ -4001,8 +4002,121 @@
       }
     }
 
+
+    // ==================== SUPABASE CLOUD DATABASE INTEGRATION ====================
+    const SUPABASE_URL = 'https://jcbpgjtaoavqzwiixaha.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjYnBnanRhb2F2cXp3aWl4YWhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMTE1MzUsImV4cCI6MjEwODY4NzUzNX0.q-HHRVzYeQFZNQfQmCpm9B33pdAiWZk95uwvMeVWcTk';
+    let dbClient = null;
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch(err) {
+      console.warn('Supabase init note:', err);
+    }
+
+    function getEffectiveTelegramId() {
+      if (tgUser && tgUser.id) return tgUser.id;
+      let localId = localStorage.getItem('happyfarm_player_tid');
+      if (!localId) {
+        localId = Math.floor(100000000 + Math.random() * 900000000);
+        localStorage.setItem('happyfarm_player_tid', localId);
+      }
+      return parseInt(localId);
+    }
+
+    let saveDebounceTimer = null;
+    function queueCloudSave() {
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(() => {
+        savePlayerDataToCloud();
+      }, 1500);
+    }
+
+    async function loadPlayerDataFromCloud() {
+      if (!dbClient) return;
+      const tId = getEffectiveTelegramId();
+      try {
+        const { data, error } = await dbClient
+          .from('players')
+          .select('*')
+          .eq('telegram_id', tId)
+          .maybeSingle();
+
+        if (error) {
+          console.warn('Cloud load error:', error);
+          return;
+        }
+
+        if (data) {
+          points = Math.max(points, Number(data.points) || 0);
+          hfcBalance = Math.max(hfcBalance, Number(data.hfc_balance) || 0);
+          userLevel = Math.max(userLevel, Number(data.user_level) || 1);
+          if (data.is_vip) isDogVipActive = true;
+          if (data.wallet_address) {
+            connectedWalletAddress = data.wallet_address;
+            isWalletConnected = true;
+          }
+          if (data.farms_data && Array.isArray(data.farms_data.watched)) {
+            watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
+          }
+          updateDisplays();
+          syncWalletView();
+          updatePvpButtonsUI();
+          console.log('âœ… Player progress loaded from Supabase cloud for ID:', tId);
+        } else {
+          // New player first-time cloud initialization
+          await savePlayerDataToCloud(true);
+        }
+      } catch (err) {
+        console.warn('Cloud sync note:', err);
+      }
+    }
+
+    async function savePlayerDataToCloud(isInitial = false) {
+      if (!dbClient) return;
+      const tId = getEffectiveTelegramId();
+      const uname = tgUser?.username || tgUser?.first_name || 'Farmer';
+      const fname = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ') || uname;
+
+      const payload = {
+        telegram_id: tId,
+        username: uname,
+        full_name: fname,
+        points: points,
+        hfc_balance: hfcBalance,
+        user_level: userLevel,
+        is_vip: isDogVipActive,
+        farms_data: {
+          watched: watchedAnimalFarms
+        },
+        wallet_address: connectedWalletAddress || '',
+        last_active: new Date().toISOString()
+      };
+
+      try {
+        const { error } = await dbClient
+          .from('players')
+          .upsert(payload, { onConflict: 'telegram_id' });
+        if (!error) {
+          console.log('â˜ï¸ Progress saved to Supabase for ID:', tId);
+        } else {
+          console.warn('Cloud save response:', error);
+        }
+      } catch (err) {
+        console.warn('Cloud save error:', err);
+      }
+    }
+
+    // Auto-save progress to cloud every 15 seconds
+    setInterval(() => {
+      queueCloudSave();
+    }, 15000);
+    // ==================== END SUPABASE ====================
+
     // Initial load
     initTelegram();
+    loadPlayerDataFromCloud();
     updateDisplays();
     startCalmBgm();
     updatePvpButtonsUI();
