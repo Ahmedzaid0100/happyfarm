@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Farm - Profile</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: 'Fredoka', 'Tajawal', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Custom 3D Cartoon Boards */
+    .wood-board {
+      background: linear-gradient(180deg, #5c2f0f 0%, #442109 50%, #2e1504 100%);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.25), 0 6px 14px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+      border: 3px solid #824718;
+    }
+
+    .cream-card {
+      background: #fdf8eb;
+      border: 2px solid #e2cb9d;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12), inset 0 1px 0 #ffffff;
+    }
+
+    .inner-subcard {
+      background: #ffffff;
+      border: 1.5px solid #eedec0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .wood-nav {
+      background: linear-gradient(180deg, #995521 0%, #763b0e 60%, #4d2305 100%);
+      border-top: 4px solid #3c1902;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.3);
+    }
+
+    .btn-3d-green {
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 60%, #15803d 100%);
+      border: 2px solid #86efac;
+      border-bottom: 4px solid #166534;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-green:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-3d-yellow {
+      background: linear-gradient(180deg, #fde047 0%, #eab308 60%, #ca8a04 100%);
+      border: 2px solid #fef08a;
+      border-bottom: 4px solid #854d0e;
+      text-shadow: 0 1px 1px rgba(255,255,255,0.6);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-yellow:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    /* Scrollbar hide */
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-[#38a135] via-[#2f8e2c] to-[#1e6b1c] min-h-screen text-slate-800 antialiased flex justify-center items-start overflow-x-hidden p-0 m-0">
+
+  <!-- Mobile Viewport Container -->
+  <div class="w-full max-w-md min-h-screen relative flex flex-col justify-between bg-gradient-to-b from-[#42a83e] via-[#339330] to-[#20691e] shadow-2xl pb-24 overflow-y-auto">
+
+    <!-- Scenic Background Elements (Clouds & Sunny Sky) -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-[140%] h-56 bg-gradient-to-b from-sky-400 via-sky-300 to-transparent rounded-[50%] opacity-90"></div>
+      <!-- Sun -->
+      <div class="absolute top-2 right-8 w-16 h-16 rounded-full bg-gradient-to-tr from-amber-300 to-yellow-200 blur-[1px] shadow-lg opacity-90"></div>
+      <!-- Cartoon Clouds -->
+      <div class="absolute top-4 left-4 w-24 h-10 bg-white/90 rounded-full blur-[0.5px]"></div>
+      <div class="absolute top-8 left-12 w-16 h-8 bg-white/80 rounded-full"></div>
+      <div class="absolute top-6 right-16 w-20 h-9 bg-white/90 rounded-full"></div>
+    </div>
+
+    <!-- MAIN SCROLLABLE CONTENT -->
+    <div class="relative z-10 w-full px-3.5 pt-3 space-y-3.5">
+
+      <!-- Top Title Banner: My Profile -->
+      <div class="flex justify-center pt-1">
+        <div class="bg-gradient-to-b from-[#3c1d06] to-[#251002] px-7 py-1.5 rounded-2xl border-2 border-[#7a4214] shadow-lg text-center">
+          <h1 class="text-lg font-black text-amber-300 tracking-wide drop-shadow-md" style="font-family: 'Fredoka', cursive;">
+            My Profile
+          </h1>
+        </div>
+      </div>
+
+      <!-- Avatar, Level, Name & ID -->
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <!-- Circular Avatar with Gold Ring -->
+          <div id="avatarBox" onclick="openAvatarModal()" class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600 border-4 border-amber-400 ring-4 ring-[#2c1303]/70 flex items-center justify-center text-5xl shadow-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all">
+            <span id="playerAvatarDisplay">👦</span>
+          </div>
+          <!-- Level Badge (Top Right) -->
+          <div class="absolute -top-1 -right-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-xs px-3 py-0.5 rounded-full border-2 border-white shadow-lg flex items-center gap-1">
+            Level <span id="playerLevelDisplay">5</span>
+          </div>
+        </div>
+
+        <!-- Name & ID -->
+        <div class="mt-2.5 text-center">
+          <div class="text-xl font-black text-white flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <span id="playerNameDisplay">Farmer123</span>
+            <button onclick="editPlayerName()" class="text-amber-300 hover:text-yellow-200 text-sm transition-transform active:scale-90" title="Edit Name">✏️</button>
+          </div>
+          <div onclick="copyPlayerId()" class="text-xs font-bold text-lime-200 drop-shadow cursor-pointer hover:underline mt-0.5 flex items-center justify-center gap-1">
+            <span>ID: <span id="playerIdText">8492 7510</span></span>
+            <span class="text-[10px]">📋</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- XP Progress Bar (320 XP / 500 XP) -->
+      <div class="bg-[#1c3a16]/80 backdrop-blur-sm border-2 border-[#3b752f] rounded-2xl p-2.5 shadow-md">
+        <div class="flex justify-between items-center text-xs font-extrabold text-lime-200 mb-1 px-1">
+          <span id="currentXpText">320 XP</span>
+          <span id="nextLevelXpText">Next level: 500 XP</span>
+        </div>
+        <div class="w-full bg-[#0c1f09] rounded-full h-4 p-0.5 overflow-hidden border border-[#2b5921]">
+          <div id="xpProgressBar" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-green-500 h-full rounded-full transition-all duration-500 shadow-inner" style="width: 64%;"></div>
+        </div>
+      </div>
+
+      <!-- ==================== CARD 1: Farm Statistics ==================== -->
+      <div class="cream-card rounded-3xl p-3.5 shadow-lg text-amber-950">
+        <!-- Header -->
+        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-amber-200/80">
+          <div class="w-8 h-8 rounded-xl bg-[#61340f] text-amber-200 flex items-center justify-center text-base shadow-sm border border-[#864c1b]">
+            🌾
+          </div>
+          <h2 class="font-black text-base text-[#422108]">Farm Statistics</h2>
+        </div>
+
+        <!-- 6 Grid Sub-cards (2 cols x 3 rows) -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <!-- 1. Total Farm Points -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-white flex items-center justify-center text-lg shadow shrink-0 border border-amber-200">
+              🪙
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Total Farm Points</div>
+              <div id="statTotalPoints" class="font-black text-amber-950 text-sm mt-1">1,248</div>
+            </div>
+          </div>
+
+          <!-- 2. Honey Coins -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center text-lg shadow shrink-0 border border-orange-200">
+              🍯
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Honey Coins</div>
+              <div id="statHoneyCoins" class="font-black text-amber-950 text-sm mt-1">2,450</div>
+            </div>
+          </div>
+
+          <!-- 3. Total Earnings -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center text-lg shadow shrink-0 border border-emerald-300">
+              💲
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Total Earnings</div>
+              <div id="statTotalEarnings" class="font-black text-emerald-700 text-sm mt-1">$184.20</div>
+            </div>
+          </div>
+
+          <!-- 4. Farming Power -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center text-lg shadow shrink-0 border border-blue-300">
+              ⚡
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Farming Power</div>
+              <div id="statFarmingPower" class="font-black text-blue-900 text-sm mt-1">+12/hr</div>
+            </div>
+          </div>
+
+          <!-- 5. Joined Date -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center text-lg shadow shrink-0 border border-sky-300">
+              📅
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Joined Date</div>
+              <div class="font-black text-amber-950 text-xs mt-1">May 2025</div>
+            </div>
+          </div>
+
+          <!-- 6. Login Streak -->
+          <div class="inner-subcard rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-orange-500 text-white flex items-center justify-center text-lg shadow shrink-0 border border-rose-300">
+              🔥
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[10px] font-bold text-amber-800/80 leading-none">Login Streak</div>
+              <div class="font-black text-rose-700 text-xs mt-1">7 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CARD 2: Connected Wallet ==================== -->
+      <div class="wood-board rounded-3xl p-3.5 text-white shadow-xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-amber-800/80">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-amber-950 flex items-center justify-center text-base font-black shadow border border-amber-200">
+              👛
+            </div>
+            <h2 class="font-black text-base text-amber-200">Connected Wallet</h2>
+          </div>
+          <span class="bg-gradient-to-r from-emerald-600 to-green-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            Connected ✓
+          </span>
+        </div>
+
+        <!-- Wallet Address Box -->
+        <div class="bg-black/55 border-2 border-amber-900/90 rounded-2xl p-2.5 flex items-center justify-between mb-3 shadow-inner">
+          <div class="overflow-hidden">
+            <div class="text-[10px] text-amber-300/90 font-bold">TON Wallet:</div>
+            <div class="font-mono text-xs font-black text-white tracking-wider">
+              0x7A4F...9C21
+            </div>
+          </div>
+          <!-- Copy Button -->
+          <button onclick="copyTonWallet()" class="btn-3d-yellow p-2 rounded-xl text-amber-950 font-black text-base shadow flex items-center justify-center" title="Copy Address">
+            📋
+          </button>
+        </div>
+
+        <!-- Action Buttons (Withdraw & Transaction History) -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="openWithdrawModal()" class="btn-3d-green py-2.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
+            <span>🚀</span> Withdraw
+          </button>
+          <button onclick="openHistoryModal()" class="btn-3d-yellow py-2.5 rounded-2xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
+            <span>📜</span> Transaction History
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== CARD 3: Farm Progress ==================== -->
+      <div class="cream-card rounded-3xl p-3.5 shadow-lg text-amber-950">
+        <!-- Header -->
+        <div class="flex items-center gap-2 mb-2.5 pb-2 border-b border-amber-200/80">
+          <div class="w-8 h-8 rounded-xl bg-[#61340f] text-amber-200 flex items-center justify-center text-base shadow-sm border border-[#864c1b]">
+            🏠
+          </div>
+          <h2 class="font-black text-base text-[#422108]">Farm Progress</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <!-- Unlocked Farms -->
+          <div class="inner-subcard flex items-center gap-2 p-2 rounded-xl">
+            <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-black shrink-0">✓</div>
+            <div>
+              <div class="text-[10px] text-amber-800/80 font-bold">Unlocked Farms</div>
+              <div class="font-black text-amber-950 text-xs">1 / 6</div>
+            </div>
+          </div>
+
+          <!-- Current Farm -->
+          <div class="inner-subcard flex items-center gap-2 p-2 rounded-xl">
+            <div class="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-black shrink-0">🐝</div>
+            <div>
+              <div class="text-[10px] text-amber-800/80 font-bold">Current Farm</div>
+              <div class="font-black text-amber-950 text-xs">Bee Farm</div>
+            </div>
+          </div>
+
+          <!-- Farm Speed -->
+          <div class="inner-subcard flex items-center gap-2 p-2 rounded-xl">
+            <div class="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-black shrink-0">⚡</div>
+            <div>
+              <div class="text-[10px] text-amber-800/80 font-bold">Farm Speed</div>
+              <div id="progFarmSpeed" class="font-black text-amber-950 text-xs">12 / hour</div>
+            </div>
+          </div>
+
+          <!-- Total Collected -->
+          <div class="inner-subcard flex items-center gap-2 p-2 rounded-xl">
+            <div class="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-black shrink-0">🪙</div>
+            <div>
+              <div class="text-[10px] text-amber-800/80 font-bold">Total Collected</div>
+              <div id="progTotalCollected" class="font-black text-amber-950 text-xs">8,940</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Row -->
+        <div class="mt-2.5 pt-2 border-t border-amber-200/80 flex items-center justify-between text-xs px-1">
+          <div class="flex items-center gap-1.5">
+            <span class="text-amber-500 font-bold text-base">⭐</span>
+            <span class="font-black text-[#422108]">Achievements</span>
+          </div>
+          <span class="font-black text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full border border-emerald-300 shadow-sm">
+            4 / 12
+          </span>
+        </div>
+      </div>
+
+      <!-- ==================== CARD 4: Grow Together! ==================== -->
+      <div class="bg-gradient-to-b from-[#e0f2fe] via-[#bae6fd] to-[#7dd3fc] border-2 border-[#38bdf8] rounded-3xl p-3.5 shadow-xl text-sky-950 relative overflow-hidden">
+        <div class="flex items-start gap-3 mb-2.5">
+          <!-- Bird / Characters avatar -->
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-sky-400 border-2 border-white flex items-center justify-center text-2xl shadow-md shrink-0">
+            👥
+          </div>
+          <div>
+            <h2 class="font-black text-lg text-sky-950 leading-tight">Grow Together!</h2>
+            <p class="text-xs text-sky-800 font-bold">Invite friends and earn Honey Coins</p>
+          </div>
+        </div>
+
+        <!-- Friends & Earnings Stats -->
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="bg-white/90 border border-sky-300 rounded-2xl p-2.5 flex justify-between items-center shadow-sm">
+            <span class="text-xs font-extrabold text-sky-800">Friends</span>
+            <span class="font-black text-sky-950 text-base">12</span>
+          </div>
+          <div class="bg-white/90 border border-sky-300 rounded-2xl p-2.5 flex justify-between items-center shadow-sm">
+            <span class="text-xs font-extrabold text-sky-800">Earnings</span>
+            <span class="font-black text-amber-600 text-base">840 🍯</span>
+          </div>
+        </div>
+
+        <!-- Invite Friends Button -->
+        <button onclick="copyInviteLink()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
+          <span>👥</span> Invite Friends
+        </button>
+      </div>
+
+      <!-- ==================== CARD 5: Settings ==================== -->
+      <div class="cream-card rounded-3xl p-3.5 shadow-lg text-amber-950">
+        <!-- Header -->
+        <div class="flex items-center gap-2 mb-2 pb-2 border-b border-amber-200/80">
+          <div class="w-8 h-8 rounded-xl bg-[#61340f] text-amber-200 flex items-center justify-center text-base shadow-sm border border-[#864c1b]">
+            ✏️
+          </div>
+          <h2 class="font-black text-base text-[#422108]">Settings</h2>
+        </div>
+
+        <div class="space-y-1 text-xs">
+          <!-- 1. Edit Profile -->
+          <div onclick="openAvatarModal()" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">✏️</span>
+              <span class="font-black text-amber-950 text-xs">Edit Profile</span>
+            </div>
+            <span class="text-amber-800 font-extrabold text-sm">›</span>
+          </div>
+
+          <!-- 2. Notifications Toggle -->
+          <div class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🔔</span>
+              <span class="font-black text-amber-950 text-xs">Notifications</span>
+            </div>
+            <!-- iOS style toggle switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="notifToggle" class="sr-only peer" checked onchange="toggleNotifications(this)">
+              <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+
+          <!-- 3. Language -->
+          <div onclick="toggleLanguage()" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🌐</span>
+              <span class="font-black text-amber-950 text-xs">Language</span>
+            </div>
+            <span class="text-amber-800 font-bold flex items-center gap-1 text-xs">
+              <span id="currentLangDisplay">English</span> <span class="font-black text-sm">›</span>
+            </span>
+          </div>
+
+          <!-- 4. Support -->
+          <div onclick="openSupportModal()" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🎧</span>
+              <span class="font-black text-amber-950 text-xs">Support</span>
+            </div>
+            <span class="text-amber-800 font-extrabold text-sm">›</span>
+          </div>
+
+          <!-- 5. Logout -->
+          <div onclick="confirmLogout()" class="flex items-center justify-between p-2.5 hover:bg-rose-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all text-rose-700">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs shadow-sm">🚪</span>
+              <span class="font-black text-xs">Logout</span>
+            </div>
+            <span class="font-extrabold text-sm">›</span>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- /MAIN SCROLLABLE CONTENT -->
+
+    <!-- ==================== BOTTOM WOODEN NAVIGATION BAR ==================== -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto wood-nav z-40 px-2 py-2 flex items-center justify-around text-amber-100">
+      
+      <!-- 1. Profile (Active in this page) -->
+      <a href="profile.html" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-2xl bg-white/20 border border-yellow-300/50 shadow-md scale-105 transition-all text-yellow-300">
+        <span class="text-2xl filter drop-shadow">👨‍🌾</span>
+        <span class="text-[10px] font-black tracking-wide">Profile</span>
+      </a>
+
+      <!-- 2. Tasks -->
+      <a href="index.html#tasks" onclick="event.preventDefault(); openTasksModal();" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-2xl filter drop-shadow">📋</span>
+        <span class="text-[10px] font-bold text-amber-200">Tasks</span>
+      </a>
+
+      <!-- 3. Home Farm (Navigates to index.html) -->
+      <a href="index.html" class="flex flex-col items-center relative -top-3 active:scale-95 transition-transform">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-t from-red-600 via-rose-500 to-red-400 border-4 border-amber-300 shadow-xl flex items-center justify-center text-3xl">
+          🏠
+        </div>
+        <span class="text-[11px] font-black text-amber-100 tracking-wide mt-1">Home Farm</span>
+      </a>
+
+      <!-- 4. Wallet -->
+      <a href="index.html#wallet" onclick="event.preventDefault(); openWithdrawModal();" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-2xl filter drop-shadow">👛</span>
+        <span class="text-[10px] font-bold text-amber-200">Wallet</span>
+      </a>
+
+      <!-- 5. Others -->
+      <a href="index.html#others" onclick="event.preventDefault(); openOthersModal();" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-2xl filter drop-shadow text-amber-300">⭐</span>
+        <span class="text-[10px] font-bold text-amber-200">Others</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+  <!-- ==================== INTERACTIVE MODALS ==================== -->
+
+  <!-- Avatar & Profile Edit Modal -->
+  <div id="avatarModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-white shadow-2xl relative border-amber-600 text-center">
+      <button onclick="closeModal('avatarModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+      
+      <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border-4 border-amber-300 mx-auto flex items-center justify-center text-4xl shadow-lg mb-2">
+        <span id="modalCurrentAvatar">👦</span>
+      </div>
+      <h3 class="text-lg font-black text-amber-300">Choose Character</h3>
+      <p class="text-xs text-lime-300 font-bold mb-3">Select your farmer character</p>
+
+      <div class="bg-black/40 p-2.5 rounded-2xl border border-amber-800/80 mb-4 grid grid-cols-4 gap-2 text-2xl">
+        <button onclick="selectAvatar('👦')" class="hover:scale-125 transition-transform active:scale-90 p-1">👦</button>
+        <button onclick="selectAvatar('👨‍🌾')" class="hover:scale-125 transition-transform active:scale-90 p-1">👨‍🌾</button>
+        <button onclick="selectAvatar('👩‍🌾')" class="hover:scale-125 transition-transform active:scale-90 p-1">👩‍🌾</button>
+        <button onclick="selectAvatar('🤠')" class="hover:scale-125 transition-transform active:scale-90 p-1">🤠</button>
+        <button onclick="selectAvatar('🐶')" class="hover:scale-125 transition-transform active:scale-90 p-1">🐶</button>
+        <button onclick="selectAvatar('🦊')" class="hover:scale-125 transition-transform active:scale-90 p-1">🦊</button>
+        <button onclick="selectAvatar('👑')" class="hover:scale-125 transition-transform active:scale-90 p-1">👑</button>
+        <button onclick="selectAvatar('🚜')" class="hover:scale-125 transition-transform active:scale-90 p-1">🚜</button>
+      </div>
+
+      <button onclick="editPlayerName()" class="w-full py-2.5 rounded-xl btn-3d-yellow font-black text-xs text-amber-950 shadow-md">
+        ✏️ Edit Farmer Name
+      </button>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div id="withdrawModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
+      <button onclick="closeModal('withdrawModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+      <div class="text-center mb-4">
+        <div class="text-3xl mb-1">🚀</div>
+        <h3 class="text-lg font-black text-amber-300">Withdraw to Wallet</h3>
+        <p class="text-xs text-amber-200/80">Withdraw to TON Wallet</p>
+      </div>
+
+      <div class="bg-black/45 rounded-2xl p-3 border border-amber-800/80 mb-3 space-y-2 text-xs">
+        <div class="flex justify-between items-center">
+          <span class="text-amber-300">Available Balance:</span>
+          <span class="font-black text-lime-400 text-sm" id="modalBalanceDisplay">1,248 FARM</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-amber-300">Wallet Address:</span>
+          <span class="font-mono text-white text-[11px]">0x7A4F...9C21</span>
+        </div>
+      </div>
+
+      <button onclick="submitWithdraw()" class="w-full py-3 rounded-2xl btn-3d-green font-black text-xs text-white shadow-lg active:scale-95 transition-all">
+        Confirm Withdrawal (TON Network)
+      </button>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
+      <button onclick="closeModal('historyModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+      <div class="text-center mb-3">
+        <div class="text-3xl mb-1">📜</div>
+        <h3 class="text-lg font-black text-amber-300">Transaction History</h3>
+        <p class="text-xs text-amber-200/80">Recent Activity</p>
+      </div>
+
+      <div class="space-y-2 text-xs max-h-60 overflow-y-auto">
+        <div class="bg-black/40 p-2.5 rounded-xl border border-amber-800/80 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white">Bee Farm Mining</div>
+            <div class="text-[10px] text-amber-300/80">Auto Completed</div>
+          </div>
+          <span class="font-black text-lime-400">+24 🪙</span>
+        </div>
+        <div class="bg-black/40 p-2.5 rounded-xl border border-amber-800/80 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white">Daily Login Reward (Day 7)</div>
+            <div class="text-[10px] text-amber-300/80">Completed</div>
+          </div>
+          <span class="font-black text-lime-400">+50 🪙</span>
+        </div>
+        <div class="bg-black/40 p-2.5 rounded-xl border border-amber-800/80 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white">TON Wallet Connected</div>
+            <div class="text-[10px] text-amber-300/80">0x7A4F...9C21</div>
+          </div>
+          <span class="font-black text-emerald-400">✓ Connected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks Modal -->
+  <div id="tasksModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
+      <button onclick="closeModal('tasksModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+      <div class="text-center mb-3">
+        <div class="text-3xl mb-1">📋</div>
+        <h3 class="text-lg font-black text-amber-300">Daily Farm Tasks</h3>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="bg-black/40 p-2.5 rounded-xl border border-amber-800/80 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white">Join Telegram Channel</div>
+            <div class="text-[10px] text-yellow-300">+100 Points 🪙</div>
+          </div>
+          <button onclick="alert('Task reward claimed!')" class="btn-3d-green px-3 py-1 rounded-lg font-black text-[10px]">Claim</button>
+        </div>
+        <div class="bg-black/40 p-2.5 rounded-xl border border-amber-800/80 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white">Invite 3 Friends</div>
+            <div class="text-[10px] text-yellow-300">+300 Points 🚀</div>
+          </div>
+          <button onclick="copyInviteLink()" class="btn-3d-yellow px-3 py-1 rounded-lg font-black text-[10px] text-amber-950">Invite</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all"></div>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    // Audio Synthesizer
+    let audioCtx = null;
+    function playAudio(freq, dur = 0.15, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'bg-amber-950/95 border-2 border-yellow-400 text-amber-200 px-4 py-2 rounded-2xl text-xs font-black shadow-2xl drop-shadow animate-bounce';
+      toast.innerText = msg;
+      c.innerHTML = '';
+      c.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    // Default values populated exactly as seen in design screenshots
+    let currentPoints = parseInt(localStorage.getItem('happy_farm_points') || '1248', 10);
+    let currentLevel = parseInt(localStorage.getItem('happy_farm_level') || '5', 10);
+    let currentAvatar = localStorage.getItem('happy_farm_avatar') || '👦';
+    let currentName = localStorage.getItem('happy_farm_name') || 'Farmer123';
+
+    function renderProfile() {
+      document.getElementById('playerAvatarDisplay').innerText = currentAvatar;
+      document.getElementById('modalCurrentAvatar').innerText = currentAvatar;
+      document.getElementById('playerLevelDisplay').innerText = currentLevel;
+      document.getElementById('playerNameDisplay').innerText = currentName;
+
+      // XP: 320 XP / 500 XP
+      const currentXp = 320;
+      const nextXp = 500;
+      const pct = (currentXp / nextXp) * 100;
+      document.getElementById('currentXpText').innerText = `${currentXp.toLocaleString()} XP`;
+      document.getElementById('nextLevelXpText').innerText = `Next level: ${nextXp.toLocaleString()} XP`;
+      document.getElementById('xpProgressBar').style.width = `${pct}%`;
+
+      // Statistics matching Screenshot 1
+      document.getElementById('statTotalPoints').innerText = currentPoints.toLocaleString();
+      document.getElementById('modalBalanceDisplay').innerText = `${currentPoints.toLocaleString()} FARM`;
+      document.getElementById('statHoneyCoins').innerText = '2,450';
+      document.getElementById('statTotalEarnings').innerText = '$184.20';
+      document.getElementById('statFarmingPower').innerText = '+12/hr';
+      document.getElementById('progFarmSpeed').innerText = '12 / hour';
+      document.getElementById('progTotalCollected').innerText = '8,940';
+    }
+
+    // Handlers
+    function copyTonWallet() {
+      playAudio(587, 0.15, 'triangle');
+      const addr = '0x7A4F8b93C9d12a67E83b0F76e534C1908dE9C21';
+      navigator.clipboard.writeText(addr);
+      showToast('📋 TON Wallet address copied!');
+    }
+
+    function copyPlayerId() {
+      playAudio(520, 0.1);
+      navigator.clipboard.writeText('84927510');
+      showToast('📋 Player ID copied: 8492 7510');
+    }
+
+    function editPlayerName() {
+      playAudio(440, 0.1);
+      const newName = prompt('Enter your farmer nickname:', currentName);
+      if (newName && newName.trim() !== '') {
+        currentName = newName.trim();
+        localStorage.setItem('happy_farm_name', currentName);
+        renderProfile();
+        playAudio(880, 0.25);
+        showToast(`✅ Welcome, ${currentName}!`);
+      }
+    }
+
+    function copyInviteLink() {
+      playAudio(659, 0.15);
+      navigator.clipboard.writeText('https://t.me/HappyFarmTonBot?start=ref_8492');
+      showToast('👥 Referral link copied!');
+    }
+
+    function selectAvatar(emoji) {
+      playAudio(880, 0.2);
+      currentAvatar = emoji;
+      localStorage.setItem('happy_farm_avatar', emoji);
+      renderProfile();
+      closeModal('avatarModal');
+      showToast('✨ Avatar updated!');
+    }
+
+    function openAvatarModal() {
+      playAudio(440, 0.1);
+      openModal('avatarModal');
+    }
+
+    function openWithdrawModal() {
+      playAudio(440, 0.1);
+      openModal('withdrawModal');
+    }
+
+    function submitWithdraw() {
+      playAudio(880, 0.3);
+      closeModal('withdrawModal');
+      alert(`🚀 Withdrawal request of ${currentPoints.toLocaleString()} tokens submitted to TON wallet: 0x7A4F...9C21.\nProcessing will complete in seconds.`);
+    }
+
+    function openHistoryModal() {
+      playAudio(440, 0.1);
+      openModal('historyModal');
+    }
+
+    function openTasksModal() {
+      playAudio(440, 0.1);
+      openModal('tasksModal');
+    }
+
+    function openOthersModal() {
+      playAudio(440, 0.1);
+      alert('⭐ Happy Farm - v1.0.0 on TON Blockchain.\nDeveloper: Happy Farm Studio.');
+    }
+
+    function toggleNotifications(el) {
+      playAudio(el.checked ? 659 : 300, 0.1);
+      showToast(el.checked ? '🔔 Notifications enabled' : '🔕 Notifications muted');
+    }
+
+    let currentLang = 'English';
+    function toggleLanguage() {
+      playAudio(520, 0.1);
+      const langEl = document.getElementById('currentLangDisplay');
+      if (currentLang === 'English') {
+        currentLang = 'Arabic';
+        langEl.innerText = 'Arabic';
+        showToast('🌐 Language set to Arabic');
+      } else {
+        currentLang = 'English';
+        langEl.innerText = 'English';
+        showToast('🌐 Language set to English');
+      }
+    }
+
+    function openSupportModal() {
+      playAudio(440, 0.1);
+      alert('🎧 Support & Help:\nContact Support Bot on Telegram:\n@HappyFarmSupportBot');
+    }
+
+    function confirmLogout() {
+      playAudio(300, 0.15);
+      if (confirm('Are you sure you want to disconnect wallet?')) {
+        showToast('🚪 Disconnected');
+      }
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Initial Render
+    renderProfile();
+  </script>
+</body>
+</html>
