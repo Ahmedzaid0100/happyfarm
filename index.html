@@ -3730,9 +3730,9 @@
       playSound('fanfare');
       const gasFee = 50; // 50 HFC gas fee deducted on withdrawal
       const netAmount = Math.max(withdrawAmount - gasFee, 0);
-      const feeNotice = "Standard Gas Fee: 50 HFC deducted from requested amount.";
-        ? 'VIP Dog Active: 0 HFC Gas Fee (Zero deduction! You receive 100% full amount!)'
-        : 'Standard Gas Fee: 50 HFC deducted (Net: ' + netAmount.toLocaleString() + ' HFC). Buy VIP Dog (3 TON) for 0 HFC gas fee!';
+      const feeNotice = "Standard Gas Fee: 50 HFC deducted (Net: " + netAmount.toLocaleString() + " HFC).";
+
+
 
       alert('Withdrawal Request Submitted!\n\n' +
             'Requested Amount: ' + withdrawAmount.toLocaleString() + ' HFC (~ $' + (withdrawAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
