@@ -241,43 +241,42 @@
         <!-- TOP BAR: Profile, Logo, VIP Badge -->
         <!-- TOP BAR: Profile & Level (Left), Centered Logo "Happy Farm" (Center), VIP Badge (Right) -->
         <!-- TOP BAR: Profile & Level (Left), Enriched Centered Logo "Happy Farm" (Center), Enriched VIP Badge (Right) -->
-        <header class="relative flex items-center justify-between min-h-[64px] px-0.5">
-          <!-- Left: Profile / Farmer & Level Badge -->
-          <div onclick="switchTab('profile')" class="z-10 flex items-center gap-1.5 bg-amber-100/95 border-2 border-amber-800/40 rounded-full pl-1.5 pr-2.5 py-1 shadow-md cursor-pointer active:scale-95 transition-transform" title="Open Profile">
-            <div id="headerAvatarDisplay" class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border border-white flex items-center justify-center text-lg shadow shrink-0">
-              👦
+        <header class="flex items-center justify-between w-full min-h-[52px] px-1 gap-1 select-none">
+          <!-- 1. Left: Profile / Farmer & Level (Shrink-safe & Truncated) -->
+          <div onclick="switchTab('profile')" class="flex items-center gap-1 bg-amber-100/95 border border-amber-800/40 rounded-full pl-1 pr-2 py-0.5 shadow-sm cursor-pointer active:scale-95 transition-transform shrink min-w-0" title="Open Profile">
+            <div id="headerAvatarDisplay" class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border border-white flex items-center justify-center text-xs shadow shrink-0 font-black text-white">
+              &#128104;&#8205;&#127806;
             </div>
-            <span id="headerPlayerNameText" class="text-xs font-black text-amber-950 truncate max-w-[75px]">Farmer</span>
-            <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[10px] px-2 py-0.5 rounded-full border border-white/60 shadow-sm leading-none shrink-0">
-              Lv. <span id="userLevelDisplay">1</span>
+            <span id="headerPlayerNameText" class="text-[11px] font-black text-amber-950 truncate max-w-[50px] leading-tight">Farmer</span>
+            <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded-full border border-white/60 shadow-sm leading-none shrink-0">
+              Lv.<span id="userLevelDisplay">1</span>
             </span>
           </div>
 
-          <!-- Center: 3D Logo "Happy Farm" (Enlarged & Mathematically Centered) -->
-          <div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-0 pointer-events-none">
-            <div class="relative bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 px-5 py-1.5 rounded-2xl border-2 border-amber-900 shadow-2xl text-center transform -rotate-1">
-              <!-- Decorative Leaves -->
-              <span class="absolute -top-2.5 -left-2.5 text-lg select-none pointer-events-none">🍃</span>
-              <span class="absolute -bottom-1.5 -right-2 text-lg select-none pointer-events-none">🌿</span>
-              <h1 class="text-xl font-black text-amber-300 tracking-wide text-stroke-green leading-none" style="font-family: 'Fredoka', cursive;">
-                Happy<br><span class="text-lime-300 text-2xl font-black">Farm</span>
+          <!-- 2. Center: 3D Logo "Happy Farm" (In-Flow Centered, Zero Overlap Guaranteed) -->
+          <div class="shrink-0 flex items-center justify-center px-0.5">
+            <div class="relative bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 px-2.5 py-1 rounded-xl border border-amber-900 shadow-md text-center transform -rotate-1">
+              <span class="absolute -top-1.5 -left-1.5 text-xs select-none pointer-events-none">&#127811;</span>
+              <span class="absolute -bottom-1 -right-1 text-xs select-none pointer-events-none">&#127807;</span>
+              <h1 class="text-xs font-black text-amber-300 tracking-wider leading-none" style="font-family: 'Fredoka', cursive;">
+                Happy<br><span class="text-lime-300 text-sm font-black">Farm</span>
               </h1>
             </div>
           </div>
 
-          <!-- Right: Enriched VIP Dog Badge (Enlarged) -->
-          <!-- Right: Enriched VIP Dog Badge & Calm Music Toggle -->
-          <div class="z-10 flex items-center gap-1.5 justify-end">
+          <!-- 3. Right: BGM Music Toggle & VIP Dog Badge -->
+          <div class="flex items-center gap-1 justify-end shrink-0">
             <!-- Calm Music (BGM) Toggle Button -->
-            <button id="bgmToggleBtn" onclick="toggleBgm()" class="w-8 h-8 rounded-full bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 border-2 border-yellow-400 shadow-md flex items-center justify-center text-sm active:scale-90 transition-transform cursor-pointer" title="Calm Farm Music">
+            <button id="bgmToggleBtn" onclick="toggleBgm()" class="w-7 h-7 rounded-full bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 border border-yellow-400 shadow-sm flex items-center justify-center text-xs active:scale-90 transition-transform cursor-pointer" title="Calm Farm Music">
               <span id="bgmIcon">&#127925;</span>
             </button>
-            <div onclick="triggerVipFeature()" class="relative bg-gradient-to-b from-blue-600 via-indigo-700 to-indigo-900 text-white px-3 py-1.5 rounded-2xl border-2 border-yellow-300 shadow-lg cursor-pointer active:scale-95 flex flex-col items-center leading-none">
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs text-yellow-300 font-black">👑 VIP</span>
-                <span class="text-sm">🐶</span>
+            <!-- VIP Dog Badge -->
+            <div onclick="triggerVipFeature()" class="bg-gradient-to-b from-blue-600 via-indigo-700 to-indigo-900 text-white px-2 py-1 rounded-xl border border-yellow-300 shadow cursor-pointer active:scale-95 flex flex-col items-center leading-none">
+              <div class="flex items-center gap-1">
+                <span class="text-[9px] text-yellow-300 font-black">&#128081; VIP</span>
+                <span class="text-[10px]">&#128054;</span>
               </div>
-              <span class="text-[9px] text-yellow-200 font-extrabold mt-0.5 tracking-wide">Dog New</span>
+              <span class="text-[7.5px] text-yellow-200 font-extrabold mt-0.5 tracking-wide">Dog New</span>
             </div>
           </div>
         </header>
@@ -2991,10 +2990,10 @@
       const upgradeBtn = document.getElementById('upgradeBeeBtn');
       if (upgradeBtn) {
         if (points >= 1000) {
-          upgradeBtn.innerHTML = `<span>⚡</span> Upgrade to Lv. ${userLevel + 1} (1,000 🪙)`;
+          upgradeBtn.innerHTML = `<span>&#9889;</span> Lv.+1 (1,000 &#129689;)`;
           upgradeBtn.className = 'btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[9px] flex items-center justify-center gap-0.5 shadow animate-pulse';
         } else {
-          upgradeBtn.innerHTML = `<span>🔒</span> Upgrade (${points}/1,000 🪙)`;
+          upgradeBtn.innerHTML = `<span>&#128274;</span> Lv.+1 (${points}/1k)`;
           upgradeBtn.className = 'bg-slate-700/80 text-amber-200/80 w-full py-1 rounded-lg font-bold text-[9px] flex items-center justify-center gap-0.5 shadow cursor-not-allowed';
         }
       }
