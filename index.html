@@ -894,11 +894,11 @@
             </div>
             <div class="bg-blue-900/60 rounded-xl p-2 text-center border border-blue-600/50">
               <div class="text-[10px] text-blue-300 font-bold">🌾 Farms</div>
-              <div class="text-sm font-black text-amber-300">5 Active</div>
+              <div id="walletFarmsActiveBadge" class="text-sm font-black text-amber-300">0 Active</div>
             </div>
             <div class="bg-gradient-to-b from-yellow-700/80 to-amber-800/80 rounded-xl p-2 text-center border border-yellow-400/60">
               <div class="text-[10px] text-yellow-300 font-bold">👑 Status</div>
-              <div class="text-sm font-black text-yellow-200">VIP</div>
+              <div id="walletStatusBadge" class="text-sm font-black text-yellow-200">Standard</div>
             </div>
           </div>
         </div>
@@ -957,7 +957,7 @@
             <div class="text-xs text-emerald-400 font-semibold">≈ <span id="hfcUsdDisplay">$0.00</span> USD</div>
             <div class="mt-2 pt-2 border-t border-emerald-800/50 flex items-center justify-between text-[10px] text-emerald-300 font-bold px-1">
               <span>Min. Withdraw: <b>1,500 HFC</b></span>
-              <span id="withdrawFeeNotice">Gas Fee: <b>50 HFC</b> (0 with VIP Dog)</span>
+              <span id="withdrawFeeNotice">Gas Fee: <b>50 HFC</b></span>
             </div>
           </div>
 
@@ -3681,6 +3681,11 @@
       // Speed badge
       const spd = document.getElementById('walletSpeedBadge');
       if (spd) spd.innerText = `+${userLevel * 24}/day`;
+      const activeFarmsList = typeof getActiveOrWatchedFarmsCount === "function" ? getActiveOrWatchedFarmsCount() : [];
+      const farmBadge = document.getElementById("walletFarmsActiveBadge");
+      if (farmBadge) farmBadge.innerText = activeFarmsList.length + " Active";
+      const statusBadge = document.getElementById("walletStatusBadge");
+      if (statusBadge) statusBadge.innerText = isDogVipActive ? "VIP Dog" : "Standard";
 
       // Convert preview
       const from = document.getElementById('convertFromDisplay');
@@ -3732,15 +3737,15 @@
         : hfcBalance;
 
       playSound('fanfare');
-      const gasFee = isDogVipActive ? 0 : 50;
+      const gasFee = 50; // 50 HFC gas fee deducted on withdrawal
       const netAmount = Math.max(withdrawAmount - gasFee, 0);
-      const feeNotice = isDogVipActive
+      const feeNotice = "Standard Gas Fee: 50 HFC deducted from requested amount.";
         ? 'VIP Dog Active: 0 HFC Gas Fee (Zero deduction! You receive 100% full amount!)'
         : 'Standard Gas Fee: 50 HFC deducted (Net: ' + netAmount.toLocaleString() + ' HFC). Buy VIP Dog (3 TON) for 0 HFC gas fee!';
 
       alert('Withdrawal Request Submitted!\n\n' +
             'Requested Amount: ' + withdrawAmount.toLocaleString() + ' HFC (~ $' + (withdrawAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
-            'Gas Fee Deduction: ' + (isDogVipActive ? '0 HFC (FREE - VIP Dog Owned)' : '50 HFC') + '\n' +
+            'Gas Fee Deduction: 50 HFC (~ $' + (50 * HFC_USD_RATE).toFixed(2) + ')\n' +
             'Net Received: ' + netAmount.toLocaleString() + ' HFC (~ $' + (netAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
             'Destination: ' + connectedWalletAddress + '\n\n' +
             feeNotice + '\n\n' +
