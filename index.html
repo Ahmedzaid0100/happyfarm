@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -4688,6 +4688,9 @@
         const tMode = parseInt(urlParams.get('testArena')) || 3;
         setTimeout(() => { enterBattleArena(tMode); }, 300);
       }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
       if (urlParams.get('testRunVictory')) {
         setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
       }
@@ -4736,6 +4739,17 @@ let runFinishLineZ = null; // Z depth of finish line (spawns at 1.0, reaches 0)
 let runHasHoneySpawned = false;
 
 // 3D Player Dog State
+let runCurrentLane = 0; // -1: Left, 0: Center, 1: Right
+function shiftRunLane(dir) {
+  runCurrentLane = Math.max(-1, Math.min(1, runCurrentLane + dir));
+  runDog.targetLanePos = runCurrentLane * 0.60;
+  playSound('click');
+}
+function setRunLane(lane) {
+  runCurrentLane = Math.max(-1, Math.min(1, lane));
+  runDog.targetLanePos = runCurrentLane * 0.60;
+}
+
 const runDog = {
   lanePos: 0.0,       // -0.76 (far left) to +0.76 (far right), 0.0 is center
   targetLanePos: 0.0,
@@ -4870,6 +4884,7 @@ function startRunSprintGame() {
   runGameStartTime = Date.now();
 
   // Reset Dog
+  runCurrentLane = 0;
   runDog.lanePos = 0.0;
   runDog.targetLanePos = 0.0;
   runDog.z = 0.08;
@@ -4935,7 +4950,7 @@ function runGameLoop() {
   else if (runSlowdownTimer > 0) speedMult = 0.65; // Mud Slowdown
 
   // Advance 3D World Scrolling
-  const baseWorldSpeed = 0.095 * speedMult;
+  const baseWorldSpeed = 0.026 * speedMult;
   runWorldDistance += baseWorldSpeed;
 
   // 1. Update Dog Position & Physics
@@ -4956,7 +4971,7 @@ function runGameLoop() {
   
   // Smooth lerp to target
   const prevLane = runDog.lanePos;
-  runDog.lanePos += (runDog.targetLanePos - runDog.lanePos) * 0.48;
+  runDog.lanePos += (runDog.targetLanePos - runDog.lanePos) * 0.35;
   runDog.z += (runDog.targetZ - runDog.z) * 0.25;
 
   // Banking tilt calculation
@@ -4998,7 +5013,7 @@ function runGameLoop() {
 
   // 3. Spawning Waves of 3D Farm Animals & Obstacles
   if (elapsed < 13.8) {
-    const waveInterval = runShieldTimer > 0 ? 650 : 950;
+    const waveInterval = runShieldTimer > 0 ? 1100 : 1800;
     if (now - runLastWaveTime > waveInterval) {
       runLastWaveTime = now;
       spawnRun3DWave();
@@ -5007,7 +5022,7 @@ function runGameLoop() {
 
   // 4. Update Finish Line
   if (runFinishLineZ !== null) {
-    runFinishLineZ -= baseWorldSpeed * 0.50;
+    runFinishLineZ -= 0.016 * speedMult;
     if (runFinishLineZ <= runDog.z) {
       triggerRunVictory();
       return;
@@ -5015,7 +5030,7 @@ function runGameLoop() {
   }
 
   // 5. Update Obstacles (Moving towards camera)
-  const objApproachSpeed = baseWorldSpeed * 0.46;
+  const objApproachSpeed = 0.0076 * speedMult;
   for (let i = runObstacles.length - 1; i >= 0; i--) {
     const obs = runObstacles[i];
     obs.z -= objApproachSpeed;
@@ -5035,7 +5050,7 @@ function runGameLoop() {
       const laneDist = Math.abs(obs.lanePos - runDog.lanePos);
 
       // Hitbox tolerance
-      if (zDist < 0.040 && laneDist < 0.22) {
+      if (zDist < 0.034 && laneDist < 0.20) {
         if (runShieldTimer > 0) {
           // Honey Shield Smashes through!
           obs.bounced = true;
@@ -5113,7 +5128,7 @@ function spawnRun3DWave() {
   lanes.sort(() => Math.random() - 0.5);
 
   // Pick 1 or 2 lanes for obstacles (always leave at least 1 open lane!)
-  const obstacleCount = Math.random() < 0.22 ? 2 : 1;
+  const obstacleCount = Math.random() < 0.18 ? 2 : 1;
   const chosenLanes = lanes.slice(0, obstacleCount);
 
   chosenLanes.forEach(lane => {
