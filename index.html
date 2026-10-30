@@ -3158,6 +3158,7 @@
       updateDisplays();
       syncWalletView();
       updatePvpButtonsUI();
+      queueCloudSave();
 
       closeBattleArena();
       showWalletToast('🎉 Claimed +' + hfcPrize + ' CFC from ' + (mode === 'run' ? 'RUN Sprint' : mode + 'v' + mode) + ' Battle!');
@@ -3224,12 +3225,12 @@
       }
     }
 
-    // Game State
-    let points = 0; // Starts with 0 points
-    let userLevel = 1; // Starts at Lv. 1 (24 pts/day free lifetime starter)
-    let isDogVipActive = false;
-    let beeMinedPoints = 0;
-    let lastBeeCollectTimestamp = Date.now();
+    // Game State (Local dual-persistence + Cloud sync)
+    let points = Number(localStorage.getItem('crazyfarm_points')) || 0;
+    let userLevel = Number(localStorage.getItem('crazyfarm_level')) || 1;
+    let isDogVipActive = localStorage.getItem('crazyfarm_is_vip') === 'true';
+    let beeMinedPoints = Number(localStorage.getItem('crazyfarm_bee_mined_pts')) || 0;
+    let lastBeeCollectTimestamp = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || Date.now();
     let audioEnabled = true;
 
     // Ad Farms System (Each farm runs a 12-hour cycle with exact rewards)
@@ -3638,6 +3639,7 @@
       points += farm.bonus;
       farm.state = 'idle';
       updateDisplays();
+      queueCloudSave();
       renderAdFarmAction(key);
 
       if (isAuto) {
@@ -4188,7 +4190,7 @@
     // ==================== END TASKS LOGIC ====================
 
     // ==================== WALLET VIEW LOGIC ====================
-    let hfcBalance = 0;
+    let hfcBalance = Number(localStorage.getItem('crazyfarm_hfc_balance')) || 0;
     let isWalletConnected = false;
     let connectedWalletAddress = '';
     const HFC_RATE = 1000; // 1000 Farm Points = 1 CFC
@@ -4602,6 +4604,14 @@
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
             calculateOfflineBeeMining();
           }
+          // Sync loaded cloud state to local storage
+          try {
+            localStorage.setItem('crazyfarm_points', points);
+            localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+            localStorage.setItem('crazyfarm_level', userLevel);
+            localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
+          } catch(e) {}
+
           updateDisplays();
           syncWalletView();
           updatePvpButtonsUI();
@@ -4637,6 +4647,17 @@
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
       };
+
+      // LocalStorage dual-save
+      try {
+        localStorage.setItem('crazyfarm_points', points);
+        localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+        localStorage.setItem('crazyfarm_level', userLevel);
+        localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
+        localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
+        localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
+        localStorage.setItem('happyfarm_watched_animals', JSON.stringify(watchedAnimalFarms));
+      } catch(e) {}
 
       try {
         const { error } = await dbClient
@@ -6102,6 +6123,7 @@ function claimRunSprintVictory() {
   updateDisplays();
   syncWalletView();
   updatePvpButtonsUI();
+  queueCloudSave();
 
   exitRunSprintGame();
   showWalletToast('&#127881; Claimed +' + wonHfc + ' CFC & +' + wonPoints + ' Points from RUN Sprint!');
