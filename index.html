@@ -346,44 +346,44 @@
         </div>
 
         <!-- Center Visual / Interactive Video Raid Arena -->
-        <div id="beeVideoContainer" class="relative w-full h-[155px] rounded-xl overflow-hidden border border-amber-900/60 shadow-inner bg-black cursor-pointer group-hover:border-amber-400/80 transition-all" onclick="toggleSwarmRaidVideo()">
-          <!-- Video Element -->
-          <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline muted preload="metadata" class="w-full h-full object-cover object-center hidden" onended="onSwarmRaidEnded()"></video>
+        <div id="beeVideoContainer" class="relative w-full h-[155px] rounded-xl overflow-hidden border border-amber-900/60 shadow-inner bg-black cursor-pointer group-hover:border-amber-400/80 transition-all select-none" onclick="toggleSwarmRaidVideo()">
+          <!-- Video Element (Autoplay & Mobile Inline Enabled) -->
+          <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline webkit-playsinline x5-playsinline muted preload="auto" class="w-full h-full object-cover object-center hidden" onended="onSwarmRaidEnded()" onclick="event.stopPropagation(); toggleSwarmRaidVideo()"></video>
           
           <!-- Poster Image -->
-          <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Queen Bee Attack" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" />
+          <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Queen Bee Attack" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105 pointer-events-none" />
           
           <!-- Subtle Dark/Gold Vignette Gradient -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/35 pointer-events-none"></div>
 
           <!-- Top-Left Floating Tag: Swarm Power -->
-          <div class="absolute top-2 left-2 bg-amber-950/85 backdrop-blur-sm border border-amber-400/70 text-amber-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow">
+          <div class="absolute top-2 left-2 bg-amber-950/85 backdrop-blur-sm border border-amber-400/70 text-amber-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow pointer-events-none">
             <span>&#9889;</span>
             <span>Swarm Power: <span class="text-yellow-300">10x</span></span>
           </div>
 
           <!-- Top-Right Floating Tag: Sound & Status controls -->
           <div class="absolute top-2 right-2 flex items-center gap-1 z-20">
-            <button id="beeSoundBtn" onclick="event.stopPropagation(); toggleBeeSound()" class="bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/30 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow flex items-center gap-0.5 active:scale-95" title="Mute/Unmute Video Sound">
+            <button id="beeSoundBtn" onclick="event.stopPropagation(); toggleBeeSound()" class="bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/30 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow flex items-center gap-0.5 active:scale-95 cursor-pointer" title="Mute/Unmute Video Sound">
               <span id="beeSoundIcon">&#128263;</span>
             </button>
-            <div id="beeRaidStatusBadge" class="bg-rose-950/85 backdrop-blur-sm border border-rose-400/70 text-rose-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow animate-pulse">
+            <div id="beeRaidStatusBadge" class="bg-rose-950/85 backdrop-blur-sm border border-rose-400/70 text-rose-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow animate-pulse pointer-events-none">
               <span>&#9876;</span>
               <span id="beeRaidStatusText">Raid Ready</span>
             </div>
           </div>
 
           <!-- Center Action Play Button Overlay -->
-          <div id="beePlayOverlay" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-300">
-            <div class="btn-3d-yellow px-4 py-1.5 rounded-xl text-amber-950 font-black text-xs flex items-center gap-2 shadow-2xl border-2 border-yellow-200 animate-bounce" style="animation-duration: 2s;">
+          <div id="beePlayOverlay" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+            <button type="button" onclick="event.stopPropagation(); playSwarmRaid()" class="btn-3d-yellow px-4 py-1.5 rounded-xl text-amber-950 font-black text-xs flex items-center gap-2 shadow-2xl border-2 border-yellow-200 animate-bounce cursor-pointer active:scale-95" style="animation-duration: 2s;">
               <span class="text-sm">&#9654;&#65039;</span>
               <span class="tracking-wide">TAP TO RAID!</span>
-            </div>
-            <span class="text-[8.5px] text-yellow-200 font-extrabold mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">&#9876; Watch Queen Bee & Swarm Attack</span>
+            </button>
+            <span class="text-[8.5px] text-yellow-200 font-extrabold mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] pointer-events-none">&#9876; Watch Queen Bee & Swarm Attack</span>
           </div>
 
           <!-- Bottom Status Bar inside visual -->
-          <div class="absolute bottom-1.5 inset-x-2 flex items-center justify-between text-[8px] font-extrabold text-white drop-shadow">
+          <div class="absolute bottom-1.5 inset-x-2 flex items-center justify-between text-[8px] font-extrabold text-white drop-shadow pointer-events-none">
             <span class="flex items-center gap-1">
               <span>&#128081;</span>
               <span>Angry Queen Bee vs Farm</span>
@@ -3230,6 +3230,96 @@
 
       showWalletToast(`&#127855; Harvested +${available} Farm Points from Bee Farm!`);
     }
+
+    // ==================== QUEEN BEE SWARM VIDEO & RAID ARENA ====================
+    let isBeeVideoPlaying = false;
+    let isBeeAudioMuted = true;
+
+    function toggleBeeSound() {
+      const vid = document.getElementById('beeAttackVideo');
+      const icon = document.getElementById('beeSoundIcon');
+      if (!vid) return;
+      isBeeAudioMuted = !isBeeAudioMuted;
+      vid.muted = isBeeAudioMuted;
+      if (icon) icon.innerHTML = isBeeAudioMuted ? '&#128263;' : '&#128266;';
+      showWalletToast(isBeeAudioMuted ? '&#128263; Video Sound Muted' : '&#128266; Video Sound Unmuted');
+    }
+
+    function toggleSwarmRaidVideo() {
+      if (isBeeVideoPlaying) {
+        pauseSwarmRaid();
+      } else {
+        playSwarmRaid();
+      }
+    }
+
+    function playSwarmRaid() {
+      const vid = document.getElementById('beeAttackVideo');
+      const poster = document.getElementById('beeAttackPoster');
+      const overlay = document.getElementById('beePlayOverlay');
+      const badge = document.getElementById('beeRaidStatusBadge');
+      const badgeText = document.getElementById('beeRaidStatusText');
+      const container = document.getElementById('beeVideoContainer');
+
+      if (!vid) return;
+      isBeeVideoPlaying = true;
+      vid.classList.remove('hidden');
+      if (poster) poster.classList.add('hidden');
+      if (overlay) overlay.classList.add('opacity-0');
+      if (badge) {
+        badge.className = 'bg-red-600 border border-yellow-300 text-white text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow animate-ping';
+      }
+      if (badgeText) badgeText.innerText = 'ATTACKING!';
+      if (container) container.classList.add('animate-pulse');
+
+      vid.muted = isBeeAudioMuted;
+      vid.currentTime = 0;
+
+      const p = vid.play();
+      if (p !== undefined) {
+        p.catch(err => {
+          console.warn('Playback error, falling back to muted:', err);
+          vid.muted = true;
+          isBeeAudioMuted = true;
+          const icon = document.getElementById('beeSoundIcon');
+          if (icon) icon.innerHTML = '&#128263;';
+          vid.play().catch(e => console.error('Final play error:', e));
+        });
+      }
+
+      try {
+        playSound('battle_start');
+      } catch(e){}
+
+      showWalletToast('&#128029; Queen Bee Swarm is attacking the farm! Watch out!');
+    }
+
+    function pauseSwarmRaid() {
+      const vid = document.getElementById('beeAttackVideo');
+      const poster = document.getElementById('beeAttackPoster');
+      const overlay = document.getElementById('beePlayOverlay');
+      const badge = document.getElementById('beeRaidStatusBadge');
+      const badgeText = document.getElementById('beeRaidStatusText');
+      const container = document.getElementById('beeVideoContainer');
+
+      if (!vid) return;
+      isBeeVideoPlaying = false;
+      vid.pause();
+      vid.classList.add('hidden');
+      if (poster) poster.classList.remove('hidden');
+      if (overlay) overlay.classList.remove('opacity-0');
+      if (badge) {
+        badge.className = 'bg-rose-950/85 backdrop-blur-sm border border-rose-400/70 text-rose-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow animate-pulse';
+      }
+      if (badgeText) badgeText.innerText = 'Raid Ready';
+      if (container) container.classList.remove('animate-pulse');
+    }
+
+    function onSwarmRaidEnded() {
+      pauseSwarmRaid();
+      showWalletToast('&#128081; Queen Bee Swarm completed the farm raid! Honey boost secured! &#127855;');
+    }
+
 
     // Offline Mining Calculation
     function calculateOfflineBeeMining() {
