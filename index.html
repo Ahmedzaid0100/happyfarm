@@ -50,6 +50,15 @@
       box-shadow: 0 1px 0 #134417, 0 2px 3px rgba(0,0,0,0.2);
     }
 
+        .btn-3d-red {
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 70%, #991b1b 100%);
+      box-shadow: 0 3px 0 #7f1d1d, 0 4px 6px rgba(0,0,0,0.25);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-red:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #7f1d1d, 0 2px 3px rgba(0,0,0,0.2);
+    }
     .btn-3d-yellow {
       background: linear-gradient(180deg, #ffca28 0%, #ffa000 70%, #e65100 100%);
       box-shadow: 0 3px 0 #b26a00, 0 4px 6px rgba(0,0,0,0.25);
@@ -408,6 +417,76 @@
         </div>
       </div>
 
+      <!-- ==================== BATTLE ARENA (PVP) - COMPACT 4-MODE ==================== -->
+      <div id="battleArenaCard" class="wood-board rounded-2xl p-2 shadow-xl border-2 border-amber-500/70 relative overflow-hidden select-none">
+        <!-- Header Banner -->
+        <div class="flex items-center justify-between border-b border-amber-900/60 pb-1 mb-1.5">
+          <div class="flex items-center gap-1.5">
+            <span class="text-base animate-bounce">&#9876;</span>
+            <div>
+              <h3 class="font-black text-[11px] text-yellow-300 uppercase tracking-wide leading-none" style="font-family: 'Fredoka', cursive;">
+                Farm Battle Arena (PvP)
+              </h3>
+              <p class="text-[8px] text-amber-200/90 font-semibold leading-tight">
+                PvP Combat &amp; Earn CFC Crypto Coins!
+              </p>
+            </div>
+          </div>
+          <span class="bg-red-600/90 text-white text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-red-300 animate-pulse">
+            LIVE &#128308;
+          </span>
+        </div>
+
+        <!-- 4 Compact Battle Mode Buttons (3vs3, 5vs5, 7vs7 VIP, RUN) -->
+        <div class="grid grid-cols-4 gap-1.5">
+
+          <!-- 1. 3 vs 3 Battle Button -->
+          <button onclick="openBattlePrep(3)" class="btn-3d-blue rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-sky-300/40 relative group cursor-pointer">
+            <span id="pvpBadge-3" class="bg-sky-950/80 text-sky-200 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full">3 Ads</span>
+            <div class="text-lg my-0.5 group-hover:scale-110 transition-transform">&#129353;</div>
+            <div class="font-black text-[9px] text-yellow-200 leading-tight">3 vs 3</div>
+            <div class="bg-sky-900/90 rounded px-1 py-0.5 text-[6.5px] font-bold text-lime-300 w-full text-center leading-tight truncate">
+              +10 CFC
+            </div>
+          </button>
+
+          <!-- 2. 5 vs 5 Battle Button -->
+          <button onclick="openBattlePrep(5)" class="btn-3d-yellow rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-amber-950 border border-yellow-200/60 relative group cursor-pointer">
+            <span id="pvpBadge-5" class="bg-amber-950/80 text-yellow-200 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full">5 Ads</span>
+            <div class="text-lg my-0.5 group-hover:scale-110 transition-transform">&#129352;</div>
+            <div class="font-black text-[9px] text-amber-950 leading-tight">5 vs 5</div>
+            <div class="bg-amber-900/90 rounded px-1 py-0.5 text-[6.5px] font-bold text-yellow-200 w-full text-center leading-tight truncate">
+              +20 CFC
+            </div>
+          </button>
+
+          <!-- 3. 7 vs 7 VIP Battle Button -->
+          <button onclick="openBattlePrep(7)" class="btn-3d-green rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-yellow-300/80 relative group cursor-pointer">
+            <span id="pvpBadge-7" class="bg-gradient-to-r from-amber-400 to-yellow-300 text-amber-950 text-[6.5px] font-black px-1 py-0.2 rounded shadow leading-none truncate max-w-full">
+              &#128081; VIP
+            </span>
+            <div class="text-lg my-0.5 group-hover:scale-110 transition-transform animate-bounce">&#129351;</div>
+            <div class="font-black text-[9px] text-yellow-300 leading-tight">7 vs 7</div>
+            <div class="bg-emerald-950/90 rounded px-1 py-0.5 text-[6.5px] font-black text-lime-200 w-full text-center leading-tight truncate">
+              +50 CFC
+            </div>
+          </button>
+
+          <!-- 4. RUN Battle Button -->
+          <button onclick="openBattleRunMode()" class="btn-3d-red rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-rose-300/70 relative group animate-pulse cursor-pointer">
+            <span id="pvpBadge-run" class="bg-rose-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full">
+              &#9889; Sprint
+            </span>
+            <div class="text-lg my-0.5 group-hover:scale-110 transition-transform">&#127939;</div>
+            <div class="font-black text-[9.5px] text-white leading-tight tracking-wider uppercase">RUN</div>
+            <div class="bg-rose-950/90 rounded px-1 py-0.5 text-[6.5px] font-bold text-yellow-300 w-full text-center leading-tight truncate">
+              Rush &#9889;
+            </div>
+          </button>
+
+        </div>
+      </div>
+
       <!-- FARM CARDS GRID (3 x 3) -->
       <div class="grid grid-cols-3 gap-2 pb-4">
 
@@ -594,64 +673,7 @@
 
       </div> <!-- /grid grid-cols-3 -->
 
-      <!-- ==================== BATTLE ARENA (PVP) ==================== -->
-      <div class="wood-board rounded-3xl p-3 shadow-2xl border-3 border-[#3d1b02] relative overflow-hidden mt-1">
-        <!-- Header Banner -->
-        <div class="flex items-center justify-between border-b border-amber-900/60 pb-2 mb-2.5">
-          <div class="flex items-center gap-2">
-            <span class="text-2xl animate-bounce">⚔️</span>
-            <div>
-              <h3 class="font-black text-sm text-yellow-300 uppercase tracking-wide leading-none" style="font-family: 'Fredoka', cursive;">
-                Farm Battle Arena (PvP)
-              </h3>
-              <p class="text-[10px] text-amber-200/90 font-semibold mt-0.5">
-                Battle other players & earn direct CFC crypto coins!
-              </p>
-            </div>
-          </div>
-          <span class="bg-red-600/90 text-white text-[9px] font-black px-2 py-0.5 rounded-full border border-red-300 animate-pulse">
-            LIVE 🔴
-          </span>
-        </div>
-
-        <!-- 3 Battle Mode Buttons (3vs3, 5vs5, 7vs7 VIP) -->
-        <div class="grid grid-cols-3 gap-2">
-
-          <!-- 1. 3 vs 3 Battle Button -->
-          <button onclick="openBattlePrep(3)" class="btn-3d-blue rounded-2xl p-2 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-white border border-sky-300/40 relative group">
-            <span id="pvpBadge-3" class="bg-sky-950/70 text-sky-200 text-[8px] font-black px-1.5 py-0.2 rounded-md">3 Ads</span>
-            <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform">🥉</div>
-            <div class="font-black text-[11px] text-yellow-200 leading-tight">3 vs 3</div>
-            <div class="bg-sky-900/80 rounded-lg px-1.5 py-0.5 text-[8px] font-bold text-lime-300 w-full text-center">
-              +10 CFC 🍀
-            </div>
-          </button>
-
-          <!-- 2. 5 vs 5 Battle Button -->
-          <button onclick="openBattlePrep(5)" class="btn-3d-yellow rounded-2xl p-2 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-amber-950 border border-yellow-200/60 relative group">
-            <span id="pvpBadge-5" class="bg-amber-950/70 text-yellow-200 text-[8px] font-black px-1.5 py-0.2 rounded-md">5 Ads</span>
-            <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform">🥈</div>
-            <div class="font-black text-[11px] text-amber-950 leading-tight">5 vs 5</div>
-            <div class="bg-amber-900/80 rounded-lg px-1.5 py-0.5 text-[8px] font-bold text-yellow-200 w-full text-center">
-              +20 CFC 🍀
-            </div>
-          </button>
-
-          <!-- 3. 7 vs 7 VIP Battle Button -->
-          <button onclick="openBattlePrep(7)" class="btn-3d-green rounded-2xl p-2 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-white border-2 border-yellow-400 relative group ring-2 ring-yellow-400/50">
-            <span id="pvpBadge-7" class="bg-gradient-to-r from-amber-400 to-yellow-300 text-amber-950 text-[8px] font-black px-1.5 py-0.2 rounded-md shadow flex items-center gap-0.5">
-              👑 VIP
-            </span>
-            <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform animate-bounce">🥇</div>
-            <div class="font-black text-[11px] text-yellow-300 leading-tight">7 vs 7</div>
-            <div class="bg-emerald-950/80 rounded-lg px-1.5 py-0.5 text-[8px] font-black text-lime-200 w-full text-center">
-              +50 CFC 💎
-            </div>
-          </button>
-
-        </div>
-      </div>
-    </div> <!-- /homeView -->
+      </div> <!-- /homeView -->
 
       <!-- ==================== 2. PROFILE VIEW (Seamless In-App View Matching 3 Screenshots) ==================== -->
       <div id="profileView" style="display: none;" class="space-y-3.5 pb-12">
@@ -3231,6 +3253,15 @@
       showWalletToast('&#128081; Queen Bee Swarm completed the farm raid! Honey boost secured! &#127855;');
     }
 
+
+    // ==================== BATTLE RUN MODE ====================
+    function openBattleRunMode() {
+      playSound('click');
+      showWalletToast('ðŸƒ SPEED RUN MODE: Animals rushing to battle! Starting 3 vs 3 Speed Clash...');
+      setTimeout(() => {
+        openBattlePrep(3);
+      }, 350);
+    }
 
     // Offline Mining Calculation
     function calculateOfflineBeeMining() {
