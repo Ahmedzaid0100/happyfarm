@@ -17,7 +17,7 @@ import urllib.parse
 # ==================== CONFIGURATION ====================
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k")
 WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
-CHANNEL_URL = "https://t.me/happyfarmHFC"
+CHANNEL_URL = "https://t.me/+hsG3joCzzOwxNTg0"
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
@@ -42,6 +42,7 @@ def send_welcome_message(chat_id, first_name, username):
         "• 🐶 <b>سباق الجري RUN 3D:</b> تفادى العوائق واكسب عملات <b>CFC</b> كاش!\n"
         "• ⚔️ <b>حلبة قتال الحيوانات PVP:</b> معارك 3v3 و 5v5 و 7v7 وجوائز كبرى.\n"
         "• 💎 <b>سحب الأرباح:</b> تحويل فوري لعملات CFC على محفظة TON.\n\n"
+        f"📢 <b>قناتنا الرسمية:</b> انضم لمتابعة التحديثات والجوائز:\n👉 {CHANNEL_URL}\n\n"
         "👇 <b>اضغط على الزر أدناه لبدء اللعب الآن مباشرة:</b>"
     )
 
@@ -55,15 +56,15 @@ def send_welcome_message(chat_id, first_name, username):
             ],
             [
                 {
-                    "text": "📢 القناة الرسمية",
+                    "text": "📢 انضم للقناة الرسمية 🌾",
                     "url": CHANNEL_URL
-                },
-                {
-                    "text": "👥 دعوة الأصدقاء",
-                    "switch_inline_query": "تعال العب معي في Crazy Farm واكسب عملات CFC مجاناً! 🌾"
                 }
             ],
             [
+                {
+                    "text": "👥 دعوة الأصدقاء",
+                    "switch_inline_query": "تعال العب معي في Crazy Farm واكسب عملات CFC مجاناً! 🌾"
+                },
                 {
                     "text": "❓ كيفية اللعب والربح",
                     "callback_data": "how_to_play"

@@ -2155,7 +2155,7 @@
               <div class="text-xs font-bold text-amber-100">Join Official Telegram Channel</div>
               <div class="text-[10px] text-yellow-300 font-semibold">+100 Points 🪙</div>
             </div>
-            <button onclick="claimTask(this, 100)" class="btn-3d-green px-3 py-1 rounded-lg text-[10px] font-bold text-white">Claim</button>
+            <button onclick="openOfficialChannel(this, 100)" class="btn-3d-green px-3 py-1 rounded-lg text-[10px] font-bold text-white">Join &amp; Claim</button>
           </div>
           <!-- Task 2 -->
           <div class="bg-amber-950/70 border border-amber-800/80 rounded-xl p-2.5 flex items-center justify-between">
@@ -3929,7 +3929,7 @@
 
     function copyRefLink() {
       playSound('click');
-      navigator.clipboard.writeText('https://t.me/CrazyFarmTonBot?start=ref_8492');
+      const rUrl = 'https://t.me/happyfarmHFCbot?start=ref_' + getEffectiveTelegramId(); navigator.clipboard.writeText(rUrl);
       alert('📋 Referral link copied:\nhttps://t.me/CrazyFarmTonBot?start=ref_8492\nShare it with friends to earn bonus rewards!');
     }
 
@@ -4069,7 +4069,7 @@
 
     function shareInviteLink() {
       playSound('click');
-      const refUrl = 'https://t.me/CrazyFarmTonBot?start=ref_8492';
+      const refUrl = 'https://t.me/happyfarmHFCbot?start=ref_' + getEffectiveTelegramId();
       if (navigator.clipboard) {
         navigator.clipboard.writeText(refUrl).catch(() => {});
       }
@@ -4185,6 +4185,13 @@
 
     // Task Execution: Start -> Claim -> Claimed ✓
     function startTask(key, bonus) {
+      if (key === 'sub' || key === 'tg') {
+        if (window.Telegram?.WebApp?.openTelegramLink) {
+          window.Telegram.WebApp.openTelegramLink('https://t.me/+hsG3joCzzOwxNTg0');
+        } else {
+          window.open('https://t.me/+hsG3joCzzOwxNTg0', '_blank');
+        }
+      }
       const task = taskItems[key];
       if (!task || task.state !== 'idle') return;
 
