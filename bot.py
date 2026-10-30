@@ -1,18 +1,21 @@
 """
 🌾 Happy Farm - Official Telegram Bot Backend
-This bot handles:
-1. /start command with a rich Welcome Message and Inline WebApp Launch Button.
-2. Direct '🎮 Play Now' button opening the Happy Farm Mini App.
-3. Referral system tracking (invited by friend).
-4. Community & Support Links.
+Production-ready bot handler optimized for standard Python and cloud platforms (PythonAnywhere, Render, VPS).
 """
 
 import os
 import sys
-import json
 import time
-import urllib.request
-import urllib.parse
+import json
+
+# Attempt to use requests (pre-installed on PythonAnywhere and handles proxies automatically)
+try:
+    import requests
+    USE_REQUESTS = True
+except ImportError:
+    USE_REQUESTS = False
+    import urllib.request
+    import urllib.parse
 
 # ==================== CONFIGURATION ====================
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k")
@@ -21,17 +24,43 @@ CHANNEL_URL = "https://t.me/+hsG3joCzzOwxNTg0"
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
+# PythonAnywhere Proxy support for urllib fallback
+PA_PROXY = os.getenv("http_proxy") or os.getenv("https_proxy") or "http://proxy.server:3128"
+
 def api_request(method, data=None):
     url = f"{API_URL}/{method}"
-    headers = {"Content-Type": "application/json"}
-    body = json.dumps(data).encode("utf-8") if data else None
-    req = urllib.request.Request(url, data=body, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=10) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except Exception as e:
-        print(f"API Error [{method}]: {e}")
-        return None
+    
+    if USE_REQUESTS:
+        try:
+            if data:
+                resp = requests.post(url, json=data, timeout=35)
+            else:
+                resp = requests.get(url, timeout=35)
+            return resp.json()
+        except Exception as e:
+            print(f"API Error [{method}]: {e}")
+            return None
+    else:
+        # Urllib fallback with proxy support
+        try:
+            proxy_support = urllib.request.ProxyHandler({'http': PA_PROXY, 'https': PA_PROXY})
+            opener = urllib.request.build_opener(proxy_support)
+            headers = {"Content-Type": "application/json"}
+            body = json.dumps(data).encode("utf-8") if data else None
+            req = urllib.request.Request(url, data=body, headers=headers)
+            with opener.open(req, timeout=35) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except Exception as e:
+            # Try without proxy if direct connection
+            try:
+                headers = {"Content-Type": "application/json"}
+                body = json.dumps(data).encode("utf-8") if data else None
+                req = urllib.request.Request(url, data=body, headers=headers)
+                with urllib.request.urlopen(req, timeout=35) as response:
+                    return json.loads(response.read().decode("utf-8"))
+            except Exception as e2:
+                print(f"API Error [{method}]: {e2}")
+                return None
 
 def send_welcome_message(chat_id, first_name, username):
     welcome_text = (
@@ -102,18 +131,16 @@ def set_bot_menu_button():
         print("✅ Menu button set successfully to WebApp!")
 
 def run_bot_polling():
-    if BOT_TOKEN == "YOUR_BOT_TOKEN_HERE" or not BOT_TOKEN:
-        print("⚠️ Please set your BOT_TOKEN from @BotFather in bot.py or via environment variable!")
-        return
-
     print("🚀 Starting Happy Farm Telegram Bot Polling...")
     set_bot_menu_button()
     
     offset = 0
+    error_count = 0
     while True:
         try:
-            updates_res = api_request("getUpdates", {"offset": offset, "timeout": 30})
+            updates_res = api_request("getUpdates", {"offset": offset, "timeout": 20})
             if updates_res and updates_res.get("ok"):
+                error_count = 0
                 for update in updates_res.get("result", []):
                     offset = update["update_id"] + 1
 
@@ -127,10 +154,10 @@ def run_bot_polling():
                         username = user.get("username", "")
 
                         if text.startswith("/start"):
-                            print(f"📥 /start from user: {first_name} (@{username}, ID: {user.get('id')})")
+                            print(f"📥 /start from: {first_name} (@{username}, ID: {user.get('id')})")
                             send_welcome_message(chat_id, first_name, username)
 
-                    # Handle Callback Queries (like how_to_play)
+                    # Handle Callback Queries
                     elif "callback_query" in update:
                         cb = update["callback_query"]
                         cb_id = cb.get("id")
@@ -144,13 +171,19 @@ def run_bot_polling():
                                 "4. اربط محفظة TON واسحب عملاتك إلى محفظتك في أي وقت!"
                             )
                             answer_callback(cb_id, how_text)
+            else:
+                error_count += 1
+                if error_count > 3:
+                    time.sleep(5)
+                else:
+                    time.sleep(1)
 
         except KeyboardInterrupt:
             print("\n🛑 Bot stopped by user.")
             break
         except Exception as e:
             print(f"Polling loop error: {e}")
-            time.sleep(3)
+            time.sleep(5)
 
 if __name__ == "__main__":
     run_bot_polling()
