@@ -1958,7 +1958,7 @@
           <div class="flex-1 max-w-[190px] flex flex-col items-center">
             <div class="flex items-center justify-between w-full text-[10px] font-black text-amber-300 drop-shadow">
               <span>&#128054; SPRINT</span>
-              <span id="runTimerDisplay" class="text-yellow-200">&#9201;&#65039; 15.0s</span>
+              <span id="runTimerDisplay" class="text-yellow-200">&#9201;&#65039; 20.0s</span>
               <span>&#127937;</span>
             </div>
             <div class="w-full bg-black/70 rounded-full h-2 border border-amber-500/70 overflow-hidden shadow-inner mt-0.5 relative">
@@ -2032,7 +2032,7 @@
             SPRINT COMPLETED!
           </h2>
           <p class="text-xs text-amber-200 font-semibold mb-3">
-            Awesome! Your Dog survived the 15-second farm sprint and reached the finish line!
+            Awesome! Your Dog survived the 20-second farm sprint and reached the finish line!
           </p>
           
           <div class="bg-black/60 rounded-2xl p-3 border-2 border-amber-500/80 w-full max-w-xs mb-3 shadow-inner">
@@ -2062,12 +2062,12 @@
             SPRINT FAILED!
           </h2>
           <p class="text-xs text-amber-200 font-semibold mb-3">
-            Too many obstacles hit! The dog couldn't finish the 15 seconds run!
+            Too many obstacles hit! The dog couldn't finish the 20 seconds run!
           </p>
 
           <div class="bg-black/60 rounded-2xl p-3 border border-red-500/50 w-full max-w-xs mb-4">
             <div class="text-xs text-amber-300 font-bold">
-              Time Survived: <span id="runGameOverTime" class="text-yellow-400 font-black">0.0s</span> / 15.0s
+              Time Survived: <span id="runGameOverTime" class="text-yellow-400 font-black">0.0s</span> / 20.0s
             </div>
           </div>
 
@@ -4694,6 +4694,9 @@
       if (urlParams.get('testRun')) {
         setTimeout(() => { startRunSprintGame(); }, 300);
       }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
       if (urlParams.get('testRunVictory')) {
         setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
       }
@@ -4725,7 +4728,7 @@
 let runGameAnimFrame = null;
 let runGameActive = false;
 let runGameStartTime = 0;
-const RUN_GAME_DURATION = 15.0; // 15 seconds run!
+const RUN_GAME_DURATION = 20.0; // 15 seconds run!
 let runLives = 3;
 let runBonusPoints = 0;
 let runBonesCollected = 0;
@@ -4758,8 +4761,8 @@ const runDog = {
   targetLanePos: 0.0,
   z: 0.08,            // Foreground depth (0.04 to 0.14 adjustable with Up/Down)
   targetZ: 0.08,
-  baseW: 84,
-  baseH: 84,
+  baseW: 104,
+  baseH: 104,
   tilt: 0,            // Banking angle when steering
   trotPhase: 0,
   dustTimer: 0,
@@ -4953,7 +4956,7 @@ function runGameLoop() {
   else if (runSlowdownTimer > 0) speedMult = 0.65; // Mud Slowdown
 
   // Advance 3D World Scrolling
-  const baseWorldSpeed = 0.026 * speedMult;
+  const baseWorldSpeed = 0.018 * speedMult;
   runWorldDistance += baseWorldSpeed;
 
   // 1. Update Dog Position & Physics
@@ -4998,7 +5001,7 @@ function runGameLoop() {
   runBee.animPhase += 0.12;
 
   // At 7.5s: Bee drops Honey Jar Bonus
-  if (elapsed >= 7.5 && !runHasHoneySpawned) {
+  if (elapsed >= 10.0 && !runHasHoneySpawned) {
     runHasHoneySpawned = true;
     runCollectibles.push({
       type: 'honey',
@@ -5010,13 +5013,13 @@ function runGameLoop() {
   }
 
   // At 14.0s: Finish line appears at horizon (z = 1.0)
-  if (elapsed >= 14.0 && runFinishLineZ === null) {
+  if (elapsed >= 18.5 && runFinishLineZ === null) {
     runFinishLineZ = 1.0;
   }
 
   // 3. Spawning Waves of 3D Farm Animals & Obstacles
-  if (elapsed < 13.8) {
-    const waveInterval = runShieldTimer > 0 ? 1100 : 1800;
+  if (elapsed < 18.2) {
+    const waveInterval = runShieldTimer > 0 ? 1400 : 2200;
     if (now - runLastWaveTime > waveInterval) {
       runLastWaveTime = now;
       spawnRun3DWave();
@@ -5025,7 +5028,7 @@ function runGameLoop() {
 
   // 4. Update Finish Line
   if (runFinishLineZ !== null) {
-    runFinishLineZ -= 0.016 * speedMult;
+    runFinishLineZ -= 0.011 * speedMult;
     if (runFinishLineZ <= runDog.z) {
       triggerRunVictory();
       return;
@@ -5033,7 +5036,7 @@ function runGameLoop() {
   }
 
   // 5. Update Obstacles (Moving towards camera)
-  const objApproachSpeed = 0.0076 * speedMult;
+  const objApproachSpeed = 0.0055 * speedMult;
   for (let i = runObstacles.length - 1; i >= 0; i--) {
     const obs = runObstacles[i];
     obs.z -= objApproachSpeed;
@@ -5308,11 +5311,11 @@ function drawFarmWindmill(ctx, canvas, now) {
     // Blade Spar
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(0, -26);
+    ctx.lineTo(0, -34);
     ctx.stroke();
     // Lattice Sail
-    ctx.fillRect(2, -25, 7, 20);
-    ctx.strokeRect(2, -25, 7, 20);
+    ctx.fillRect(2, -33, 9, 27);
+    ctx.strokeRect(2, -33, 9, 27);
   }
 
   // Hub Pin
@@ -5327,15 +5330,15 @@ function drawFarmWindmill(ctx, canvas, now) {
 function drawSidelineCheeringAnimals(ctx, canvas, now) {
   // Cheering spectator animals stationed on the grass borders of the race
   const cheeringLeft = [
-    { key: 'cows', emoji: '\uD83D\uDC04', lanePos: -1.35, z: 0.38, size: 48, animOffset: 0 },
-    { key: 'sheep', emoji: '\uD83D\uDC11', lanePos: -1.28, z: 0.20, size: 42, animOffset: 1.5 },
-    { key: 'bunny', emoji: '\uD83D\uDC30', lanePos: -1.24, z: 0.09, size: 38, animOffset: 2.8 }
+    { key: 'cows', emoji: '\uD83D\uDC04', lanePos: -1.35, z: 0.38, size: 62, animOffset: 0 },
+    { key: 'sheep', emoji: '\uD83D\uDC11', lanePos: -1.28, z: 0.20, size: 54, animOffset: 1.5 },
+    { key: 'bunny', emoji: '\uD83D\uDC30', lanePos: -1.24, z: 0.09, size: 48, animOffset: 2.8 }
   ];
 
   const cheeringRight = [
-    { key: 'horse', emoji: '\uD83D\uDC0E', lanePos: 1.35, z: 0.44, size: 50, animOffset: 0.8 },
-    { key: 'pig', emoji: '\uD83D\uDC37', lanePos: 1.28, z: 0.24, size: 44, animOffset: 2.1 },
-    { key: 'chicken', emoji: '\uD83D\uDC14', lanePos: 1.22, z: 0.11, size: 36, animOffset: 3.5 }
+    { key: 'horse', emoji: '\uD83D\uDC0E', lanePos: 1.35, z: 0.44, size: 64, animOffset: 0.8 },
+    { key: 'pig', emoji: '\uD83D\uDC37', lanePos: 1.28, z: 0.24, size: 54, animOffset: 2.1 },
+    { key: 'chicken', emoji: '\uD83D\uDC14', lanePos: 1.22, z: 0.11, size: 44, animOffset: 3.5 }
   ];
 
   const allSpectators = cheeringLeft.concat(cheeringRight);
@@ -5685,7 +5688,7 @@ function draw3DObstacle(ctx, canvas, obs, now) {
 
   if (obs.type === 'animal') {
     // Farm Animals (Bunny, Pig, Sheep, Horse, Cow, Chicken, Duck)
-    const baseSize = 68 * scale;
+    const baseSize = 82 * scale;
     // Natural hopping/bobbing per animal
     let hopY = 0;
     if (obs.animalKey === 'bunny') {
@@ -5732,8 +5735,8 @@ function draw3DObstacle(ctx, canvas, obs, now) {
 
   } else if (obs.type === 'hay') {
     // 3D Hay Bale (Straw Cube with Depth Faces)
-    const bw = 64 * scale;
-    const bh = 44 * scale;
+    const bw = 78 * scale;
+    const bh = 52 * scale;
     const depthH = 12 * scale;
 
     // Ground Shadow
@@ -5765,8 +5768,8 @@ function draw3DObstacle(ctx, canvas, obs, now) {
 
   } else if (obs.type === 'pit') {
     // 3D Pit Hole (Deep Earth Cavity with Rim Shadow)
-    const rw = 58 * scale;
-    const rh = 34 * scale;
+    const rw = 72 * scale;
+    const rh = 40 * scale;
     ctx.fillStyle = '#1c0d02';
     ctx.beginPath();
     ctx.ellipse(0, 0, rw / 2, rh / 2, 0, 0, Math.PI * 2);
@@ -5783,8 +5786,8 @@ function draw3DObstacle(ctx, canvas, obs, now) {
 
   } else if (obs.type === 'mud') {
     // 3D Mud Splatter Puddle
-    const mw = 68 * scale;
-    const mh = 32 * scale;
+    const mw = 84 * scale;
+    const mh = 38 * scale;
     ctx.fillStyle = '#451a03';
     ctx.beginPath();
     ctx.ellipse(0, 0, mw / 2, mh / 2, 0.1, 0, Math.PI * 2);
@@ -5796,8 +5799,8 @@ function draw3DObstacle(ctx, canvas, obs, now) {
 
   } else if (obs.type === 'fence') {
     // 3D Caution Timber Barrier with Warning Stripes
-    const fw = 74 * scale;
-    const fh = 38 * scale;
+    const fw = 92 * scale;
+    const fh = 46 * scale;
 
     // Ground Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.30)';
@@ -5839,7 +5842,7 @@ function draw3DCollectible(ctx, canvas, item, now) {
 
   if (item.type === 'bone') {
     // Golden Bone
-    ctx.font = Math.floor(28 * scale) + 'px sans-serif';
+    ctx.font = Math.floor(40 * scale) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowColor = '#fef08a';
@@ -5850,7 +5853,7 @@ function draw3DCollectible(ctx, canvas, item, now) {
     // Spinning 3D CFC Coin
     const spin = Math.cos(now / 140 + item.animPhase);
     ctx.scale(spin, 1);
-    ctx.font = Math.floor(26 * scale) + 'px sans-serif';
+    ctx.font = Math.floor(38 * scale) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowColor = '#facc15';
@@ -5859,7 +5862,7 @@ function draw3DCollectible(ctx, canvas, item, now) {
 
   } else if (item.type === 'honey') {
     // Glowing Queen Bee's Honey Jar with Sky Light Beacon
-    ctx.font = Math.floor(34 * scale) + 'px sans-serif';
+    ctx.font = Math.floor(46 * scale) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowColor = '#eab308';
@@ -5916,7 +5919,7 @@ function draw3DFinishLineArch(ctx, canvas, z) {
   ctx.font = 'black ' + Math.max(9, Math.floor(11 * scale)) + 'px Fredoka, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('\uD83C\uDFC1 15s SPRINT FINISH \uD83C\uDFC1', 0, -archH - 9 * scale);
+  ctx.fillText('\uD83C\uDFC1 20s SPRINT FINISH \uD83C\uDFC1', 0, -archH - 9 * scale);
 
   ctx.restore();
 }
