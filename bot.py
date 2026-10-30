@@ -15,10 +15,9 @@ import urllib.request
 import urllib.parse
 
 # ==================== CONFIGURATION ====================
-# Replace with your Bot Token from @BotFather, or set TELEGRAM_BOT_TOKEN environment variable
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k")
 WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
-CHANNEL_URL = "https://t.me/happyfarmHFC" # Replace with your channel if different
+CHANNEL_URL = "https://t.me/happyfarmHFC"
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
