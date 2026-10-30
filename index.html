@@ -1941,6 +1941,149 @@
       </div>
     </div>
 
+        <!-- ==================== RUN SPRINT (15s FARM RUSH) MINI-GAME MODAL ==================== -->
+    <div id="runGameModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[110] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
+      <!-- Game Card Container -->
+      <div id="runGameFrame" class="max-w-md w-full h-full max-h-[820px] relative rounded-3xl overflow-hidden border-4 border-[#5c3a21] shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#78b14b] via-[#5c9932] to-[#3b731b] select-none">
+        
+        <!-- Top HUD Header -->
+        <div class="relative z-20 w-full pt-2 px-3 pb-1.5 flex items-center justify-between gap-1.5 bg-gradient-to-b from-black/85 via-black/60 to-transparent">
+          
+          <!-- Lives (Hearts) -->
+          <div class="flex items-center gap-1 bg-black/60 px-2 py-1 rounded-xl border border-white/20">
+            <span id="runGameLives" class="text-sm tracking-tighter">&#10084;&#65039;&#10084;&#65039;&#10084;&#65039;</span>
+          </div>
+
+          <!-- Timer & Distance Progress Bar -->
+          <div class="flex-1 max-w-[190px] flex flex-col items-center">
+            <div class="flex items-center justify-between w-full text-[10px] font-black text-amber-300 drop-shadow">
+              <span>&#128054; SPRINT</span>
+              <span id="runTimerDisplay" class="text-yellow-200">&#9201;&#65039; 15.0s</span>
+              <span>&#127937;</span>
+            </div>
+            <div class="w-full bg-black/70 rounded-full h-2 border border-amber-500/70 overflow-hidden shadow-inner mt-0.5 relative">
+              <div id="runProgressBar" class="bg-gradient-to-r from-amber-400 via-yellow-300 to-lime-400 h-full w-[0%] transition-all duration-100"></div>
+            </div>
+          </div>
+
+          <!-- Bonus Coins & Close Button -->
+          <div class="flex items-center gap-1.5">
+            <div class="bg-black/60 px-2 py-1 rounded-xl border border-amber-500/50 flex items-center gap-1">
+              <span class="text-xs">&#129689;</span>
+              <span id="runCoinsCollected" class="text-yellow-300 font-black text-[10px]">+0</span>
+            </div>
+            <button onclick="exitRunSprintGame()" class="w-7 h-7 bg-red-600/90 hover:bg-red-500 text-white font-black rounded-full border border-white/40 flex items-center justify-center text-xs shadow-md active:scale-95 cursor-pointer">
+              âœ•
+            </button>
+          </div>
+        </div>
+
+        <!-- Queen Bee Hovering Mascot Guide -->
+        <div id="runQueenBeeGuide" class="absolute top-12 left-1/2 -translate-x-1/2 z-10 pointer-events-none transition-all duration-300 flex items-center gap-1 bg-amber-950/70 backdrop-blur-sm px-2.5 py-0.5 rounded-full border border-yellow-400/60 shadow">
+          <span class="text-sm animate-bounce">&#128029;</span>
+          <span class="text-[8.5px] font-black text-amber-200">Queen Bee leading the sprint!</span>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="relative flex-1 w-full overflow-hidden flex items-center justify-center">
+          <canvas id="runSprintCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+          
+          <!-- Screen Flash Effect (Hit) -->
+          <div id="runScreenFlash" class="absolute inset-0 bg-red-600/35 pointer-events-none opacity-0 transition-opacity duration-150"></div>
+          
+          <!-- Speed Effect Wind Lines -->
+          <div id="runSpeedVfx" class="absolute inset-0 pointer-events-none opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/30 via-transparent to-transparent"></div>
+        </div>
+
+        <!-- Bottom Controls Bar (4-Direction D-Pad + Touch Hint) -->
+        <div class="relative z-20 w-full p-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent flex items-center justify-between">
+          <div class="text-[8.5px] text-amber-200/90 font-bold px-1 text-center">
+            &#128070; Drag screen<br>or tap arrows:
+          </div>
+
+          <!-- 4-Way Virtual D-Pad -->
+          <div class="flex items-center gap-1.5">
+            <button id="btnDpadLeft" class="w-10 h-10 btn-3d-yellow rounded-xl flex items-center justify-center font-black text-amber-950 text-base shadow active:scale-90 select-none">
+              &#11013;&#65039;
+            </button>
+            <div class="flex flex-col gap-1">
+              <button id="btnDpadUp" class="w-10 h-6 btn-3d-green rounded-lg flex items-center justify-center font-black text-white text-xs shadow active:scale-90 select-none">
+                &#11014;&#65039;
+              </button>
+              <button id="btnDpadDown" class="w-10 h-6 btn-3d-yellow rounded-lg flex items-center justify-center font-black text-amber-950 text-xs shadow active:scale-90 select-none">
+                &#11015;&#65039;
+              </button>
+            </div>
+            <button id="btnDpadRight" class="w-10 h-10 btn-3d-yellow rounded-xl flex items-center justify-center font-black text-amber-950 text-base shadow active:scale-90 select-none">
+              &#10145;&#65039;
+            </button>
+          </div>
+
+          <!-- Boost indicator -->
+          <div id="runShieldBadge" class="hidden bg-yellow-400 text-amber-950 text-[8px] font-black px-2 py-1 rounded-xl shadow animate-bounce">
+            &#127855; SHIELD ON!
+          </div>
+        </div>
+
+        <!-- ==================== VICTORY OVERLAY ==================== -->
+        <div id="runVictoryOverlay" class="absolute inset-0 bg-black/85 backdrop-blur-md z-30 hidden flex flex-col items-center justify-center p-4 text-center">
+          <div class="text-5xl animate-bounce mb-2">&#127942;&#127937;</div>
+          <h2 class="text-xl font-black text-yellow-300 drop-shadow mb-1" style="font-family: 'Fredoka', cursive;">
+            SPRINT COMPLETED!
+          </h2>
+          <p class="text-xs text-amber-200 font-semibold mb-3">
+            Awesome! Your Dog survived the 15-second farm sprint and reached the finish line!
+          </p>
+          
+          <div class="bg-black/60 rounded-2xl p-3 border-2 border-amber-500/80 w-full max-w-xs mb-3 shadow-inner">
+            <span class="text-[10px] text-amber-400 uppercase font-black tracking-wider block mb-1">
+              Your Sprint Rewards
+            </span>
+            <div class="text-2xl font-black text-lime-400 mb-0.5">
+              &#128142; +50 CFC ($1.40)
+            </div>
+            <div class="text-xs font-bold text-yellow-200">
+              &#127806; +500 Farm Points
+            </div>
+            <div id="runStatsSummary" class="text-[10px] text-amber-300/80 mt-2 pt-2 border-t border-white/10">
+              Bones: <span id="runStatBones" class="text-yellow-300 font-bold">0</span> &bull; Coins: <span id="runStatCoins" class="text-yellow-300 font-bold">0</span> &bull; Bonus: <span id="runStatBonus" class="text-lime-300 font-bold">+0 pts</span>
+            </div>
+          </div>
+
+          <button onclick="claimRunSprintVictory()" class="btn-3d-green w-full max-w-xs py-3 rounded-2xl text-white font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
+            <span>&#127881;</span> Claim +50 CFC &amp; 500 Points!
+          </button>
+        </div>
+
+        <!-- ==================== GAME OVER OVERLAY ==================== -->
+        <div id="runGameOverOverlay" class="absolute inset-0 bg-black/85 backdrop-blur-md z-30 hidden flex flex-col items-center justify-center p-4 text-center">
+          <div class="text-5xl animate-bounce mb-2">&#128165;&#128054;</div>
+          <h2 class="text-xl font-black text-rose-400 drop-shadow mb-1" style="font-family: 'Fredoka', cursive;">
+            SPRINT FAILED!
+          </h2>
+          <p class="text-xs text-amber-200 font-semibold mb-3">
+            Too many obstacles hit! The dog couldn't finish the 15 seconds run!
+          </p>
+
+          <div class="bg-black/60 rounded-2xl p-3 border border-red-500/50 w-full max-w-xs mb-4">
+            <div class="text-xs text-amber-300 font-bold">
+              Time Survived: <span id="runGameOverTime" class="text-yellow-400 font-black">0.0s</span> / 15.0s
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 w-full max-w-xs">
+            <button onclick="retryRunSprintGame()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+              <span>ðŸ”„</span> Watch 1 Ad to Retry!
+            </button>
+            <button onclick="exitRunSprintGame()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 w-full py-2 rounded-xl font-bold text-xs shadow transition-all cursor-pointer">
+              Exit Sprint
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- 1. Simulated Watch Ad Modal -->
     <div id="adModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 text-center max-w-xs w-full text-white shadow-2xl relative">
@@ -2583,7 +2726,11 @@
           clearInterval(interval);
           setTimeout(() => {
             if (modal) modal.classList.add('hidden');
-            enterBattleArena(mode);
+            if (mode === 'run') {
+              startRunSprintGame();
+            } else {
+              enterBattleArena(mode);
+            }
           }, 300);
         }
       }, 700);
@@ -4542,7 +4689,758 @@
         setTimeout(() => { enterBattleArena(tMode); }, 300);
       }
     } catch(e) {}
-  </script>
+      // =========================================================================
+    // ==================== 15s FARM SPRINT (RUN MODE) ENGINE ====================
+    // =========================================================================
+    let runGameAnimFrame = null;
+    let runGameActive = false;
+    let runGameStartTime = 0;
+    const RUN_GAME_DURATION = 15.0; // 15 seconds run!
+    let runLives = 3;
+    let runBonusPoints = 0;
+    let runBonesCollected = 0;
+    let runCoinsCollectedCount = 0;
+    let runShieldTimer = 0;
+    let runInvulnerableTimer = 0;
+    let runSlowdownTimer = 0;
+    let runTrackOffset = 0;
+    let runObstacles = [];
+    let runCollectibles = [];
+    let runParticles = [];
+    let runLastObstacleTime = 0;
+    let runFinishLine = null;
+    let runHasHoneySpawned = false;
+
+    // Player Dog State
+    const runDog = {
+      x: 0,
+      y: 0,
+      w: 46,
+      h: 46,
+      vx: 0,
+      vy: 0,
+      baseSpeed: 5.2,
+      img: null,
+      loaded: false
+    };
+
+    // Preload Dog Image
+        const runBeeImg = new Image();
+    runBeeImg.src = 'assets/farms/bee.png';
+    let runBeeLoaded = false;
+    runBeeImg.onload = () => { runBeeLoaded = true; };
+
+    const runDogImg = new Image();
+    runDogImg.src = 'assets/farms/dog.png';
+    runDogImg.onload = () => { runDog.img = runDogImg; runDog.loaded = true; };
+
+    // Mascot Queen Bee
+    const runBeeState = {
+      x: 100,
+      y: 35,
+      vx: 1.8,
+      w: 36,
+      h: 36
+    };
+
+    // Key input tracking
+    const runKeys = {
+      left: false,
+      right: false,
+      up: false,
+      down: false
+    };
+
+    function startRunSprintGame() {
+      const modal = document.getElementById('runGameModal');
+      const victoryOverlay = document.getElementById('runVictoryOverlay');
+      const gameOverOverlay = document.getElementById('runGameOverOverlay');
+      if (!modal) return;
+
+      if (victoryOverlay) victoryOverlay.classList.add('hidden');
+      if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
+      modal.classList.remove('hidden');
+
+      const canvas = document.getElementById('runSprintCanvas');
+      if (!canvas) return;
+
+      // Set canvas size matching container
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = Math.max(300, Math.floor(rect.width));
+      canvas.height = Math.max(400, Math.floor(rect.height));
+
+      // Reset Game Variables
+      runLives = 3;
+      runBonusPoints = 0;
+      runBonesCollected = 0;
+      runCoinsCollectedCount = 0;
+      runShieldTimer = 0;
+      runInvulnerableTimer = 0;
+      runSlowdownTimer = 0;
+      runTrackOffset = 0;
+      runObstacles = [];
+      runCollectibles = [];
+      runParticles = [];
+      runLastObstacleTime = Date.now();
+      runFinishLine = null;
+      runHasHoneySpawned = false;
+      runGameActive = true;
+      runGameStartTime = Date.now();
+
+      // Dog position
+      runDog.x = (canvas.width - runDog.w) / 2;
+      runDog.y = canvas.height - runDog.h - 30;
+      runDog.vx = 0;
+      runDog.vy = 0;
+
+      updateRunHud();
+      bindRunControls();
+
+      if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
+      runGameAnimFrame = requestAnimationFrame(runGameLoop);
+      playSound('click');
+    }
+
+    function updateRunHud() {
+      const livesEl = document.getElementById('runGameLives');
+      if (livesEl) {
+        livesEl.innerHTML = '\u2764\uFE0F'.repeat(Math.max(0, runLives)) + '\uD83D\uDDA4'.repeat(Math.max(0, 3 - runLives));
+      }
+      const coinsEl = document.getElementById('runCoinsCollected');
+      if (coinsEl) {
+        coinsEl.innerText = '+' + runBonusPoints;
+      }
+      const shieldBadge = document.getElementById('runShieldBadge');
+      if (shieldBadge) {
+        if (runShieldTimer > 0) shieldBadge.classList.remove('hidden');
+        else shieldBadge.classList.add('hidden');
+      }
+    }
+
+    function runGameLoop() {
+      if (!runGameActive) return;
+
+      const canvas = document.getElementById('runSprintCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const now = Date.now();
+      const elapsed = Math.min((now - runGameStartTime) / 1000, RUN_GAME_DURATION);
+      const remaining = Math.max(0, RUN_GAME_DURATION - elapsed);
+
+      // Update Timer & Progress
+      const timerEl = document.getElementById('runTimerDisplay');
+      if (timerEl) timerEl.innerText = '\u23F1\uFE0F ' + remaining.toFixed(1) + 's';
+      const progressEl = document.getElementById('runProgressBar');
+      if (progressEl) progressEl.style.width = ((elapsed / RUN_GAME_DURATION) * 100) + '%';
+
+      // Timers decrement
+      if (runShieldTimer > 0) runShieldTimer -= 0.016;
+      if (runInvulnerableTimer > 0) runInvulnerableTimer -= 0.016;
+      if (runSlowdownTimer > 0) runSlowdownTimer -= 0.016;
+
+      // Current Speed
+      let speedMult = 1.0;
+      if (runShieldTimer > 0) speedMult = 1.35; // Super Boost
+      else if (runSlowdownTimer > 0) speedMult = 0.6; // Mud Slowdown
+
+      const currentScrollSpeed = 5.2 * speedMult;
+      runTrackOffset = (runTrackOffset + currentScrollSpeed) % 40;
+
+      // Update Dog Movement
+      const moveSpeed = runDog.baseSpeed * speedMult;
+      let targetVx = 0;
+      let targetVy = 0;
+      if (runKeys.left) targetVx -= moveSpeed;
+      if (runKeys.right) targetVx += moveSpeed;
+      if (runKeys.up) targetVy -= moveSpeed * 0.9;
+      if (runKeys.down) targetVy += moveSpeed * 0.9;
+
+      runDog.vx += (targetVx - runDog.vx) * 0.35;
+      runDog.vy += (targetVy - runDog.vy) * 0.35;
+      runDog.x += runDog.vx;
+      runDog.y += runDog.vy;
+
+      // Track boundaries
+      const trackPadding = 28;
+      runDog.x = Math.max(trackPadding, Math.min(canvas.width - runDog.w - trackPadding, runDog.x));
+      runDog.y = Math.max(70, Math.min(canvas.height - runDog.h - 10, runDog.y));
+
+      // Bee Companion Floating
+      runBeeState.x += runBeeState.vx;
+      if (runBeeState.x < 40 || runBeeState.x > canvas.width - 70) {
+        runBeeState.vx = -runBeeState.vx;
+      }
+
+      // Spawning Obstacles & Collectibles
+      if (elapsed < 13.5) {
+        if (now - runLastObstacleTime > (runShieldTimer > 0 ? 600 : 850)) {
+          runLastObstacleTime = now;
+          spawnRunWave(canvas);
+        }
+      }
+
+      // At 7.5s: Bee drops a Honey Jar bonus
+      if (elapsed >= 7.5 && !runHasHoneySpawned) {
+        runHasHoneySpawned = true;
+        runCollectibles.push({
+          type: 'honey',
+          x: Math.max(trackPadding + 10, Math.min(canvas.width - trackPadding - 40, runBeeState.x)),
+          y: -30,
+          w: 32,
+          h: 32,
+          collected: false
+        });
+      }
+
+      // At 14.5s: Finish line banner spawns
+      if (elapsed >= 14.5 && !runFinishLine) {
+        runFinishLine = {
+          y: -70,
+          h: 40,
+          passed: false
+        };
+      }
+
+      // Update Obstacles
+      for (let i = runObstacles.length - 1; i >= 0; i--) {
+        const obs = runObstacles[i];
+        obs.y += currentScrollSpeed;
+
+        // Collision Check with Dog
+        if (!obs.hit && checkRunCollision(runDog, obs)) {
+          obs.hit = true;
+          handleRunObstacleHit(obs);
+        }
+
+        if (obs.y > canvas.height + 60) {
+          runObstacles.splice(i, 1);
+        }
+      }
+
+      // Update Collectibles
+      for (let i = runCollectibles.length - 1; i >= 0; i--) {
+        const item = runCollectibles[i];
+        item.y += currentScrollSpeed;
+
+        if (!item.collected && checkRunCollision(runDog, item)) {
+          item.collected = true;
+          handleRunItemCollected(item);
+          runCollectibles.splice(i, 1);
+        } else if (item.y > canvas.height + 40) {
+          runCollectibles.splice(i, 1);
+        }
+      }
+
+      // Update Finish Line
+      if (runFinishLine) {
+        runFinishLine.y += currentScrollSpeed;
+        if (!runFinishLine.passed && runDog.y <= runFinishLine.y + runFinishLine.h + 20) {
+          runFinishLine.passed = true;
+          triggerRunVictory();
+          return;
+        }
+      }
+
+      // Update Particles
+      for (let i = runParticles.length - 1; i >= 0; i--) {
+        const p = runParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.025;
+        if (p.alpha <= 0) runParticles.splice(i, 1);
+      }
+
+      // Render Everything
+      drawRunScene(ctx, canvas);
+
+      // Loop
+      if (runGameActive) {
+        runGameAnimFrame = requestAnimationFrame(runGameLoop);
+      }
+    }
+
+    function spawnRunWave(canvas) {
+      const trackPadding = 32;
+      const usableWidth = canvas.width - (trackPadding * 2) - 50;
+      const types = ['pit', 'hay', 'mud', 'fence'];
+      const chosenType = types[Math.floor(Math.random() * types.length)];
+      
+      const dims = {
+        pit: { w: 42, h: 42 },
+        hay: { w: 46, h: 36 },
+        mud: { w: 52, h: 36 },
+        fence: { w: 56, h: 28 }
+      }[chosenType];
+
+      const xPos = trackPadding + Math.random() * usableWidth;
+
+      runObstacles.push({
+        type: chosenType,
+        x: xPos,
+        y: -50,
+        w: dims.w,
+        h: dims.h,
+        hit: false
+      });
+
+      // 45% chance to spawn bone or coin near opposite lane
+      if (Math.random() < 0.45) {
+        const otherX = (xPos > canvas.width / 2) 
+          ? trackPadding + (Math.random() * (canvas.width / 2 - trackPadding - 30))
+          : (canvas.width / 2) + (Math.random() * (canvas.width / 2 - trackPadding - 30));
+        
+        const itemType = Math.random() < 0.5 ? 'bone' : 'coin';
+        runCollectibles.push({
+          type: itemType,
+          x: otherX,
+          y: -40,
+          w: itemType === 'bone' ? 28 : 24,
+          h: itemType === 'bone' ? 28 : 24,
+          collected: false
+        });
+      }
+    }
+
+    function checkRunCollision(a, b) {
+      // Inset hitbox for forgiving gameplay
+      const padA = 8;
+      const padB = 6;
+      return (
+        a.x + padA < b.x + b.w - padB &&
+        a.x + a.w - padA > b.x + padB &&
+        a.y + padA < b.y + b.h - padB &&
+        a.y + a.h - padA > b.y + padB
+      );
+    }
+
+    function handleRunObstacleHit(obs) {
+      // If shield active, shield destroys obstacle
+      if (runShieldTimer > 0) {
+        playSound('coin');
+        createExplosionParticles(obs.x + obs.w / 2, obs.y + obs.h / 2, '#fbbf24', 16);
+        return;
+      }
+
+      // If invulnerable, skip
+      if (runInvulnerableTimer > 0) return;
+
+      playSound('click');
+      runLives--;
+      updateRunHud();
+
+      // Screen red flash
+      const flash = document.getElementById('runScreenFlash');
+      if (flash) {
+        flash.style.opacity = '1';
+        setTimeout(() => { if (flash) flash.style.opacity = '0'; }, 180);
+      }
+
+      // Mud causes slowdown
+      if (obs.type === 'mud') {
+        runSlowdownTimer = 1.6;
+        createExplosionParticles(runDog.x + runDog.w / 2, runDog.y + runDog.h, '#78350f', 12);
+      } else {
+        createExplosionParticles(runDog.x + runDog.w / 2, runDog.y + runDog.h / 2, '#ef4444', 15);
+      }
+
+      runInvulnerableTimer = 1.4; // 1.4s grace period
+
+      if (runLives <= 0) {
+        triggerRunGameOver();
+      }
+    }
+
+    function handleRunItemCollected(item) {
+      playSound('coin');
+      if (item.type === 'bone') {
+        runBonusPoints += 50;
+        runBonesCollected++;
+        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#fef08a', 10);
+      } else if (item.type === 'coin') {
+        runBonusPoints += 20;
+        runCoinsCollectedCount++;
+        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#facc15', 8);
+      } else if (item.type === 'honey') {
+        runBonusPoints += 100;
+        runShieldTimer = 4.0; // 4 seconds invincible boost!
+        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#eab308', 20);
+      }
+      updateRunHud();
+    }
+
+    function createExplosionParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = 1.5 + Math.random() * 3.5;
+        runParticles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd,
+          color: color,
+          size: 3 + Math.random() * 4,
+          alpha: 1.0
+        });
+      }
+    }
+
+    // ==================== RENDERING ====================
+    function drawRunScene(ctx, canvas) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const trackPadding = 28;
+
+      // 1. Background Grass Shoulders
+      ctx.fillStyle = '#4c8727';
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Dirt Road
+      ctx.fillStyle = '#c89552';
+      ctx.fillRect(trackPadding, 0, w - trackPadding * 2, h);
+
+      // Road track side borders (dark edges)
+      ctx.fillStyle = '#8f5e27';
+      ctx.fillRect(trackPadding - 3, 0, 4, h);
+      ctx.fillRect(w - trackPadding - 1, 0, 4, h);
+
+      // Scrolling tire tracks / dirt specks
+      ctx.strokeStyle = '#b47e3c';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([16, 20]);
+      ctx.lineDashOffset = -runTrackOffset;
+
+      const lane1 = trackPadding + (w - trackPadding * 2) * 0.33;
+      const lane2 = trackPadding + (w - trackPadding * 2) * 0.67;
+      ctx.beginPath();
+      ctx.moveTo(lane1, 0); ctx.lineTo(lane1, h);
+      ctx.moveTo(lane2, 0); ctx.lineTo(lane2, h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 3. Fences on borders
+      ctx.fillStyle = '#d97706';
+      for (let y = -20 + (runTrackOffset % 30); y < h + 30; y += 30) {
+        // Left post
+        ctx.fillRect(10, y, 8, 12);
+        // Right post
+        ctx.fillRect(w - 18, y, 8, 12);
+      }
+      ctx.fillStyle = '#92400e';
+      ctx.fillRect(12, 0, 4, h);
+      ctx.fillRect(w - 16, 0, 4, h);
+
+      // 4. Draw Obstacles
+      runObstacles.forEach(obs => {
+        ctx.save();
+        if (obs.type === 'pit') {
+          // Dark earth pit
+          ctx.fillStyle = '#291404';
+          ctx.beginPath();
+          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, obs.h / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#5c2c09';
+          ctx.stroke();
+          // Inner shadow
+          ctx.fillStyle = '#120701';
+          ctx.beginPath();
+          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2 + 2, obs.w / 2.6, obs.h / 2.6, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (obs.type === 'hay') {
+          // Hay bale
+          ctx.fillStyle = '#eab308';
+          ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#ca8a04';
+          ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+          // Straw ties
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(obs.x + obs.w * 0.25, obs.y, 3, obs.h);
+          ctx.fillRect(obs.x + obs.w * 0.75, obs.y, 3, obs.h);
+        } else if (obs.type === 'mud') {
+          // Mud Puddle
+          ctx.fillStyle = '#451a03';
+          ctx.beginPath();
+          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, obs.h / 2.5, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#78350f';
+          ctx.beginPath();
+          ctx.ellipse(obs.x + obs.w / 2 - 4, obs.y + obs.h / 2, obs.w / 3, obs.h / 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (obs.type === 'fence') {
+          // Wooden fence barrier
+          ctx.fillStyle = '#b45309';
+          ctx.fillRect(obs.x, obs.y + 6, obs.w, 8);
+          ctx.fillRect(obs.x, obs.y + 16, obs.w, 8);
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(obs.x + 6, obs.y, 6, obs.h);
+          ctx.fillRect(obs.x + obs.w - 12, obs.y, 6, obs.h);
+          // Caution stripes
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(obs.x + obs.w * 0.35, obs.y + 7, 6, 6);
+          ctx.fillRect(obs.x + obs.w * 0.65, obs.y + 7, 6, 6);
+        }
+        ctx.restore();
+      });
+
+      // 5. Draw Collectibles
+      runCollectibles.forEach(item => {
+        ctx.save();
+        if (item.type === 'bone') {
+          ctx.font = '22px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('\uD83E\uDDB4', item.x + item.w / 2, item.y + item.h / 2);
+        } else if (item.type === 'coin') {
+          ctx.font = '20px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('\uD83E\uDE99', item.x + item.w / 2, item.y + item.h / 2);
+        } else if (item.type === 'honey') {
+          ctx.font = '26px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          // Golden aura around honey
+          ctx.shadowColor = '#eab308';
+          ctx.shadowBlur = 12;
+          ctx.fillText('\uD83C\uDF6F', item.x + item.w / 2, item.y + item.h / 2);
+        }
+        ctx.restore();
+      });
+
+      // 6. Draw Finish Line Banner
+      if (runFinishLine) {
+        ctx.save();
+        const fy = runFinishLine.y;
+        // Checkered pattern
+        const boxSize = 14;
+        for (let bx = trackPadding; bx < w - trackPadding; bx += boxSize) {
+          for (let by = 0; by < 2; by++) {
+            const isBlack = ((Math.floor(bx / boxSize) + by) % 2 === 0);
+            ctx.fillStyle = isBlack ? '#111827' : '#f9fafb';
+            ctx.fillRect(bx, fy + (by * boxSize), boxSize, boxSize);
+          }
+        }
+        // Ribbon Banner text
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(trackPadding, fy + 28, w - trackPadding * 2, 18);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'black 11px Fredoka, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('\uD83C\uDFC1 15s SPRINT FINISH LINE \uD83C\uDFC1', w / 2, fy + 41);
+        ctx.restore();
+      }
+
+      // 7. Draw Player Dog
+      ctx.save();
+      // Trot bounce
+      const trotBounce = Math.sin(Date.now() / 70) * 2.5;
+
+      // Invulnerability flicker
+      if (runInvulnerableTimer > 0 && Math.floor(Date.now() / 100) % 2 === 0) {
+        ctx.globalAlpha = 0.45;
+      }
+
+      // Shield Aura
+      if (runShieldTimer > 0) {
+        ctx.save();
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 18;
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(runDog.x + runDog.w / 2, runDog.y + runDog.h / 2 + trotBounce, runDog.w * 0.68, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Dog Sprite
+      if (runDog.loaded && runDog.img) {
+        ctx.drawImage(runDog.img, runDog.x, runDog.y + trotBounce, runDog.w, runDog.h);
+      } else {
+        ctx.font = '36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ðŸ¶', runDog.x + runDog.w / 2, runDog.y + runDog.h + trotBounce - 8);
+      }
+      ctx.restore();
+
+      // 8. Draw Mascot Queen Bee at top
+      ctx.save();
+      ctx.font = '28px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#fde047';
+      ctx.shadowBlur = 8;
+      ctx.fillText('\uD83D\uDC1D', runBeeState.x, runBeeState.y + Math.sin(Date.now() / 120) * 4);
+      ctx.restore();
+
+      // 9. Draw Particles
+      runParticles.forEach(p => {
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    // ==================== CONTROLS BINDING ====================
+    let runControlsBound = false;
+    function bindRunControls() {
+      if (runControlsBound) return;
+      runControlsBound = true;
+
+      // Virtual D-Pad Button listeners
+      const btnLeft = document.getElementById('btnDpadLeft');
+      const btnRight = document.getElementById('btnDpadRight');
+      const btnUp = document.getElementById('btnDpadUp');
+      const btnDown = document.getElementById('btnDpadDown');
+
+      const setKey = (k, val) => { runKeys[k] = val; };
+
+      const attachBtn = (el, key) => {
+        if (!el) return;
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); setKey(key, true); }, { passive: false });
+        el.addEventListener('touchend', (e) => { e.preventDefault(); setKey(key, false); }, { passive: false });
+        el.addEventListener('mousedown', () => setKey(key, true));
+        el.addEventListener('mouseup', () => setKey(key, false));
+        el.addEventListener('mouseleave', () => setKey(key, false));
+      };
+
+      attachBtn(btnLeft, 'left');
+      attachBtn(btnRight, 'right');
+      attachBtn(btnUp, 'up');
+      attachBtn(btnDown, 'down');
+
+      // Keyboard Controls
+      window.addEventListener('keydown', (e) => {
+        if (!runGameActive) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = true;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = true;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = true;
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = true;
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if (!runGameActive) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = false;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = false;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = false;
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = false;
+      });
+
+      // Canvas Touch Dragging & Mouse Move
+      const canvas = document.getElementById('runSprintCanvas');
+      if (canvas) {
+        let isDragging = false;
+        const handleMove = (clientX, clientY) => {
+          if (!runGameActive) return;
+          const rect = canvas.getBoundingClientRect();
+          const targetX = clientX - rect.left - (runDog.w / 2);
+          const targetY = clientY - rect.top - (runDog.h / 2);
+          runDog.x += (targetX - runDog.x) * 0.45;
+          runDog.y += (targetY - runDog.y) * 0.45;
+        };
+
+        canvas.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches[0]) {
+            isDragging = true;
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+          if (isDragging && e.touches && e.touches[0]) {
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', () => { isDragging = false; });
+
+        canvas.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          handleMove(e.clientX, e.clientY);
+        });
+        canvas.addEventListener('mousemove', (e) => {
+          if (isDragging) handleMove(e.clientX, e.clientY);
+        });
+        canvas.addEventListener('mouseup', () => { isDragging = false; });
+      }
+    }
+
+    // ==================== VICTORY & GAME OVER ====================
+    function triggerRunVictory() {
+      runGameActive = false;
+      playSound('fanfare');
+      playSound('coin');
+
+      const overlay = document.getElementById('runVictoryOverlay');
+      const bStat = document.getElementById('runStatBones');
+      const cStat = document.getElementById('runStatCoins');
+      const bonusStat = document.getElementById('runStatBonus');
+
+      if (bStat) bStat.innerText = runBonesCollected;
+      if (cStat) cStat.innerText = runCoinsCollectedCount;
+      if (bonusStat) bonusStat.innerText = '+' + runBonusPoints + ' pts';
+
+      if (overlay) overlay.classList.remove('hidden');
+
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+      }
+    }
+
+    function triggerRunGameOver() {
+      runGameActive = false;
+      playSound('click');
+
+      const overlay = document.getElementById('runGameOverOverlay');
+      const timeSurvivedEl = document.getElementById('runGameOverTime');
+      const elapsed = Math.min((Date.now() - runGameStartTime) / 1000, RUN_GAME_DURATION);
+
+      if (timeSurvivedEl) timeSurvivedEl.innerText = elapsed.toFixed(1) + 's';
+      if (overlay) overlay.classList.remove('hidden');
+
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
+      }
+    }
+
+    function claimRunSprintVictory() {
+      playSound('coin');
+      playSound('fanfare');
+
+      // 50 CFC + 500 Farm points + extra collected points
+      const wonHfc = 50;
+      const wonPoints = 500 + runBonusPoints;
+
+      hfcBalance += wonHfc;
+      points += wonPoints;
+
+      updateDisplays();
+      syncWalletView();
+      updatePvpButtonsUI();
+
+      exitRunSprintGame();
+      showWalletToast('ðŸŽ‰ Claimed +' + wonHfc + ' CFC & +' + wonPoints + ' Points from RUN Sprint!');
+    }
+
+    function retryRunSprintGame() {
+      exitRunSprintGame();
+      setTimeout(() => {
+        watchBattleEntryAd('run');
+      }, 300);
+    }
+
+    function exitRunSprintGame() {
+      runGameActive = false;
+      if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
+      const modal = document.getElementById('runGameModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+</script>
 </body>
 </html>
 
