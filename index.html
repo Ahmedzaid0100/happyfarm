@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Happy Farm - Web3 Telegram Mini App</title>
+  <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
@@ -240,8 +240,8 @@
       <div id="homeView" class="space-y-3">
 
         <!-- TOP BAR: Profile, Logo, VIP Badge -->
-        <!-- TOP BAR: Profile & Level (Left), Centered Logo "Happy Farm" (Center), VIP Badge (Right) -->
-        <!-- TOP BAR: Profile & Level (Left), Enriched Centered Logo "Happy Farm" (Center), Enriched VIP Badge (Right) -->
+        <!-- TOP BAR: Profile & Level (Left), Centered Logo "Crazy Farm" (Center), VIP Badge (Right) -->
+        <!-- TOP BAR: Profile & Level (Left), Enriched Centered Logo "Crazy Farm" (Center), Enriched VIP Badge (Right) -->
         <header class="flex items-center justify-between w-full min-h-[52px] px-1 gap-1 select-none">
           <!-- 1. Left: Profile / Farmer & Level (Shrink-safe & Truncated) -->
           <div onclick="switchTab('profile')" class="flex items-center gap-1 bg-amber-100/95 border border-amber-800/40 rounded-full pl-1 pr-2 py-0.5 shadow-sm cursor-pointer active:scale-95 transition-transform shrink min-w-0" title="Open Profile">
@@ -254,7 +254,7 @@
             </span>
           </div>
 
-          <!-- 2. Center: 3D Logo "Happy Farm" (In-Flow Centered, Zero Overlap Guaranteed) -->
+          <!-- 2. Center: 3D Logo "Crazy Farm" (In-Flow Centered, Zero Overlap Guaranteed) -->
           <div class="shrink-0 flex items-center justify-center px-0.5">
             <div class="relative bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 px-2.5 py-1 rounded-xl border border-amber-900 shadow-md text-center transform -rotate-1">
               <span class="absolute -top-1.5 -left-1.5 text-xs select-none pointer-events-none">&#127811;</span>
@@ -508,7 +508,7 @@
                 Farm Battle Arena (PvP)
               </h3>
               <p class="text-[10px] text-amber-200/90 font-semibold mt-0.5">
-                Battle other players & earn direct HFC crypto coins!
+                Battle other players & earn direct CFC crypto coins!
               </p>
             </div>
           </div>
@@ -526,7 +526,7 @@
             <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform">🥉</div>
             <div class="font-black text-[11px] text-yellow-200 leading-tight">3 vs 3</div>
             <div class="bg-sky-900/80 rounded-lg px-1.5 py-0.5 text-[8px] font-bold text-lime-300 w-full text-center">
-              +10 HFC 🍀
+              +10 CFC 🍀
             </div>
           </button>
 
@@ -536,7 +536,7 @@
             <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform">🥈</div>
             <div class="font-black text-[11px] text-amber-950 leading-tight">5 vs 5</div>
             <div class="bg-amber-900/80 rounded-lg px-1.5 py-0.5 text-[8px] font-bold text-yellow-200 w-full text-center">
-              +20 HFC 🍀
+              +20 CFC 🍀
             </div>
           </button>
 
@@ -548,7 +548,7 @@
             <div class="text-2xl my-0.5 group-hover:scale-110 transition-transform animate-bounce">🥇</div>
             <div class="font-black text-[11px] text-yellow-300 leading-tight">7 vs 7</div>
             <div class="bg-emerald-950/80 rounded-lg px-1.5 py-0.5 text-[8px] font-black text-lime-200 w-full text-center">
-              +50 HFC 💎
+              +50 CFC 💎
             </div>
           </button>
 
@@ -622,12 +622,12 @@
               </div>
             </div>
 
-            <!-- 2. Happy Farm Coin -->
-            <div onclick="switchTab('wallet')" class="bg-white border border-[#eedec0] hover:border-emerald-400 rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-all" title="View Happy Farm Coin Wallet">
+            <!-- 2. Crazy Farm Coin -->
+            <div onclick="switchTab('wallet')" class="bg-white border border-[#eedec0] hover:border-emerald-400 rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-all" title="View Crazy Farm Coin Wallet">
               <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-600 text-white flex items-center justify-center text-lg shadow shrink-0 border border-emerald-300">&#127808;</div>
               <div class="overflow-hidden">
-                <div class="text-[10px] font-bold text-emerald-800/90 leading-none">Happy Farm Coin</div>
-                <div id="statHoneyCoins" class="font-black text-emerald-700 text-sm mt-1">0 HFC</div>
+                <div class="text-[10px] font-bold text-emerald-800/90 leading-none">Crazy Farm Coin</div>
+                <div id="statHoneyCoins" class="font-black text-emerald-700 text-sm mt-1">0 CFC</div>
               </div>
             </div>
 
@@ -764,7 +764,7 @@
             </div>
             <div>
               <h3 class="font-black text-lg text-sky-950 leading-tight">Grow Together!</h3>
-              <p class="text-xs text-sky-800 font-bold">Invite friends and earn Happy Farm Coins</p>
+              <p class="text-xs text-sky-800 font-bold">Invite friends and earn Crazy Farm Coins</p>
             </div>
           </div>
 
@@ -903,12 +903,12 @@
           </div>
         </div>
 
-        <!-- CARD 2: Convert Farm Points → HFC -->
+        <!-- CARD 2: Convert Farm Points → CFC -->
         <div class="bg-gradient-to-b from-[#1e1a4a] to-[#130f33] border-2 border-[#5a3bc4] rounded-3xl p-4 shadow-xl text-white">
           <!-- Header -->
           <div class="flex items-center gap-2 mb-3">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-500 to-purple-600 flex items-center justify-center text-lg shadow border border-purple-300">🔄</div>
-            <h3 class="font-black text-base text-purple-200">Convert Points → HFC</h3>
+            <h3 class="font-black text-base text-purple-200">Convert Points → CFC</h3>
           </div>
 
           <!-- Rate Info -->
@@ -916,7 +916,7 @@
             <span class="text-purple-300 font-semibold">Rate: </span>
             <span class="text-white font-black">1,000 Farm Points</span>
             <span class="text-purple-300"> → </span>
-            <span class="text-lime-300 font-black">1 HFC &#127808;</span> <span class="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-900/70 text-emerald-300 border border-emerald-500/60 font-black text-[10px]">100% FREE (0% Fee)</span>
+            <span class="text-lime-300 font-black">1 CFC &#127808;</span> <span class="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-900/70 text-emerald-300 border border-emerald-500/60 font-black text-[10px]">100% FREE (0% Fee)</span>
           </div>
 
           <!-- Conversion Row -->
@@ -929,7 +929,7 @@
               <div class="text-2xl animate-pulse">→</div>
             </div>
             <div class="flex-1 bg-black/50 border-2 border-lime-600/60 rounded-xl p-2 text-center">
-              <div class="text-[10px] text-lime-300 font-bold mb-0.5">HFC Coins</div>
+              <div class="text-[10px] text-lime-300 font-bold mb-0.5">CFC Coins</div>
               <div id="convertToDisplay" class="text-xl font-black text-lime-300">0</div>
             </div>
           </div>
@@ -940,34 +940,34 @@
           </button>
         </div>
 
-        <!-- CARD 3: HFC Balance -->
+        <!-- CARD 3: CFC Balance -->
         <div class="bg-gradient-to-b from-[#0d3d1a] to-[#061a0b] border-2 border-[#2a8c4a] rounded-3xl p-4 shadow-xl text-white">
           <!-- Header -->
           <div class="flex items-center gap-2 mb-3">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-600 flex items-center justify-center text-lg shadow border border-emerald-300">🍀</div>
-            <h3 class="font-black text-base text-emerald-200">Happy Farm Coin Balance</h3>
+            <h3 class="font-black text-base text-emerald-200">Crazy Farm Coin Balance</h3>
           </div>
 
-          <!-- HFC Balance -->
+          <!-- CFC Balance -->
           <div class="bg-black/40 rounded-2xl p-3 mb-3 text-center border border-emerald-700/60">
             <div class="flex items-center justify-center gap-2 mb-1">
               <span id="hfcBalanceDisplay" class="text-3xl font-black text-emerald-300">0</span>
-              <span class="text-xl font-black text-emerald-200">HFC</span>
+              <span class="text-xl font-black text-emerald-200">CFC</span>
             </div>
             <div class="text-xs text-emerald-400 font-semibold">≈ <span id="hfcUsdDisplay">$0.00</span> USD</div>
             <div class="mt-2 pt-2 border-t border-emerald-800/50 flex items-center justify-between text-[10px] text-emerald-300 font-bold px-1">
-              <span>Min. Withdraw: <b>1,500 HFC</b></span>
-              <span id="withdrawFeeNotice">Gas Fee: <b>50 HFC</b></span>
+              <span>Min. Withdraw: <b>1,500 CFC</b></span>
+              <span id="withdrawFeeNotice">Gas Fee: <b>50 CFC</b></span>
             </div>
           </div>
 
-          <!-- Withdraw & Buy HFC Buttons -->
+          <!-- Withdraw & Buy CFC Buttons -->
           <div class="grid grid-cols-2 gap-2.5">
             <button onclick="withdrawHFC()" class="py-2.5 rounded-2xl btn-3d-green text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
               <span>🚀</span> Withdraw
             </button>
             <button onclick="buyHFC()" class="py-2.5 rounded-2xl bg-gradient-to-b from-yellow-400 to-amber-500 text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md border-b-4 border-amber-700 active:scale-95 transition-all">
-              <span>💰</span> Buy HFC
+              <span>💰</span> Buy CFC
             </button>
           </div>
         </div>
@@ -1008,11 +1008,11 @@
       <!-- ==================== 4. TASKS VIEW ==================== -->
       <div id="tasksView" style="display: none;" class="space-y-3.5 pb-12">
 
-        <!-- Top Title Banner: Happy Farm - Earn Rewards -->
+        <!-- Top Title Banner: Crazy Farm - Earn Rewards -->
         <div class="flex flex-col items-center pt-1 gap-1 text-center">
           <div class="bg-gradient-to-b from-[#2d5a1b] to-[#17380b] px-6 py-1 rounded-2xl border-2 border-[#4fa82d] shadow-lg">
             <h2 class="text-sm font-black text-amber-300 tracking-wide" style="font-family: 'Fredoka', cursive;">
-              🌾 Happy Farm
+              🌾 Crazy Farm
             </h2>
           </div>
           <div class="bg-gradient-to-b from-[#b45309] to-[#78350f] px-5 py-0.5 rounded-xl border border-yellow-400 shadow">
@@ -1107,13 +1107,13 @@
           </button>
         </div>
 
-        <!-- ==================== SECTION 2: FRIEND INVITE MILESTONES (EARN DIRECT HFC) ==================== -->
+        <!-- ==================== SECTION 2: FRIEND INVITE MILESTONES (EARN DIRECT CFC) ==================== -->
         <div class="bg-gradient-to-b from-[#2e1805] via-[#442308] to-[#251002] border-2 border-[#b45309] rounded-3xl p-3.5 shadow-xl text-white">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-amber-900/60">
             <div class="flex items-center gap-2">
               <span class="text-xl">👥</span>
               <div>
-                <h3 class="font-black text-sm text-yellow-300">Invite Friends & Collect HFC</h3>
+                <h3 class="font-black text-sm text-yellow-300">Invite Friends & Collect CFC</h3>
                 <p class="text-[10px] text-amber-200/80">Invite friends to your farm & claim direct crypto rewards!</p>
               </div>
             </div>
@@ -1124,7 +1124,7 @@
 
           <!-- Milestones List -->
           <div id="inviteMilestonesContainer" class="space-y-2">
-            <!-- 1. 5 Friends -> 10 HFC -->
+            <!-- 1. 5 Friends -> 10 CFC -->
             <div class="bg-black/40 border border-amber-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-600 to-amber-900 text-white flex items-center justify-center text-base shrink-0 border border-amber-500 shadow">
@@ -1133,18 +1133,18 @@
                 <div class="min-w-0">
                   <div class="font-black text-xs text-amber-100 truncate">Invite 5 Friends</div>
                   <div class="text-[10px] text-yellow-300 font-extrabold flex items-center gap-1">
-                    <span>🪙</span> +10 HFC ($0.28)
+                    <span>🪙</span> +10 CFC ($0.28)
                   </div>
                 </div>
               </div>
               <div id="inviteBtnContainer-inv5" class="shrink-0">
                 <button onclick="claimInviteReward('inv5')" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
-                  <span>🪙</span> Collect 10 HFC
+                  <span>🪙</span> Collect 10 CFC
                 </button>
               </div>
             </div>
 
-            <!-- 2. 10 Friends -> 20 HFC -->
+            <!-- 2. 10 Friends -> 20 CFC -->
             <div class="bg-black/40 border border-amber-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-400 to-slate-700 text-white flex items-center justify-center text-base shrink-0 border border-slate-300 shadow">
@@ -1153,18 +1153,18 @@
                 <div class="min-w-0">
                   <div class="font-black text-xs text-amber-100 truncate">Invite 10 Friends</div>
                   <div class="text-[10px] text-yellow-300 font-extrabold flex items-center gap-1">
-                    <span>🪙</span> +20 HFC ($0.56)
+                    <span>🪙</span> +20 CFC ($0.56)
                   </div>
                 </div>
               </div>
               <div id="inviteBtnContainer-inv10" class="shrink-0">
                 <button onclick="claimInviteReward('inv10')" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
-                  <span>🪙</span> Collect 20 HFC
+                  <span>🪙</span> Collect 20 CFC
                 </button>
               </div>
             </div>
 
-            <!-- 3. 50 Friends -> 80 HFC -->
+            <!-- 3. 50 Friends -> 80 CFC -->
             <div class="bg-black/40 border border-amber-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-700 text-white flex items-center justify-center text-base shrink-0 border border-yellow-300 shadow">
@@ -1173,7 +1173,7 @@
                 <div class="min-w-0">
                   <div class="font-black text-xs text-amber-100 truncate">Invite 50 Friends</div>
                   <div class="text-[10px] text-yellow-300 font-extrabold flex items-center gap-1">
-                    <span>🪙</span> +80 HFC ($2.24)
+                    <span>🪙</span> +80 CFC ($2.24)
                   </div>
                 </div>
               </div>
@@ -1184,7 +1184,7 @@
               </div>
             </div>
 
-            <!-- 4. 100 Friends -> 120 HFC -->
+            <!-- 4. 100 Friends -> 120 CFC -->
             <div class="bg-black/40 border border-amber-800/80 rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-800 text-white flex items-center justify-center text-base shrink-0 border border-purple-300 shadow">
@@ -1193,7 +1193,7 @@
                 <div class="min-w-0">
                   <div class="font-black text-xs text-amber-100 truncate">Invite 100 Friends</div>
                   <div class="text-[10px] text-yellow-300 font-extrabold flex items-center gap-1">
-                    <span>🪙</span> +120 HFC ($3.36)
+                    <span>🪙</span> +120 CFC ($3.36)
                   </div>
                 </div>
               </div>
@@ -1230,7 +1230,7 @@
                   ▶️
                 </div>
                 <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Watch Happy Farm YouTube</div>
+                  <div class="font-bold text-xs text-amber-950 truncate">Watch Crazy Farm YouTube</div>
                   <div class="text-[10px] text-amber-700 font-extrabold">+100 Points 🪙</div>
                 </div>
               </div>
@@ -1248,7 +1248,7 @@
                   📺
                 </div>
                 <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Subscribe Happy Farm Channel</div>
+                  <div class="font-bold text-xs text-amber-950 truncate">Subscribe Crazy Farm Channel</div>
                   <div class="text-[10px] text-amber-700 font-extrabold">+100 Points 🪙</div>
                 </div>
               </div>
@@ -1266,7 +1266,7 @@
                   𝕏
                 </div>
                 <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Follow Happy Farm on X</div>
+                  <div class="font-bold text-xs text-amber-950 truncate">Follow Crazy Farm on X</div>
                   <div class="text-[10px] text-amber-700 font-extrabold">+100 Points 🪙</div>
                 </div>
               </div>
@@ -1358,7 +1358,7 @@
               🎬 Watch More Earn More
             </h3>
             <p class="text-[11px] text-amber-200/90 font-semibold mt-0.5">
-              Watch 5 ads to unlock 10 HFC instantly!
+              Watch 5 ads to unlock 10 CFC instantly!
             </p>
           </div>
 
@@ -1389,7 +1389,7 @@
           <!-- Reward Text & Action Button -->
           <div class="bg-black/40 rounded-2xl p-2.5 mb-2.5 text-center border border-amber-700/60">
             <span class="text-xs font-black text-lime-300">
-              🎁 Watch Ads Get 10 HFC (≈ $0.28)
+              🎁 Watch Ads Get 10 CFC (≈ $0.28)
             </span>
             <div class="text-[10px] text-amber-300 font-bold mt-0.5" id="otherAdStatusText">
               Ads watched: 0 / 5
@@ -1424,7 +1424,7 @@
                 <span id="faq-chevron-1" class="text-amber-700 text-sm font-extrabold transition-transform duration-200">▼</span>
               </button>
               <div id="faq-body-1" class="hidden px-3.5 pb-3 pt-1 text-[11px] text-amber-900/90 leading-relaxed border-t border-amber-100 bg-amber-50/30">
-                Happy Farm is a next-generation decentralized Web3 Telegram gaming ecosystem built on the TON blockchain, empowering players to earn cryptocurrency and farm points passively and through fun gameplay.
+                Crazy Farm is a next-generation decentralized Web3 Telegram gaming ecosystem built on the TON blockchain, empowering players to earn cryptocurrency and farm points passively and through fun gameplay.
               </div>
             </div>
 
@@ -1456,17 +1456,17 @@
               </div>
             </div>
 
-            <!-- Item 4: What's HFC ? -->
+            <!-- Item 4: What's CFC ? -->
             <div class="bg-white border border-[#eedec0] rounded-2xl overflow-hidden shadow-sm">
               <button onclick="toggleFaq('faq-4')" class="w-full p-3 flex items-center justify-between text-left font-black text-amber-950 hover:bg-amber-50/50 transition-colors">
                 <span class="flex items-center gap-2">
                   <span class="text-amber-600 font-bold">🍀</span>
-                  <span>What's HFC ?</span>
+                  <span>What's CFC ?</span>
                 </span>
                 <span id="faq-chevron-4" class="text-amber-700 text-sm font-extrabold transition-transform duration-200">▼</span>
               </button>
               <div id="faq-body-4" class="hidden px-3.5 pb-3 pt-1 text-[11px] text-amber-900/90 leading-relaxed border-t border-amber-100 bg-amber-50/30">
-                Happy Farm Coin (HFC) is the official utility token of the Happy Farm ecosystem, backed by real treasury value on TON and convertible from Farm Points at a 1,000 : 1 ratio.
+                Crazy Farm Coin (CFC) is the official utility token of the Crazy Farm ecosystem, backed by real treasury value on TON and convertible from Farm Points at a 1,000 : 1 ratio.
               </div>
             </div>
 
@@ -1522,7 +1522,7 @@
                 <span id="faq-chevron-8" class="text-amber-700 text-sm font-extrabold transition-transform duration-200">▼</span>
               </button>
               <div id="faq-body-8" class="hidden px-3.5 pb-3 pt-1 text-[11px] text-amber-900/90 leading-relaxed border-t border-amber-100 bg-amber-50/30">
-                If you experience any issues connecting your wallet or withdrawing tokens, ensure your Telegram app is updated to the latest version, disconnect and reconnect your wallet, or reach out to our official support bot @HappyFarmSupportBot.
+                If you experience any issues connecting your wallet or withdrawing tokens, ensure your Telegram app is updated to the latest version, disconnect and reconnect your wallet, or reach out to our official support bot @CrazyFarmSupportBot.
               </div>
             <!-- Item 9: How to withdraw ? -->
             <div class="bg-white border border-[#eedec0] rounded-2xl overflow-hidden shadow-sm">
@@ -1534,7 +1534,7 @@
                 <span id="faq-chevron-9" class="text-amber-700 text-sm font-extrabold transition-transform duration-200">▼</span>
               </button>
               <div id="faq-body-9" class="hidden px-3.5 pb-3 pt-1 text-[11px] text-amber-900/90 leading-relaxed border-t border-amber-100 bg-amber-50/30">
-                To withdraw your earnings, go to the <b>Wallet</b> tab, link your non-custodial TON wallet, ensure you have met the minimum threshold of <b>1,500 HFC</b>, and tap <b>Withdraw</b>. Points conversion to HFC is 100% FREE. Withdrawals have a standard <b>50 HFC gas fee</b>, but owning the <b>VIP Dog (3 TON)</b> completely eliminates the gas fee (0 HFC fee)!
+                To withdraw your earnings, go to the <b>Wallet</b> tab, link your non-custodial TON wallet, ensure you have met the minimum threshold of <b>1,500 CFC</b>, and tap <b>Withdraw</b>. Points conversion to CFC is 100% FREE. Withdrawals have a standard <b>50 CFC gas fee</b>, but owning the <b>VIP Dog (3 TON)</b> completely eliminates the gas fee (0 CFC fee)!
               </div>
             </div>
 
@@ -1548,7 +1548,7 @@
                 <span id="faq-chevron-10" class="text-amber-700 text-sm font-extrabold transition-transform duration-200">▼</span>
               </button>
               <div id="faq-body-10" class="hidden px-3.5 pb-3 pt-1 text-[11px] text-amber-900/90 leading-relaxed border-t border-amber-100 bg-amber-50/30">
-                The <b>Farm Battle Arena (PvP)</b> lets you enter real-time 3D animal combat in 3 tiers: 3 vs 3 (Bronze), 5 vs 5 (Silver), and 7 vs 7 VIP Championship (Gold)! Squads are dynamically formed using the active animals from your garden. Win battles to earn direct HFC crypto tokens, farm point rewards, and climb the global leaderboard!
+                The <b>Farm Battle Arena (PvP)</b> lets you enter real-time 3D animal combat in 3 tiers: 3 vs 3 (Bronze), 5 vs 5 (Silver), and 7 vs 7 VIP Championship (Gold)! Squads are dynamically formed using the active animals from your garden. Win battles to earn direct CFC crypto tokens, farm point rewards, and climb the global leaderboard!
               </div>
             </div>
             </div>
@@ -1623,7 +1623,7 @@
         <div class="bg-amber-950/70 rounded-2xl p-3 text-left text-xs space-y-2 mb-4 border border-amber-800/80">
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">&#9876; Unlocks 7 vs 7 VIP Battle Arena <span class="text-lime-300">(Win +50 HFC &#128142;)</span>.</span>
+            <span class="text-amber-100 font-bold">&#9876; Unlocks 7 vs 7 VIP Battle Arena <span class="text-lime-300">(Win +50 CFC &#128142;)</span>.</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
@@ -1631,7 +1631,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">&#128184; 0% Withdrawal Fee on HFC <span class="text-cyan-300">(Zero fee on all withdrawals!)</span>.</span>
+            <span class="text-amber-100 font-bold">&#128184; 0% Withdrawal Fee on CFC <span class="text-cyan-300">(Zero fee on all withdrawals!)</span>.</span>
           </div>
         </div>
 
@@ -1678,7 +1678,7 @@
         <!-- Reward Banner -->
         <div class="bg-black/50 rounded-2xl p-2.5 mb-3 border border-amber-700/60 text-center">
           <span class="text-[10px] text-amber-300 font-bold block mb-0.5">Battle Victory Prize:</span>
-          <span id="prepPrizeBadge" class="text-xs font-black text-lime-300">🪙 Win +10 HFC Direct Coins</span>
+          <span id="prepPrizeBadge" class="text-xs font-black text-lime-300">🪙 Win +10 CFC Direct Coins</span>
         </div>
 
         <!-- Action Button -->
@@ -1795,7 +1795,7 @@
           <div class="text-center bg-black/75 p-5 rounded-3xl border border-amber-500/40 shadow-2xl max-w-xs mx-auto">
             <div class="text-5xl animate-bounce mb-1">⚔️</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-lg" style="font-family: 'Fredoka', cursive;" id="battleStartTitle">3 vs 3 Battle</h2>
-            <p class="text-xs text-amber-100 font-bold mt-1" id="battleStartDesc">Win to earn direct +10 HFC coins!</p>
+            <p class="text-xs text-amber-100 font-bold mt-1" id="battleStartDesc">Win to earn direct +10 CFC coins!</p>
             <button onclick="startLiveBattleRound()" class="btn-3d-green w-full py-2.5 mt-3 rounded-2xl text-white font-black text-sm shadow-2xl animate-pulse active:scale-95 transition-transform flex items-center justify-center gap-2">
               <span>⚡</span> START FIGHT!
             </button>
@@ -1810,7 +1810,7 @@
             <p class="text-xs text-amber-200 font-bold mb-3">Enemy squad knocked out!</p>
             <div class="bg-black/60 rounded-2xl p-3 mb-4 border border-yellow-500/60 text-center">
               <span class="text-[10px] text-amber-300 font-bold uppercase block mb-1">Direct Prize Claimed</span>
-              <div class="text-2xl font-black text-lime-400 drop-shadow" id="battleWinRewardText">+10 HFC 🍀</div>
+              <div class="text-2xl font-black text-lime-400 drop-shadow" id="battleWinRewardText">+10 CFC 🍀</div>
               <div class="text-[10px] text-amber-200 font-semibold mt-0.5" id="battleWinSubReward">+100 Farm Points</div>
             </div>
             <button onclick="claimBattleVictoryReward()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-sm shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
@@ -2289,7 +2289,7 @@
 
       if (mode === 3) {
         if (icon) icon.innerText = '🥉';
-        if (prize) prize.innerText = '🪙 Win +10 HFC ($0.28) Direct Coins + 100 Pts';
+        if (prize) prize.innerText = '🪙 Win +10 CFC ($0.28) Direct Coins + 100 Pts';
 
         if (count < 3) {
           if (title) title.innerText = '3 vs 3 Bronze Arena (Locked)';
@@ -2333,7 +2333,7 @@
         }
       } else if (mode === 5) {
         if (icon) icon.innerText = '🥈';
-        if (prize) prize.innerText = '🪙 Win +20 HFC ($0.56) Direct Coins + 250 Pts';
+        if (prize) prize.innerText = '🪙 Win +20 CFC ($0.56) Direct Coins + 250 Pts';
 
         if (count < 5) {
           if (title) title.innerText = '5 vs 5 Silver Arena (Locked)';
@@ -2377,7 +2377,7 @@
         }
       } else if (mode === 7) {
         if (icon) icon.innerText = '👑';
-        if (prize) prize.innerText = '💎 Win +50 HFC ($1.40) Direct Coins + 500 Pts';
+        if (prize) prize.innerText = '💎 Win +50 CFC ($1.40) Direct Coins + 500 Pts';
 
         if (!isDogVipActive) {
           if (title) title.innerText = '7 vs 7 VIP Championship (Locked)';
@@ -2432,7 +2432,7 @@
           if (stepsContainer) {
             stepsContainer.innerHTML = 
               '<div class="flex items-center justify-center gap-2 py-1 text-yellow-300 text-xs font-black">' +
-              '<span>👑</span> FREE ENTRY WITH NO ADS â€¢ Claim +50 HFC 💎' +
+              '<span>👑</span> FREE ENTRY WITH NO ADS â€¢ Claim +50 CFC 💎' +
               '</div>';
           }
           if (actionContainer) {
@@ -2618,7 +2618,7 @@
       // Mode badge removed per design
       if (startTitle) startTitle.innerText = mode + ' vs ' + mode + ' Animal Battle';
       
-      let rewardHfcText = mode === 3 ? '+10 HFC' : (mode === 5 ? '+20 HFC' : '+50 HFC 💎');
+      let rewardHfcText = mode === 3 ? '+10 CFC' : (mode === 5 ? '+20 CFC' : '+50 CFC 💎');
       if (startDesc) startDesc.innerText = 'Lead your ' + mode + ' farm animals to victory and claim ' + rewardHfcText + '!';
 
       renderSquadOnField(enemySquad, 'enemySquadContainer', true, mode);
@@ -2862,7 +2862,7 @@
       const hfcPrize = mode === 3 ? 10 : (mode === 5 ? 20 : 50);
       const ptsPrize = mode === 3 ? 100 : (mode === 5 ? 250 : 500);
 
-      if (rewardText) rewardText.innerText = '+' + hfcPrize + ' HFC 🪙 ($' + (hfcPrize * 0.028).toFixed(2) + ')';
+      if (rewardText) rewardText.innerText = '+' + hfcPrize + ' CFC 🪙 ($' + (hfcPrize * 0.028).toFixed(2) + ')';
       if (subReward) subReward.innerText = '+' + ptsPrize + ' Farm Points';
 
       if (victoryOverlay) victoryOverlay.classList.remove('hidden');
@@ -2888,7 +2888,7 @@
       updatePvpButtonsUI();
 
       closeBattleArena();
-      showWalletToast('🎉 Claimed +' + hfcPrize + ' HFC from ' + mode + 'v' + mode + ' Battle!');
+      showWalletToast('🎉 Claimed +' + hfcPrize + ' CFC from ' + mode + 'v' + mode + ' Battle!');
     }
 
     function closeBattleArena() {
@@ -3016,7 +3016,7 @@
       const statTotalPoints = document.getElementById('statTotalPoints');
       if (statTotalPoints) statTotalPoints.innerText = (1248 + points).toLocaleString();
       const statHFC = document.getElementById('statHoneyCoins');
-      if (statHFC) statHFC.innerText = hfcBalance.toLocaleString() + " HFC";
+      if (statHFC) statHFC.innerText = hfcBalance.toLocaleString() + " CFC";
 
       const profProgressCollected = document.getElementById('profProgressCollected');
       if (profProgressCollected) profProgressCollected.innerText = (8940 + points).toLocaleString();
@@ -3236,7 +3236,7 @@
       playSound('fanfare');
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = 3000000000;
-      const memo = 'HappyFarm_VIP_' + tId;
+      const memo = 'CrazyFarm_VIP_' + tId;
       const transferUrl = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
 
       try {
@@ -3283,7 +3283,7 @@
         dogBtn.innerHTML = '<span>&#9989;</span> Active (3 TON)';
         dogBtn.className = 'w-full py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow border border-emerald-300';
       }
-      alert('Congratulations! 3 TON payment confirmed!\n\nVIP Dog Activated with 3 Super Powers:\n1. 7 vs 7 VIP Battle Arena is now UNLOCKED (Win +50 HFC)!\n2. All 9 Animal Farms are now active & auto-collected 24/7!\n3. 0% Withdrawal Fee on HFC (Zero deduction on all withdrawals)!');
+      alert('Congratulations! 3 TON payment confirmed!\n\nVIP Dog Activated with 3 Super Powers:\n1. 7 vs 7 VIP Battle Arena is now UNLOCKED (Win +50 CFC)!\n2. All 9 Animal Farms are now active & auto-collected 24/7!\n3. 0% Withdrawal Fee on CFC (Zero deduction on all withdrawals)!');
     }
     function old_confirmTonPayment() {
       playSound('fanfare');
@@ -3363,8 +3363,8 @@
 
     function copyRefLink() {
       playSound('click');
-      navigator.clipboard.writeText('https://t.me/HappyFarmTonBot?start=ref_8492');
-      alert('📋 Referral link copied:\nhttps://t.me/HappyFarmTonBot?start=ref_8492\nShare it with friends to earn bonus rewards!');
+      navigator.clipboard.writeText('https://t.me/CrazyFarmTonBot?start=ref_8492');
+      alert('📋 Referral link copied:\nhttps://t.me/CrazyFarmTonBot?start=ref_8492\nShare it with friends to earn bonus rewards!');
     }
 
     function toggleAudio(btn) {
@@ -3467,15 +3467,15 @@
     const checkInRewards = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
     const taskItems = {
-      yt:     { name: 'Watch Happy Farm YouTube', bonus: 100, state: 'idle' },
-      sub:    { name: 'Subscribe Happy Farm Channel', bonus: 100, state: 'idle' },
-      follow: { name: 'Follow Happy Farm on X', bonus: 100, state: 'idle' },
+      yt:     { name: 'Watch Crazy Farm YouTube', bonus: 100, state: 'idle' },
+      sub:    { name: 'Subscribe Crazy Farm Channel', bonus: 100, state: 'idle' },
+      follow: { name: 'Follow Crazy Farm on X', bonus: 100, state: 'idle' },
       react:  { name: 'React on Post', bonus: 50, state: 'idle' },
       rt:     { name: 'Like & Retweet', bonus: 50, state: 'idle' },
       tg:     { name: 'Join Telegram Bot', bonus: 150, state: 'idle' }
     };
 
-    // ==================== INVITE MILESTONES (EARN DIRECT HFC) ====================
+    // ==================== INVITE MILESTONES (EARN DIRECT CFC) ====================
     let invitedFriendsCount = 12;
     const inviteMilestones = [
       { id: 'inv5',   target: 5,   reward: 10,  claimed: false },
@@ -3498,17 +3498,17 @@
       renderInviteTasks();
       updateAvailableTasksCounter();
 
-      showWalletToast(`🎉 Claimed +${m.reward} HFC from ${m.target} Friends Invite Milestone!`);
+      showWalletToast(`🎉 Claimed +${m.reward} CFC from ${m.target} Friends Invite Milestone!`);
     }
 
     function shareInviteLink() {
       playSound('click');
-      const refUrl = 'https://t.me/HappyFarmTonBot?start=ref_8492';
+      const refUrl = 'https://t.me/CrazyFarmTonBot?start=ref_8492';
       if (navigator.clipboard) {
         navigator.clipboard.writeText(refUrl).catch(() => {});
       }
       if (window.Telegram?.WebApp?.openTelegramLink) {
-        const text = encodeURIComponent('Join Happy Farm on Telegram and grow your Web3 farm together!');
+        const text = encodeURIComponent('Join Crazy Farm on Telegram and grow your Web3 farm together!');
         window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`);
       } else {
         alert(`🎉 Referral Link Copied:\n\n${refUrl}\n\nShare with friends to reach the next milestone!`);
@@ -3532,7 +3532,7 @@
         } else if (invitedFriendsCount >= m.target) {
           btnBox.innerHTML = `
             <button onclick="claimInviteReward('${m.id}')" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
-              <span>🪙</span> Collect ${m.reward} HFC
+              <span>🪙</span> Collect ${m.reward} CFC
             </button>
           `;
         } else {
@@ -3685,12 +3685,12 @@
     let hfcBalance = 0;
     let isWalletConnected = false;
     let connectedWalletAddress = '';
-    const HFC_RATE = 1000; // 1000 Farm Points = 1 HFC
-    const HFC_USD_RATE = 0.028; // 1 HFC ≈ $0.028
+    const HFC_RATE = 1000; // 1000 Farm Points = 1 CFC
+    const HFC_USD_RATE = 0.028; // 1 CFC ≈ $0.028
 
     function syncWalletView() {
       const statHFCWallet = document.getElementById('statHoneyCoins');
-      if (statHFCWallet) statHFCWallet.innerText = hfcBalance.toLocaleString() + " HFC";
+      if (statHFCWallet) statHFCWallet.innerText = hfcBalance.toLocaleString() + " CFC";
       // Sync avatar & level
       const av = document.getElementById('walletAvatarDisplay');
       const hAv = document.getElementById('headerAvatarDisplay');
@@ -3718,14 +3718,14 @@
       if (from) from.innerText = points.toLocaleString();
       if (to) to.innerText = Math.floor(points / HFC_RATE).toLocaleString();
 
-      // HFC balance
+      // CFC balance
       const hfcEl = document.getElementById('hfcBalanceDisplay');
       const usdEl = document.getElementById('hfcUsdDisplay');
       if (hfcEl) hfcEl.innerText = hfcBalance.toLocaleString();
       if (usdEl) usdEl.innerText = `$${(hfcBalance * HFC_USD_RATE).toFixed(2)}`;
       const feeNoticeEl = document.getElementById("withdrawFeeNotice");
       if (feeNoticeEl) {
-        feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 HFC (VIP FREE)</b>" : "Gas Fee: <b>50 HFC</b> (0 with VIP Dog)";
+        feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 CFC (VIP FREE)</b>" : "Gas Fee: <b>50 CFC</b> (0 with VIP Dog)";
       }
     }
 
@@ -3742,7 +3742,7 @@
       hfcBalance += earned;
       updateDisplays();
       syncWalletView();
-      showWalletToast(`🍀 Converted ${(earned * HFC_RATE).toLocaleString()} pts → ${earned} HFC!`);
+      showWalletToast(`🍀 Converted ${(earned * HFC_RATE).toLocaleString()} pts → ${earned} CFC!`);
     }
 
     function withdrawHFC(customAmount) {
@@ -3753,7 +3753,7 @@
       }
       if (hfcBalance < 1500) {
         playSound('click');
-        alert('Minimum withdrawal amount is 1,500 HFC!\n\nCurrent Balance: ' + hfcBalance.toLocaleString() + ' HFC\nRemaining Needed: ' + (1500 - hfcBalance).toLocaleString() + ' HFC\n\nTip: Win PvP Battles (up to +50 HFC in 7vs7) or convert your Farm Points for FREE to reach 1,500 HFC!');
+        alert('Minimum withdrawal amount is 1,500 CFC!\n\nCurrent Balance: ' + hfcBalance.toLocaleString() + ' CFC\nRemaining Needed: ' + (1500 - hfcBalance).toLocaleString() + ' CFC\n\nTip: Win PvP Battles (up to +50 CFC in 7vs7) or convert your Farm Points for FREE to reach 1,500 CFC!');
         return;
       }
       
@@ -3762,16 +3762,16 @@
         : hfcBalance;
 
       playSound('fanfare');
-      const gasFee = 50; // 50 HFC gas fee deducted on withdrawal
+      const gasFee = 50; // 50 CFC gas fee deducted on withdrawal
       const netAmount = Math.max(withdrawAmount - gasFee, 0);
-      const feeNotice = "Standard Gas Fee: 50 HFC deducted (Net: " + netAmount.toLocaleString() + " HFC).";
+      const feeNotice = "Standard Gas Fee: 50 CFC deducted (Net: " + netAmount.toLocaleString() + " CFC).";
 
 
 
       alert('Withdrawal Request Submitted!\n\n' +
-            'Requested Amount: ' + withdrawAmount.toLocaleString() + ' HFC (~ $' + (withdrawAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
-            'Gas Fee Deduction: 50 HFC (~ $' + (50 * HFC_USD_RATE).toFixed(2) + ')\n' +
-            'Net Received: ' + netAmount.toLocaleString() + ' HFC (~ $' + (netAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
+            'Requested Amount: ' + withdrawAmount.toLocaleString() + ' CFC (~ $' + (withdrawAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
+            'Gas Fee Deduction: 50 CFC (~ $' + (50 * HFC_USD_RATE).toFixed(2) + ')\n' +
+            'Net Received: ' + netAmount.toLocaleString() + ' CFC (~ $' + (netAmount * HFC_USD_RATE).toFixed(2) + ')\n' +
             'Destination: ' + connectedWalletAddress + '\n\n' +
             feeNotice + '\n\n' +
             'Processing on TON Network within seconds.');
@@ -3779,11 +3779,11 @@
       hfcBalance -= withdrawAmount; queueCloudSave();
       updateDisplays();
       syncWalletView();
-      showWalletToast('Withdrew ' + withdrawAmount.toLocaleString() + ' HFC (Net: ' + netAmount.toLocaleString() + ' HFC)');
+      showWalletToast('Withdrew ' + withdrawAmount.toLocaleString() + ' CFC (Net: ' + netAmount.toLocaleString() + ' CFC)');
     }
     function buyHFC() {
       playSound('click');
-      alert('💰 Buy Happy Farm Coins (HFC)\n\n• 10 HFC = 0.1 TON ≈ $0.28\n• 100 HFC = 0.9 TON ≈ $2.52\n• 500 HFC = 4.0 TON ≈ $11.20\n\n👛 Connect your TON wallet to purchase.');
+      alert('💰 Buy Crazy Farm Coins (CFC)\n\n• 10 CFC = 0.1 TON ≈ $0.28\n• 100 CFC = 0.9 TON ≈ $2.52\n• 500 CFC = 4.0 TON ≈ $11.20\n\n👛 Connect your TON wallet to purchase.');
     }
 
     function connectTONWallet() {
@@ -3891,9 +3891,9 @@
       const actionContainer = document.getElementById('otherAdActionContainer');
       if (actionContainer) {
         if (hasClaimedOtherHfc) {
-          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> Reward Claimed (10 HFC Added)</button>';
+          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> Reward Claimed (10 CFC Added)</button>';
         } else if (otherAdsWatched >= 5) {
-          actionContainer.innerHTML = '<button onclick="claimOtherHfcReward()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>🎁</span> Claim 10 HFC Reward Now!</button>';
+          actionContainer.innerHTML = '<button onclick="claimOtherHfcReward()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>🎁</span> Claim 10 CFC Reward Now!</button>';
         } else {
           actionContainer.innerHTML = `<button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>▶️</span> Watch Ad (<span id="otherAdBtnCount">${otherAdsWatched + 1}</span>/5)</button>`;
         }
@@ -3907,7 +3907,7 @@
       const bar = document.getElementById('adProgressBar');
       const desc = document.getElementById('adDescription');
       const countdown = document.getElementById('adCountdown');
-      if (desc) desc.innerText = `Watching ad (${otherAdsWatched + 1}/5) to unlock 10 HFC reward...`;
+      if (desc) desc.innerText = `Watching ad (${otherAdsWatched + 1}/5) to unlock 10 CFC reward...`;
       if (modal) modal.classList.remove('hidden');
       if (bar) bar.style.width = '0%';
       let progress = 0;
@@ -3924,7 +3924,7 @@
             otherAdsWatched++;
             renderOtherAdSteps();
             if (otherAdsWatched >= 5) {
-              showWalletToast('🎉 All 5 ads watched! Click Claim to receive 10 HFC!');
+              showWalletToast('🎉 All 5 ads watched! Click Claim to receive 10 CFC!');
             } else {
               showWalletToast(`✅ Ad watched (${otherAdsWatched}/5)!`);
             }
@@ -3941,7 +3941,7 @@
       hasClaimedOtherHfc = true;
       syncWalletView();
       renderOtherAdSteps();
-      showWalletToast('🎉 Congratulations! 10 HFC added to your balance!');
+      showWalletToast('🎉 Congratulations! 10 CFC added to your balance!');
     }
 
     function toggleFaq(id) {
@@ -4024,7 +4024,7 @@
 
     function openSupport() {
       playSound('click');
-      alert('🎧 Support & Community:\n\n• Support Bot: @HappyFarmSupportBot\n• Telegram Community: @HappyFarmCommunity\n• Response Time: 24/7');
+      alert('🎧 Support & Community:\n\n• Support Bot: @CrazyFarmSupportBot\n• Telegram Community: @CrazyFarmCommunity\n• Response Time: 24/7');
     }
 
     function logoutWallet() {
@@ -4050,7 +4050,7 @@
 
     function getEffectiveTelegramId() {
       if (tgUser && tgUser.id) return tgUser.id;
-      let localId = localStorage.getItem('happyfarm_player_tid');
+      let localId = (localStorage.getItem('crazyfarm_player_tid') || localStorage.getItem('happyfarm_player_tid'));
       if (!localId) {
         localId = Math.floor(100000000 + Math.random() * 900000000);
         localStorage.setItem('happyfarm_player_tid', localId);
