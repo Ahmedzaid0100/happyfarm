@@ -328,11 +328,15 @@
             <span class="text-[10px] font-black text-amber-950 truncate leading-none">Bee Farm</span>
             <span id="beeFarmLevelBadge" class="bg-amber-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-sm">Lv. 1</span>
           </div>
+          <div class="flex items-center justify-between px-0.5 pb-1 text-[8px] font-bold">
+            <span id="beeFarmDailyRateText" class="text-amber-800">24/day</span>
+            <span id="beeReadyText" class="text-amber-800 font-bold bg-amber-100/90 border border-amber-300 px-1 py-0.2 rounded text-[7.5px]">&#127855; 0 ready</span>
+          </div>
           <div class="grid grid-cols-2 gap-1 mt-0.5">
             <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-1 rounded-lg text-amber-950 font-black text-[9px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform" title="Upgrade Bee Farm">
               <span>⚡</span> Lv.+1
             </button>
-            <button onclick="collectCoins('Bee Farm', 10, this)" class="btn-3d-green py-1 rounded-lg text-white font-black text-[9px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform" title="Collect Mined Points">
+            <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-1 rounded-lg text-white font-black text-[9px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform" title="Collect Mined Points">
               <span>🪙</span> Collect
             </button>
           </div>
@@ -2956,6 +2960,8 @@
     let points = 0; // Starts with 0 points
     let userLevel = 1; // Starts at Lv. 1 (24 pts/day free lifetime starter)
     let isDogVipActive = false;
+    let beeMinedPoints = 0;
+    let lastBeeCollectTimestamp = Date.now();
     let audioEnabled = true;
 
     // Ad Farms System (Each farm runs a 12-hour cycle with exact rewards)
@@ -2978,6 +2984,7 @@
       document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/day (+${hourlyBeeRate}/h)`;
       document.getElementById('walletFarmBalance').innerText = `${points.toLocaleString()} FARM Points`;
       document.getElementById('userLevelDisplay').innerText = userLevel;
+      updateBeeFarmUI();
 
       // Bee Farm UI updates
       const beeBadge = document.getElementById('beeFarmLevelBadge');
@@ -3036,11 +3043,147 @@
       alert(`🎉 Congratulations! Upgraded to Lv. ${userLevel}!\n⚡ Bee Farm mining speed is now: ${userLevel * 24} points/day (${userLevel} pts/hour)!`);
     }
 
-    // Real-time Passive Mining Tick for Bee Farm
-    setInterval(() => {
-      points += 1; // Automatically add points for passive mining simulation
+    // Dynamic UI Update for Bee Farm Card
+    function updateBeeFarmUI() {
+      const beeBadge = document.getElementById('beeFarmLevelBadge');
+      if (beeBadge) beeBadge.innerText = `Lv. ${userLevel}`;
+
+      const beeRate = document.getElementById('beeFarmDailyRateText');
+      if (beeRate) beeRate.innerText = `${userLevel * 24} pts/day`;
+
+      const readyPts = Math.floor(beeMinedPoints);
+      const readyEl = document.getElementById('beeReadyText');
+      if (readyEl) {
+        if (isDogVipActive) {
+          readyEl.innerHTML = `&#128054; Auto VIP`;
+          readyEl.className = 'text-blue-700 font-black bg-blue-100 border border-blue-400 px-1 py-0.2 rounded text-[7.5px]';
+        } else {
+          readyEl.innerHTML = `&#127855; +${readyPts} ready`;
+          readyEl.className = readyPts > 0 
+            ? 'text-emerald-900 font-black bg-emerald-200 border border-emerald-500 px-1 py-0.2 rounded text-[7.5px] animate-pulse' 
+            : 'text-amber-800 font-bold bg-amber-100/90 border border-amber-300 px-1 py-0.2 rounded text-[7.5px]';
+        }
+      }
+
+      const upgradeBtn = document.getElementById('upgradeBeeBtn');
+      if (upgradeBtn) {
+        if (points >= 1000) {
+          upgradeBtn.innerHTML = `<span>&#9889;</span> Lv.+1 (1k &#129689;)`;
+          upgradeBtn.className = 'btn-3d-yellow py-1 rounded-lg text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow animate-pulse cursor-pointer';
+        } else {
+          upgradeBtn.innerHTML = `<span>&#128274;</span> Lv.+1 (${points}/1k)`;
+          upgradeBtn.className = 'bg-slate-700/80 text-amber-200/80 py-1 rounded-lg font-bold text-[8.5px] flex items-center justify-center gap-0.5 shadow cursor-not-allowed';
+        }
+      }
+
+      const collectBtn = document.getElementById('collectBeeBtn');
+      if (collectBtn) {
+        if (isDogVipActive) {
+          collectBtn.innerHTML = `<span>&#128054;</span> Auto-VIP`;
+          collectBtn.className = 'bg-gradient-to-r from-blue-600 to-indigo-700 text-yellow-200 py-1 rounded-lg font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow-sm border border-yellow-300/40 cursor-default';
+        } else if (readyPts > 0) {
+          collectBtn.innerHTML = `<span>&#129689;</span> Collect (+${readyPts})`;
+          collectBtn.className = 'btn-3d-green py-1 rounded-lg text-white font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform animate-bounce';
+          collectBtn.style.animationDuration = '2.5s';
+        } else {
+          collectBtn.innerHTML = `<span>&#9203;</span> Mining...`;
+          collectBtn.className = 'bg-slate-700/70 text-slate-300 py-1 rounded-lg font-bold text-[8.5px] flex items-center justify-center gap-0.5 shadow-sm cursor-pointer opacity-80';
+        }
+      }
+    }
+
+    // Collect Mined Bee Points Action
+    function collectBeeMined(btnElement) {
+      if (isDogVipActive) {
+        playSound('click');
+        showWalletToast('&#128054; VIP Dog collects all Bee Farm mining points 24/7 automatically!');
+        return;
+      }
+
+      const available = Math.floor(beeMinedPoints);
+      if (available <= 0) {
+        playSound('click');
+        const ratePerSec = (userLevel * 24) / 86400;
+        const nextSec = Math.ceil((1 - (beeMinedPoints % 1)) / (ratePerSec || 1));
+        showWalletToast(`&#9203; Mining in progress! Next point ready in ~${Math.max(1, Math.round(nextSec))}s`);
+        return;
+      }
+
+      playSound('coin');
+      points += available;
+      beeMinedPoints -= available;
+      lastBeeCollectTimestamp = Date.now();
+      try {
+        localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
+        localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
+      } catch(e){}
+
+      queueCloudSave();
       updateDisplays();
-    }, 15000);
+
+      // Floating animation
+      if (btnElement) {
+        const rect = btnElement.getBoundingClientRect();
+        const floater = document.createElement('div');
+        floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-50';
+        floater.style.left = (rect.left + rect.width / 2 - 15) + 'px';
+        floater.style.top = (rect.top - 10) + 'px';
+        floater.innerText = `+${available} &#129689;`;
+        document.getElementById('coinAnimationContainer').appendChild(floater);
+        setTimeout(() => floater.remove(), 800);
+      }
+
+      showWalletToast(`&#127855; Harvested +${available} Farm Points from Bee Farm!`);
+    }
+
+    // Offline Mining Calculation
+    function calculateOfflineBeeMining() {
+      const now = Date.now();
+      const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
+      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const cappedSeconds = Math.min(elapsedSeconds, 86400 * 3); // Up to 3 days offline accumulation
+
+      const dailyRate = userLevel * 24;
+      const ratePerSec = dailyRate / 86400;
+      const earned = cappedSeconds * ratePerSec;
+
+      if (isDogVipActive) {
+        if (earned >= 1) {
+          const collected = Math.floor(earned);
+          points += collected;
+          beeMinedPoints = earned - collected;
+          console.log(`VIP Dog auto-collected ${collected} points while offline!`);
+        }
+      } else {
+        beeMinedPoints += earned;
+      }
+
+      lastBeeCollectTimestamp = now;
+      try {
+        localStorage.setItem('crazyfarm_bee_last_collect', now);
+        localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
+      } catch(e){}
+    }
+
+    // Real-time Live Mining Tick for Bee Farm (Every 1 second)
+    setInterval(() => {
+      const dailyRate = userLevel * 24;
+      const ratePerSec = dailyRate / 86400;
+
+      if (isDogVipActive) {
+        beeMinedPoints += ratePerSec;
+        if (beeMinedPoints >= 1) {
+          const autoCollect = Math.floor(beeMinedPoints);
+          points += autoCollect;
+          beeMinedPoints -= autoCollect;
+          updateDisplays();
+          queueCloudSave();
+        }
+      } else {
+        beeMinedPoints += ratePerSec;
+        updateBeeFarmUI();
+      }
+    }, 1000);
 
     // Format Seconds to HH:MM:SS
     function formatTime(totalSec) {
@@ -4092,6 +4235,9 @@
           }
           if (data.farms_data && Array.isArray(data.farms_data.watched)) {
             watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
+            if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
+            if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
+            calculateOfflineBeeMining();
           }
           updateDisplays();
           syncWalletView();
@@ -4121,7 +4267,9 @@
         user_level: userLevel,
         is_vip: isDogVipActive,
         farms_data: {
-          watched: watchedAnimalFarms
+          watched: watchedAnimalFarms,
+          bee_mined: beeMinedPoints,
+          bee_last_collect: lastBeeCollectTimestamp
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -4149,6 +4297,7 @@
 
     // Initial load
     initTelegram();
+    calculateOfflineBeeMining();
     loadPlayerDataFromCloud();
     updateDisplays();
     startCalmBgm();
