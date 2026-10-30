@@ -4688,757 +4688,1276 @@
         const tMode = parseInt(urlParams.get('testArena')) || 3;
         setTimeout(() => { enterBattleArena(tMode); }, 300);
       }
+      if (urlParams.get('testRunVictory')) {
+        setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
+      }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
+      if (urlParams.get('testRunVictory')) {
+        setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
+      }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
+      if (urlParams.get('testRunVictory')) {
+        setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
+      }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
+      if (urlParams.get('testRunVictory')) {
+        setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
+      }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
     } catch(e) {}
       // =========================================================================
     // ==================== 15s FARM SPRINT (RUN MODE) ENGINE ====================
-    // =========================================================================
-    let runGameAnimFrame = null;
-    let runGameActive = false;
-    let runGameStartTime = 0;
-    const RUN_GAME_DURATION = 15.0; // 15 seconds run!
-    let runLives = 3;
-    let runBonusPoints = 0;
-    let runBonesCollected = 0;
-    let runCoinsCollectedCount = 0;
-    let runShieldTimer = 0;
-    let runInvulnerableTimer = 0;
-    let runSlowdownTimer = 0;
-    let runTrackOffset = 0;
-    let runObstacles = [];
-    let runCollectibles = [];
-    let runParticles = [];
-    let runLastObstacleTime = 0;
-    let runFinishLine = null;
-    let runHasHoneySpawned = false;
+// =========================================================================
+let runGameAnimFrame = null;
+let runGameActive = false;
+let runGameStartTime = 0;
+const RUN_GAME_DURATION = 15.0; // 15 seconds run!
+let runLives = 3;
+let runBonusPoints = 0;
+let runBonesCollected = 0;
+let runCoinsCollectedCount = 0;
+let runShieldTimer = 0;
+let runInvulnerableTimer = 0;
+let runSlowdownTimer = 0;
+let runWorldDistance = 0; // Cumulative distance for smooth road scrolling
+let runObstacles = [];
+let runCollectibles = [];
+let runParticles = [];
+let runLastWaveTime = 0;
+let runFinishLineZ = null; // Z depth of finish line (spawns at 1.0, reaches 0)
+let runHasHoneySpawned = false;
 
-    // Player Dog State
-    const runDog = {
-      x: 0,
-      y: 0,
-      w: 46,
-      h: 46,
-      vx: 0,
-      vy: 0,
-      baseSpeed: 5.2,
-      img: null,
-      loaded: false
-    };
+// 3D Player Dog State
+const runDog = {
+  lanePos: 0.0,       // -0.76 (far left) to +0.76 (far right), 0.0 is center
+  targetLanePos: 0.0,
+  z: 0.08,            // Foreground depth (0.04 to 0.14 adjustable with Up/Down)
+  targetZ: 0.08,
+  baseW: 82,
+  baseH: 82,
+  tilt: 0,            // Banking angle when steering
+  trotPhase: 0,
+  dustTimer: 0,
+  img: null,
+  loaded: false
+};
 
-    // Preload Dog Image
-        const runBeeImg = new Image();
-    runBeeImg.src = 'assets/farms/bee.png';
-    let runBeeLoaded = false;
-    runBeeImg.onload = () => { runBeeLoaded = true; };
+// Mascot Queen Bee State
+const runBee = {
+  lanePos: 0.0,
+  vx: 0.016,
+  yOffset: 32,
+  animPhase: 0,
+  img: null,
+  loaded: false
+};
 
-    const runDogImg = new Image();
-    runDogImg.src = 'assets/farms/dog.png';
-    runDogImg.onload = () => { runDog.img = runDogImg; runDog.loaded = true; };
+// Preload 3D Dog Runner Sprite (Clean transparent cutout)
+const runDogImg = new Image();
+runDogImg.src = 'assets/farms/dog_runner_3d.png';
+runDogImg.onload = () => {
+  runDog.img = runDogImg;
+  runDog.loaded = true;
+};
 
-    // Mascot Queen Bee
-    const runBeeState = {
-      x: 100,
-      y: 35,
-      vx: 1.8,
-      w: 36,
-      h: 36
-    };
+// Preload Farm Animal Images
+const runAnimalImages = {};
+const RUN_ANIMAL_KEYS = ['dog', 'bee', 'bunny', 'chicken', 'cows', 'duck', 'horse', 'pig', 'sheep'];
 
-    // Key input tracking
-    const runKeys = {
-      left: false,
-      right: false,
-      up: false,
-      down: false
-    };
+RUN_ANIMAL_KEYS.forEach(key => {
+  const img = new Image();
+  try {
+    const domSrc = typeof getFarmAnimalImg === 'function' ? getFarmAnimalImg(key) : null;
+    img.src = domSrc || ('assets/farms/' + key + '.png');
+  } catch(e) {
+    img.src = 'assets/farms/' + key + '.png';
+  }
+  img.onload = () => {
+    if (key === 'bee') {
+      runBee.img = img;
+      runBee.loaded = true;
+    }
+  };
+  runAnimalImages[key] = img;
+});
 
-    function startRunSprintGame() {
-      const modal = document.getElementById('runGameModal');
-      const victoryOverlay = document.getElementById('runVictoryOverlay');
-      const gameOverOverlay = document.getElementById('runGameOverOverlay');
-      if (!modal) return;
+// Animal Emoji Dictionary for instant 3D badge clarity
+const RUN_ANIMAL_EMOJIS = {
+  bunny: '\uD83D\uDC30',
+  pig: '\uD83D\uDC37',
+  sheep: '\uD83D\uDC11',
+  horse: '\uD83D\uDC0E',
+  cows: '\uD83D\uDC04',
+  chicken: '\uD83D\uDC14',
+  duck: '\uD83E\uDD86'
+};
 
-      if (victoryOverlay) victoryOverlay.classList.add('hidden');
-      if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
-      modal.classList.remove('hidden');
+// Key Inputs
+const runKeys = {
+  left: false,
+  right: false,
+  up: false,
+  down: false
+};
 
-      const canvas = document.getElementById('runSprintCanvas');
-      if (!canvas) return;
+// ==================== 3D PERSPECTIVE MATH ====================
+function projectRun3D(lanePos, z, canvas) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const horizonY = h * 0.28;
+  const topRoadW = w * 0.14;
+  const bottomRoadW = w * 0.88;
 
-      // Set canvas size matching container
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = Math.max(300, Math.floor(rect.width));
-      canvas.height = Math.max(400, Math.floor(rect.height));
+  // Clamped depth (1.0 at horizon, 0.0 at player/camera)
+  const clampedZ = Math.max(0, Math.min(1.0, z));
+  
+  // Non-linear perspective curve for OutRun/Subway Surfers depth feel
+  const p = Math.pow(1.0 - clampedZ, 1.65);
+  const screenY = horizonY + (h - horizonY) * p;
+  const roadW = topRoadW + (bottomRoadW - topRoadW) * p;
+  const halfW = roadW / 2;
+  const screenX = (w / 2) + (lanePos * halfW);
+  
+  // Perspective scaling (small at horizon, full size in foreground)
+  const scale = 0.16 + 0.84 * Math.pow(1.0 - clampedZ, 1.75);
 
-      // Reset Game Variables
-      runLives = 3;
-      runBonusPoints = 0;
-      runBonesCollected = 0;
-      runCoinsCollectedCount = 0;
-      runShieldTimer = 0;
-      runInvulnerableTimer = 0;
-      runSlowdownTimer = 0;
-      runTrackOffset = 0;
-      runObstacles = [];
-      runCollectibles = [];
-      runParticles = [];
-      runLastObstacleTime = Date.now();
-      runFinishLine = null;
-      runHasHoneySpawned = false;
-      runGameActive = true;
-      runGameStartTime = Date.now();
+  return { screenX, screenY, roadW, scale, horizonY };
+}
 
-      // Dog position
-      runDog.x = (canvas.width - runDog.w) / 2;
-      runDog.y = canvas.height - runDog.h - 30;
-      runDog.vx = 0;
-      runDog.vy = 0;
+// ==================== START / RESET ====================
+function startRunSprintGame() {
+  const modal = document.getElementById('runGameModal');
+  const victoryOverlay = document.getElementById('runVictoryOverlay');
+  const gameOverOverlay = document.getElementById('runGameOverOverlay');
+  if (!modal) return;
 
-      updateRunHud();
-      bindRunControls();
+  if (victoryOverlay) victoryOverlay.classList.add('hidden');
+  if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
+  modal.classList.remove('hidden');
 
-      if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
-      runGameAnimFrame = requestAnimationFrame(runGameLoop);
-      playSound('click');
+  const canvas = document.getElementById('runSprintCanvas');
+  if (!canvas) return;
+
+  // Set crisp canvas resolution
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = Math.max(300, Math.floor(rect.width));
+  canvas.height = Math.max(400, Math.floor(rect.height));
+
+  // Reset Game Variables
+  runLives = 3;
+  runBonusPoints = 0;
+  runBonesCollected = 0;
+  runCoinsCollectedCount = 0;
+  runShieldTimer = 0;
+  runInvulnerableTimer = 0;
+  runSlowdownTimer = 0;
+  runWorldDistance = 0;
+  runObstacles = [];
+  runCollectibles = [];
+  runParticles = [];
+  runLastWaveTime = Date.now();
+  runFinishLineZ = null;
+  runHasHoneySpawned = false;
+  runGameActive = true;
+  runGameStartTime = Date.now();
+
+  // Reset Dog
+  runDog.lanePos = 0.0;
+  runDog.targetLanePos = 0.0;
+  runDog.z = 0.08;
+  runDog.targetZ = 0.08;
+  runDog.tilt = 0;
+  runDog.trotPhase = 0;
+  runDog.dustTimer = 0;
+
+  // Reset Bee
+  runBee.lanePos = 0.0;
+  runBee.vx = 0.016;
+
+  updateRunHud();
+  bindRunControls();
+
+  if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
+  runGameAnimFrame = requestAnimationFrame(runGameLoop);
+  playSound('click');
+}
+
+function updateRunHud() {
+  const livesEl = document.getElementById('runGameLives');
+  if (livesEl) {
+    livesEl.innerHTML = '&#10084;&#65039;'.repeat(Math.max(0, runLives)) + '&#128420;'.repeat(Math.max(0, 3 - runLives));
+  }
+  const coinsEl = document.getElementById('runCoinsCollected');
+  if (coinsEl) {
+    coinsEl.innerText = '+' + runBonusPoints;
+  }
+  const shieldBadge = document.getElementById('runShieldBadge');
+  if (shieldBadge) {
+    if (runShieldTimer > 0) shieldBadge.classList.remove('hidden');
+    else shieldBadge.classList.add('hidden');
+  }
+}
+
+// ==================== MAIN GAME LOOP ====================
+function runGameLoop() {
+  if (!runGameActive) return;
+
+  const canvas = document.getElementById('runSprintCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const now = Date.now();
+  const elapsed = Math.min((now - runGameStartTime) / 1000, RUN_GAME_DURATION);
+  const remaining = Math.max(0, RUN_GAME_DURATION - elapsed);
+
+  // Update HUD Timer & Progress Bar
+  const timerEl = document.getElementById('runTimerDisplay');
+  if (timerEl) timerEl.innerHTML = '&#9201;&#65039; ' + remaining.toFixed(1) + 's';
+  const progressEl = document.getElementById('runProgressBar');
+  if (progressEl) progressEl.style.width = ((elapsed / RUN_GAME_DURATION) * 100) + '%';
+
+  // Timers decrement
+  const dt = 0.016;
+  if (runShieldTimer > 0) runShieldTimer -= dt;
+  if (runInvulnerableTimer > 0) runInvulnerableTimer -= dt;
+  if (runSlowdownTimer > 0) runSlowdownTimer -= dt;
+
+  // Running Speed Multipliers
+  let speedMult = 1.0;
+  if (runShieldTimer > 0) speedMult = 1.45; // Invincible Super Boost
+  else if (runSlowdownTimer > 0) speedMult = 0.65; // Mud Slowdown
+
+  // Advance 3D World Scrolling
+  const baseWorldSpeed = 0.16 * speedMult;
+  runWorldDistance += baseWorldSpeed;
+
+  // 1. Update Dog Position & Physics
+  let steerDir = 0;
+  if (runKeys.left) steerDir -= 1;
+  if (runKeys.right) steerDir += 1;
+
+  if (steerDir !== 0) {
+    runDog.targetLanePos += steerDir * 0.045 * speedMult;
+  }
+  // Up / Down adjusts depth slightly
+  if (runKeys.up) runDog.targetZ = 0.14;
+  else if (runKeys.down) runDog.targetZ = 0.04;
+  else runDog.targetZ = 0.08;
+
+  // Clamp lane position
+  runDog.targetLanePos = Math.max(-0.76, Math.min(0.76, runDog.targetLanePos));
+  
+  // Smooth lerp to target
+  const prevLane = runDog.lanePos;
+  runDog.lanePos += (runDog.targetLanePos - runDog.lanePos) * 0.32;
+  runDog.z += (runDog.targetZ - runDog.z) * 0.25;
+
+  // Banking tilt calculation
+  const lateralDelta = runDog.lanePos - prevLane;
+  runDog.tilt = -lateralDelta * 6.5;
+
+  // Running trot bobbing & dust
+  runDog.trotPhase += 0.38 * speedMult;
+  runDog.dustTimer += dt;
+  if (runDog.dustTimer > 0.08) {
+    runDog.dustTimer = 0;
+    const proj = projectRun3D(runDog.lanePos, runDog.z, canvas);
+    spawnRunDustParticle(proj.screenX - 8 + Math.random() * 16, proj.screenY + 14 * proj.scale);
+  }
+
+  // 2. Mascot Queen Bee Movement
+  runBee.lanePos += runBee.vx;
+  if (runBee.lanePos < -0.65 || runBee.lanePos > 0.65) {
+    runBee.vx = -runBee.vx;
+  }
+  runBee.animPhase += 0.12;
+
+  // At 7.5s: Bee drops Honey Jar Bonus
+  if (elapsed >= 7.5 && !runHasHoneySpawned) {
+    runHasHoneySpawned = true;
+    runCollectibles.push({
+      type: 'honey',
+      lanePos: runBee.lanePos,
+      z: 1.0,
+      collected: false,
+      animPhase: 0
+    });
+  }
+
+  // At 14.0s: Finish line appears at horizon (z = 1.0)
+  if (elapsed >= 14.0 && runFinishLineZ === null) {
+    runFinishLineZ = 1.0;
+  }
+
+  // 3. Spawning Waves of 3D Farm Animals & Obstacles
+  if (elapsed < 13.8) {
+    const waveInterval = runShieldTimer > 0 ? 450 : 620;
+    if (now - runLastWaveTime > waveInterval) {
+      runLastWaveTime = now;
+      spawnRun3DWave();
+    }
+  }
+
+  // 4. Update Finish Line
+  if (runFinishLineZ !== null) {
+    runFinishLineZ -= baseWorldSpeed * 0.42;
+    if (runFinishLineZ <= runDog.z) {
+      triggerRunVictory();
+      return;
+    }
+  }
+
+  // 5. Update Obstacles (Moving towards camera)
+  const objApproachSpeed = baseWorldSpeed * 0.82;
+  for (let i = runObstacles.length - 1; i >= 0; i--) {
+    const obs = runObstacles[i];
+    obs.z -= objApproachSpeed;
+
+    // Animal natural wandering / bobbing
+    obs.animPhase += 0.12;
+    if (obs.type === 'animal') {
+      if (obs.wanderSpeed) {
+        obs.lanePos += obs.wanderSpeed;
+        if (obs.lanePos < -0.72 || obs.lanePos > 0.72) obs.wanderSpeed = -obs.wanderSpeed;
+      }
     }
 
-    function updateRunHud() {
-      const livesEl = document.getElementById('runGameLives');
-      if (livesEl) {
-        livesEl.innerHTML = '\u2764\uFE0F'.repeat(Math.max(0, runLives)) + '\uD83D\uDDA4'.repeat(Math.max(0, 3 - runLives));
-      }
-      const coinsEl = document.getElementById('runCoinsCollected');
-      if (coinsEl) {
-        coinsEl.innerText = '+' + runBonusPoints;
-      }
-      const shieldBadge = document.getElementById('runShieldBadge');
-      if (shieldBadge) {
-        if (runShieldTimer > 0) shieldBadge.classList.remove('hidden');
-        else shieldBadge.classList.add('hidden');
-      }
-    }
+    // Collision Check with Dog in 3D
+    if (!obs.hit && !obs.bounced) {
+      const zDist = Math.abs(obs.z - runDog.z);
+      const laneDist = Math.abs(obs.lanePos - runDog.lanePos);
 
-    function runGameLoop() {
-      if (!runGameActive) return;
-
-      const canvas = document.getElementById('runSprintCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const now = Date.now();
-      const elapsed = Math.min((now - runGameStartTime) / 1000, RUN_GAME_DURATION);
-      const remaining = Math.max(0, RUN_GAME_DURATION - elapsed);
-
-      // Update Timer & Progress
-      const timerEl = document.getElementById('runTimerDisplay');
-      if (timerEl) timerEl.innerText = '\u23F1\uFE0F ' + remaining.toFixed(1) + 's';
-      const progressEl = document.getElementById('runProgressBar');
-      if (progressEl) progressEl.style.width = ((elapsed / RUN_GAME_DURATION) * 100) + '%';
-
-      // Timers decrement
-      if (runShieldTimer > 0) runShieldTimer -= 0.016;
-      if (runInvulnerableTimer > 0) runInvulnerableTimer -= 0.016;
-      if (runSlowdownTimer > 0) runSlowdownTimer -= 0.016;
-
-      // Current Speed
-      let speedMult = 1.0;
-      if (runShieldTimer > 0) speedMult = 1.35; // Super Boost
-      else if (runSlowdownTimer > 0) speedMult = 0.6; // Mud Slowdown
-
-      const currentScrollSpeed = 5.2 * speedMult;
-      runTrackOffset = (runTrackOffset + currentScrollSpeed) % 40;
-
-      // Update Dog Movement
-      const moveSpeed = runDog.baseSpeed * speedMult;
-      let targetVx = 0;
-      let targetVy = 0;
-      if (runKeys.left) targetVx -= moveSpeed;
-      if (runKeys.right) targetVx += moveSpeed;
-      if (runKeys.up) targetVy -= moveSpeed * 0.9;
-      if (runKeys.down) targetVy += moveSpeed * 0.9;
-
-      runDog.vx += (targetVx - runDog.vx) * 0.35;
-      runDog.vy += (targetVy - runDog.vy) * 0.35;
-      runDog.x += runDog.vx;
-      runDog.y += runDog.vy;
-
-      // Track boundaries
-      const trackPadding = 28;
-      runDog.x = Math.max(trackPadding, Math.min(canvas.width - runDog.w - trackPadding, runDog.x));
-      runDog.y = Math.max(70, Math.min(canvas.height - runDog.h - 10, runDog.y));
-
-      // Bee Companion Floating
-      runBeeState.x += runBeeState.vx;
-      if (runBeeState.x < 40 || runBeeState.x > canvas.width - 70) {
-        runBeeState.vx = -runBeeState.vx;
-      }
-
-      // Spawning Obstacles & Collectibles
-      if (elapsed < 13.5) {
-        if (now - runLastObstacleTime > (runShieldTimer > 0 ? 600 : 850)) {
-          runLastObstacleTime = now;
-          spawnRunWave(canvas);
-        }
-      }
-
-      // At 7.5s: Bee drops a Honey Jar bonus
-      if (elapsed >= 7.5 && !runHasHoneySpawned) {
-        runHasHoneySpawned = true;
-        runCollectibles.push({
-          type: 'honey',
-          x: Math.max(trackPadding + 10, Math.min(canvas.width - trackPadding - 40, runBeeState.x)),
-          y: -30,
-          w: 32,
-          h: 32,
-          collected: false
-        });
-      }
-
-      // At 14.5s: Finish line banner spawns
-      if (elapsed >= 14.5 && !runFinishLine) {
-        runFinishLine = {
-          y: -70,
-          h: 40,
-          passed: false
-        };
-      }
-
-      // Update Obstacles
-      for (let i = runObstacles.length - 1; i >= 0; i--) {
-        const obs = runObstacles[i];
-        obs.y += currentScrollSpeed;
-
-        // Collision Check with Dog
-        if (!obs.hit && checkRunCollision(runDog, obs)) {
+      // Hitbox tolerance
+      if (zDist < 0.055 && laneDist < 0.28) {
+        if (runShieldTimer > 0) {
+          // Honey Shield Smashes through!
+          obs.bounced = true;
+          obs.bounceVx = (obs.lanePos > runDog.lanePos ? 0.03 : -0.03);
+          obs.bounceVy = -12;
+          runBonusPoints += 30;
+          updateRunHud();
+          playSound('coin');
+          const p = projectRun3D(obs.lanePos, obs.z, canvas);
+          createExplosionParticles(p.screenX, p.screenY, '#facc15', 18);
+        } else {
           obs.hit = true;
-          handleRunObstacleHit(obs);
+          handleRunObstacleHit(obs, canvas);
         }
-
-        if (obs.y > canvas.height + 60) {
-          runObstacles.splice(i, 1);
-        }
-      }
-
-      // Update Collectibles
-      for (let i = runCollectibles.length - 1; i >= 0; i--) {
-        const item = runCollectibles[i];
-        item.y += currentScrollSpeed;
-
-        if (!item.collected && checkRunCollision(runDog, item)) {
-          item.collected = true;
-          handleRunItemCollected(item);
-          runCollectibles.splice(i, 1);
-        } else if (item.y > canvas.height + 40) {
-          runCollectibles.splice(i, 1);
-        }
-      }
-
-      // Update Finish Line
-      if (runFinishLine) {
-        runFinishLine.y += currentScrollSpeed;
-        if (!runFinishLine.passed && runDog.y <= runFinishLine.y + runFinishLine.h + 20) {
-          runFinishLine.passed = true;
-          triggerRunVictory();
-          return;
-        }
-      }
-
-      // Update Particles
-      for (let i = runParticles.length - 1; i >= 0; i--) {
-        const p = runParticles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= 0.025;
-        if (p.alpha <= 0) runParticles.splice(i, 1);
-      }
-
-      // Render Everything
-      drawRunScene(ctx, canvas);
-
-      // Loop
-      if (runGameActive) {
-        runGameAnimFrame = requestAnimationFrame(runGameLoop);
       }
     }
 
-    function spawnRunWave(canvas) {
-      const trackPadding = 32;
-      const usableWidth = canvas.width - (trackPadding * 2) - 50;
-      const types = ['pit', 'hay', 'mud', 'fence'];
-      const chosenType = types[Math.floor(Math.random() * types.length)];
-      
-      const dims = {
-        pit: { w: 42, h: 42 },
-        hay: { w: 46, h: 36 },
-        mud: { w: 52, h: 36 },
-        fence: { w: 56, h: 28 }
-      }[chosenType];
+    // Bounced object physics (knocked by shield)
+    if (obs.bounced) {
+      obs.lanePos += obs.bounceVx;
+      obs.z += 0.015;
+    }
 
-      const xPos = trackPadding + Math.random() * usableWidth;
+    // Remove if passed behind camera
+    if (obs.z < -0.1) {
+      runObstacles.splice(i, 1);
+    }
+  }
 
+  // 6. Update Collectibles
+  for (let i = runCollectibles.length - 1; i >= 0; i--) {
+    const item = runCollectibles[i];
+    item.z -= objApproachSpeed;
+    item.animPhase = (item.animPhase || 0) + 0.1;
+
+    // Collision Check with Dog
+    if (!item.collected) {
+      const zDist = Math.abs(item.z - runDog.z);
+      const laneDist = Math.abs(item.lanePos - runDog.lanePos);
+      if (zDist < 0.065 && laneDist < 0.32) {
+        item.collected = true;
+        handleRunItemCollected(item, canvas);
+        runCollectibles.splice(i, 1);
+        continue;
+      }
+    }
+
+    if (item.z < -0.1) {
+      runCollectibles.splice(i, 1);
+    }
+  }
+
+  // 7. Update Particles
+  for (let i = runParticles.length - 1; i >= 0; i--) {
+    const p = runParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= p.decay || 0.025;
+    if (p.alpha <= 0) runParticles.splice(i, 1);
+  }
+
+  // 8. Render 3D Scene
+  drawRun3DScene(ctx, canvas, now);
+
+  // Next Frame
+  if (runGameActive) {
+    runGameAnimFrame = requestAnimationFrame(runGameLoop);
+  }
+}
+
+// ==================== SPAWNING LOGIC ====================
+function spawnRun3DWave() {
+  const lanes = [-0.62, 0.0, 0.62];
+  // Shuffle lanes
+  lanes.sort(() => Math.random() - 0.5);
+
+  // Pick 1 or 2 lanes for obstacles (always leave at least 1 open lane!)
+  const obstacleCount = Math.random() < 0.35 ? 2 : 1;
+  const chosenLanes = lanes.slice(0, obstacleCount);
+
+  chosenLanes.forEach(lane => {
+    // 65% Chance Farm Animal, 35% Terrain Hazard
+    if (Math.random() < 0.65) {
+      const farmAnimals = ['bunny', 'pig', 'sheep', 'horse', 'cows', 'chicken', 'duck'];
+      const animalKey = farmAnimals[Math.floor(Math.random() * farmAnimals.length)];
       runObstacles.push({
-        type: chosenType,
-        x: xPos,
-        y: -50,
-        w: dims.w,
-        h: dims.h,
-        hit: false
+        type: 'animal',
+        animalKey: animalKey,
+        lanePos: lane,
+        z: 1.0,
+        animPhase: Math.random() * 10,
+        wanderSpeed: (animalKey === 'chicken' || animalKey === 'duck') ? (Math.random() < 0.5 ? 0.004 : -0.004) : 0,
+        hit: false,
+        bounced: false
       });
-
-      // 45% chance to spawn bone or coin near opposite lane
-      if (Math.random() < 0.45) {
-        const otherX = (xPos > canvas.width / 2) 
-          ? trackPadding + (Math.random() * (canvas.width / 2 - trackPadding - 30))
-          : (canvas.width / 2) + (Math.random() * (canvas.width / 2 - trackPadding - 30));
-        
-        const itemType = Math.random() < 0.5 ? 'bone' : 'coin';
-        runCollectibles.push({
-          type: itemType,
-          x: otherX,
-          y: -40,
-          w: itemType === 'bone' ? 28 : 24,
-          h: itemType === 'bone' ? 28 : 24,
-          collected: false
-        });
-      }
-    }
-
-    function checkRunCollision(a, b) {
-      // Inset hitbox for forgiving gameplay
-      const padA = 8;
-      const padB = 6;
-      return (
-        a.x + padA < b.x + b.w - padB &&
-        a.x + a.w - padA > b.x + padB &&
-        a.y + padA < b.y + b.h - padB &&
-        a.y + a.h - padA > b.y + padB
-      );
-    }
-
-    function handleRunObstacleHit(obs) {
-      // If shield active, shield destroys obstacle
-      if (runShieldTimer > 0) {
-        playSound('coin');
-        createExplosionParticles(obs.x + obs.w / 2, obs.y + obs.h / 2, '#fbbf24', 16);
-        return;
-      }
-
-      // If invulnerable, skip
-      if (runInvulnerableTimer > 0) return;
-
-      playSound('click');
-      runLives--;
-      updateRunHud();
-
-      // Screen red flash
-      const flash = document.getElementById('runScreenFlash');
-      if (flash) {
-        flash.style.opacity = '1';
-        setTimeout(() => { if (flash) flash.style.opacity = '0'; }, 180);
-      }
-
-      // Mud causes slowdown
-      if (obs.type === 'mud') {
-        runSlowdownTimer = 1.6;
-        createExplosionParticles(runDog.x + runDog.w / 2, runDog.y + runDog.h, '#78350f', 12);
-      } else {
-        createExplosionParticles(runDog.x + runDog.w / 2, runDog.y + runDog.h / 2, '#ef4444', 15);
-      }
-
-      runInvulnerableTimer = 1.4; // 1.4s grace period
-
-      if (runLives <= 0) {
-        triggerRunGameOver();
-      }
-    }
-
-    function handleRunItemCollected(item) {
-      playSound('coin');
-      if (item.type === 'bone') {
-        runBonusPoints += 50;
-        runBonesCollected++;
-        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#fef08a', 10);
-      } else if (item.type === 'coin') {
-        runBonusPoints += 20;
-        runCoinsCollectedCount++;
-        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#facc15', 8);
-      } else if (item.type === 'honey') {
-        runBonusPoints += 100;
-        runShieldTimer = 4.0; // 4 seconds invincible boost!
-        createExplosionParticles(item.x + item.w / 2, item.y + item.h / 2, '#eab308', 20);
-      }
-      updateRunHud();
-    }
-
-    function createExplosionParticles(x, y, color, count) {
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const spd = 1.5 + Math.random() * 3.5;
-        runParticles.push({
-          x: x,
-          y: y,
-          vx: Math.cos(angle) * spd,
-          vy: Math.sin(angle) * spd,
-          color: color,
-          size: 3 + Math.random() * 4,
-          alpha: 1.0
-        });
-      }
-    }
-
-    // ==================== RENDERING ====================
-    function drawRunScene(ctx, canvas) {
-      const w = canvas.width;
-      const h = canvas.height;
-      const trackPadding = 28;
-
-      // 1. Background Grass Shoulders
-      ctx.fillStyle = '#4c8727';
-      ctx.fillRect(0, 0, w, h);
-
-      // 2. Dirt Road
-      ctx.fillStyle = '#c89552';
-      ctx.fillRect(trackPadding, 0, w - trackPadding * 2, h);
-
-      // Road track side borders (dark edges)
-      ctx.fillStyle = '#8f5e27';
-      ctx.fillRect(trackPadding - 3, 0, 4, h);
-      ctx.fillRect(w - trackPadding - 1, 0, 4, h);
-
-      // Scrolling tire tracks / dirt specks
-      ctx.strokeStyle = '#b47e3c';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([16, 20]);
-      ctx.lineDashOffset = -runTrackOffset;
-
-      const lane1 = trackPadding + (w - trackPadding * 2) * 0.33;
-      const lane2 = trackPadding + (w - trackPadding * 2) * 0.67;
-      ctx.beginPath();
-      ctx.moveTo(lane1, 0); ctx.lineTo(lane1, h);
-      ctx.moveTo(lane2, 0); ctx.lineTo(lane2, h);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // 3. Fences on borders
-      ctx.fillStyle = '#d97706';
-      for (let y = -20 + (runTrackOffset % 30); y < h + 30; y += 30) {
-        // Left post
-        ctx.fillRect(10, y, 8, 12);
-        // Right post
-        ctx.fillRect(w - 18, y, 8, 12);
-      }
-      ctx.fillStyle = '#92400e';
-      ctx.fillRect(12, 0, 4, h);
-      ctx.fillRect(w - 16, 0, 4, h);
-
-      // 4. Draw Obstacles
-      runObstacles.forEach(obs => {
-        ctx.save();
-        if (obs.type === 'pit') {
-          // Dark earth pit
-          ctx.fillStyle = '#291404';
-          ctx.beginPath();
-          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, obs.h / 2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = '#5c2c09';
-          ctx.stroke();
-          // Inner shadow
-          ctx.fillStyle = '#120701';
-          ctx.beginPath();
-          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2 + 2, obs.w / 2.6, obs.h / 2.6, 0, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (obs.type === 'hay') {
-          // Hay bale
-          ctx.fillStyle = '#eab308';
-          ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = '#ca8a04';
-          ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-          // Straw ties
-          ctx.fillStyle = '#78350f';
-          ctx.fillRect(obs.x + obs.w * 0.25, obs.y, 3, obs.h);
-          ctx.fillRect(obs.x + obs.w * 0.75, obs.y, 3, obs.h);
-        } else if (obs.type === 'mud') {
-          // Mud Puddle
-          ctx.fillStyle = '#451a03';
-          ctx.beginPath();
-          ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, obs.h / 2.5, 0.1, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#78350f';
-          ctx.beginPath();
-          ctx.ellipse(obs.x + obs.w / 2 - 4, obs.y + obs.h / 2, obs.w / 3, obs.h / 4, 0, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (obs.type === 'fence') {
-          // Wooden fence barrier
-          ctx.fillStyle = '#b45309';
-          ctx.fillRect(obs.x, obs.y + 6, obs.w, 8);
-          ctx.fillRect(obs.x, obs.y + 16, obs.w, 8);
-          ctx.fillStyle = '#78350f';
-          ctx.fillRect(obs.x + 6, obs.y, 6, obs.h);
-          ctx.fillRect(obs.x + obs.w - 12, obs.y, 6, obs.h);
-          // Caution stripes
-          ctx.fillStyle = '#dc2626';
-          ctx.fillRect(obs.x + obs.w * 0.35, obs.y + 7, 6, 6);
-          ctx.fillRect(obs.x + obs.w * 0.65, obs.y + 7, 6, 6);
-        }
-        ctx.restore();
+    } else {
+      const terrainTypes = ['hay', 'pit', 'mud', 'fence'];
+      const hazardType = terrainTypes[Math.floor(Math.random() * terrainTypes.length)];
+      runObstacles.push({
+        type: hazardType,
+        lanePos: lane,
+        z: 1.0,
+        animPhase: 0,
+        hit: false,
+        bounced: false
       });
+    }
+  });
 
-      // 5. Draw Collectibles
-      runCollectibles.forEach(item => {
-        ctx.save();
-        if (item.type === 'bone') {
-          ctx.font = '22px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('\uD83E\uDDB4', item.x + item.w / 2, item.y + item.h / 2);
-        } else if (item.type === 'coin') {
-          ctx.font = '20px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('\uD83E\uDE99', item.x + item.w / 2, item.y + item.h / 2);
-        } else if (item.type === 'honey') {
-          ctx.font = '26px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          // Golden aura around honey
-          ctx.shadowColor = '#eab308';
-          ctx.shadowBlur = 12;
-          ctx.fillText('\uD83C\uDF6F', item.x + item.w / 2, item.y + item.h / 2);
-        }
-        ctx.restore();
-      });
+  // Spawn collectible in the open lane (50% chance)
+  if (Math.random() < 0.50 && lanes.length > obstacleCount) {
+    const openLane = lanes[obstacleCount];
+    const itemType = Math.random() < 0.55 ? 'coin' : 'bone';
+    runCollectibles.push({
+      type: itemType,
+      lanePos: openLane,
+      z: 1.0,
+      collected: false,
+      animPhase: 0
+    });
+  }
+}
 
-      // 6. Draw Finish Line Banner
-      if (runFinishLine) {
-        ctx.save();
-        const fy = runFinishLine.y;
-        // Checkered pattern
-        const boxSize = 14;
-        for (let bx = trackPadding; bx < w - trackPadding; bx += boxSize) {
-          for (let by = 0; by < 2; by++) {
-            const isBlack = ((Math.floor(bx / boxSize) + by) % 2 === 0);
-            ctx.fillStyle = isBlack ? '#111827' : '#f9fafb';
-            ctx.fillRect(bx, fy + (by * boxSize), boxSize, boxSize);
-          }
-        }
-        // Ribbon Banner text
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(trackPadding, fy + 28, w - trackPadding * 2, 18);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'black 11px Fredoka, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('\uD83C\uDFC1 15s SPRINT FINISH LINE \uD83C\uDFC1', w / 2, fy + 41);
-        ctx.restore();
-      }
+// ==================== HITS & PICKUPS ====================
+function handleRunObstacleHit(obs, canvas) {
+  if (runInvulnerableTimer > 0) return;
 
-      // 7. Draw Player Dog
-      ctx.save();
-      // Trot bounce
-      const trotBounce = Math.sin(Date.now() / 70) * 2.5;
+  playSound('click');
+  runLives--;
+  updateRunHud();
 
-      // Invulnerability flicker
-      if (runInvulnerableTimer > 0 && Math.floor(Date.now() / 100) % 2 === 0) {
-        ctx.globalAlpha = 0.45;
-      }
+  const flash = document.getElementById('runScreenFlash');
+  if (flash) {
+    flash.style.opacity = '1';
+    setTimeout(() => { if (flash) flash.style.opacity = '0'; }, 180);
+  }
 
-      // Shield Aura
-      if (runShieldTimer > 0) {
-        ctx.save();
-        ctx.shadowColor = '#facc15';
-        ctx.shadowBlur = 18;
-        ctx.strokeStyle = '#fde047';
-        ctx.lineWidth = 3;
+  const proj = projectRun3D(runDog.lanePos, runDog.z, canvas);
+  if (obs.type === 'mud') {
+    runSlowdownTimer = 1.6;
+    createExplosionParticles(proj.screenX, proj.screenY, '#78350f', 12);
+  } else {
+    createExplosionParticles(proj.screenX, proj.screenY, '#ef4444', 16);
+  }
+
+  runInvulnerableTimer = 1.5; // 1.5s grace period
+
+  if (runLives <= 0) {
+    triggerRunGameOver();
+  }
+}
+
+function handleRunItemCollected(item, canvas) {
+  playSound('coin');
+  const proj = projectRun3D(item.lanePos, item.z, canvas);
+
+  if (item.type === 'bone') {
+    runBonusPoints += 50;
+    runBonesCollected++;
+    createExplosionParticles(proj.screenX, proj.screenY, '#fef08a', 12);
+  } else if (item.type === 'coin') {
+    runBonusPoints += 20;
+    runCoinsCollectedCount++;
+    createExplosionParticles(proj.screenX, proj.screenY, '#facc15', 10);
+  } else if (item.type === 'honey') {
+    runBonusPoints += 100;
+    runShieldTimer = 4.5; // 4.5 seconds Invincible Super Boost!
+    createExplosionParticles(proj.screenX, proj.screenY, '#eab308', 25);
+    playSound('fanfare');
+  }
+  updateRunHud();
+}
+
+function createExplosionParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const spd = 1.5 + Math.random() * 3.5;
+    runParticles.push({
+      x: x,
+      y: y,
+      vx: Math.cos(angle) * spd,
+      vy: Math.sin(angle) * spd,
+      color: color,
+      size: 3 + Math.random() * 4,
+      alpha: 1.0,
+      decay: 0.03
+    });
+  }
+}
+
+function spawnRunDustParticle(x, y) {
+  runParticles.push({
+    x: x,
+    y: y,
+    vx: -0.6 + Math.random() * 1.2,
+    vy: -0.5 - Math.random() * 1.0,
+    color: '#d4a373',
+    size: 2 + Math.random() * 3,
+    alpha: 0.6,
+    decay: 0.04
+  });
+}
+
+// ==================== 3D RENDERING ====================
+function drawRun3DScene(ctx, canvas, now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const horizonY = h * 0.28;
+
+  // 1. SKY & DISTANT HORIZON
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
+  skyGrad.addColorStop(0, '#38bdf8');   // Sunny Sky Blue
+  skyGrad.addColorStop(0.65, '#bae6fd');
+  skyGrad.addColorStop(1, '#fef08a');   // Warm Golden Horizon
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, w, horizonY);
+
+  // Golden Sun
+  ctx.save();
+  ctx.fillStyle = '#fde047';
+  ctx.shadowColor = '#facc15';
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(w * 0.82, horizonY * 0.38, 22, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Fluffy Cartoon Clouds
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+  const cloudOffset1 = (now / 60) % (w + 100);
+  const cloudOffset2 = (now / 45 + 160) % (w + 120);
+  drawCartoonCloud(ctx, cloudOffset1 - 50, horizonY * 0.30, 26);
+  drawCartoonCloud(ctx, cloudOffset2 - 60, horizonY * 0.55, 18);
+
+  // Distant Rolling Green Farm Hills
+  ctx.fillStyle = '#4d7c0f';
+  ctx.beginPath();
+  ctx.moveTo(0, horizonY);
+  ctx.bezierCurveTo(w * 0.25, horizonY - 18, w * 0.4, horizonY - 6, w * 0.6, horizonY - 14);
+  ctx.bezierCurveTo(w * 0.75, horizonY - 22, w * 0.9, horizonY - 8, w, horizonY);
+  ctx.lineTo(w, horizonY + 2);
+  ctx.lineTo(0, horizonY + 2);
+  ctx.fill();
+
+  // Distant Farm Barn / Silo Silhouette
+  ctx.fillStyle = '#854d0e';
+  ctx.fillRect(w * 0.18, horizonY - 12, 16, 12);
+  ctx.beginPath();
+  ctx.moveTo(w * 0.17, horizonY - 12);
+  ctx.lineTo(w * 0.18 + 8, horizonY - 19);
+  ctx.lineTo(w * 0.18 + 17, horizonY - 12);
+  ctx.fill();
+
+  // 2. 3D ROAD SEGMENTS WITH PERSPECTIVE SLICES
+  const numSlices = 24;
+  const sliceZStep = 1.0 / numSlices;
+  const scrollOffset = (runWorldDistance * 0.35) % sliceZStep;
+
+  // Background Grass Field
+  ctx.fillStyle = '#3f6212';
+  ctx.fillRect(0, horizonY, w, h - horizonY);
+
+  // Render road slices from horizon (z=1) down to camera (z=0)
+  for (let s = numSlices; s >= 0; s--) {
+    const zFar = Math.max(0, Math.min(1.0, (s * sliceZStep) + scrollOffset));
+    const zNear = Math.max(0, Math.min(1.0, ((s - 1) * sliceZStep) + scrollOffset));
+    if (zNear >= zFar) continue;
+
+    const pFar = projectRun3D(0, zFar, canvas);
+    const pNear = projectRun3D(0, zNear, canvas);
+
+    const isEven = (s % 2 === 0);
+
+    // Lush Shoulder Grass (Alternating tones)
+    ctx.fillStyle = isEven ? '#4d7c0f' : '#3f6212';
+    ctx.fillRect(0, pFar.screenY, w, pNear.screenY - pFar.screenY + 1);
+
+    // Dirt Road Bed
+    ctx.fillStyle = isEven ? '#c89552' : '#bc8441';
+    ctx.beginPath();
+    ctx.moveTo(pFar.screenX - pFar.roadW / 2, pFar.screenY);
+    ctx.lineTo(pFar.screenX + pFar.roadW / 2, pFar.screenY);
+    ctx.lineTo(pNear.screenX + pNear.roadW / 2, pNear.screenY + 1);
+    ctx.lineTo(pNear.screenX - pNear.roadW / 2, pNear.screenY + 1);
+    ctx.fill();
+
+    // Road Edge Curbs (Rustic Timber / Red-White Curbs)
+    const curbWFar = 6 * pFar.scale;
+    const curbWNear = 6 * pNear.scale;
+    ctx.fillStyle = isEven ? '#ef4444' : '#f9fafb';
+    // Left Curb
+    ctx.beginPath();
+    ctx.moveTo(pFar.screenX - pFar.roadW / 2 - curbWFar, pFar.screenY);
+    ctx.lineTo(pFar.screenX - pFar.roadW / 2, pFar.screenY);
+    ctx.lineTo(pNear.screenX - pNear.roadW / 2, pNear.screenY + 1);
+    ctx.lineTo(pNear.screenX - pNear.roadW / 2 - curbWNear, pNear.screenY + 1);
+    ctx.fill();
+    // Right Curb
+    ctx.beginPath();
+    ctx.moveTo(pFar.screenX + pFar.roadW / 2, pFar.screenY);
+    ctx.lineTo(pFar.screenX + pFar.roadW / 2 + curbWFar, pFar.screenY);
+    ctx.lineTo(pNear.screenX + pNear.roadW / 2 + curbWNear, pNear.screenY + 1);
+    ctx.lineTo(pNear.screenX + pNear.roadW / 2, pNear.screenY + 1);
+    ctx.fill();
+
+    // Dashed White Lane Divider Lines (-0.33 and +0.33)
+    if (isEven) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.70)';
+      [-0.33, 0.33].forEach(laneX => {
+        const pLaneFar = projectRun3D(laneX, zFar, canvas);
+        const pLaneNear = projectRun3D(laneX, zNear, canvas);
+        const dashW = Math.max(1.5, 3 * pNear.scale);
         ctx.beginPath();
-        ctx.arc(runDog.x + runDog.w / 2, runDog.y + runDog.h / 2 + trotBounce, runDog.w * 0.68, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Dog Sprite
-      if (runDog.loaded && runDog.img) {
-        ctx.drawImage(runDog.img, runDog.x, runDog.y + trotBounce, runDog.w, runDog.h);
-      } else {
-        ctx.font = '36px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('ðŸ¶', runDog.x + runDog.w / 2, runDog.y + runDog.h + trotBounce - 8);
-      }
-      ctx.restore();
-
-      // 8. Draw Mascot Queen Bee at top
-      ctx.save();
-      ctx.font = '28px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = '#fde047';
-      ctx.shadowBlur = 8;
-      ctx.fillText('\uD83D\uDC1D', runBeeState.x, runBeeState.y + Math.sin(Date.now() / 120) * 4);
-      ctx.restore();
-
-      // 9. Draw Particles
-      runParticles.forEach(p => {
-        ctx.save();
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(0, p.alpha);
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.moveTo(pLaneFar.screenX - dashW / 2, pLaneFar.screenY);
+        ctx.lineTo(pLaneFar.screenX + dashW / 2, pLaneFar.screenY);
+        ctx.lineTo(pLaneNear.screenX + dashW / 2, pLaneNear.screenY);
+        ctx.lineTo(pLaneNear.screenX - dashW / 2, pLaneNear.screenY);
         ctx.fill();
-        ctx.restore();
       });
     }
 
-    // ==================== CONTROLS BINDING ====================
-    let runControlsBound = false;
-    function bindRunControls() {
-      if (runControlsBound) return;
-      runControlsBound = true;
+    // Roadside Wooden Fence Posts (Every 3 slices)
+    if (s % 3 === 0) {
+      drawRoadsideFences(ctx, pFar, pNear);
+    }
+  }
 
-      // Virtual D-Pad Button listeners
-      const btnLeft = document.getElementById('btnDpadLeft');
-      const btnRight = document.getElementById('btnDpadRight');
-      const btnUp = document.getElementById('btnDpadUp');
-      const btnDown = document.getElementById('btnDpadDown');
+  // 3. DEPTH-SORT ALL 3D OBJECTS (Desc: Horizon z=1.0 down to Camera z=0.0)
+  const renderList = [];
 
-      const setKey = (k, val) => { runKeys[k] = val; };
+  // Finish Line Arch
+  if (runFinishLineZ !== null) {
+    renderList.push({ type: 'finish', z: runFinishLineZ });
+  }
 
-      const attachBtn = (el, key) => {
-        if (!el) return;
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); setKey(key, true); }, { passive: false });
-        el.addEventListener('touchend', (e) => { e.preventDefault(); setKey(key, false); }, { passive: false });
-        el.addEventListener('mousedown', () => setKey(key, true));
-        el.addEventListener('mouseup', () => setKey(key, false));
-        el.addEventListener('mouseleave', () => setKey(key, false));
-      };
+  // Obstacles (Animals & Hazards)
+  runObstacles.forEach(obs => {
+    renderList.push({ type: 'obstacle', data: obs, z: obs.z });
+  });
 
-      attachBtn(btnLeft, 'left');
-      attachBtn(btnRight, 'right');
-      attachBtn(btnUp, 'up');
-      attachBtn(btnDown, 'down');
+  // Collectibles (Coins, Bones, Honey)
+  runCollectibles.forEach(item => {
+    renderList.push({ type: 'collectible', data: item, z: item.z });
+  });
 
-      // Keyboard Controls
-      window.addEventListener('keydown', (e) => {
-        if (!runGameActive) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = true;
-        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = true;
-        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = true;
-        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = true;
-      });
+  // Player Dog
+  renderList.push({ type: 'dog', z: runDog.z });
 
-      window.addEventListener('keyup', (e) => {
-        if (!runGameActive) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = false;
-        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = false;
-        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = false;
-        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = false;
-      });
+  // Sort distant first, foreground last
+  renderList.sort((a, b) => b.z - a.z);
 
-      // Canvas Touch Dragging & Mouse Move
-      const canvas = document.getElementById('runSprintCanvas');
-      if (canvas) {
-        let isDragging = false;
-        const handleMove = (clientX, clientY) => {
-          if (!runGameActive) return;
-          const rect = canvas.getBoundingClientRect();
-          const targetX = clientX - rect.left - (runDog.w / 2);
-          const targetY = clientY - rect.top - (runDog.h / 2);
-          runDog.x += (targetX - runDog.x) * 0.45;
-          runDog.y += (targetY - runDog.y) * 0.45;
-        };
+  // 4. DRAW 3D OBJECTS
+  renderList.forEach(entry => {
+    if (entry.type === 'dog') {
+      draw3DPlayerDog(ctx, canvas, now);
+    } else if (entry.type === 'finish') {
+      draw3DFinishLineArch(ctx, canvas, entry.z);
+    } else if (entry.type === 'obstacle') {
+      draw3DObstacle(ctx, canvas, entry.data, now);
+    } else if (entry.type === 'collectible') {
+      draw3DCollectible(ctx, canvas, entry.data, now);
+    }
+  });
 
-        canvas.addEventListener('touchstart', (e) => {
-          if (e.touches && e.touches[0]) {
-            isDragging = true;
-            handleMove(e.touches[0].clientX, e.touches[0].clientY);
-          }
-        }, { passive: true });
+  // 5. DRAW OVERHEAD MASCOT QUEEN BEE
+  drawOverheadQueenBee(ctx, canvas, now);
 
-        canvas.addEventListener('touchmove', (e) => {
-          if (isDragging && e.touches && e.touches[0]) {
-            handleMove(e.touches[0].clientX, e.touches[0].clientY);
-          }
-        }, { passive: true });
+  // 6. DRAW 3D PARTICLES
+  runParticles.forEach(p => {
+    ctx.save();
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
 
-        canvas.addEventListener('touchend', () => { isDragging = false; });
+  // 7. SUPER BOOST SPEED LINES (If Shield Active)
+  if (runShieldTimer > 0) {
+    drawSpeedLinesVfx(ctx, canvas, now);
+  }
+}
 
-        canvas.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          handleMove(e.clientX, e.clientY);
-        });
-        canvas.addEventListener('mousemove', (e) => {
-          if (isDragging) handleMove(e.clientX, e.clientY);
-        });
-        canvas.addEventListener('mouseup', () => { isDragging = false; });
+// ==================== OBJECT RENDERING SUBROUTINES ====================
+function drawCartoonCloud(ctx, x, y, r) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.arc(x + r * 0.7, y - r * 0.35, r * 0.8, 0, Math.PI * 2);
+  ctx.arc(x + r * 1.4, y, r * 0.9, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawRoadsideFences(ctx, pFar, pNear) {
+  const postHFar = 20 * pFar.scale;
+  const postHNear = 20 * pNear.scale;
+  const postWNear = Math.max(2, 5 * pNear.scale);
+
+  // Left Post
+  const leftXNear = pNear.screenX - pNear.roadW / 2 - (18 * pNear.scale);
+  const leftYNear = pNear.screenY;
+  ctx.fillStyle = '#78350f';
+  ctx.fillRect(leftXNear, leftYNear - postHNear, postWNear, postHNear);
+
+  // Right Post
+  const rightXNear = pNear.screenX + pNear.roadW / 2 + (14 * pNear.scale);
+  const rightYNear = pNear.screenY;
+  ctx.fillRect(rightXNear, rightYNear - postHNear, postWNear, postHNear);
+
+  // Wooden Crossbeams
+  ctx.fillStyle = '#92400e';
+  ctx.fillRect(leftXNear - 4 * pNear.scale, leftYNear - postHNear * 0.7, 10 * pNear.scale, 2 * pNear.scale);
+  ctx.fillRect(rightXNear - 2 * pNear.scale, rightYNear - postHNear * 0.7, 10 * pNear.scale, 2 * pNear.scale);
+}
+
+// 3D Player Dog (Matching 3D Game Video Character)
+function draw3DPlayerDog(ctx, canvas, now) {
+  const proj = projectRun3D(runDog.lanePos, runDog.z, canvas);
+  const scale = proj.scale;
+  const renderW = runDog.baseW * scale;
+  const renderH = runDog.baseH * scale;
+
+  // Running Trot Bobbing
+  const trotY = Math.sin(runDog.trotPhase) * (4.5 * scale);
+
+  ctx.save();
+  ctx.translate(proj.screenX, proj.screenY + trotY);
+  ctx.rotate(runDog.tilt);
+
+  // 1. Perspective Ground Contact Shadow (Soft Dark Ellipse Under Paws)
+  ctx.save();
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
+  ctx.beginPath();
+  ctx.ellipse(0, renderH * 0.42 - trotY, renderW * 0.42, renderH * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // 2. Invulnerability Damage Flicker
+  if (runInvulnerableTimer > 0 && Math.floor(now / 100) % 2 === 0) {
+    ctx.globalAlpha = 0.45;
+  }
+
+  // 3. Golden Honey Shield Swirling Aura
+  if (runShieldTimer > 0) {
+    ctx.save();
+    ctx.shadowColor = '#facc15';
+    ctx.shadowBlur = 20;
+    ctx.strokeStyle = '#fde047';
+    ctx.lineWidth = 3.5 * scale;
+    ctx.beginPath();
+    ctx.arc(0, 0, renderW * 0.65, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Honeycomb Star Sparks
+    const angle = (now / 120);
+    const sparkX = Math.cos(angle) * (renderW * 0.65);
+    const sparkY = Math.sin(angle) * (renderW * 0.65);
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(sparkX, sparkY, 4.5 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 4. Draw 3D Dog Sprite (Clean Transparent Cutout)
+  const dogImg = runDog.img || runAnimalImages['dog'];
+  if (dogImg && dogImg.complete && dogImg.naturalWidth > 0) {
+    ctx.drawImage(dogImg, -renderW / 2, -renderH / 2, renderW, renderH);
+  } else {
+    // Fallback emoji
+    ctx.font = Math.floor(38 * scale) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('\uD83D\uDC36', 0, 0);
+  }
+
+  ctx.restore();
+}
+
+// 3D Obstacles (Animals & Farm Hazards)
+function draw3DObstacle(ctx, canvas, obs, now) {
+  const proj = projectRun3D(obs.lanePos, obs.z, canvas);
+  const scale = proj.scale;
+
+  ctx.save();
+  ctx.translate(proj.screenX, proj.screenY);
+
+  if (obs.type === 'animal') {
+    // Farm Animals (Bunny, Pig, Sheep, Horse, Cow, Chicken, Duck)
+    const baseSize = 68 * scale;
+    // Natural hopping/bobbing per animal
+    let hopY = 0;
+    if (obs.animalKey === 'bunny') {
+      hopY = Math.abs(Math.sin(now / 120 + obs.animPhase)) * (14 * scale);
+    } else if (obs.animalKey === 'chicken' || obs.animalKey === 'duck') {
+      hopY = Math.abs(Math.sin(now / 80 + obs.animPhase)) * (8 * scale);
+    } else {
+      hopY = Math.sin(now / 150 + obs.animPhase) * (4 * scale);
+    }
+
+    // Ground Contact Shadow (Perspective Ellipse)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, baseSize * 0.40, baseSize * 0.44, baseSize * 0.13, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3D Circular Character Token with Golden Rim
+    const img = runAnimalImages[obs.animalKey];
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, -hopY, baseSize * 0.44, 0, Math.PI * 2);
+    ctx.clip();
+    if (img && img.complete && img.naturalWidth > 0) {
+      // Zoomed on character center to eliminate card border
+      ctx.drawImage(img, -baseSize * 0.52, -baseSize * 0.52 - hopY, baseSize * 1.05, baseSize * 1.05);
+    }
+    ctx.restore();
+
+    // 3D Golden/Amber Token Rim
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, -hopY, baseSize * 0.44, 0, Math.PI * 2);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = Math.max(1.8, 2.8 * scale);
+    ctx.stroke();
+
+    // Floating Animal Emoji Indicator for instant clarity
+    const emojiChar = RUN_ANIMAL_EMOJIS[obs.animalKey] || '\uD83D\uDC2E';
+    ctx.font = Math.max(10, Math.floor(16 * scale)) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emojiChar, 0, -baseSize * 0.55 - hopY);
+    ctx.restore();
+
+  } else if (obs.type === 'hay') {
+    // 3D Hay Bale (Straw Cube with Depth Faces)
+    const bw = 64 * scale;
+    const bh = 44 * scale;
+    const depthH = 12 * scale;
+
+    // Ground Shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.30)';
+    ctx.beginPath();
+    ctx.ellipse(0, bh * 0.45, bw * 0.55, bh * 0.18, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Front Face
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
+
+    // Top Perspective Face
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.moveTo(-bw / 2, -bh / 2);
+    ctx.lineTo(-bw / 2 + 8 * scale, -bh / 2 - depthH);
+    ctx.lineTo(bw / 2 + 8 * scale, -bh / 2 - depthH);
+    ctx.lineTo(bw / 2, -bh / 2);
+    ctx.fill();
+
+    // Twine Straw Ties
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(-bw * 0.25, -bh / 2, 2.5 * scale, bh);
+    ctx.fillRect(bw * 0.25, -bh / 2, 2.5 * scale, bh);
+
+  } else if (obs.type === 'pit') {
+    // 3D Pit Hole (Deep Earth Cavity with Rim Shadow)
+    const rw = 58 * scale;
+    const rh = 34 * scale;
+    ctx.fillStyle = '#1c0d02';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rw / 2, rh / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.lineWidth = 2.5 * scale;
+    ctx.strokeStyle = '#5c2c09';
+    ctx.stroke();
+
+    // Darker Center Depth
+    ctx.fillStyle = '#0a0401';
+    ctx.beginPath();
+    ctx.ellipse(0, 2 * scale, rw * 0.38, rh * 0.38, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (obs.type === 'mud') {
+    // 3D Mud Splatter Puddle
+    const mw = 68 * scale;
+    const mh = 32 * scale;
+    ctx.fillStyle = '#451a03';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, mw / 2, mh / 2, 0.1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.ellipse(-4 * scale, 0, mw * 0.32, mh * 0.32, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (obs.type === 'fence') {
+    // 3D Caution Timber Barrier with Warning Stripes
+    const fw = 74 * scale;
+    const fh = 38 * scale;
+
+    // Ground Shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.30)';
+    ctx.fillRect(-fw / 2, fh * 0.35, fw, 4 * scale);
+
+    // Crossbars
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(-fw / 2, -fh / 2, fw, 7 * scale);
+    ctx.fillRect(-fw / 2, -fh / 2 + 11 * scale, fw, 7 * scale);
+
+    // Legs
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(-fw / 2 + 3 * scale, -fh / 2, 5 * scale, fh);
+    ctx.fillRect(fw / 2 - 8 * scale, -fh / 2, 5 * scale, fh);
+
+    // Red Hazard Stripes
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(-fw * 0.25, -fh / 2, 6 * scale, 6 * scale);
+    ctx.fillRect(fw * 0.15, -fh / 2, 6 * scale, 6 * scale);
+  }
+
+  ctx.restore();
+}
+
+// 3D Collectibles (Coins, Bones, Honey)
+function draw3DCollectible(ctx, canvas, item, now) {
+  const proj = projectRun3D(item.lanePos, item.z, canvas);
+  const scale = proj.scale;
+  const floatBob = Math.sin(now / 150 + item.animPhase) * (5 * scale);
+
+  ctx.save();
+  ctx.translate(proj.screenX, proj.screenY + floatBob);
+
+  // Ground Shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+  ctx.beginPath();
+  ctx.ellipse(0, 20 * scale - floatBob, 14 * scale, 5 * scale, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (item.type === 'bone') {
+    // Golden Bone
+    ctx.font = Math.floor(28 * scale) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#fef08a';
+    ctx.shadowBlur = 10 * scale;
+    ctx.fillText('\uD83E\uDDB4', 0, 0);
+
+  } else if (item.type === 'coin') {
+    // Spinning 3D CFC Coin
+    const spin = Math.cos(now / 140 + item.animPhase);
+    ctx.scale(spin, 1);
+    ctx.font = Math.floor(26 * scale) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#facc15';
+    ctx.shadowBlur = 12 * scale;
+    ctx.fillText('\uD83E\uDE99', 0, 0);
+
+  } else if (item.type === 'honey') {
+    // Glowing Queen Bee's Honey Jar with Sky Light Beacon
+    ctx.font = Math.floor(34 * scale) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#eab308';
+    ctx.shadowBlur = 20 * scale;
+    ctx.fillText('\uD83C\uDF6F', 0, 0);
+
+    // Light Beacon Beam
+    ctx.strokeStyle = 'rgba(253, 224, 71, 0.35)';
+    ctx.lineWidth = 12 * scale;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -180 * scale);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// 3D Finish Line Arch
+function draw3DFinishLineArch(ctx, canvas, z) {
+  const proj = projectRun3D(0, z, canvas);
+  const scale = proj.scale;
+  const roadW = proj.roadW;
+  const archH = 110 * scale;
+  const postW = 12 * scale;
+
+  ctx.save();
+  ctx.translate(proj.screenX, proj.screenY);
+
+  // Left & Right Timber Arch Pillars
+  ctx.fillStyle = '#78350f';
+  ctx.fillRect(-roadW / 2 - postW, -archH, postW, archH);
+  ctx.fillRect(roadW / 2, -archH, postW, archH);
+
+  // Crossbeam
+  const beamH = 26 * scale;
+  ctx.fillStyle = '#92400e';
+  ctx.fillRect(-roadW / 2 - postW, -archH, roadW + postW * 2, beamH);
+
+  // Checkered Finish Line Banner
+  const boxSize = 10 * scale;
+  for (let bx = -roadW / 2; bx < roadW / 2; bx += boxSize) {
+    for (let by = 0; by < 2; by++) {
+      const isBlack = (Math.floor(bx / boxSize) + by) % 2 === 0;
+      ctx.fillStyle = isBlack ? '#111827' : '#f9fafb';
+      ctx.fillRect(bx, -archH + 4 * scale + (by * boxSize), boxSize, boxSize);
+    }
+  }
+
+  // Banner Text Plate
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(-roadW / 2 + 10 * scale, -archH - 18 * scale, roadW - 20 * scale, 18 * scale);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'black ' + Math.max(9, Math.floor(11 * scale)) + 'px Fredoka, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\uD83C\uDFC1 15s SPRINT FINISH \uD83C\uDFC1', 0, -archH - 9 * scale);
+
+  ctx.restore();
+}
+
+// Overhead Mascot Queen Bee Guide
+function drawOverheadQueenBee(ctx, canvas, now) {
+  const p = projectRun3D(runBee.lanePos, 0.45, canvas);
+  const scale = 0.88;
+  const bobY = Math.sin(runBee.animPhase) * 6;
+
+  ctx.save();
+  ctx.translate(p.screenX, canvas.height * 0.12 + bobY);
+
+  // Golden Mascot Halo
+  ctx.save();
+  ctx.shadowColor = '#facc15';
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.arc(0, 0, 20 * scale, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(254, 240, 138, 0.25)';
+  ctx.fill();
+  ctx.strokeStyle = '#facc15';
+  ctx.lineWidth = 2 * scale;
+  ctx.stroke();
+
+  // Queen Bee Mascot
+  ctx.font = '28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\uD83D\uDC1D', 0, 0);
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// Speed Lines for Invincible Boost
+function drawSpeedLinesVfx(ctx, canvas, now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(254, 240, 138, 0.45)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 8; i++) {
+    const rx = (i * (w / 8) + (now * 0.6)) % w;
+    ctx.beginPath();
+    ctx.moveTo(rx, h * 0.32);
+    ctx.lineTo(rx + (rx > w / 2 ? 40 : -40), h * 0.88);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ==================== CONTROLS BINDING ====================
+let runControlsBound = false;
+function bindRunControls() {
+  if (runControlsBound) return;
+  runControlsBound = true;
+
+  // Virtual D-Pad Buttons
+  const btnLeft = document.getElementById('btnDpadLeft');
+  const btnRight = document.getElementById('btnDpadRight');
+  const btnUp = document.getElementById('btnDpadUp');
+  const btnDown = document.getElementById('btnDpadDown');
+
+  const setKey = (k, val) => { runKeys[k] = val; };
+
+  const attachBtn = (el, key) => {
+    if (!el) return;
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); setKey(key, true); }, { passive: false });
+    el.addEventListener('touchend', (e) => { e.preventDefault(); setKey(key, false); }, { passive: false });
+    el.addEventListener('mousedown', () => setKey(key, true));
+    el.addEventListener('mouseup', () => setKey(key, false));
+    el.addEventListener('mouseleave', () => setKey(key, false));
+  };
+
+  attachBtn(btnLeft, 'left');
+  attachBtn(btnRight, 'right');
+  attachBtn(btnUp, 'up');
+  attachBtn(btnDown, 'down');
+
+  // Keyboard Controls
+  window.addEventListener('keydown', (e) => {
+    if (!runGameActive) return;
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = true;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = true;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = true;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = true;
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (!runGameActive) return;
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') runKeys.left = false;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') runKeys.right = false;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') runKeys.up = false;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') runKeys.down = false;
+  });
+
+  // Canvas Touch Dragging & Smooth Steering
+  const canvas = document.getElementById('runSprintCanvas');
+  if (canvas) {
+    let isDragging = false;
+    const handleMove = (clientX) => {
+      if (!runGameActive) return;
+      const rect = canvas.getBoundingClientRect();
+      const relX = clientX - rect.left;
+      // Convert to lanePos (-0.76 to +0.76)
+      const norm = (relX / rect.width) * 2 - 1.0;
+      runDog.targetLanePos = Math.max(-0.76, Math.min(0.76, norm * 1.05));
+    };
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) {
+        isDragging = true;
+        handleMove(e.touches[0].clientX);
       }
-    }
+    }, { passive: true });
 
-    // ==================== VICTORY & GAME OVER ====================
-    function triggerRunVictory() {
-      runGameActive = false;
-      playSound('fanfare');
-      playSound('coin');
-
-      const overlay = document.getElementById('runVictoryOverlay');
-      const bStat = document.getElementById('runStatBones');
-      const cStat = document.getElementById('runStatCoins');
-      const bonusStat = document.getElementById('runStatBonus');
-
-      if (bStat) bStat.innerText = runBonesCollected;
-      if (cStat) cStat.innerText = runCoinsCollectedCount;
-      if (bonusStat) bonusStat.innerText = '+' + runBonusPoints + ' pts';
-
-      if (overlay) overlay.classList.remove('hidden');
-
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+    canvas.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches && e.touches[0]) {
+        handleMove(e.touches[0].clientX);
       }
-    }
+    }, { passive: true });
 
-    function triggerRunGameOver() {
-      runGameActive = false;
-      playSound('click');
+    canvas.addEventListener('touchend', () => { isDragging = false; });
+    canvas.addEventListener('mousedown', (e) => { isDragging = true; handleMove(e.clientX); });
+    canvas.addEventListener('mousemove', (e) => { if (isDragging) handleMove(e.clientX); });
+    canvas.addEventListener('mouseup', () => { isDragging = false; });
+  }
+}
 
-      const overlay = document.getElementById('runGameOverOverlay');
-      const timeSurvivedEl = document.getElementById('runGameOverTime');
-      const elapsed = Math.min((Date.now() - runGameStartTime) / 1000, RUN_GAME_DURATION);
+// ==================== VICTORY & GAME OVER ====================
+function triggerRunVictory() {
+  runGameActive = false;
+  playSound('fanfare');
+  playSound('coin');
 
-      if (timeSurvivedEl) timeSurvivedEl.innerText = elapsed.toFixed(1) + 's';
-      if (overlay) overlay.classList.remove('hidden');
+  const overlay = document.getElementById('runVictoryOverlay');
+  const bStat = document.getElementById('runStatBones');
+  const cStat = document.getElementById('runStatCoins');
+  const bonusStat = document.getElementById('runStatBonus');
 
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
-      }
-    }
+  if (bStat) bStat.innerText = runBonesCollected;
+  if (cStat) cStat.innerText = runCoinsCollectedCount;
+  if (bonusStat) bonusStat.innerText = '+' + runBonusPoints + ' pts';
 
-    function claimRunSprintVictory() {
-      playSound('coin');
-      playSound('fanfare');
+  if (overlay) overlay.classList.remove('hidden');
 
-      // 50 CFC + 500 Farm points + extra collected points
-      const wonHfc = 50;
-      const wonPoints = 500 + runBonusPoints;
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+  }
+}
 
-      hfcBalance += wonHfc;
-      points += wonPoints;
+function triggerRunGameOver() {
+  runGameActive = false;
+  playSound('click');
 
-      updateDisplays();
-      syncWalletView();
-      updatePvpButtonsUI();
+  const overlay = document.getElementById('runGameOverOverlay');
+  const timeSurvivedEl = document.getElementById('runGameOverTime');
+  const elapsed = Math.min((Date.now() - runGameStartTime) / 1000, RUN_GAME_DURATION);
 
-      exitRunSprintGame();
-      showWalletToast('ðŸŽ‰ Claimed +' + wonHfc + ' CFC & +' + wonPoints + ' Points from RUN Sprint!');
-    }
+  if (timeSurvivedEl) timeSurvivedEl.innerText = elapsed.toFixed(1) + 's';
+  if (overlay) overlay.classList.remove('hidden');
 
-    function retryRunSprintGame() {
-      exitRunSprintGame();
-      setTimeout(() => {
-        watchBattleEntryAd('run');
-      }, 300);
-    }
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
+  }
+}
 
-    function exitRunSprintGame() {
-      runGameActive = false;
-      if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
-      const modal = document.getElementById('runGameModal');
-      if (modal) modal.classList.add('hidden');
-    }
+function claimRunSprintVictory() {
+  playSound('coin');
+  playSound('fanfare');
+
+  // +50 CFC ($1.40) + 500 Farm points + bonus points
+  const wonHfc = 50;
+  const wonPoints = 500 + runBonusPoints;
+
+  hfcBalance += wonHfc;
+  points += wonPoints;
+
+  updateDisplays();
+  syncWalletView();
+  updatePvpButtonsUI();
+
+  exitRunSprintGame();
+  showWalletToast('&#127881; Claimed +' + wonHfc + ' CFC & +' + wonPoints + ' Points from RUN Sprint!');
+}
+
+function retryRunSprintGame() {
+  exitRunSprintGame();
+  setTimeout(() => {
+    watchBattleEntryAd('run');
+  }, 300);
+}
+
+function exitRunSprintGame() {
+  runGameActive = false;
+  if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
+  const modal = document.getElementById('runGameModal');
+  if (modal) modal.classList.add('hidden');
+}
+
 
 </script>
 </body>
