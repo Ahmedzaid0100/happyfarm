@@ -2632,14 +2632,15 @@
         p1Avatar.innerHTML = '<img src="' + tgUser.photo_url + '" class="w-full h-full rounded-full object-cover" />';
       }
 
-      // Auto-load matching 3D battle video
+      // Prepare matching 3D battle video (Paused initially - plays only when player taps START FIGHT)
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         videoEl.src = 'assets/videos/battle_' + mode + 'vs' + mode + '.mp4';
         videoEl.muted = false;
         videoEl.volume = 1.0;
         videoEl.load();
-        videoEl.play().catch(e => {});
+        videoEl.pause();
+        videoEl.currentTime = 0;
       }
 
       pauseBgmForBattle();
@@ -2669,9 +2670,21 @@
     function startLiveBattleRound() {
       if (isBattleInProgress) return;
       isBattleInProgress = true;
-      // Ensure battle video audio is playing with sound
+      // Start 3D battle video on START FIGHT click
       const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) { videoEl.muted = false; videoEl.volume = 1.0; if (videoEl.paused) videoEl.play().catch(()=>{}); }
+      if (videoEl) {
+        videoEl.muted = false;
+        videoEl.volume = 1.0;
+        videoEl.currentTime = 0;
+        const p = videoEl.play();
+        if (p !== undefined) {
+          p.catch(e => {
+            console.warn('Playback error, falling back to muted:', e);
+            videoEl.muted = true;
+            videoEl.play().catch(()=>{});
+          });
+        }
+      }
 
       const fightOverlay = document.getElementById('battleFightOverlay');
       if (fightOverlay) fightOverlay.classList.add('hidden');
