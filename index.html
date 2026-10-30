@@ -473,14 +473,14 @@
           </button>
 
           <!-- 4. RUN Battle Button -->
-          <button onclick="openBattleRunMode()" class="btn-3d-red rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-rose-300/70 relative group animate-pulse cursor-pointer">
-            <span id="pvpBadge-run" class="bg-rose-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full">
-              &#9889; Sprint
+          <button onclick="openBattleRunMode()" class="btn-3d-red rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-rose-300/70 relative group cursor-pointer">
+            <span id="pvpBadge-run" class="bg-red-950/90 text-red-200 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full">
+              &#128274; Lv.25 / Dog
             </span>
             <div class="text-lg my-0.5 group-hover:scale-110 transition-transform">&#127939;</div>
-            <div class="font-black text-[9.5px] text-white leading-tight tracking-wider uppercase">RUN</div>
+            <div class="font-black text-[9.5px] text-yellow-300 leading-tight tracking-wider uppercase">RUN</div>
             <div class="bg-rose-950/90 rounded px-1 py-0.5 text-[6.5px] font-bold text-yellow-300 w-full text-center leading-tight truncate">
-              Rush &#9889;
+              +50 CFC
             </div>
           </button>
 
@@ -2286,6 +2286,24 @@
           b7.className = 'bg-red-950/80 text-red-200 text-[8px] font-black px-1.5 py-0.2 rounded-md';
         }
       }
+
+      const bRun = document.getElementById('pvpBadge-run');
+      if (bRun) {
+        const isLevelUnlocked = (userLevel >= 25);
+        const isDogUnlocked = (typeof isDogVipActive !== 'undefined' && isDogVipActive);
+        const isUnlocked = isLevelUnlocked || isDogUnlocked;
+
+        if (!isUnlocked) {
+          bRun.innerHTML = '&#128274; Lv.25 / Dog';
+          bRun.className = 'bg-red-950/90 text-red-200 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
+        } else if (count < 7) {
+          bRun.innerHTML = '&#128274; ' + count + '/7 Farms';
+          bRun.className = 'bg-amber-950/90 text-yellow-200 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
+        } else {
+          bRun.innerHTML = '&#127939; 1 Ad to RUN';
+          bRun.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full shadow';
+        }
+      }
     }
 
     function openBattlePrep(mode) {
@@ -2462,6 +2480,80 @@
               '</button>';
           }
         }
+      } else if (mode === 'run') {
+        if (icon) icon.innerHTML = '&#127939;&#9889;';
+        if (prize) prize.innerHTML = '&#128142; Win +50 CFC ($1.40) Direct Coins + 500 Pts';
+
+        const isLevelUnlocked = (userLevel >= 25);
+        const isDogUnlocked = (typeof isDogVipActive !== 'undefined' && isDogVipActive);
+        const isUnlocked = isLevelUnlocked || isDogUnlocked;
+
+        if (!isUnlocked) {
+          if (title) title.innerText = 'RUN Sprint Arena (Locked)';
+          if (sub) sub.innerText = 'Reach Level 25 OR Buy VIP Dog Farm to unlock RUN mode!';
+          if (stepsContainer) {
+            stepsContainer.innerHTML = 
+              '<div class="w-full bg-black/60 rounded-xl p-2.5 border border-red-800 text-center space-y-2">' +
+                '<div class="flex justify-between text-[11px] text-amber-300 font-bold">' +
+                  '<span>Level Requirement:</span>' +
+                  '<span>Lv. ' + userLevel + ' / 25</span>' +
+                '</div>' +
+                '<div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-white/20">' +
+                  '<div class="bg-gradient-to-r from-red-500 to-rose-400 h-full transition-all" style="width:' + Math.min((userLevel / 25) * 100, 100) + '%"></div>' +
+                '</div>' +
+                '<p class="text-[10px] text-red-200">Reach Level 25 by upgrading your Bee Farm or buy VIP Dog Farm &#128054;</p>' +
+              '</div>';
+          }
+          if (actionContainer) actionContainer.classList.add('hidden');
+          if (vipContainer) {
+            vipContainer.classList.remove('hidden');
+            vipContainer.innerHTML = 
+              '<p class="text-xs text-amber-200 leading-relaxed font-semibold">&#128081; Want immediate access? Buying the VIP Dog Farm unlocks RUN mode instantly without waiting for Level 25!</p>' +
+              '<button onclick="closeModal(\'battlePrepModal\'); openDogVipModal();" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce">' +
+                '<span>&#128054;</span> Buy Dog Farm (3 TON)' +
+              '</button>';
+          }
+        } else if (count < 7) {
+          if (title) title.innerText = 'RUN Sprint Arena (7 Farms Required)';
+          if (sub) sub.innerText = 'Unlocked! But you must watch ads on all 7 animal farms in your garden before entering!';
+          if (stepsContainer) {
+            stepsContainer.innerHTML = 
+              '<div class="w-full bg-black/60 rounded-xl p-2.5 border border-amber-800 text-center">' +
+                '<div class="flex justify-between text-[11px] text-amber-300 font-bold mb-1.5">' +
+                  '<span>Active Animal Farms:</span>' +
+                  '<span>' + count + ' / 7</span>' +
+                '</div>' +
+                '<div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-white/20">' +
+                  '<div class="bg-gradient-to-r from-amber-400 to-yellow-500 h-full transition-all" style="width:' + Math.min((count / 7) * 100, 100) + '%"></div>' +
+                '</div>' +
+                '<p class="text-[10px] text-amber-200/80 mt-1.5">Watch ads to activate all 7 animal farms to qualify for RUN Sprint.</p>' +
+              '</div>';
+          }
+          if (actionContainer) {
+            actionContainer.classList.remove('hidden');
+            actionContainer.innerHTML = 
+              '<button onclick="closeModal(\'battlePrepModal\'); window.scrollTo({top: 400, behavior: \'smooth\'});" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all">' +
+                '<span>&#127806;</span> Go Activate Animal Farms (' + count + '/7)' +
+              '</button>';
+          }
+        } else {
+          if (title) title.innerText = 'RUN Speed Sprint (Unlocked!)';
+          if (sub) sub.innerText = 'Level & 7 Farms qualifications met! Watch 1 Ad to enter the RUN Sprint!';
+          if (stepsContainer) {
+            stepsContainer.innerHTML = 
+              '<div class="flex flex-col items-center justify-center gap-1 py-1 text-emerald-300 text-xs font-black">' +
+                '<span>&#9989; Level/VIP Qualified &bull; 7 Farms Active</span>' +
+                '<span class="text-yellow-300 text-[11px]">&#128142; Prize: +50 CFC ($1.40) + 500 Pts</span>' +
+              '</div>';
+          }
+          if (actionContainer) {
+            actionContainer.classList.remove('hidden');
+            actionContainer.innerHTML = 
+              '<button onclick="watchBattleEntryAd(\'run\')" class="btn-3d-red w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce">' +
+                '<span>&#127939;&#9889;</span> Watch 1 Ad & Enter RUN Sprint!' +
+              '</button>';
+          }
+        }
       }
 
       modal.classList.remove('hidden');
@@ -2476,7 +2568,7 @@
       const desc = document.getElementById('adDescription');
       const countdown = document.getElementById('adCountdown');
       
-      if (desc) desc.innerText = 'Loading ' + mode + ' vs ' + mode + ' Battle Arena (Watching 1 Ad)...';
+      if (desc) desc.innerText = (mode === 'run' ? 'Loading RUN Speed Sprint' : 'Loading ' + mode + ' vs ' + mode + ' Battle Arena') + ' (Watching 1 Ad)...';
       if (modal) modal.classList.remove('hidden');
       if (bar) bar.style.width = '0%';
 
@@ -2531,7 +2623,7 @@
       const combined = Array.from(new Set([...activeList, ...defaultOrder]));
       
       let selectedKeys = [];
-      if (mode === 7) {
+      if (mode === 7 || mode === 'run') {
         selectedKeys = ['dog', 'cows', 'chicken', 'duck', 'bunny', 'sheep', 'horse'];
       } else {
         selectedKeys = combined.slice(0, mode);
@@ -2555,7 +2647,8 @@
       const enemyPresets = {
         3: ['dog', 'sheep', 'pig'],
         5: ['dog', 'sheep', 'pig', 'horse', 'bee'],
-        7: ['dog', 'sheep', 'pig', 'horse', 'bee', 'cow', 'duck']
+        7: ['dog', 'sheep', 'pig', 'horse', 'bee', 'cow', 'duck'],
+        'run': ['dog', 'sheep', 'pig', 'horse', 'bee', 'cow', 'duck']
       };
       const eKeys = enemyPresets[mode] || enemyPresets[3];
       const eSquad = eKeys.map((key, idx) => {
@@ -2635,10 +2728,10 @@
       if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
       // Mode badge removed per design
-      if (startTitle) startTitle.innerText = mode + ' vs ' + mode + ' Animal Battle';
+      if (startTitle) startTitle.innerHTML = (mode === 'run') ? '&#127939;&#9889; RUN Sprint Battle' : (mode + ' vs ' + mode + ' Animal Battle');
       
       let rewardHfcText = mode === 3 ? '+10 CFC' : (mode === 5 ? '+20 CFC' : '+50 CFC 💎');
-      if (startDesc) startDesc.innerText = 'Lead your ' + mode + ' farm animals to victory and claim ' + rewardHfcText + '!';
+      if (startDesc) startDesc.innerText = (mode === 'run') ? ('Unleash your full farm squad in high-speed sprint battle and claim ' + rewardHfcText + '!') : ('Lead your ' + mode + ' farm animals to victory and claim ' + rewardHfcText + '!');
 
       renderSquadOnField(enemySquad, 'enemySquadContainer', true, mode);
       renderSquadOnField(playerSquad, 'playerSquadContainer', false, mode);
@@ -2657,7 +2750,7 @@
       // Prepare matching 3D battle video (Paused initially - plays only when player taps START FIGHT)
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
-        videoEl.src = 'assets/videos/battle_' + mode + 'vs' + mode + '.mp4';
+        videoEl.src = (mode === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + mode + 'vs' + mode + '.mp4');
         videoEl.muted = false;
         videoEl.volume = 1.0;
         videoEl.load();
@@ -2891,8 +2984,8 @@
       const subReward = document.getElementById('battleWinSubReward');
 
       const mode = currentBattleMode;
-      const hfcPrize = mode === 3 ? 10 : (mode === 5 ? 20 : 50);
-      const ptsPrize = mode === 3 ? 100 : (mode === 5 ? 250 : 500);
+      const hfcPrize = (mode === 7 || mode === 'run') ? 50 : (mode === 5 ? 20 : 10);
+      const ptsPrize = (mode === 7 || mode === 'run') ? 500 : (mode === 5 ? 250 : 100);
 
       if (rewardText) rewardText.innerText = '+' + hfcPrize + ' CFC 🪙 ($' + (hfcPrize * 0.028).toFixed(2) + ')';
       if (subReward) subReward.innerText = '+' + ptsPrize + ' Farm Points';
@@ -2909,8 +3002,8 @@
       playSound('fanfare');
 
       const mode = currentBattleMode;
-      const hfcPrize = mode === 3 ? 10 : (mode === 5 ? 20 : 50);
-      const ptsPrize = mode === 3 ? 100 : (mode === 5 ? 250 : 500);
+      const hfcPrize = (mode === 7 || mode === 'run') ? 50 : (mode === 5 ? 20 : 10);
+      const ptsPrize = (mode === 7 || mode === 'run') ? 500 : (mode === 5 ? 250 : 100);
 
       hfcBalance += hfcPrize;
       points += ptsPrize;
@@ -2920,7 +3013,7 @@
       updatePvpButtonsUI();
 
       closeBattleArena();
-      showWalletToast('🎉 Claimed +' + hfcPrize + ' CFC from ' + mode + 'v' + mode + ' Battle!');
+      showWalletToast('🎉 Claimed +' + hfcPrize + ' CFC from ' + (mode === 'run' ? 'RUN Sprint' : mode + 'v' + mode) + ' Battle!');
     }
 
     function closeBattleArena() {
@@ -3052,6 +3145,7 @@
       if (statTotalPoints) statTotalPoints.innerText = (1248 + points).toLocaleString();
       const statHFC = document.getElementById('statHoneyCoins');
       if (statHFC) statHFC.innerText = hfcBalance.toLocaleString() + " CFC";
+      updatePvpButtonsUI();
 
       const profProgressCollected = document.getElementById('profProgressCollected');
       if (profProgressCollected) profProgressCollected.innerText = (8940 + points).toLocaleString();
@@ -3256,13 +3350,8 @@
 
     // ==================== BATTLE RUN MODE ====================
     function openBattleRunMode() {
-      playSound('click');
-      showWalletToast('ðŸƒ SPEED RUN MODE: Animals rushing to battle! Starting 3 vs 3 Speed Clash...');
-      setTimeout(() => {
-        openBattlePrep(3);
-      }, 350);
+      openBattlePrep('run');
     }
-
     // Offline Mining Calculation
     function calculateOfflineBeeMining() {
       const now = Date.now();
