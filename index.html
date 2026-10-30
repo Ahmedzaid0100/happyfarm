@@ -4691,6 +4691,9 @@
       if (urlParams.get('testRun')) {
         setTimeout(() => { startRunSprintGame(); }, 300);
       }
+      if (urlParams.get('testRun')) {
+        setTimeout(() => { startRunSprintGame(); }, 300);
+      }
       if (urlParams.get('testRunVictory')) {
         setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
       }
@@ -4755,8 +4758,8 @@ const runDog = {
   targetLanePos: 0.0,
   z: 0.08,            // Foreground depth (0.04 to 0.14 adjustable with Up/Down)
   targetZ: 0.08,
-  baseW: 82,
-  baseH: 82,
+  baseW: 84,
+  baseH: 84,
   tilt: 0,            // Banking angle when steering
   trotPhase: 0,
   dustTimer: 0,
@@ -5254,6 +5257,140 @@ function spawnRunDustParticle(x, y) {
   });
 }
 
+// ==================== FARM WINDMILL & SIDELINE ANIMALS ====================
+function drawFarmWindmill(ctx, canvas, now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const horizonY = h * 0.28;
+  const millX = w * 0.16;
+  const millY = horizonY - 14;
+
+  ctx.save();
+  // Windmill Stone / Timber Tower
+  ctx.fillStyle = '#b45309';
+  ctx.beginPath();
+  ctx.moveTo(millX - 10, millY + 16);
+  ctx.lineTo(millX - 7, millY - 18);
+  ctx.lineTo(millX + 7, millY - 18);
+  ctx.lineTo(millX + 10, millY + 16);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#78350f';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Thatched Roof
+  ctx.fillStyle = '#78350f';
+  ctx.beginPath();
+  ctx.moveTo(millX - 9, millY - 18);
+  ctx.lineTo(millX, millY - 28);
+  ctx.lineTo(millX + 9, millY - 18);
+  ctx.closePath();
+  ctx.fill();
+
+  // Arched Door & Window
+  ctx.fillStyle = '#451a03';
+  ctx.fillRect(millX - 3, millY + 6, 6, 10);
+  ctx.fillStyle = '#fef08a';
+  ctx.fillRect(millX - 3, millY - 10, 6, 6);
+
+  // Rotating 4 Lattice Blades
+  const bladeAngle = (now / 700) % (Math.PI * 2);
+  ctx.translate(millX, millY - 18);
+  ctx.rotate(bladeAngle);
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+
+  for (let b = 0; b < 4; b++) {
+    ctx.rotate(Math.PI / 2);
+    // Blade Spar
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -26);
+    ctx.stroke();
+    // Lattice Sail
+    ctx.fillRect(2, -25, 7, 20);
+    ctx.strokeRect(2, -25, 7, 20);
+  }
+
+  // Hub Pin
+  ctx.fillStyle = '#eab308';
+  ctx.beginPath();
+  ctx.arc(0, 0, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawSidelineCheeringAnimals(ctx, canvas, now) {
+  // Cheering spectator animals stationed on the grass borders of the race
+  const cheeringLeft = [
+    { key: 'cows', emoji: '\uD83D\uDC04', lanePos: -1.35, z: 0.38, size: 48, animOffset: 0 },
+    { key: 'sheep', emoji: '\uD83D\uDC11', lanePos: -1.28, z: 0.20, size: 42, animOffset: 1.5 },
+    { key: 'bunny', emoji: '\uD83D\uDC30', lanePos: -1.24, z: 0.09, size: 38, animOffset: 2.8 }
+  ];
+
+  const cheeringRight = [
+    { key: 'horse', emoji: '\uD83D\uDC0E', lanePos: 1.35, z: 0.44, size: 50, animOffset: 0.8 },
+    { key: 'pig', emoji: '\uD83D\uDC37', lanePos: 1.28, z: 0.24, size: 44, animOffset: 2.1 },
+    { key: 'chicken', emoji: '\uD83D\uDC14', lanePos: 1.22, z: 0.11, size: 36, animOffset: 3.5 }
+  ];
+
+  const allSpectators = cheeringLeft.concat(cheeringRight);
+
+  allSpectators.forEach(spec => {
+    const proj = projectRun3D(spec.lanePos, spec.z, canvas);
+    const scale = proj.scale;
+    const renderSize = spec.size * scale;
+    const cheerBob = Math.sin(now / 160 + spec.animOffset) * (4 * scale);
+
+    ctx.save();
+    ctx.translate(proj.screenX, proj.screenY);
+
+    // Ground Shadow on Grass
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.30)';
+    ctx.beginPath();
+    ctx.ellipse(0, renderSize * 0.42, renderSize * 0.45, renderSize * 0.14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3D Circular Cheering Badge
+    const img = runAnimalImages[spec.key];
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, -cheerBob, renderSize * 0.44, 0, Math.PI * 2);
+    ctx.clip();
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, -renderSize * 0.52, -renderSize * 0.52 - cheerBob, renderSize * 1.05, renderSize * 1.05);
+    }
+    ctx.restore();
+
+    // Golden Rim
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, -cheerBob, renderSize * 0.44, 0, Math.PI * 2);
+    ctx.strokeStyle = '#eab308';
+    ctx.lineWidth = Math.max(1.5, 2.5 * scale);
+    ctx.stroke();
+
+    // Floating Cheering Emoji / Star
+    ctx.font = Math.max(9, Math.floor(13 * scale)) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(spec.emoji, 0, -renderSize * 0.55 - cheerBob);
+
+    // Little Cheering Sparkle
+    if (Math.sin(now / 200 + spec.animOffset) > 0.4) {
+      ctx.font = Math.max(8, Math.floor(11 * scale)) + 'px sans-serif';
+      ctx.fillText('\u2728', (spec.lanePos < 0 ? 12 : -12) * scale, -renderSize * 0.7 - cheerBob);
+    }
+    ctx.restore();
+
+    ctx.restore();
+  });
+}
+
 // ==================== 3D RENDERING ====================
 function drawRun3DScene(ctx, canvas, now) {
   const w = canvas.width;
@@ -5304,7 +5441,10 @@ function drawRun3DScene(ctx, canvas, now) {
   ctx.lineTo(w * 0.18 + 17, horizonY - 12);
   ctx.fill();
 
-  // 2. 3D ROAD SEGMENTS WITH PERSPECTIVE SLICES
+  // 1.5 DRAW FARM WINDMILL ON HILLSIDE
+  drawFarmWindmill(ctx, canvas, now);
+
+  // 2. RUSTIC FARM WOODEN BOARDWALK (PLANK ROAD - NO STADIUM LINES)
   const numSlices = 24;
   const sliceZStep = 1.0 / numSlices;
   const scrollOffset = (runWorldDistance * 0.35) % sliceZStep;
@@ -5313,7 +5453,7 @@ function drawRun3DScene(ctx, canvas, now) {
   ctx.fillStyle = '#3f6212';
   ctx.fillRect(0, horizonY, w, h - horizonY);
 
-  // Render road slices from horizon (z=1) down to camera (z=0)
+  // Render wooden plank slices from horizon (z=1) down to camera (z=0)
   for (let s = numSlices; s >= 0; s--) {
     const zFar = Math.max(0, Math.min(1.0, (s * sliceZStep) + scrollOffset));
     const zNear = Math.max(0, Math.min(1.0, ((s - 1) * sliceZStep) + scrollOffset));
@@ -5324,12 +5464,12 @@ function drawRun3DScene(ctx, canvas, now) {
 
     const isEven = (s % 2 === 0);
 
-    // Lush Shoulder Grass (Alternating tones)
+    // Lush Shoulder Grass with Wildflowers
     ctx.fillStyle = isEven ? '#4d7c0f' : '#3f6212';
     ctx.fillRect(0, pFar.screenY, w, pNear.screenY - pFar.screenY + 1);
 
-    // Dirt Road Bed
-    ctx.fillStyle = isEven ? '#c89552' : '#bc8441';
+    // Rustic Wood Planks (Alternating rich warm timber tones)
+    ctx.fillStyle = isEven ? '#a16207' : '#854d0e';
     ctx.beginPath();
     ctx.moveTo(pFar.screenX - pFar.roadW / 2, pFar.screenY);
     ctx.lineTo(pFar.screenX + pFar.roadW / 2, pFar.screenY);
@@ -5337,18 +5477,22 @@ function drawRun3DScene(ctx, canvas, now) {
     ctx.lineTo(pNear.screenX - pNear.roadW / 2, pNear.screenY + 1);
     ctx.fill();
 
-    // Road Edge Curbs (Rustic Timber / Red-White Curbs)
-    const curbWFar = 6 * pFar.scale;
-    const curbWNear = 6 * pNear.scale;
-    ctx.fillStyle = isEven ? '#ef4444' : '#f9fafb';
-    // Left Curb
+    // Dark Horizontal Wooden Plank Gap / Seam
+    ctx.fillStyle = '#3d1e05';
+    ctx.fillRect(pFar.screenX - pFar.roadW / 2, pFar.screenY, pFar.roadW, Math.max(1, 1.8 * pFar.scale));
+
+    // Solid Rustic Timber Log Curbs on Left & Right
+    const curbWFar = 8 * pFar.scale;
+    const curbWNear = 8 * pNear.scale;
+    ctx.fillStyle = '#5c2e0b';
+    // Left Timber Log
     ctx.beginPath();
     ctx.moveTo(pFar.screenX - pFar.roadW / 2 - curbWFar, pFar.screenY);
     ctx.lineTo(pFar.screenX - pFar.roadW / 2, pFar.screenY);
     ctx.lineTo(pNear.screenX - pNear.roadW / 2, pNear.screenY + 1);
     ctx.lineTo(pNear.screenX - pNear.roadW / 2 - curbWNear, pNear.screenY + 1);
     ctx.fill();
-    // Right Curb
+    // Right Timber Log
     ctx.beginPath();
     ctx.moveTo(pFar.screenX + pFar.roadW / 2, pFar.screenY);
     ctx.lineTo(pFar.screenX + pFar.roadW / 2 + curbWFar, pFar.screenY);
@@ -5356,27 +5500,28 @@ function drawRun3DScene(ctx, canvas, now) {
     ctx.lineTo(pNear.screenX + pNear.roadW / 2, pNear.screenY + 1);
     ctx.fill();
 
-    // Dashed White Lane Divider Lines (-0.33 and +0.33)
-    if (isEven) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.70)';
-      [-0.33, 0.33].forEach(laneX => {
-        const pLaneFar = projectRun3D(laneX, zFar, canvas);
-        const pLaneNear = projectRun3D(laneX, zNear, canvas);
-        const dashW = Math.max(1.5, 3 * pNear.scale);
-        ctx.beginPath();
-        ctx.moveTo(pLaneFar.screenX - dashW / 2, pLaneFar.screenY);
-        ctx.lineTo(pLaneFar.screenX + dashW / 2, pLaneFar.screenY);
-        ctx.lineTo(pLaneNear.screenX + dashW / 2, pLaneNear.screenY);
-        ctx.lineTo(pLaneNear.screenX - dashW / 2, pLaneNear.screenY);
-        ctx.fill();
-      });
-    }
+    // Natural Rustic Wood Seams for 3-Lane Guides (Subtle dark timber joints, NO white lines!)
+    [-0.33, 0.33].forEach(laneX => {
+      const pLaneFar = projectRun3D(laneX, zFar, canvas);
+      const pLaneNear = projectRun3D(laneX, zNear, canvas);
+      const seamW = Math.max(1, 2 * pNear.scale);
+      ctx.fillStyle = 'rgba(61, 30, 5, 0.45)';
+      ctx.beginPath();
+      ctx.moveTo(pLaneFar.screenX - seamW / 2, pLaneFar.screenY);
+      ctx.lineTo(pLaneFar.screenX + seamW / 2, pLaneFar.screenY);
+      ctx.lineTo(pLaneNear.screenX + seamW / 2, pLaneNear.screenY);
+      ctx.lineTo(pLaneNear.screenX - seamW / 2, pLaneNear.screenY);
+      ctx.fill();
+    });
 
-    // Roadside Wooden Fence Posts (Every 3 slices)
+    // Roadside Rustic Wooden Fence Posts
     if (s % 3 === 0) {
       drawRoadsideFences(ctx, pFar, pNear);
     }
   }
+
+  // 2.5 DRAW SIDELINE CHEERING FARM ANIMALS
+  drawSidelineCheeringAnimals(ctx, canvas, now);
 
   // 3. DEPTH-SORT ALL 3D OBJECTS (Desc: Horizon z=1.0 down to Camera z=0.0)
   const renderList = [];
