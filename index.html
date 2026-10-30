@@ -268,9 +268,7 @@
           <!-- 3. Right: BGM Music Toggle & VIP Dog Badge -->
           <div class="flex items-center gap-1 justify-end shrink-0">
             <!-- Calm Music (BGM) Toggle Button -->
-            <button id="bgmToggleBtn" onclick="toggleBgm()" class="w-7 h-7 rounded-full bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 border border-yellow-400 shadow-sm flex items-center justify-center text-xs active:scale-90 transition-transform cursor-pointer" title="Calm Farm Music">
-              <span id="bgmIcon">&#127925;</span>
-            </button>
+            
             <!-- VIP Dog Badge -->
             <div onclick="triggerVipFeature()" class="bg-gradient-to-b from-blue-600 via-indigo-700 to-indigo-900 text-white px-2 py-1 rounded-xl border border-yellow-300 shadow cursor-pointer active:scale-95 flex flex-col items-center leading-none">
               <div class="flex items-center gap-1">
@@ -2083,113 +2081,13 @@
   <script>
     // Web Audio Synthesizer (Zero External Dependencies)
     let audioCtx = null;
-    let bgmEnabled = true;
-    let bgmLoopTimer = null;
-    let bgmStep = 0;
-    let isBgmPausedForBattle = false;
-
-    // Peaceful Countryside Pentatonic Score (Warm Wooden Kalimba / Acoustic Harp)
-    // Harmony: Fmaj7 -> Cmaj -> Am7 -> Gsus4 -> Dm7 -> C
-    const calmFarmMelody = [
-      { bass: 174.61, melody: 440.00 }, // F3 + A4 (Peaceful morning breeze)
-      { bass: null,   melody: 523.25 }, // C5
-      { bass: null,   melody: 659.25 }, // E5 (Sweet soft chime)
-      { bass: null,   melody: 523.25 }, // C5
-      { bass: 130.81, melody: 392.00 }, // C3 + G4 (Sunny fields & flowers)
-      { bass: null,   melody: 523.25 }, // C5
-      { bass: null,   melody: 587.33 }, // D5
-      { bass: null,   melody: 392.00 }, // G4
-      { bass: 110.00, melody: 329.63 }, // A2 + E4 (Happy grazing animals)
-      { bass: null,   melody: 440.00 }, // A4
-      { bass: null,   melody: 523.25 }, // C5
-      { bass: null,   melody: 440.00 }, // A4
-      { bass: 98.00,  melody: 293.66 }, // G2 + D4 (Warm gentle sunset)
-      { bass: null,   melody: 392.00 }, // G4
-      { bass: null,   melody: 493.88 }, // B4
-      { bass: 130.81, melody: 523.25 }  // C3 + C5 (Cozy farmhouse resolution)
-    ];
-
-    function playCalmNote(freq, isBass) {
-      if (!bgmEnabled || isBgmPausedForBattle) return;
-      try {
-        const ctx = getAudioContext();
-        if (ctx.state === "suspended") return;
-
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-
-        // Warm acoustic low-pass filter (wooden kalimba / acoustic harp timbre)
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(isBass ? 420 : 1150, now);
-
-        osc.type = isBass ? "triangle" : "sine";
-        osc.frequency.setValueAtTime(freq, now);
-
-        const dur = isBass ? 1.4 : 1.1;
-        const maxGain = isBass ? 0.045 : 0.038;
-        gain.gain.setValueAtTime(0.0005, now);
-        gain.gain.linearRampToValueAtTime(maxGain, now + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + dur);
-      } catch(e) {}
-    }
-
-    function tickCalmBgm() {
-      if (!bgmEnabled || isBgmPausedForBattle) return;
-      const step = calmFarmMelody[bgmStep];
-      if (step.bass) playCalmNote(step.bass, true);
-      if (step.melody) playCalmNote(step.melody, false);
-      bgmStep = (bgmStep + 1) % calmFarmMelody.length;
-    }
-
-    function startCalmBgm() {
-      if (bgmLoopTimer) clearInterval(bgmLoopTimer);
-      bgmLoopTimer = setInterval(tickCalmBgm, 700);
-    }
-
-    function toggleBgm() {
-      bgmEnabled = !bgmEnabled;
-      const ctx = getAudioContext();
-      if (ctx && ctx.state === "suspended") {
-        ctx.resume().catch(function(){});
-      }
-      const icon = document.getElementById("bgmIcon");
-      const btn = document.getElementById("bgmToggleBtn");
-      if (icon) icon.innerHTML = bgmEnabled ? "&#127925;" : "&#128263;";
-      if (btn) {
-        if (bgmEnabled) {
-          btn.classList.remove("opacity-60", "grayscale");
-          btn.classList.add("border-yellow-400");
-        } else {
-          btn.classList.add("opacity-60", "grayscale");
-          btn.classList.remove("border-yellow-400");
-        }
-      }
-      const settingsBtn = document.getElementById("settingsBgmBtn");
-      if (settingsBtn) {
-        settingsBtn.innerHTML = bgmEnabled ? "Calm Music ON &#127925;" : "Muted &#128263;";
-        settingsBtn.className = bgmEnabled ? "px-2.5 py-1 rounded-md bg-emerald-600 font-bold text-[10px]" : "px-2.5 py-1 rounded-md bg-slate-600 font-bold text-[10px]";
-      }
-      if (bgmEnabled) {
-        playSound("coin");
-      }
-    }
-
-    function pauseBgmForBattle() {
-      isBgmPausedForBattle = true;
-    }
-
-    function resumeBgmAfterBattle() {
-      isBgmPausedForBattle = false;
-    }
+    let bgmEnabled = false; // BGM music completely removed per user request
+    function playCalmNote() {}
+    function tickCalmBgm() {}
+    function startCalmBgm() {}
+    function toggleBgm() {}
+    function pauseBgmForBattle() {}
+    function resumeBgmAfterBattle() {}
 
     // Auto-resume AudioContext on first user interaction anywhere
     function unlockAudioOnGesture() {
@@ -4485,7 +4383,7 @@
     calculateOfflineBeeMining();
     loadPlayerDataFromCloud();
     updateDisplays();
-    startCalmBgm();
+    // startCalmBgm(); // Removed completely
     updatePvpButtonsUI();
     if (document.getElementById('walletView')) document.getElementById('walletView').style.display = 'none';
     if (document.getElementById('tasksView')) document.getElementById('tasksView').style.display = 'none';
