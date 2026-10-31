@@ -1794,7 +1794,7 @@
 
 
           <!-- Close Button (Right) -->
-          <button onclick="closeBattleArena()" class="bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 flex items-center justify-center font-black border border-white/30 text-sm shadow active:scale-90 transition-transform">✕</button>
+          <button type="button" onclick="closeBattleArena()" ontouchend="closeBattleArena()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50">&#10005;</button>
         </div>
 
         <!-- ==================== ENEMY SQUAD ROW (ON GREEN TOP) ==================== -->
@@ -2412,16 +2412,7 @@
     }
 
     function openBattlePrep(mode) {
-      if (mode === 'run') {
-        openBattleRunMode();
-        return;
-      }
       playSound('click');
-      if (isBattleOnCooldown(mode)) {
-        showWalletToast(`â³ ${mode}vs${mode} is on cooldown! Available in ${formatTime(getBattleCooldownRemaining(mode))}`);
-        return;
-      }
-
       currentBattleMode = mode;
       const modal = document.getElementById('battlePrepModal');
       const icon = document.getElementById('battlePrepIcon');
@@ -2434,38 +2425,31 @@
 
       if (vipContainer) vipContainer.classList.add('hidden');
 
-      const pts = (mode === 7) ? 300 : (mode === 5 ? 200 : 100);
-      const iconEmoji = (mode === 7) ? '&#129351;' : (mode === 5 ? '&#129352;' : '&#129353;');
+      const pts = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
+      const iconEmoji = (mode === 'run') ? '&#127939;&#9889;' : ((mode === 7) ? '&#129351;' : (mode === 5 ? '&#129352;' : '&#129353;'));
 
       if (icon) icon.innerHTML = iconEmoji;
-      if (title) title.innerText = `${mode} vs ${mode} Arena (Free Entry)`;
-      if (sub) sub.innerText = `Fight and win to earn +${pts} Farm Points! (Optional 2x Boost with Ad)`;
-      if (prize) prize.innerHTML = `<span>&#129689;</span> Win +${pts} Farm Points (2x Boost = ${pts * 2} Pts)`;
+      if (title) title.innerText = (mode === 'run') ? 'RUN Sprint Arena (Free Entry)' : (mode + ' vs ' + mode + ' Arena (Free Entry)');
+      if (sub) sub.innerText = 'Fight and win to earn +' + pts + ' Farm Points! (Optional 2x Boost with Ad)';
+      if (prize) prize.innerHTML = '<span>&#129689;</span> Win +' + pts + ' Farm Points (2x Boost = ' + (pts * 2) + ' Pts)';
 
       if (stepsContainer) {
-        stepsContainer.innerHTML = `
-          <div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black">
-            <span>&#9989;</span> Free Play Ready! Available once every 8 hours.
-          </div>
-        `;
+        stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All Farm Animals Ready.</div>';
       }
 
       if (actionContainer) {
         actionContainer.classList.remove('hidden');
-        actionContainer.innerHTML = `
-          <button type="button" onclick="enterBattleArena(${mode})" ontouchend="enterBattleArena(${mode})" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto">
-            <span>&#9876;</span> ENTER BATTLE (FREE)!
-          </button>
-        `;
+        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(\'' + mode + '\')" ontouchend="enterBattleArena(\'' + mode + '\')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
       }
 
-      if (modal) modal.classList.remove('hidden');
-  modal.style.display = 'flex';
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
     }
 
     function openBattleRunMode() {
-      playSound('click');
-      startRunSprintGame();
+      openBattlePrep('run');
     }
 
     function getPlayerBattlePower() {
@@ -2560,13 +2544,7 @@
     }
 
     function enterBattleArena(mode) {
-      if (mode === 'run') {
-        closeModal('battlePrepModal');
-        startRunSprintGame();
-        return;
-      }
       try {
-      // playSound removed - video audio active
       closeModal('battlePrepModal');
 
       currentBattleMode = mode;
@@ -2853,7 +2831,7 @@
       const normalClaimPts = document.getElementById('battleNormalClaimPts');
 
       const mode = currentBattleMode;
-      const basePoints = (mode === 7) ? 300 : (mode === 5 ? 200 : 100);
+      const basePoints = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
       const doublePoints = basePoints * 2;
 
       if (rewardText) rewardText.innerHTML = `+${basePoints} Farm Points &#129689;`;
@@ -2872,7 +2850,7 @@
       playSound('fanfare');
 
       const mode = currentBattleMode;
-      const basePoints = (mode === 7) ? 300 : (mode === 5 ? 200 : 100);
+      const basePoints = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
@@ -2900,7 +2878,10 @@
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       isBattleInProgress = false;
       const arena = document.getElementById('battleArenaModal');
-      if (arena) arena.classList.add('hidden');
+      if (arena) {
+        arena.classList.add('hidden');
+        arena.style.display = 'none';
+      }
       resumeBgmAfterBattle();
     }
 
