@@ -2460,14 +2460,11 @@
       }
 
       if (modal) modal.classList.remove('hidden');
+  modal.style.display = 'flex';
     }
 
     function openBattleRunMode() {
       playSound('click');
-      if (isBattleOnCooldown('run')) {
-        showWalletToast(`â³ RUN Sprint is on cooldown! Available in ${formatTime(getBattleCooldownRemaining('run'))}`);
-        return;
-      }
       startRunSprintGame();
     }
 
@@ -3581,14 +3578,21 @@
 
     // Modal Handlers
     function openModal(id) {
-      playSound('click');
-      document.getElementById(id).classList.remove('hidden');
+      try { playSound('click'); } catch(e){}
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.style.display = 'flex';
+      }
     }
 
     function closeModal(id) {
       try { playSound('click'); } catch(e){}
       const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
+      if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+      }
     }
 
     // TON Connect Simulation
@@ -4637,6 +4641,7 @@ function startRunSprintGame() {
   if (victoryOverlay) victoryOverlay.classList.add('hidden');
   if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
   modal.classList.remove('hidden');
+  modal.style.display = 'flex';
 
   const canvas = document.getElementById('runSprintCanvas');
   if (!canvas) return;
@@ -5922,7 +5927,7 @@ function exitRunSprintGame() {
     runKeys.down = false;
   }
   const modal = document.getElementById('runGameModal');
-  if (modal) modal.classList.add('hidden');
+  if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
   const victoryOverlay = document.getElementById('runVictoryOverlay');
   if (victoryOverlay) victoryOverlay.classList.add('hidden');
   const gameOverOverlay = document.getElementById('runGameOverOverlay');
