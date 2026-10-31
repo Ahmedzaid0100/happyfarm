@@ -325,16 +325,16 @@
 
           <!-- Center Visual: Clean Looping Video Screen with 'Tap to Farm' Button -->
           <div id="beeVideoContainer" class="relative w-full h-[160px] rounded-xl overflow-hidden border-2 border-amber-900/60 shadow-inner bg-black select-none" onclick="tapToFarmClick(event)">
-            <!-- Video Element (Looping & Always Playing while on Home) -->
-            <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline webkit-playsinline x5-playsinline muted loop autoplay class="w-full h-full object-cover object-center"></video>
+            <!-- Video Element (Paused initially, starts when player clicks Farm) -->
+            <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline webkit-playsinline x5-playsinline muted loop preload="auto" class="w-full h-full object-cover object-center"></video>
             
             <!-- Poster Fallback (under video if video is loading) -->
             <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Bee Farm" class="w-full h-full object-cover object-center absolute inset-0 pointer-events-none -z-10" />
 
-            <!-- Clean Screen: All previous clutter text removed! Only the stylish Center Button -->
+            <!-- Clean Screen: Center Tap to Farm Button -->
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <button type="button" onclick="tapToFarmClick(event)" class="btn-3d-yellow px-5 py-2 rounded-2xl text-amber-950 font-black text-xs shadow-2xl border-2 border-yellow-200 animate-bounce pointer-events-auto active:scale-95 transition-transform cursor-pointer flex items-center gap-1.5">
-                <span class="text-sm">&#9889;</span><span class="tracking-wider uppercase">Tap to Farm</span>
+              <button id="tapToFarmBtn" type="button" onclick="tapToFarmClick(event)" class="btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-2xl border-2 border-yellow-200 pointer-events-auto active:scale-95 transition-transform cursor-pointer flex items-center gap-2">
+                <span id="tapToFarmIcon" class="text-sm">&#9654;</span><span id="tapToFarmLabel" class="tracking-wider uppercase">Tap to Farm</span>
               </button>
             </div>
           </div>
@@ -3435,6 +3435,23 @@
       if (event) event.stopPropagation();
       playSound('click');
       
+      const vid = document.getElementById('beeAttackVideo');
+      const farmBtn = document.getElementById('tapToFarmBtn');
+      const farmIcon = document.getElementById('tapToFarmIcon');
+      const farmLabel = document.getElementById('tapToFarmLabel');
+
+      if (vid) {
+        vid.muted = true; // Always muted without sound
+        if (vid.paused) {
+          vid.play().then(() => {
+            if (farmIcon) farmIcon.innerHTML = '&#9889;';
+            if (farmLabel) farmLabel.innerText = 'FARMING...';
+          }).catch(err => {
+            console.log('Video play error:', err);
+          });
+        }
+      }
+
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
       }
@@ -3449,7 +3466,7 @@
         floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-30 select-none';
         floater.style.left = x + 'px';
         floater.style.top = y + 'px';
-        floater.innerText = '+1 ðŸª™';
+        floater.innerHTML = '+1 &#129689;';
         container.appendChild(floater);
         setTimeout(() => { floater.remove(); }, 1000);
       }
@@ -3983,6 +4000,7 @@
       }
 
       // Smoothly scroll back to the very top
+
       window.scrollTo(0, 0);
       if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -4608,7 +4626,8 @@
             watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
             if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
-            calculateOfflineBeeMining();
+
+    calculateOfflineBeeMining();
           }
           // Sync loaded cloud state to local storage
           try {
@@ -4688,6 +4707,10 @@
     // Initial load
     initTelegram();
     initAdsgram();
+    const startupBeeVid = document.getElementById('beeAttackVideo');
+    if (startupBeeVid) {
+      startupBeeVid.pause();
+    }
     calculateOfflineBeeMining();
     loadPlayerDataFromCloud();
     updateDisplays();
