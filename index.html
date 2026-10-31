@@ -3344,7 +3344,7 @@
 
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
-      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
       const is24hComplete = elapsedSeconds >= 86400;
       const remainingSeconds = Math.max(0, 86400 - elapsedSeconds);
       const dailyRate = userLevel * 24;
@@ -3408,7 +3408,7 @@
     function collectBeeMined(btnElement) {
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
-      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
       const dailyRate = userLevel * 24;
 
       if (elapsedSeconds < 86400) {
@@ -3590,7 +3590,7 @@
     function calculateOfflineBeeMining() {
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
-      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
       const cappedSeconds = Math.min(elapsedSeconds, 86400);
 
       const dailyRate = userLevel * 24;
@@ -3606,7 +3606,7 @@
     setInterval(() => {
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
-      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
       const cappedSeconds = Math.min(elapsedSeconds, 86400);
 
       const dailyRate = userLevel * 24;
@@ -3616,11 +3616,12 @@
       updateBeeFarmUI();
     }, 1000);
 
-    // Format Seconds to HH:MM:SS
+    // Format Seconds to HH:MM:SS (Pure integer Hours, Minutes, Seconds only)
     function formatTime(totalSec) {
-      const h = Math.floor(totalSec / 3600);
-      const m = Math.floor((totalSec % 3600) / 60);
-      const s = totalSec % 60;
+      const secInt = Math.floor(Math.max(0, Number(totalSec) || 0));
+      const h = Math.floor(secInt / 3600);
+      const m = Math.floor((secInt % 3600) / 60);
+      const s = secInt % 60;
       return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
