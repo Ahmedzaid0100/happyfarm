@@ -1433,47 +1433,47 @@
               🎬 Watch More Earn More
             </h3>
             <p class="text-[11px] text-amber-200/90 font-semibold mt-0.5">
-              Watch 5 ads to unlock 10 CFC instantly!
+              Watch ads to earn up to +240 Farm Points daily!
             </p>
           </div>
 
           <!-- 5 Steps / Boxes Grid -->
-          <div class="grid grid-cols-5 gap-2 mb-3" id="watchAdStepsGrid">
+          <div class="grid grid-cols-5 gap-1.5 mb-3" id="watchAdStepsGrid">
             <div id="adStep-1" class="bg-black/50 border-2 border-amber-600 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all">
-              <span class="text-xs font-black text-amber-200">1</span>
-              <span id="adStepIcon-1" class="text-xs">📺</span>
+              <span class="text-[10px] font-black text-amber-200">1</span>
+              <span id="adStepIcon-1" class="text-[10px] font-black text-yellow-300">+20</span>
             </div>
             <div id="adStep-2" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-xs font-black text-amber-200">2</span>
-              <span id="adStepIcon-2" class="text-xs">📺</span>
+              <span class="text-[10px] font-black text-amber-200">2</span>
+              <span id="adStepIcon-2" class="text-[10px] font-black text-yellow-300">+30</span>
             </div>
             <div id="adStep-3" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-xs font-black text-amber-200">3</span>
-              <span id="adStepIcon-3" class="text-xs">📺</span>
+              <span class="text-[10px] font-black text-amber-200">3</span>
+              <span id="adStepIcon-3" class="text-[10px] font-black text-yellow-300">+40</span>
             </div>
             <div id="adStep-4" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-xs font-black text-amber-200">4</span>
-              <span id="adStepIcon-4" class="text-xs">📺</span>
+              <span class="text-[10px] font-black text-amber-200">4</span>
+              <span id="adStepIcon-4" class="text-[10px] font-black text-yellow-300">+50</span>
             </div>
             <div id="adStep-5" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-xs font-black text-amber-200">5</span>
-              <span id="adStepIcon-5" class="text-xs">🎁</span>
+              <span class="text-[10px] font-black text-amber-200">5</span>
+              <span id="adStepIcon-5" class="text-[10px] font-black text-yellow-300">+100</span>
             </div>
           </div>
 
           <!-- Reward Text & Action Button -->
           <div class="bg-black/40 rounded-2xl p-2.5 mb-2.5 text-center border border-amber-700/60">
-            <span class="text-xs font-black text-lime-300">
-              🎁 Watch Ads Get 10 CFC (≈ $0.28)
+            <span class="text-xs font-black text-yellow-300">
+              🪙 Earn Points: +20, +30, +40, +50, +100
             </span>
             <div class="text-[10px] text-amber-300 font-bold mt-0.5" id="otherAdStatusText">
-              Ads watched: 0 / 5
+              Next: +20 Points (Step 1/5)
             </div>
           </div>
 
           <div id="otherAdActionContainer">
             <button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce">
-              <span>▶️</span> Watch Ad (<span id="otherAdBtnCount">1</span>/5)
+              <span>▶️</span> Watch Ad (+20 Points) [1/5]
             </button>
           </div>
 
@@ -4372,8 +4372,15 @@
     // ==================== END WALLET ====================
 
     // ==================== OTHERS & FAQ VIEW LOGIC ====================
-    let otherAdsWatched = 0;
-    let hasClaimedOtherHfc = false;
+    const adPointRewards = [20, 30, 40, 50, 100];
+    let otherAdsWatched = Number(localStorage.getItem('crazyfarm_other_ads_count') || 0);
+    const lastOtherAdDay = localStorage.getItem('crazyfarm_other_ads_day');
+    const todayAdStr = new Date().toISOString().slice(0, 10);
+    if (lastOtherAdDay !== todayAdStr) {
+      otherAdsWatched = 0;
+      localStorage.setItem('crazyfarm_other_ads_day', todayAdStr);
+      localStorage.setItem('crazyfarm_other_ads_count', '0');
+    }
 
     function syncOthersView() {
       renderOtherAdSteps();
@@ -4384,30 +4391,37 @@
         const stepEl = document.getElementById(`adStep-${i}`);
         const iconEl = document.getElementById(`adStepIcon-${i}`);
         if (!stepEl || !iconEl) continue;
+        const pts = adPointRewards[i - 1];
+
         if (i <= otherAdsWatched) {
           stepEl.className = 'bg-emerald-950/80 border-2 border-emerald-400 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 shadow-md';
-          iconEl.innerText = '✓';
-          iconEl.className = 'text-xs font-black text-emerald-300';
+          iconEl.innerHTML = `<span class="text-[10px] font-black text-emerald-300">✓ +${pts}</span>`;
         } else if (i === otherAdsWatched + 1) {
           stepEl.className = 'bg-amber-900/90 border-2 border-yellow-300 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 shadow-md ring-2 ring-yellow-400/80 animate-pulse';
-          iconEl.innerText = i === 5 ? '🎁' : '📺';
+          iconEl.innerHTML = `<span class="text-[10px] font-black text-yellow-300">+${pts}</span>`;
         } else {
           stepEl.className = 'bg-black/50 border-2 border-amber-900/60 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 opacity-60';
-          iconEl.innerText = i === 5 ? '🎁' : '📺';
+          iconEl.innerHTML = `<span class="text-[10px] font-black text-amber-400/70">+${pts}</span>`;
         }
       }
+
       const statusText = document.getElementById('otherAdStatusText');
-      if (statusText) statusText.innerText = `Ads watched: ${otherAdsWatched} / 5`;
-      const btnCount = document.getElementById('otherAdBtnCount');
-      if (btnCount) btnCount.innerText = Math.min(otherAdsWatched + 1, 5);
       const actionContainer = document.getElementById('otherAdActionContainer');
-      if (actionContainer) {
-        if (hasClaimedOtherHfc) {
-          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> Reward Claimed (10 CFC Added)</button>';
-        } else if (otherAdsWatched >= 5) {
-          actionContainer.innerHTML = '<button onclick="claimOtherHfcReward()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>🎁</span> Claim 10 CFC Reward Now!</button>';
+      const nextPts = otherAdsWatched < 5 ? adPointRewards[otherAdsWatched] : 0;
+
+      if (statusText) {
+        if (otherAdsWatched >= 5) {
+          statusText.innerText = 'Completed: 5 / 5 Ads (+240 Points Total)';
         } else {
-          actionContainer.innerHTML = `<button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>▶️</span> Watch Ad (<span id="otherAdBtnCount">${otherAdsWatched + 1}</span>/5)</button>`;
+          statusText.innerText = `Next: +${nextPts} Points (Step ${otherAdsWatched + 1}/5)`;
+        }
+      }
+
+      if (actionContainer) {
+        if (otherAdsWatched >= 5) {
+          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> All 5 Daily Ads Completed (+240 Points Claimed)</button>';
+        } else {
+          actionContainer.innerHTML = `<button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>▶️</span> Watch Ad (+${nextPts} Points) [${otherAdsWatched + 1}/5]</button>`;
         }
       }
     }
@@ -4415,27 +4429,21 @@
     function watchOtherBonusAd() {
       if (otherAdsWatched >= 5) return;
       playSound('click');
+      const currentReward = adPointRewards[otherAdsWatched];
       showUniversalAd(() => {
+        points += currentReward;
         otherAdsWatched++;
-        renderOtherAdSteps();
-        if (otherAdsWatched >= 5) {
-          showWalletToast('ðŸŽ‰ All 5 ads watched! Click Claim to receive 10 CFC!');
-        } else {
-          showWalletToast('âœ… Ad watched (' + otherAdsWatched + '/5)!');
-        }
-      }, 'Bonus 10 CFC Task');
-    }
+        localStorage.setItem('crazyfarm_other_ads_count', String(otherAdsWatched));
+        localStorage.setItem('crazyfarm_other_ads_day', new Date().toISOString().slice(0, 10));
 
-    function claimOtherHfcReward() {
-      if (otherAdsWatched < 5 || hasClaimedOtherHfc) return;
-      playSound('fanfare');
-      playSound('coin');
-      hfcBalance += 10;
-      hasClaimedOtherHfc = true;
-      syncWalletView();
-      initTonConnect();
-      renderOtherAdSteps();
-      showWalletToast('🎉 Congratulations! 10 CFC added to your balance!');
+        updateDisplays();
+        renderOtherAdSteps();
+        queueCloudSave();
+
+        playSound('fanfare');
+        playSound('coin');
+        showWalletToast(`🎉 +${currentReward} Points added! (${otherAdsWatched}/5)`);
+      }, `Bonus +${currentReward} Points Ad`);
     }
 
     function toggleFaq(id) {
