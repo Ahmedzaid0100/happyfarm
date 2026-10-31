@@ -2336,28 +2336,22 @@
       updatePvpButtonsUI();
     }
 
-        const BATTLE_COOLDOWN_MS = 8 * 3600 * 1000; // 8 Hours Cooldown
+        const BATTLE_COOLDOWN_MS = 0; // Cooldown eliminated: 100% UNLIMITED FREE PLAY
     let pvpCooldowns = { 3: 0, 5: 0, 7: 0, run: 0 };
     try {
-      const savedCd = localStorage.getItem('crazyfarm_pvp_cooldowns');
-      if (savedCd) pvpCooldowns = Object.assign(pvpCooldowns, JSON.parse(savedCd));
+      localStorage.removeItem('crazyfarm_pvp_cooldowns');
     } catch(e){}
 
     function savePvpCooldowns() {
-      try { localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns)); } catch(e){}
-      queueCloudSave();
+      // Cooldown eliminated - no saving needed
     }
 
     function isBattleOnCooldown(mode) {
-      const lastPlay = Number(pvpCooldowns[mode]) || 0;
-      const elapsed = Date.now() - lastPlay;
-      return elapsed < BATTLE_COOLDOWN_MS;
+      return false; // Unlimited Free Play - Always ready!
     }
 
     function getBattleCooldownRemaining(mode) {
-      const lastPlay = Number(pvpCooldowns[mode]) || 0;
-      const elapsed = Date.now() - lastPlay;
-      return Math.max(0, Math.floor((BATTLE_COOLDOWN_MS - elapsed) / 1000));
+      return 0;
     }
 
     function updatePvpButtonsUI() {
@@ -2366,48 +2360,21 @@
       const b7 = document.getElementById('pvpBadge-7');
       const bRun = document.getElementById('pvpBadge-run');
 
-      // Mode 3
       if (b3) {
-        if (isBattleOnCooldown(3)) {
-          b3.innerHTML = `&#9203; ${formatTime(getBattleCooldownRemaining(3))}`;
-          b3.className = 'bg-amber-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        } else {
-          b3.innerHTML = '&#9876; Free';
-          b3.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        }
+        b3.innerHTML = '&#9876; Free';
+        b3.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
       }
-
-      // Mode 5
       if (b5) {
-        if (isBattleOnCooldown(5)) {
-          b5.innerHTML = `&#9203; ${formatTime(getBattleCooldownRemaining(5))}`;
-          b5.className = 'bg-amber-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        } else {
-          b5.innerHTML = '&#9876; Free';
-          b5.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        }
+        b5.innerHTML = '&#9876; Free';
+        b5.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
       }
-
-      // Mode 7
       if (b7) {
-        if (isBattleOnCooldown(7)) {
-          b7.innerHTML = `&#9203; ${formatTime(getBattleCooldownRemaining(7))}`;
-          b7.className = 'bg-amber-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        } else {
-          b7.innerHTML = '&#9876; Free';
-          b7.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        }
+        b7.innerHTML = '&#9876; Free';
+        b7.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
       }
-
-      // Mode RUN
       if (bRun) {
-        if (isBattleOnCooldown('run')) {
-          bRun.innerHTML = `&#9203; ${formatTime(getBattleCooldownRemaining('run'))}`;
-          bRun.className = 'bg-amber-950/90 text-yellow-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        } else {
-          bRun.innerHTML = '&#127939; Free';
-          bRun.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-        }
+        bRun.innerHTML = '&#127939; Free';
+        bRun.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
       }
     }
 
@@ -2600,11 +2567,17 @@
       }
 
       pauseBgmForBattle();
-      if (arena) arena.classList.remove('hidden');
+      if (arena) {
+        arena.classList.remove('hidden');
+        arena.style.display = 'flex';
+      }
       } catch(err) {
         console.error("Battle enter error:", err);
         const arena = document.getElementById('battleArenaModal');
-        if (arena) arena.classList.remove('hidden');
+        if (arena) {
+          arena.classList.remove('hidden');
+          arena.style.display = 'flex';
+        }
       }
     }
 
@@ -2854,15 +2827,15 @@
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
-      pvpCooldowns[mode] = Date.now();
-      savePvpCooldowns();
+      // No cooldown saved - unlimited free play
+      // No cooldown saved
 
       updateDisplays();
       syncWalletView();
       updatePvpButtonsUI();
 
       closeBattleArena();
-      showWalletToast(`ðŸŽ‰ Claimed +${finalPoints} Farm Points from ${mode}v${mode} Battle! (8h cooldown started)`);
+      showWalletToast('ðŸŽ‰ Claimed +' + finalPoints + ' Farm Points from ' + (mode === 'run' ? 'RUN' : (mode + 'v' + mode)) + ' Battle!');
     }
 
     function claimBattleDoubleRewardWithAd() {
@@ -5854,15 +5827,15 @@ function claimRunSprintVictory(isDouble = false) {
   const finalPoints = isDouble ? ((100 * 2) + runBonusPoints) : basePoints;
 
   points += finalPoints;
-  pvpCooldowns['run'] = Date.now();
-  savePvpCooldowns();
+  // No cooldown saved - unlimited free play
+      // No cooldown saved
 
   updateDisplays();
   syncWalletView();
   updatePvpButtonsUI();
 
   exitRunSprintGame();
-  showWalletToast(`ðŸŽ‰ Claimed +${finalPoints} Farm Points from RUN Sprint! (8h cooldown started)`);
+  showWalletToast('ðŸŽ‰ Claimed +' + finalPoints + ' Farm Points from RUN Sprint!');
 }
 
 function claimRunDoubleRewardWithAd() {
