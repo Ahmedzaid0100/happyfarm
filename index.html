@@ -1943,33 +1943,12 @@
           <div id="runSpeedVfx" class="absolute inset-0 pointer-events-none opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/30 via-transparent to-transparent"></div>
         </div>
 
-        <!-- Bottom Controls Bar (4-Direction D-Pad + Touch Hint) -->
-        <div class="relative z-20 w-full p-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent flex items-center justify-between">
-          <div class="text-[8.5px] text-amber-200/90 font-bold px-1 text-center">
-            &#128070; Drag screen<br>or tap arrows:
-          </div>
-
-          <!-- 4-Way Virtual D-Pad -->
-          <div class="flex items-center gap-1.5">
-            <button id="btnDpadLeft" class="w-10 h-10 btn-3d-yellow rounded-xl flex items-center justify-center font-black text-amber-950 text-base shadow active:scale-90 select-none">
-              &#11013;&#65039;
-            </button>
-            <div class="flex flex-col gap-1">
-              <button id="btnDpadUp" class="w-10 h-6 btn-3d-green rounded-lg flex items-center justify-center font-black text-white text-xs shadow active:scale-90 select-none">
-                &#11014;&#65039;
-              </button>
-              <button id="btnDpadDown" class="w-10 h-6 btn-3d-yellow rounded-lg flex items-center justify-center font-black text-amber-950 text-xs shadow active:scale-90 select-none">
-                &#11015;&#65039;
-              </button>
-            </div>
-            <button id="btnDpadRight" class="w-10 h-10 btn-3d-yellow rounded-xl flex items-center justify-center font-black text-amber-950 text-base shadow active:scale-90 select-none">
-              &#10145;&#65039;
-            </button>
-          </div>
-
+        <!-- Clean Touch Screen Navigation Hint (No arrows cluttering screen) -->
+        <div class="relative z-20 w-full py-1.5 px-3 bg-gradient-to-t from-black/85 to-transparent flex items-center justify-between text-[9px] text-amber-200/90 font-bold select-none">
+          <span class="flex items-center gap-1"><span>ðŸ‘†</span> Touch / Drag screen left & right to steer dog</span>
           <!-- Boost indicator -->
-          <div id="runShieldBadge" class="hidden bg-yellow-400 text-amber-950 text-[8px] font-black px-2 py-1 rounded-xl shadow animate-bounce">
-            &#127855; SHIELD ON!
+          <div id="runShieldBadge" class="hidden bg-yellow-400 text-amber-950 text-[8px] font-black px-2 py-0.5 rounded-xl shadow animate-bounce">
+            ðŸ¯ SHIELD ON!
           </div>
         </div>
 
@@ -2416,7 +2395,8 @@
     }
 
     function openBattleRunMode() {
-      openBattlePrep('run');
+      playSound('click');
+      startRunSprintGame();
     }
 
     function getPlayerBattlePower() {
@@ -4388,7 +4368,7 @@
 
     // Initial load
     initTelegram();
-    initAdsgram();
+    if (typeof initAdsgram === 'function') { try { initAdsgram(); } catch(e){} }
     const startupBeeVid = document.getElementById('beeAttackVideo');
     if (startupBeeVid) {
       startupBeeVid.pause();
@@ -4421,14 +4401,11 @@
         const tMode = parseInt(urlParams.get('testArena')) || 3;
         setTimeout(() => { enterBattleArena(tMode); }, 300);
       }
-      if (urlParams.get('testRun')) {
+            if (urlParams.get('testRun')) {
         setTimeout(() => { startRunSprintGame(); }, 300);
       }
-      if (urlParams.get('testRun')) {
-        setTimeout(() => { startRunSprintGame(); }, 300);
-      }
-      if (urlParams.get('testRun')) {
-        setTimeout(() => { startRunSprintGame(); }, 300);
+      if (urlParams.get('testRunVictory')) {
+        setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
       }
       if (urlParams.get('testRunVictory')) {
         setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
@@ -4458,27 +4435,25 @@
       // =========================================================================
     // ==================== 15s FARM SPRINT (RUN MODE) ENGINE ====================
 // =========================================================================
-let runGameAnimFrame = null;
-let runGameActive = false;
-let runGameStartTime = 0;
-const RUN_GAME_DURATION = 20.0; // 15 seconds run!
-let runLives = 3;
-let runBonusPoints = 0;
-let runBonesCollected = 0;
-let runCoinsCollectedCount = 0;
-let runShieldTimer = 0;
-let runInvulnerableTimer = 0;
-let runSlowdownTimer = 0;
-let runWorldDistance = 0; // Cumulative distance for smooth road scrolling
-let runObstacles = [];
-let runCollectibles = [];
-let runParticles = [];
-let runLastWaveTime = 0;
-let runFinishLineZ = null; // Z depth of finish line (spawns at 1.0, reaches 0)
-let runHasHoneySpawned = false;
-
-// 3D Player Dog State
-let runCurrentLane = 0; // -1: Left, 0: Center, 1: Right
+var runGameAnimFrame = null;
+var runGameActive = false;
+var runGameStartTime = 0;
+var RUN_GAME_DURATION = 20.0;
+var runLives = 3;
+var runBonusPoints = 0;
+var runBonesCollected = 0;
+var runCoinsCollectedCount = 0;
+var runShieldTimer = 0;
+var runInvulnerableTimer = 0;
+var runSlowdownTimer = 0;
+var runWorldDistance = 0;
+var runObstacles = [];
+var runCollectibles = [];
+var runParticles = [];
+var runLastWaveTime = 0;
+var runFinishLineZ = null;
+var runHasHoneySpawned = false;
+var runCurrentLane = 0;
 function shiftRunLane(dir) {
   runCurrentLane = Math.max(-1, Math.min(1, runCurrentLane + dir));
   runDog.targetLanePos = runCurrentLane * 0.60;
@@ -4489,7 +4464,7 @@ function setRunLane(lane) {
   runDog.targetLanePos = runCurrentLane * 0.60;
 }
 
-const runDog = {
+var runDog = {
   lanePos: 0.0,       // -0.76 (far left) to +0.76 (far right), 0.0 is center
   targetLanePos: 0.0,
   z: 0.08,            // Foreground depth (0.04 to 0.14 adjustable with Up/Down)
@@ -4504,7 +4479,7 @@ const runDog = {
 };
 
 // Mascot Queen Bee State
-const runBee = {
+var runBee = {
   lanePos: 0.0,
   vx: 0.016,
   yOffset: 32,
@@ -4514,7 +4489,7 @@ const runBee = {
 };
 
 // Preload 3D Dog Runner Sprite (Clean transparent cutout)
-const runDogImg = new Image();
+var runDogImg = new Image();
 runDogImg.src = 'assets/farms/dog_runner_3d.png';
 runDogImg.onload = () => {
   runDog.img = runDogImg;
@@ -4522,8 +4497,8 @@ runDogImg.onload = () => {
 };
 
 // Preload Farm Animal Images
-const runAnimalImages = {};
-const RUN_ANIMAL_KEYS = ['dog', 'bee', 'bunny', 'chicken', 'cows', 'duck', 'horse', 'pig', 'sheep'];
+var runAnimalImages = {};
+var RUN_ANIMAL_KEYS = ['dog', 'bee', 'bunny', 'chicken', 'cows', 'duck', 'horse', 'pig', 'sheep'];
 
 RUN_ANIMAL_KEYS.forEach(key => {
   const img = new Image();
@@ -4543,7 +4518,7 @@ RUN_ANIMAL_KEYS.forEach(key => {
 });
 
 // Animal Emoji Dictionary for instant 3D badge clarity
-const RUN_ANIMAL_EMOJIS = {
+var RUN_ANIMAL_EMOJIS = {
   bunny: '\uD83D\uDC30',
   pig: '\uD83D\uDC37',
   sheep: '\uD83D\uDC11',
@@ -4554,7 +4529,7 @@ const RUN_ANIMAL_EMOJIS = {
 };
 
 // Key Inputs
-const runKeys = {
+var runKeys = {
   left: false,
   right: false,
   up: false,
@@ -5710,7 +5685,7 @@ function drawSpeedLinesVfx(ctx, canvas, now) {
 }
 
 // ==================== CONTROLS BINDING ====================
-let runControlsBound = false;
+var runControlsBound = false;
 function bindRunControls() {
   if (runControlsBound) return;
   runControlsBound = true;
