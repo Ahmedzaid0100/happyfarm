@@ -2467,6 +2467,42 @@
       startRunSprintGame();
     }
 
+        function getAnimalIcon(key) {
+      const icons = { cows: 'ðŸ„', chicken: 'ðŸ”', duck: 'ðŸ¦†', bunny: 'ðŸ°', sheep: 'ðŸ‘', horse: 'ðŸ´', pig: 'ðŸ·', dog: 'ðŸ¶', bee: 'ðŸ' };
+      return icons[key] || 'ðŸ¾';
+    }
+
+    function buildSquadForBattle(mode) {
+      let selectedKeys = [];
+      if (mode === 7 || mode === 'run') {
+        selectedKeys = ['dog', 'cows', 'chicken', 'duck', 'bunny', 'sheep', 'horse'];
+      } else if (mode === 5) {
+        selectedKeys = ['cows', 'chicken', 'duck', 'bunny', 'sheep'];
+      } else {
+        selectedKeys = ['cows', 'chicken', 'duck'];
+      }
+
+      const pSquad = selectedKeys.map((k, idx) => ({
+        key: k,
+        name: k.toUpperCase(),
+        icon: getAnimalIcon(k),
+        hp: 100,
+        maxHp: 100,
+        atk: 25 + (idx * 5)
+      }));
+
+      const eSquad = selectedKeys.map((k, idx) => ({
+        key: k,
+        name: 'WILD ' + k.toUpperCase(),
+        icon: getAnimalIcon(k),
+        hp: 85,
+        maxHp: 85,
+        atk: 18 + (idx * 4)
+      }));
+
+      return { player: pSquad, enemy: eSquad };
+    }
+
     function enterBattleArena(mode) {
       // playSound removed - video audio active
       closeModal('battlePrepModal');
@@ -2495,7 +2531,7 @@
       // Mode badge removed per design
       if (startTitle) startTitle.innerHTML = (mode === 'run') ? '&#127939;&#9889; RUN Sprint Battle' : (mode + ' vs ' + mode + ' Animal Battle');
       
-      let rewardHfcText = mode === 3 ? '+10 CFC' : (mode === 5 ? '+20 CFC' : '+50 CFC 💎');
+      let rewardHfcText = mode === 3 ? '+100 Farm Points' : (mode === 5 ? '+200 Farm Points' : '+300 Farm Points');
       if (startDesc) startDesc.innerText = (mode === 'run') ? ('Unleash your full farm squad in high-speed sprint battle and claim ' + rewardHfcText + '!') : ('Lead your ' + mode + ' farm animals to victory and claim ' + rewardHfcText + '!');
 
       renderSquadOnField(enemySquad, 'enemySquadContainer', true, mode);
