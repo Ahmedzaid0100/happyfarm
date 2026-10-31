@@ -8,6 +8,8 @@
   <!-- AdsGram Official Telegram Ads Monetization SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -699,15 +701,15 @@
           </div>
         </div>
 
-        <!-- CARD 2: Connected Wallet (Exact match to Screenshot 1) -->
+        <!-- CARD 2: Connected Wallet (Dynamic Player Wallet) -->
         <div class="wood-board rounded-3xl p-3.5 text-white shadow-xl">
           <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-amber-800/80">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-amber-950 flex items-center justify-center text-base font-black shadow border border-amber-200">👛</div>
               <h3 class="font-black text-base text-amber-200">Connected Wallet</h3>
             </div>
-            <span id="profWalletStatusBadge" class="bg-gradient-to-r from-emerald-600 to-green-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full border border-emerald-400 shadow">
-              Connected ✓
+            <span id="profWalletStatusBadge" class="bg-rose-900/80 text-rose-300 text-[11px] font-black px-2.5 py-0.5 rounded-full border border-rose-600 shadow">
+              Not Connected
             </span>
           </div>
 
@@ -715,8 +717,8 @@
           <div class="bg-black/55 border-2 border-amber-900/90 rounded-2xl p-2.5 flex items-center justify-between mb-3 shadow-inner">
             <div class="overflow-hidden">
               <div class="text-[10px] text-amber-300/90 font-bold">TON Wallet:</div>
-              <div id="profWalletAddress" class="font-mono text-xs font-black text-white tracking-wider">
-                0x7A4F...9C21
+              <div id="profWalletAddress" class="font-mono text-xs font-black text-slate-400 tracking-wider">
+                — Not connected —
               </div>
             </div>
             <button onclick="copyTonWallet()" class="btn-3d-yellow p-2 rounded-xl text-amber-950 font-black text-base shadow flex items-center justify-center" title="Copy Wallet Address">
@@ -724,11 +726,13 @@
             </button>
           </div>
 
-          <!-- Action Buttons (Withdraw & History) -->
+          <!-- Action Buttons (Connect Wallet & Activity History) -->
           <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="switchTab('wallet')" class="btn-3d-yellow px-3 py-1.5 rounded-xl text-amber-950 font-black text-[11px] shadow flex items-center gap-1 active:scale-95 transition-transform shrink-0" title="Convert Farm Points to CFC"><span>&#128259;</span><span>Convert</span></button>
+            <button onclick="connectTONWallet()" class="btn-3d-blue py-2.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
+              <span>💎</span> Connect Wallet
+            </button>
             <button onclick="openTransactionHistory()" class="btn-3d-yellow py-2.5 rounded-2xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
-              <span>📜</span> Transaction History
+              <span>📜</span> Activity History
             </button>
           </div>
         </div>
@@ -2820,6 +2824,7 @@
 
       updateDisplays();
       syncWalletView();
+      initTonConnect();
       updatePvpButtonsUI();
 
       closeBattleArena();
@@ -3726,6 +3731,7 @@
           navHomeIconBox.classList.add('opacity-75');
         }
         syncWalletView();
+      initTonConnect();
       } else if (tab === 'tasks') {
         tasksView.style.display = 'block';
         if (navTasksBtn) navTasksBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
@@ -3823,6 +3829,7 @@
       saveTasksState();
       updateDisplays();
       syncWalletView();
+      initTonConnect();
       renderInviteTasks();
       updateAvailableTasksCounter();
 
@@ -4128,6 +4135,7 @@
       hfcBalance += earned;
       updateDisplays();
       syncWalletView();
+      initTonConnect();
       showWalletToast(`🍀 Converted ${(earned * HFC_RATE).toLocaleString()} pts → ${earned} CFC!`);
     }
 
@@ -4165,6 +4173,7 @@
       hfcBalance -= withdrawAmount; queueCloudSave();
       updateDisplays();
       syncWalletView();
+      initTonConnect();
       showWalletToast('Withdrew ' + withdrawAmount.toLocaleString() + ' CFC (Net: ' + netAmount.toLocaleString() + ' CFC)');
     }
     function buyHFC() {
@@ -4172,64 +4181,181 @@
       alert('💰 Buy Crazy Farm Coins (CFC)\n\n• 10 CFC = 0.1 TON ≈ $0.28\n• 100 CFC = 0.9 TON ≈ $2.52\n• 500 CFC = 4.0 TON ≈ $11.20\n\n👛 Connect your TON wallet to purchase.');
     }
 
-    function connectTONWallet() {
-      playSound('fanfare');
+    let tonConnectUI = null;
+
+    function shortenAddress(addr) {
+      if (!addr) return '';
+      if (addr.length <= 12) return addr;
+      return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
+    }
+
+    function handleWalletConnected(address) {
+      if (!address) return;
       isWalletConnected = true;
-      connectedWalletAddress = 'EQB7x...4K19';
+      connectedWalletAddress = address.trim();
+      try {
+        localStorage.setItem('crazyfarm_ton_wallet', connectedWalletAddress);
+      } catch(e) {}
+
+      updateWalletConnectionUI();
+      queueCloudSave();
+
+      playSound('fanfare');
+      playSound('coin');
+      showWalletToast('✅ TON Wallet linked: ' + shortenAddress(connectedWalletAddress));
+    }
+
+    function handleWalletDisconnected() {
+      isWalletConnected = false;
+      connectedWalletAddress = '';
+      try {
+        localStorage.removeItem('crazyfarm_ton_wallet');
+      } catch(e) {}
+
+      updateWalletConnectionUI();
+      queueCloudSave();
+      showWalletToast('🔌 Wallet disconnected.');
+    }
+
+    function updateWalletConnectionUI() {
+      const isConn = isWalletConnected && !!connectedWalletAddress;
+      const shortAddr = isConn ? shortenAddress(connectedWalletAddress) : '';
+
+      // 1. Wallet tab Card 4
       const badge = document.getElementById('walletConnectionBadge');
       const addrEl = document.getElementById('walletAddressDisplay');
       const copyBtn = document.getElementById('copyWalletBtn');
-      const walletStatus = document.getElementById('walletStatusText');
       if (badge) {
-        badge.innerText = 'Connected ✓';
-        badge.className = 'ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-600';
+        badge.innerText = isConn ? 'Connected ✓' : 'Not Connected';
+        badge.className = isConn
+          ? 'ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-600'
+          : 'ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700';
       }
-      if (addrEl) addrEl.innerText = connectedWalletAddress;
+      if (addrEl) {
+        addrEl.innerText = isConn ? shortAddr : '— Not connected —';
+        addrEl.title = isConn ? connectedWalletAddress : '';
+      }
       if (copyBtn) {
-        copyBtn.disabled = false;
-        copyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        copyBtn.disabled = !isConn;
+        if (isConn) {
+          copyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+          copyBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
       }
+
+      // 2. Profile tab Card 2
+      const profBadge = document.getElementById('profWalletStatusBadge');
+      const profAddr = document.getElementById('profWalletAddress');
+      if (profBadge) {
+        profBadge.innerText = isConn ? 'Connected ✓' : 'Not Connected';
+        profBadge.className = isConn
+          ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full border border-emerald-400 shadow'
+          : 'bg-rose-900/80 text-rose-300 text-[11px] font-black px-2.5 py-0.5 rounded-full border border-rose-600 shadow';
+      }
+      if (profAddr) {
+        profAddr.innerText = isConn ? shortAddr : '— Not connected —';
+        profAddr.title = isConn ? connectedWalletAddress : '';
+      }
+
+      // 3. Status text in modals if any
+      const walletStatus = document.getElementById('walletStatusText');
       if (walletStatus) {
-        walletStatus.innerText = 'Connected: EQB...7X19';
-        walletStatus.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700';
+        walletStatus.innerText = isConn ? `Connected: ${shortAddr}` : 'Not Connected';
+        walletStatus.className = isConn
+          ? 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700'
+          : 'text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700';
       }
-      showWalletToast('✅ TON Wallet connected successfully!');
     }
 
-    function disconnectTONWallet() {
-      if (!isWalletConnected) {
+    async function connectTONWallet() {
+      playSound('click');
+      if (tonConnectUI) {
+        try {
+          await tonConnectUI.openModal();
+          return;
+        } catch(e) {
+          console.warn('TonConnect openModal error:', e);
+        }
+      }
+
+      // Fallback manual prompt for the player's personal wallet address
+      const playerInput = prompt('Enter your personal TON Wallet address (e.g. UQ... or EQ...):', connectedWalletAddress || '');
+      if (playerInput && playerInput.trim().length > 10) {
+        handleWalletConnected(playerInput.trim());
+      } else if (playerInput !== null) {
+        showWalletToast('⚠️ Please enter a valid TON wallet address.');
+      }
+    }
+
+    async function disconnectTONWallet() {
+      if (!isWalletConnected && !connectedWalletAddress) {
         showWalletToast('⚠️ No wallet connected.');
         return;
       }
       if (!confirm('Disconnect your TON wallet?')) return;
       playSound('click');
-      isWalletConnected = false;
-      connectedWalletAddress = '';
-      const badge = document.getElementById('walletConnectionBadge');
-      const addrEl = document.getElementById('walletAddressDisplay');
-      const copyBtn = document.getElementById('copyWalletBtn');
-      const walletStatus = document.getElementById('walletStatusText');
-      if (badge) {
-        badge.innerText = 'Not Connected';
-        badge.className = 'ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700';
+      if (tonConnectUI && tonConnectUI.connected) {
+        try {
+          await tonConnectUI.disconnect();
+        } catch(e) {}
       }
-      if (addrEl) addrEl.innerText = '— Not connected —';
-      if (copyBtn) {
-        copyBtn.disabled = true;
-        copyBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      }
-      if (walletStatus) {
-        walletStatus.innerText = 'Not Connected';
-        walletStatus.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700';
-      }
-      showWalletToast('🔌 Wallet disconnected.');
+      handleWalletDisconnected();
     }
 
     function copyWalletAddress() {
-      if (!isWalletConnected) return;
+      if (!isWalletConnected || !connectedWalletAddress) {
+        showWalletToast('⚠️ No wallet connected.');
+        return;
+      }
       playSound('coin');
       navigator.clipboard.writeText(connectedWalletAddress);
       showWalletToast('📋 Wallet address copied!');
+    }
+
+    function initTonConnect() {
+      if (typeof TON_CONNECT_UI !== 'undefined') {
+        try {
+          tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://ahmedzaid0100.github.io/happyfarm/tonconnect-manifest.json',
+            buttonRootId: null
+          });
+
+          tonConnectUI.onStatusChange(wallet => {
+            if (wallet && wallet.account) {
+              let addr = wallet.account.address;
+              try {
+                if (TON_CONNECT_UI.toUserFriendlyAddress) {
+                  addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
+                }
+              } catch(e) {}
+              handleWalletConnected(addr);
+            } else if (!wallet && isWalletConnected) {
+              handleWalletDisconnected();
+            }
+          });
+
+          if (tonConnectUI.wallet && tonConnectUI.wallet.account) {
+            let addr = tonConnectUI.wallet.account.address;
+            try {
+              if (TON_CONNECT_UI.toUserFriendlyAddress) {
+                addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
+              }
+            } catch(e) {}
+            handleWalletConnected(addr);
+          }
+        } catch(e) {
+          console.warn('TonConnect UI init failed:', e);
+        }
+      }
+
+      // Check saved wallet in localStorage or loaded from Supabase
+      const savedWallet = localStorage.getItem('crazyfarm_ton_wallet');
+      if (savedWallet && !connectedWalletAddress) {
+        connectedWalletAddress = savedWallet;
+        isWalletConnected = true;
+      }
+      updateWalletConnectionUI();
     }
 
     function showWalletToast(msg) {
@@ -4307,6 +4433,7 @@
       hfcBalance += 10;
       hasClaimedOtherHfc = true;
       syncWalletView();
+      initTonConnect();
       renderOtherAdSteps();
       showWalletToast('🎉 Congratulations! 10 CFC added to your balance!');
     }
@@ -4336,10 +4463,17 @@
 
     // Profile Actions & Handlers
     function copyTonWallet() {
+      if (!isWalletConnected || !connectedWalletAddress) {
+        playSound('click');
+        if (confirm('No TON wallet connected yet.\n\nWould you like to connect your TON wallet now?')) {
+          connectTONWallet();
+        }
+        return;
+      }
       playSound('coin');
-      const fullAddress = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ';
-      navigator.clipboard.writeText(fullAddress);
-      alert('📋 TON Wallet address copied:\n' + fullAddress);
+      navigator.clipboard.writeText(connectedWalletAddress);
+      showWalletToast('📋 TON Wallet address copied!');
+      alert('📋 Your TON Wallet address copied:\n\n' + connectedWalletAddress);
     }
 
     function copyUserId() {
@@ -4362,7 +4496,10 @@
 
     function openTransactionHistory() {
       playSound('click');
-      alert('📜 Recent Activity:\n\n• TON Wallet linked: 0x7A4F...9C21\n• Bee Farm Production: +24 pts/day\n• Daily Login Bonus: +50 pts\n• Total Balance: ' + points.toLocaleString() + ' points');
+      const wInfo = (isWalletConnected && connectedWalletAddress)
+        ? `TON Wallet linked: ${shortenAddress(connectedWalletAddress)}`
+        : 'TON Wallet: Not connected';
+      alert(`📜 Recent Activity:\n\n• ${wInfo}\n• Bee Farm Production: +24 pts/day\n• Daily Login Bonus: +50 pts\n• Total Balance: ${points.toLocaleString()} points`);
     }
 
     function toggleNotifications(el) {
@@ -4474,6 +4611,7 @@
 
           updateDisplays();
           syncWalletView();
+      initTonConnect();
           updatePvpButtonsUI();
           console.log('âœ… Player progress loaded from Supabase cloud for ID:', tId);
         } else {
@@ -5980,6 +6118,7 @@ function claimRunSprintVictory(isDouble = false) {
 
   updateDisplays();
   syncWalletView();
+      initTonConnect();
   updatePvpButtonsUI();
 
   exitRunSprintGame();
