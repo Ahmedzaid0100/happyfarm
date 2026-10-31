@@ -331,24 +331,34 @@
             <!-- Poster Fallback (under video if video is loading) -->
             <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Bee Farm" class="w-full h-full object-cover object-center absolute inset-0 pointer-events-none -z-10" />
 
-            <!-- Clean Screen: Center Tap to Farm Button -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <!-- Clean Screen: Center Tap to Farm Button (Fades out when video plays) -->
+            <div id="tapToFarmOverlay" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300">
               <button id="tapToFarmBtn" type="button" onclick="tapToFarmClick(event)" class="btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-2xl border-2 border-yellow-200 pointer-events-auto active:scale-95 transition-transform cursor-pointer flex items-center gap-2">
                 <span id="tapToFarmIcon" class="text-sm">&#9654;</span><span id="tapToFarmLabel" class="tracking-wider uppercase">Tap to Farm</span>
               </button>
             </div>
           </div>
 
-          <!-- Bottom Action Buttons: Upgrade (Left) & Collect (Right) -->
+          <!-- Bottom Action Buttons: Upgrade (Left) & Farming/Gold (Right) -->
           <div class="grid grid-cols-2 gap-2 mt-2">
             <!-- Upgrade Hive Button -->
-            <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-yellow-300 active:scale-95 transition-transform" title="Upgrade Bee Hive">
-              <span class="text-xs">&#9889;</span><span>Upgrade (Lv.+1)</span>
+            <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer" title="Upgrade Bee Hive">
+              <div class="flex flex-col items-center leading-none">
+                <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#9889;</span> Upgrade</span>
+                <span class="text-[9px] font-extrabold text-amber-950 mt-1 flex items-center gap-0.5">
+                  <span>Lv.+1</span> <span>(1,000 &#129689;)</span>
+                </span>
+              </div>
             </button>
             
-            <!-- Collect Honey Button -->
-            <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-emerald-300 active:scale-95 transition-transform" title="Collect Mined Honey">
-              <span class="text-xs">&#127855;</span><span>Collect (+0)</span>
+            <!-- Farming & Gold Button (Replaces Auto-VIP) -->
+            <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center shadow-md border border-emerald-300 active:scale-95 transition-transform" title="Collect Mined Gold">
+              <div class="flex flex-col items-center leading-none">
+                <span class="uppercase tracking-wide font-black">FARMING</span>
+                <span class="text-[9.5px] font-extrabold text-lime-200 mt-1 flex items-center gap-1">
+                  <span>&#129689;</span> <span>+0</span>
+                </span>
+              </div>
             </button>
           </div>
         </div>
@@ -3324,78 +3334,99 @@
       alert(`🎉 Congratulations! Upgraded to Lv. ${userLevel}!\n⚡ Bee Farm mining speed is now: ${userLevel * 24} points/day (${userLevel} pts/hour)!`);
     }
 
-    // Dynamic UI Update for Bee Farm Card
+    // Dynamic UI Update for Bee Farm Card (24-Hour Farming Cycle)
     function updateBeeFarmUI() {
       const beeBadge = document.getElementById('beeFarmLevelBadge');
       if (beeBadge) beeBadge.innerText = `Lv. ${userLevel}`;
 
       const beeRate = document.getElementById('beeFarmDailyRateText');
-      if (beeRate) beeRate.innerText = `${userLevel * 24} pts/day`;
+      if (beeRate) beeRate.innerText = `${userLevel * 24}/d - ${userLevel}/h`;
 
-      const readyPts = Math.floor(beeMinedPoints);
-      const readyEl = document.getElementById('beeReadyText');
-      if (readyEl) {
-        if (isDogVipActive) {
-          readyEl.innerHTML = `&#128054; Auto VIP`;
-          readyEl.className = 'text-blue-700 font-black bg-blue-100 border border-blue-400 px-1 py-0.2 rounded text-[7.5px]';
-        } else {
-          readyEl.innerHTML = `&#127855; +${readyPts} ready`;
-          readyEl.className = readyPts > 0 
-            ? 'text-emerald-900 font-black bg-emerald-200 border border-emerald-500 px-1 py-0.2 rounded text-[7.5px] animate-pulse' 
-            : 'text-amber-800 font-bold bg-amber-100/90 border border-amber-300 px-1 py-0.2 rounded text-[7.5px]';
-        }
-      }
+      const now = Date.now();
+      const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
+      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const is24hComplete = elapsedSeconds >= 86400;
+      const remainingSeconds = Math.max(0, 86400 - elapsedSeconds);
+      const dailyRate = userLevel * 24;
+      const currentMined = Math.min(dailyRate, Math.floor(elapsedSeconds * (dailyRate / 86400)));
 
       const upgradeBtn = document.getElementById('upgradeBeeBtn');
       if (upgradeBtn) {
         if (points >= 1000) {
-          upgradeBtn.innerHTML = `<span>&#9889;</span> Lv.+1 (1k &#129689;)`;
-          upgradeBtn.className = 'btn-3d-yellow py-1 rounded-lg text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow animate-pulse cursor-pointer';
+          upgradeBtn.innerHTML = `
+            <div class="flex flex-col items-center leading-none">
+              <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#9889;</span> Upgrade</span>
+              <span class="text-[9px] font-extrabold text-amber-950 mt-1 flex items-center gap-0.5">
+                <span>Lv.+1</span> <span>(1,000 &#129689;)</span>
+              </span>
+            </div>
+          `;
+          upgradeBtn.className = 'btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer';
         } else {
-          upgradeBtn.innerHTML = `<span>&#128274;</span> Lv.+1 (${points}/1k)`;
-          upgradeBtn.className = 'bg-slate-700/80 text-amber-200/80 py-1 rounded-lg font-bold text-[8.5px] flex items-center justify-center gap-0.5 shadow cursor-not-allowed';
+          upgradeBtn.innerHTML = `
+            <div class="flex flex-col items-center leading-none">
+              <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#128274;</span> Upgrade</span>
+              <span class="text-[9px] font-extrabold text-amber-200/80 mt-1 flex items-center gap-0.5">
+                <span>Lv.+1</span> <span>(${points.toLocaleString()}/1k)</span>
+              </span>
+            </div>
+          `;
+          upgradeBtn.className = 'bg-slate-700/80 text-amber-200/80 py-2 px-2 rounded-xl font-bold text-[10px] flex items-center justify-center shadow border border-amber-900/40 cursor-not-allowed';
         }
       }
 
       const collectBtn = document.getElementById('collectBeeBtn');
       if (collectBtn) {
-        if (isDogVipActive) {
-          collectBtn.innerHTML = `<span>&#128054;</span> Auto-VIP`;
-          collectBtn.className = 'bg-gradient-to-r from-blue-600 to-indigo-700 text-yellow-200 py-1 rounded-lg font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow-sm border border-yellow-300/40 cursor-default';
-        } else if (readyPts > 0) {
-          collectBtn.innerHTML = `<span>&#129689;</span> Collect (+${readyPts})`;
-          collectBtn.className = 'btn-3d-green py-1 rounded-lg text-white font-black text-[8.5px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform animate-bounce';
-          collectBtn.style.animationDuration = '2.5s';
+        if (is24hComplete) {
+          // After 24 hours: Green Collect Button!
+          collectBtn.innerHTML = `
+            <div class="flex flex-col items-center leading-none">
+              <span class="uppercase tracking-wide font-black">COLLECT</span>
+              <span class="text-[9.5px] font-extrabold text-lime-200 mt-1 flex items-center gap-1">
+                <span>&#129689;</span> <span>+${dailyRate.toLocaleString()}</span>
+              </span>
+            </div>
+          `;
+          collectBtn.className = 'btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center shadow-md border border-emerald-300 active:scale-95 transition-transform animate-bounce cursor-pointer';
+          collectBtn.style.animationDuration = '2s';
         } else {
-          collectBtn.innerHTML = `<span>&#9203;</span> Mining...`;
-          collectBtn.className = 'bg-slate-700/70 text-slate-300 py-1 rounded-lg font-bold text-[8.5px] flex items-center justify-center gap-0.5 shadow-sm cursor-pointer opacity-80';
+          // In Progress (24h): Golden Farming Button!
+          collectBtn.innerHTML = `
+            <div class="flex flex-col items-center leading-none">
+              <span class="uppercase tracking-wide font-black text-amber-950">FARMING</span>
+              <span class="text-[9px] font-extrabold text-amber-900 mt-0.5 flex items-center gap-1">
+                <span>&#129689;</span> <span>+${currentMined}</span>
+                <span class="text-[8px] text-amber-950/70 font-black">(${formatTime(remainingSeconds)})</span>
+              </span>
+            </div>
+          `;
+          collectBtn.className = 'btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer';
         }
       }
     }
 
-    // Collect Mined Bee Points Action
     function collectBeeMined(btnElement) {
-      if (isDogVipActive) {
+      const now = Date.now();
+      const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
+      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const dailyRate = userLevel * 24;
+
+      if (elapsedSeconds < 86400) {
         playSound('click');
-        showWalletToast('&#128054; VIP Dog collects all Bee Farm mining points 24/7 automatically!');
+        const remainingSeconds = Math.max(0, 86400 - elapsedSeconds);
+        const currentMined = Math.min(dailyRate, Math.floor(elapsedSeconds * (dailyRate / 86400)));
+        showWalletToast(`â³ Farming in progress! ${formatTime(remainingSeconds)} remaining until Collect (+${currentMined}/${dailyRate} ðŸª™)`);
         return;
       }
 
-      const available = Math.floor(beeMinedPoints);
-      if (available <= 0) {
-        playSound('click');
-        const ratePerSec = (userLevel * 24) / 86400;
-        const nextSec = Math.ceil((1 - (beeMinedPoints % 1)) / (ratePerSec || 1));
-        showWalletToast(`&#9203; Mining in progress! Next point ready in ~${Math.max(1, Math.round(nextSec))}s`);
-        return;
-      }
-
+      // 24 hours completed: Collect reward!
       playSound('coin');
-      points += available;
-      beeMinedPoints -= available;
+      playSound('fanfare');
+      points += dailyRate;
       lastBeeCollectTimestamp = Date.now();
+      beeMinedPoints = 0;
       try {
-        localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
+        localStorage.setItem('crazyfarm_bee_mined_pts', 0);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
       } catch(e){}
 
@@ -3406,20 +3437,16 @@
       if (btnElement) {
         const rect = btnElement.getBoundingClientRect();
         const floater = document.createElement('div');
-        floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-50';
-        floater.style.left = (rect.left + rect.width / 2 - 15) + 'px';
-        floater.style.top = (rect.top - 10) + 'px';
-        floater.innerText = `+${available} &#129689;`;
-        document.getElementById('coinAnimationContainer').appendChild(floater);
-        setTimeout(() => floater.remove(), 800);
+        floater.className = 'absolute font-black text-yellow-300 text-base coin-float pointer-events-none drop-shadow-md z-30 select-none';
+        floater.style.left = (rect.left + rect.width / 2) + 'px';
+        floater.style.top = (rect.top - 15) + 'px';
+        floater.innerHTML = `+${dailyRate} &#129689;`;
+        document.body.appendChild(floater);
+        setTimeout(() => { floater.remove(); }, 1200);
       }
 
-      showWalletToast(`&#127855; Harvested +${available} Farm Points from Bee Farm!`);
+      showWalletToast(`ðŸŽ‰ Claimed +${dailyRate} Farm Points! New 24h cycle started.`);
     }
-
-    // ==================== QUEEN BEE SWARM VIDEO & RAID ARENA ====================
-    let isBeeVideoPlaying = false;
-    let isBeeAudioMuted = true;
 
     function toggleBeeSound() {
       const vid = document.getElementById('beeAttackVideo');
@@ -3436,19 +3463,22 @@
       playSound('click');
       
       const vid = document.getElementById('beeAttackVideo');
-      const farmBtn = document.getElementById('tapToFarmBtn');
-      const farmIcon = document.getElementById('tapToFarmIcon');
-      const farmLabel = document.getElementById('tapToFarmLabel');
+      const farmOverlay = document.getElementById('tapToFarmOverlay');
 
       if (vid) {
         vid.muted = true; // Always muted without sound
         if (vid.paused) {
           vid.play().then(() => {
-            if (farmIcon) farmIcon.innerHTML = '&#9889;';
-            if (farmLabel) farmLabel.innerText = 'FARMING...';
+            if (farmOverlay) {
+              farmOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }
           }).catch(err => {
             console.log('Video play error:', err);
           });
+        } else {
+          if (farmOverlay) {
+            farmOverlay.classList.add('opacity-0', 'pointer-events-none');
+          }
         }
       }
 
@@ -3561,48 +3591,29 @@
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
       const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
-      const cappedSeconds = Math.min(elapsedSeconds, 86400 * 3); // Up to 3 days offline accumulation
+      const cappedSeconds = Math.min(elapsedSeconds, 86400);
 
       const dailyRate = userLevel * 24;
       const ratePerSec = dailyRate / 86400;
-      const earned = cappedSeconds * ratePerSec;
-
-      if (isDogVipActive) {
-        if (earned >= 1) {
-          const collected = Math.floor(earned);
-          points += collected;
-          beeMinedPoints = earned - collected;
-          console.log(`VIP Dog auto-collected ${collected} points while offline!`);
-        }
-      } else {
-        beeMinedPoints += earned;
-      }
-
-      lastBeeCollectTimestamp = now;
+      beeMinedPoints = cappedSeconds * ratePerSec;
       try {
         localStorage.setItem('crazyfarm_bee_last_collect', now);
         localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
       } catch(e){}
     }
 
-    // Real-time Live Mining Tick for Bee Farm (Every 1 second)
+    // Real-time Live Mining Tick for Bee Farm (Updates 24h countdown & points)
     setInterval(() => {
+      const now = Date.now();
+      const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
+      const elapsedSeconds = Math.max(0, (now - storedTime) / 1000);
+      const cappedSeconds = Math.min(elapsedSeconds, 86400);
+
       const dailyRate = userLevel * 24;
       const ratePerSec = dailyRate / 86400;
+      beeMinedPoints = cappedSeconds * ratePerSec;
 
-      if (isDogVipActive) {
-        beeMinedPoints += ratePerSec;
-        if (beeMinedPoints >= 1) {
-          const autoCollect = Math.floor(beeMinedPoints);
-          points += autoCollect;
-          beeMinedPoints -= autoCollect;
-          updateDisplays();
-          queueCloudSave();
-        }
-      } else {
-        beeMinedPoints += ratePerSec;
-        updateBeeFarmUI();
-      }
+      updateBeeFarmUI();
     }, 1000);
 
     // Format Seconds to HH:MM:SS
