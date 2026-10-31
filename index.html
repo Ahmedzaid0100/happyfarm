@@ -1920,8 +1920,8 @@
               <span class="text-xs">&#129689;</span>
               <span id="runCoinsCollected" class="text-yellow-300 font-black text-[10px]">+0</span>
             </div>
-            <button onclick="exitRunSprintGame()" class="w-7 h-7 bg-red-600/90 hover:bg-red-500 text-white font-black rounded-full border border-white/40 flex items-center justify-center text-xs shadow-md active:scale-95 cursor-pointer">
-              âœ•
+            <button type="button" onclick="exitRunSprintGame()" ontouchend="exitRunSprintGame()" class="w-9 h-9 bg-red-600 hover:bg-red-500 text-white font-black rounded-full border-2 border-white/70 flex items-center justify-center text-base shadow-lg active:scale-90 cursor-pointer pointer-events-auto z-50">
+              &#10005;
             </button>
           </div>
         </div>
@@ -2467,7 +2467,24 @@
       startRunSprintGame();
     }
 
-        function getAnimalIcon(key) {
+    function getPlayerBattlePower() {
+      const activeFarms = (typeof getActiveOrWatchedFarmsCount === 'function') ? getActiveOrWatchedFarmsCount().length : 3;
+      const levelBonus = (typeof userLevel !== 'undefined' ? (userLevel - 1) : 0) * 0.15;
+      const adsCount = (typeof otherAdsWatched !== 'undefined') ? otherAdsWatched : 0;
+      const adsBonus = (activeFarms * 0.12) + (adsCount * 0.05);
+      const vipBonus = (typeof isDogVipActive !== 'undefined' && isDogVipActive) ? 0.50 : 0.0;
+
+      const totalMultiplier = 1.0 + levelBonus + adsBonus + vipBonus;
+      return {
+        multiplier: totalMultiplier,
+        defenseFactor: 1.0 + (vipBonus * 0.5),
+        isVip: (typeof isDogVipActive !== 'undefined' && isDogVipActive),
+        userLevel: (typeof userLevel !== 'undefined' ? userLevel : 1),
+        powerPercent: Math.round((totalMultiplier - 1.0) * 100)
+      };
+    }
+
+    function getAnimalIcon(key) {
       const icons = { cows: 'ðŸ„', chicken: 'ðŸ”', duck: 'ðŸ¦†', bunny: 'ðŸ°', sheep: 'ðŸ‘', horse: 'ðŸ´', pig: 'ðŸ·', dog: 'ðŸ¶', bee: 'ðŸ' };
       return icons[key] || 'ðŸ¾';
     }
@@ -2504,6 +2521,7 @@
     }
 
     function enterBattleArena(mode) {
+      try {
       // playSound removed - video audio active
       closeModal('battlePrepModal');
 
@@ -2561,6 +2579,11 @@
 
       pauseBgmForBattle();
       if (arena) arena.classList.remove('hidden');
+      } catch(err) {
+        console.error("Battle enter error:", err);
+        const arena = document.getElementById('battleArenaModal');
+        if (arena) arena.classList.remove('hidden');
+      }
     }
 
     function updateTeamHpBars() {
@@ -4636,6 +4659,7 @@ function updateRunHud() {
 
 // ==================== MAIN GAME LOOP ====================
 function runGameLoop() {
+  try {
   if (!runGameActive) return;
 
   const canvas = document.getElementById('runSprintCanvas');
@@ -4827,10 +4851,12 @@ function runGameLoop() {
 
   // 8. Render 3D Scene
   drawRun3DScene(ctx, canvas, now);
-
-  // Next Frame
-  if (runGameActive) {
-    runGameAnimFrame = requestAnimationFrame(runGameLoop);
+  } catch (err) {
+    console.error("Run loop frame error:", err);
+  } finally {
+    if (runGameActive) {
+      runGameAnimFrame = requestAnimationFrame(runGameLoop);
+    }
   }
 }
 
@@ -5831,26 +5857,6 @@ function triggerRunGameOver() {
   }
 }
 
-function disabledDuplicateRunClaim() { return;
-  playSound('coin');
-  playSound('fanfare');
-
-  // +50 CFC ($1.40) + 500 Farm points + bonus points
-  const wonHfc = 50;
-  const wonPoints = 500 + runBonusPoints;
-
-  hfcBalance += wonHfc;
-  points += wonPoints;
-
-  updateDisplays();
-  syncWalletView();
-  updatePvpButtonsUI();
-  queueCloudSave();
-
-  exitRunSprintGame();
-  showWalletToast('&#127881; Claimed +' + wonHfc + ' CFC & +' + wonPoints + ' Points from RUN Sprint!');
-}
-
 function retryRunSprintGame() {
   exitRunSprintGame();
   setTimeout(() => {
@@ -5860,9 +5866,22 @@ function retryRunSprintGame() {
 
 function exitRunSprintGame() {
   runGameActive = false;
-  if (runGameAnimFrame) cancelAnimationFrame(runGameAnimFrame);
+  if (runGameAnimFrame) {
+    cancelAnimationFrame(runGameAnimFrame);
+    runGameAnimFrame = null;
+  }
+  if (typeof runKeys !== 'undefined') {
+    runKeys.left = false;
+    runKeys.right = false;
+    runKeys.up = false;
+    runKeys.down = false;
+  }
   const modal = document.getElementById('runGameModal');
   if (modal) modal.classList.add('hidden');
+  const victoryOverlay = document.getElementById('runVictoryOverlay');
+  if (victoryOverlay) victoryOverlay.classList.add('hidden');
+  const gameOverOverlay = document.getElementById('runGameOverOverlay');
+  if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
 }
 
 
