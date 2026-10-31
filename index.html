@@ -253,173 +253,107 @@
         <!-- TOP BAR: Profile, Logo, VIP Badge -->
         <!-- TOP BAR: Profile & Level (Left), Centered Logo "Crazy Farm" (Center), VIP Badge (Right) -->
         <!-- TOP BAR: Profile & Level (Left), Enriched Centered Logo "Crazy Farm" (Center), Enriched VIP Badge (Right) -->
-        <header class="flex items-center justify-between w-full min-h-[52px] px-1 gap-1 select-none">
-          <!-- 1. Left: Profile / Farmer & Level (Shrink-safe & Truncated) -->
-          <div onclick="switchTab('profile')" class="flex items-center gap-1 bg-amber-100/95 border border-amber-800/40 rounded-full pl-1 pr-2 py-0.5 shadow-sm cursor-pointer active:scale-95 transition-transform shrink min-w-0" title="Open Profile">
-            <div id="headerAvatarDisplay" class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border border-white flex items-center justify-center text-xs shadow shrink-0 font-black text-white">
-              &#128104;&#8205;&#127806;
+                <!-- TOP BAR: Profile (Left with Name & Level below), Centered "Crazy Farm" Logo, VIP Badge Removed -->
+        <header class="flex items-center justify-between w-full min-h-[50px] px-1 select-none">
+          <!-- 1. Left: Profile Icon with Name & Level below -->
+          <div onclick="switchTab('profile')" class="flex items-center gap-1.5 bg-amber-100/90 border border-amber-800/40 rounded-2xl pl-1 pr-2.5 py-1 shadow-sm cursor-pointer active:scale-95 transition-transform shrink min-w-0" title="Open Profile">
+            <div id="headerAvatarDisplay" class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border border-white flex items-center justify-center text-sm shadow shrink-0 font-black text-white">&#128104;&#8205;&#127806;</div>
+            <div class="flex flex-col text-left leading-none">
+              <span id="headerPlayerNameText" class="text-[11px] font-black text-amber-950 truncate max-w-[70px]">Farmer</span>
+              <span class="text-[9px] font-extrabold text-emerald-800 mt-0.5">
+                Lv.<span id="userLevelDisplay">1</span>
+              </span>
             </div>
-            <span id="headerPlayerNameText" class="text-[11px] font-black text-amber-950 truncate max-w-[50px] leading-tight">Farmer</span>
-            <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded-full border border-white/60 shadow-sm leading-none shrink-0">
-              Lv.<span id="userLevelDisplay">1</span>
-            </span>
           </div>
 
-          <!-- 2. Center: 3D Logo "Crazy Farm" (In-Flow Centered, Zero Overlap Guaranteed) -->
-          <div class="shrink-0 flex items-center justify-center px-0.5">
-            <div class="relative bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 px-2.5 py-1 rounded-xl border border-amber-900 shadow-md text-center transform -rotate-1">
-              <span class="absolute -top-1.5 -left-1.5 text-xs select-none pointer-events-none">&#127811;</span>
-              <span class="absolute -bottom-1 -right-1 text-xs select-none pointer-events-none">&#127807;</span>
-              <h1 class="text-xs font-black text-amber-300 tracking-wider leading-none" style="font-family: 'Fredoka', cursive;">
-                Crazy<br><span class="text-lime-300 text-sm font-black">Farm</span>
+          <!-- 2. Center: Logo "Crazy Farm" Horizontally across -->
+          <div class="flex-1 flex items-center justify-center px-1">
+            <div class="bg-gradient-to-b from-amber-700 via-amber-800 to-amber-950 px-4 py-1.5 rounded-2xl border-2 border-amber-900 shadow-md text-center transform -rotate-0.5">
+              <h1 class="text-sm sm:text-base font-black text-yellow-300 tracking-wider drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] uppercase leading-none" style="font-family: 'Fredoka', cursive;">
+                Crazy Farm
               </h1>
             </div>
           </div>
 
-          <!-- 3. Right: BGM Music Toggle & VIP Dog Badge -->
-          <div class="flex items-center gap-1 justify-end shrink-0">
-            <!-- Calm Music (BGM) Toggle Button -->
-            
-            <!-- VIP Dog Badge -->
-            <div onclick="triggerVipFeature()" class="bg-gradient-to-b from-blue-600 via-indigo-700 to-indigo-900 text-white px-2 py-1 rounded-xl border border-yellow-300 shadow cursor-pointer active:scale-95 flex flex-col items-center leading-none">
-              <div class="flex items-center gap-1">
-                <span class="text-[9px] text-yellow-300 font-black">&#128081; VIP</span>
-                <span class="text-[10px]">&#128054;</span>
-              </div>
-              <span class="text-[7.5px] text-yellow-200 font-extrabold mt-0.5 tracking-wide">Dog New</span>
-            </div>
-          </div>
+          <!-- 3. Right: Spacer (VIP Badge removed completely) -->
+          <div class="w-12 shrink-0"></div>
         </header>
 
-      <!-- WOODEN DASHBOARD: Farm Points & Farming Speed -->
-      <div class="wood-board rounded-2xl p-2.5 text-white flex items-center justify-between">
-        <!-- Farm Points (Left) -->
-        <div class="flex-1 flex items-center gap-2 pl-2 border-r border-amber-900/60 pr-2">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 flex items-center justify-center text-xl shadow-inner border-2 border-yellow-200 shrink-0 animate-bounce" style="animation-duration: 2.5s;">
-            🪙
-          </div>
-          <div>
-            <div class="text-[11px] font-semibold text-amber-200">Farm Points</div>
-            <div id="farmPointsDisplay" class="text-xl font-black text-white tracking-wide text-stroke-brown leading-none">
-              0
+        <!-- WOODEN DASHBOARD: Farm Points, Farming Speed & Convert Button (Slimmer & Wider) -->
+        <div class="wood-board rounded-2xl px-3 py-2 text-white flex items-center justify-between shadow-lg gap-2">
+          <!-- Left: Farm Points -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-500 flex items-center justify-center text-base shadow-inner border border-yellow-200 shrink-0 animate-bounce" style="animation-duration: 2.5s;">&#129689;</div>
+            <div class="flex flex-col text-left leading-tight">
+              <span class="text-[9px] font-bold text-amber-200 uppercase tracking-tight">Farm Point</span>
+              <span id="farmPointsDisplay" class="text-sm font-black text-yellow-300 drop-shadow">0</span>
             </div>
           </div>
+
+          <!-- Center: Farming Speed -->
+          <div class="flex flex-col items-center justify-center text-center px-1.5 border-x border-amber-900/60 leading-tight flex-1">
+            <span class="text-[8.5px] font-bold text-amber-200 uppercase tracking-tight">Farming Speed</span>
+            <span id="farmingSpeedDisplay" class="text-xs font-black text-lime-300 drop-shadow">
+              +24/d (Lv. 1)
+            </span>
+            <span class="text-[7.5px] text-amber-300/80 font-semibold">Bee Farm</span>
+          </div>
+
+          <!-- Right: Convert Button -->
+          <button onclick="switchTab('wallet')" class="btn-3d-yellow px-3 py-1.5 rounded-xl text-amber-950 font-black text-[11px] shadow flex items-center gap-1 active:scale-95 transition-transform shrink-0" title="Convert Farm Points to CFC"><span>&#128259;</span><span>Convert</span></button>
         </div>
 
-        <!-- Farming Speed (Right) -->
-        <div class="flex-1 flex items-center gap-2 pl-2">
-          <div class="text-2xl animate-pulse">
-            🐝
-          </div>
-          <div>
-            <div class="text-[11px] font-semibold text-amber-200">Farming Speed</div>
-            <div class="flex items-center gap-1">
-              <span id="farmingSpeedDisplay" class="text-lg font-black text-lime-300 leading-none drop-shadow">
-                +12/h
+        <!-- BEE FARM BANNER & CLEAN VIDEO CENTER -->
+        <div id="beeRaidBanner" class="wood-board rounded-2xl p-2.5 border-2 border-amber-500/80 shadow-2xl relative overflow-hidden select-none">
+          <!-- Top Ribbon: Bee Farm & Level on Left, Speed on Right -->
+          <div class="flex items-center justify-between px-1 pb-1.5 border-b border-amber-900/50 mb-1.5">
+            <!-- Left: Bee Farm + Level -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-lg animate-bounce" style="animation-duration: 2s;">&#128029;</span>
+              <span class="text-xs font-black text-yellow-300 tracking-wide drop-shadow-sm uppercase" style="font-family: 'Fredoka', cursive;">Bee Farm</span>
+              <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950 text-[8.5px] font-black px-1.5 py-0.2 rounded-md shadow leading-none border border-yellow-200">
+                Lv. <span id="beeFarmLevelBadge">1</span>
               </span>
             </div>
-            <button onclick="watchDoubleSpeedAd()" class="text-[10px] text-yellow-300 hover:text-white font-bold underline flex items-center gap-0.5 mt-0.5 active:scale-95">
-              <span>(▶️ 2x with Ad)</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
-
-      <!-- BEE HIVE & QUEEN SWARM COMMAND CENTER BANNER -->
-      <div id="beeRaidBanner" class="wood-board rounded-2xl p-2.5 border-2 border-amber-500/80 shadow-2xl relative overflow-hidden group select-none transition-all duration-300">
-        <!-- Top Ribbon: Level & Speed on Left, Honey Ready on Right -->
-        <div class="flex items-center justify-between px-1 pb-2">
-          <!-- Left: Bee Icon + Title + Level Badge -->
-          <div class="flex items-center gap-1.5">
-            <span class="text-xl animate-bounce" style="animation-duration: 2s;">&#128029;</span>
-            <div class="leading-tight">
-              <div class="flex items-center gap-1.5">
-                <span class="text-[12px] font-black text-amber-200 tracking-wide drop-shadow-sm uppercase">Queen Bee Hive</span>
-                <span id="beeFarmLevelBadge" class="bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950 text-[8.5px] font-black px-1.5 py-0.2 rounded-md shadow leading-none border border-yellow-200">Lv. 1</span>
-              </div>
-              <div class="text-[8px] font-bold text-amber-300/90 flex items-center gap-1">
-                <span>&#9889; Speed:</span>
-                <span id="beeFarmDailyRateText" class="text-yellow-300 font-extrabold">24/day (+1/h)</span>
-              </div>
+            <!-- Right: Speed -->
+            <div class="flex items-center gap-1 text-[8.5px] font-black text-lime-300 bg-black/40 px-2 py-0.5 rounded-lg border border-amber-900/40">
+              <span class="text-amber-200 font-bold">Speed:</span>
+              <span id="beeFarmDailyRateText">24/d - 1/h</span>
             </div>
           </div>
 
-          <!-- Right: Honey Mining Indicator -->
-          <div class="flex flex-col items-end">
-            <span id="beeReadyText" class="bg-amber-900/90 border border-amber-400 text-yellow-300 text-[8.5px] font-black px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
-              <span>&#127855;</span> 0 ready
-            </span>
-            <span class="text-[7.5px] text-amber-300 font-bold mt-0.5">24/7 Auto Mining</span>
-          </div>
-        </div>
+          <!-- Center Visual: Clean Looping Video Screen with 'Tap to Farm' Button -->
+          <div id="beeVideoContainer" class="relative w-full h-[160px] rounded-xl overflow-hidden border-2 border-amber-900/60 shadow-inner bg-black select-none" onclick="tapToFarmClick(event)">
+            <!-- Video Element (Looping & Always Playing while on Home) -->
+            <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline webkit-playsinline x5-playsinline muted loop autoplay class="w-full h-full object-cover object-center"></video>
+            
+            <!-- Poster Fallback (under video if video is loading) -->
+            <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Bee Farm" class="w-full h-full object-cover object-center absolute inset-0 pointer-events-none -z-10" />
 
-        <!-- Center Visual / Interactive Video Raid Arena -->
-        <div id="beeVideoContainer" class="relative w-full h-[155px] rounded-xl overflow-hidden border border-amber-900/60 shadow-inner bg-black cursor-pointer group-hover:border-amber-400/80 transition-all select-none" onclick="toggleSwarmRaidVideo()">
-          <!-- Video Element (Autoplay & Mobile Inline Enabled) -->
-          <video id="beeAttackVideo" src="assets/videos/bee_attack.mp4" playsinline webkit-playsinline x5-playsinline muted preload="auto" class="w-full h-full object-cover object-center hidden" onended="onSwarmRaidEnded()" onclick="event.stopPropagation(); toggleSwarmRaidVideo()"></video>
-          
-          <!-- Poster Image -->
-          <img id="beeAttackPoster" src="assets/bee_raid_poster.png" alt="Queen Bee Attack" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105 pointer-events-none" />
-          
-          <!-- Subtle Dark/Gold Vignette Gradient -->
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/35 pointer-events-none"></div>
-
-          <!-- Top-Left Floating Tag: Swarm Power -->
-          <div class="absolute top-2 left-2 bg-amber-950/85 backdrop-blur-sm border border-amber-400/70 text-amber-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow pointer-events-none">
-            <span>&#9889;</span>
-            <span>Swarm Power: <span class="text-yellow-300">10x</span></span>
-          </div>
-
-          <!-- Top-Right Floating Tag: Sound & Status controls -->
-          <div class="absolute top-2 right-2 flex items-center gap-1 z-20">
-            <button id="beeSoundBtn" onclick="event.stopPropagation(); toggleBeeSound()" class="bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/30 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow flex items-center gap-0.5 active:scale-95 cursor-pointer" title="Mute/Unmute Video Sound">
-              <span id="beeSoundIcon">&#128263;</span>
-            </button>
-            <div id="beeRaidStatusBadge" class="bg-rose-950/85 backdrop-blur-sm border border-rose-400/70 text-rose-200 text-[8.5px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow animate-pulse pointer-events-none">
-              <span>&#9876;</span>
-              <span id="beeRaidStatusText">Raid Ready</span>
+            <!-- Clean Screen: All previous clutter text removed! Only the stylish Center Button -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <button type="button" onclick="tapToFarmClick(event)" class="btn-3d-yellow px-5 py-2 rounded-2xl text-amber-950 font-black text-xs shadow-2xl border-2 border-yellow-200 animate-bounce pointer-events-auto active:scale-95 transition-transform cursor-pointer flex items-center gap-1.5">
+                <span class="text-sm">&#9889;</span><span class="tracking-wider uppercase">Tap to Farm</span>
+              </button>
             </div>
           </div>
 
-          <!-- Center Action Play Button Overlay -->
-          <div id="beePlayOverlay" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
-            <button type="button" onclick="event.stopPropagation(); playSwarmRaid()" class="btn-3d-yellow px-4 py-1.5 rounded-xl text-amber-950 font-black text-xs flex items-center gap-2 shadow-2xl border-2 border-yellow-200 animate-bounce cursor-pointer active:scale-95" style="animation-duration: 2s;">
-              <span class="text-sm">&#9654;&#65039;</span>
-              <span class="tracking-wide">TAP TO RAID!</span>
+          <!-- Bottom Action Buttons: Upgrade (Left) & Collect (Right) -->
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <!-- Upgrade Hive Button -->
+            <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-yellow-300 active:scale-95 transition-transform" title="Upgrade Bee Hive">
+              <span class="text-xs">&#9889;</span><span>Upgrade (Lv.+1)</span>
             </button>
-            <span class="text-[8.5px] text-yellow-200 font-extrabold mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] pointer-events-none">&#9876; Watch Queen Bee & Swarm Attack</span>
-          </div>
-
-          <!-- Bottom Status Bar inside visual -->
-          <div class="absolute bottom-1.5 inset-x-2 flex items-center justify-between text-[8px] font-extrabold text-white drop-shadow pointer-events-none">
-            <span class="flex items-center gap-1">
-              <span>&#128081;</span>
-              <span>Angry Queen Bee vs Farm</span>
-            </span>
-            <span class="text-yellow-300">
-              &#9889; 2x Mining Speed at Lv. 2
-            </span>
+            
+            <!-- Collect Honey Button -->
+            <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-emerald-300 active:scale-95 transition-transform" title="Collect Mined Honey">
+              <span class="text-xs">&#127855;</span><span>Collect (+0)</span>
+            </button>
           </div>
         </div>
 
-        <!-- Integrated Bee Hive Action Buttons (Upgrade & Collect) -->
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          <!-- Upgrade Hive Button -->
-          <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-yellow-300 active:scale-95 transition-transform" title="Upgrade Bee Hive">
-            <span class="text-xs">&#9889;</span>
-            <span>Upgrade Hive (Lv.+1)</span>
-          </button>
-          
-          <!-- Collect Honey Button -->
-          <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1.5 shadow-md border border-emerald-300 active:scale-95 transition-transform" title="Collect Mined Honey">
-            <span class="text-xs">&#127855;</span>
-            <span>Collect Honey (+0)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- ==================== BATTLE ARENA (PVP) - COMPACT 4-MODE ==================== -->
+        <!-- ==================== BATTLE ARENA (PVP) - COMPACT 4-MODE ==================== -->
       <div id="battleArenaCard" class="wood-board rounded-2xl p-2 shadow-xl border-2 border-amber-500/70 relative overflow-hidden select-none">
         <!-- Header Banner -->
         <div class="flex items-center justify-between border-b border-amber-900/60 pb-1 mb-1.5">
@@ -817,9 +751,7 @@
 
           <!-- Action Buttons (Withdraw & History) -->
           <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="switchTab('wallet')" class="btn-3d-green py-2.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
-              <span>🚀</span> Withdraw
-            </button>
+            <button onclick="switchTab('wallet')" class="btn-3d-yellow px-3 py-1.5 rounded-xl text-amber-950 font-black text-[11px] shadow flex items-center gap-1 active:scale-95 transition-transform shrink-0" title="Convert Farm Points to CFC"><span>&#128259;</span><span>Convert</span></button>
             <button onclick="openTransactionHistory()" class="btn-3d-yellow py-2.5 rounded-2xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
               <span>📜</span> Transaction History
             </button>
@@ -3329,7 +3261,7 @@
       const hourlyBeeRate = userLevel;
 
       document.getElementById('farmPointsDisplay').innerText = points.toLocaleString();
-      document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/day (+${hourlyBeeRate}/h)`;
+      document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/d (Lv. ${userLevel})`;
       document.getElementById('walletFarmBalance').innerText = `${points.toLocaleString()} FARM Points`;
       document.getElementById('userLevelDisplay').innerText = userLevel;
       updateBeeFarmUI();
@@ -3497,6 +3429,34 @@
       vid.muted = isBeeAudioMuted;
       if (icon) icon.innerHTML = isBeeAudioMuted ? '&#128263;' : '&#128266;';
       showWalletToast(isBeeAudioMuted ? '&#128263; Video Sound Muted' : '&#128266; Video Sound Unmuted');
+    }
+
+    function tapToFarmClick(event) {
+      if (event) event.stopPropagation();
+      playSound('click');
+      
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
+
+      const container = document.getElementById('beeVideoContainer');
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const x = event && event.clientX ? (event.clientX - rect.left) : (rect.width / 2);
+        const y = event && event.clientY ? (event.clientY - rect.top) : (rect.height / 2);
+
+        const floater = document.createElement('div');
+        floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-30 select-none';
+        floater.style.left = x + 'px';
+        floater.style.top = y + 'px';
+        floater.innerText = '+1 ðŸª™';
+        container.appendChild(floater);
+        setTimeout(() => { floater.remove(); }, 1000);
+      }
+
+      points += 1;
+      updateDisplays();
+      queueCloudSave();
     }
 
     function toggleSwarmRaidVideo() {
