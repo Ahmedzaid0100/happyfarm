@@ -1825,7 +1825,7 @@
         <!-- ==================== TOP BAR: PLAYER 2 (ENEMY) & MODE & CLOSE ==================== -->
         <div class="relative z-30 w-full pt-2.5 px-3 pb-1 flex items-center justify-between gap-1.5 bg-gradient-to-b from-black/40 to-transparent">
           <!-- Player 2 Box (Left) -->
-          <div class="flex items-center gap-1.5 bg-black/75 backdrop-blur-sm p-1.5 rounded-2xl border border-red-500/80 max-w-[160px] w-full shadow-lg">
+          <div class="flex items-center gap-1.5 bg-black/75 backdrop-blur-sm p-1.5 rounded-2xl border border-red-500/80 max-w-[150px] w-full shadow-lg">
             <div class="w-7 h-7 rounded-full bg-red-900 border border-white/50 flex items-center justify-center text-xs shadow">👹</div>
             <div class="flex-1 pr-1">
               <div class="flex justify-between items-center text-[9px] font-black text-white leading-none">
@@ -1838,6 +1838,11 @@
             </div>
           </div>
 
+          <!-- Live 20s Battle Timer (Center) -->
+          <div id="battleTimerBadge" class="flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2.5 py-1 rounded-2xl border border-yellow-400/80 shadow-lg select-none">
+            <span class="text-xs">⏱️</span>
+            <span id="battleTimerDisplay" class="font-black text-xs text-yellow-300 font-mono tracking-wider">20.0s</span>
+          </div>
 
           <!-- Close Button (Right) -->
           <button type="button" onclick="closeBattleArena()" ontouchend="closeBattleArena()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50">&#10005;</button>
@@ -2308,6 +2313,9 @@
     let enemySquad = [];
     let isBattleInProgress = false;
     let battleRoundInterval = null;
+    let battleClockInterval = null;
+    let battleStartTime = 0;
+    const BATTLE_ROUND_DURATION = 20.0; // 20 seconds live combat timer
 
     const ANIMAL_STATS = {
       dog:     { name: 'Dog',     lvl: 20, maxHp: 130, hp: 130, anim: 'anim-dog' },
@@ -2621,12 +2629,20 @@
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         videoEl.src = (mode === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + mode + 'vs' + mode + '.mp4');
+        videoEl.loop = true;
         videoEl.muted = false;
         videoEl.volume = 1.0;
+        videoEl.onended = () => {
+          videoEl.currentTime = 0;
+          videoEl.play().catch(()=>{});
+        };
         videoEl.load();
         videoEl.pause();
         videoEl.currentTime = 0;
       }
+
+      const timerEl = document.getElementById('battleTimerDisplay');
+      if (timerEl) timerEl.innerText = BATTLE_ROUND_DURATION.toFixed(1) + 's';
 
       pauseBgmForBattle();
       if (arena) {
@@ -2666,12 +2682,19 @@
     function startLiveBattleRound() {
       if (isBattleInProgress) return;
       isBattleInProgress = true;
-      // Start 3D battle video on START FIGHT click
+      battleStartTime = Date.now();
+
+      // Start 3D battle video on START FIGHT click (loops continuously throughout the 20 seconds)
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
+        videoEl.loop = true;
         videoEl.muted = false;
         videoEl.volume = 1.0;
         videoEl.currentTime = 0;
+        videoEl.onended = () => {
+          videoEl.currentTime = 0;
+          videoEl.play().catch(()=>{});
+        };
         const p = videoEl.play();
         if (p !== undefined) {
           p.catch(e => {
@@ -2685,31 +2708,53 @@
       const fightOverlay = document.getElementById('battleFightOverlay');
       if (fightOverlay) fightOverlay.classList.add('hidden');
 
+      // 20-Second Live Battle Clock Interval
+      if (battleClockInterval) clearInterval(battleClockInterval);
+      battleClockInterval = setInterval(() => {
+        if (!isBattleInProgress) return;
+        const elapsed = (Date.now() - battleStartTime) / 1000;
+        const remaining = Math.max(0, BATTLE_ROUND_DURATION - elapsed);
+        const timerEl = document.getElementById('battleTimerDisplay');
+        if (timerEl) timerEl.innerText = remaining.toFixed(1) + 's';
+
+        if (remaining <= 0) {
+          clearInterval(battleClockInterval);
+          clearInterval(battleRoundInterval);
+          isBattleInProgress = false;
+          // Final knockout on all enemies at exactly 20.0s
+          enemySquad.forEach(u => {
+            u.hp = 0;
+            const tgtBar = document.getElementById('hpBar-' + u.id);
+            if (tgtBar) tgtBar.style.width = '0%';
+            const skull = document.getElementById('skull-' + u.id);
+            if (skull) skull.classList.remove('hidden');
+            const tgtFrame = document.getElementById('unitFrame-' + u.id);
+            if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
+          });
+          updateTeamHpBars();
+          setTimeout(() => triggerBattleVictory(), 600);
+        }
+      }, 100);
+
+      // Paced Combat Interval: Attacks distributed over the 20 seconds
+      if (battleRoundInterval) clearInterval(battleRoundInterval);
       battleRoundInterval = setInterval(() => {
+        if (!isBattleInProgress) return;
+        const elapsed = (Date.now() - battleStartTime) / 1000;
+        if (elapsed >= BATTLE_ROUND_DURATION - 0.5) return;
+
         const alivePlayers = playerSquad.filter(u => u.hp > 0);
         const aliveEnemies = enemySquad.filter(u => u.hp > 0);
-
-        if (aliveEnemies.length === 0) {
-          clearInterval(battleRoundInterval);
-          setTimeout(() => triggerBattleVictory(), 600);
-          return;
-        }
-
-        if (alivePlayers.length === 0) {
-          clearInterval(battleRoundInterval);
-          showWalletToast('💀 Your squad was defeated! Try again.');
-          closeBattleArena();
-          return;
-        }
+        if (alivePlayers.length === 0 || aliveEnemies.length === 0) return;
 
         const attacker = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
-        const target = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+        const target = aliveEnemies[0];
 
-                const power = getPlayerBattlePower();
-        const baseDmg = Math.floor(Math.random() * 20) + 30;
+        const power = getPlayerBattlePower();
+        const baseDmg = Math.floor(Math.random() * 8) + 12;
         let dmg = Math.round(baseDmg * power.multiplier);
-        const isCrit = Math.random() < (power.multiplier > 1.3 ? 0.35 : 0.15);
-        if (isCrit) { dmg = Math.round(dmg * 1.45); }
+        const isCrit = Math.random() < 0.25;
+        if (isCrit) { dmg = Math.round(dmg * 1.4); }
         target.hp = Math.max(target.hp - dmg, 0);
 
         const attFrame = document.getElementById('unitFrame-' + attacker.id);
@@ -2724,13 +2769,12 @@
 
         if (tgtCard) {
           const rect = tgtCard.getBoundingClientRect();
-          spawnHitEffect((isCrit ? 'âš¡ CRIT! -' : '-') + dmg, rect.left + rect.width / 2, rect.top, isCrit ? '#facc15' : '#ef4444');
+          spawnHitEffect((isCrit ? '⚡ CRIT! -' : '-') + dmg, rect.left + rect.width / 2, rect.top, isCrit ? '#facc15' : '#ef4444');
         }
         if (tgtBar) {
           const pct = Math.round((target.hp / target.maxHp) * 100);
           tgtBar.style.width = pct + '%';
         }
-        // Video audio plays battle sounds
         if (target.hp <= 0) {
           const skull = document.getElementById('skull-' + target.id);
           if (skull) skull.classList.remove('hidden');
@@ -2739,14 +2783,9 @@
 
         updateTeamHpBars();
 
-        if (enemySquad.every(u => u.hp <= 0)) {
-          clearInterval(battleRoundInterval);
-          setTimeout(() => triggerBattleVictory(), 600);
-          return;
-        }
-
-        // Enemy Counter-Attack
+        // Enemy Counter-Attack (Player squad takes light theatrical damage)
         setTimeout(() => {
+          if (!isBattleInProgress) return;
           const livingE = enemySquad.filter(u => u.hp > 0);
           const livingP = playerSquad.filter(u => u.hp > 0);
           if (livingE.length === 0 || livingP.length === 0) return;
@@ -2754,11 +2793,8 @@
           const eAttacker = livingE[Math.floor(Math.random() * livingE.length)];
           const pTarget = livingP[Math.floor(Math.random() * livingP.length)];
 
-                    const power = getPlayerBattlePower();
-          const rawEDmg = Math.floor(Math.random() * 15) + 12;
-          // Inactive players take more damage; active players with VIP take much less
-          const eDmg = Math.max(Math.round(rawEDmg / power.defenseFactor), 4);
-          pTarget.hp = Math.max(pTarget.hp - eDmg, 0);
+          const eDmg = Math.floor(Math.random() * 5) + 3;
+          pTarget.hp = Math.max(pTarget.hp - eDmg, 20); // Keep player squad alive and fighting
 
           const eAttFrame = document.getElementById('unitFrame-' + eAttacker.id);
           if (eAttFrame) {
@@ -2778,9 +2814,9 @@
             pTgtBar.style.width = pPct + '%';
           }
           updateTeamHpBars();
-        }, 650);
+        }, 550);
 
-      }, 1400);
+      }, 1200);
     }
 
     function triggerSpecialAttack() {
@@ -2790,7 +2826,6 @@
 
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl && videoEl.muted) { videoEl.muted = false; videoEl.volume = 1.0; }
-      // playSound removed
 
       // Screen shake and slash VFX
       const innerFrame = document.getElementById('arenaInnerFrame');
@@ -2807,7 +2842,7 @@
       }
 
       const target = aliveEnemies[0];
-      const bonusDmg = 65;
+      const bonusDmg = 25;
       target.hp = Math.max(target.hp - bonusDmg, 0);
 
       const tgtCard = document.getElementById('unitCard-' + target.id);
@@ -2834,11 +2869,6 @@
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
       }
-
-      if (enemySquad.every(u => u.hp <= 0)) {
-        if (battleRoundInterval) clearInterval(battleRoundInterval);
-        setTimeout(() => triggerBattleVictory(), 500);
-      }
     }
 
     function spawnHitEffect(text, clientX, clientY, colorHex) {
@@ -2858,6 +2888,12 @@
 
     function triggerBattleVictory() {
       isBattleInProgress = false;
+      if (battleRoundInterval) clearInterval(battleRoundInterval);
+      if (battleClockInterval) clearInterval(battleClockInterval);
+
+      const videoEl = document.getElementById('arenaBattleVideo');
+      if (videoEl) videoEl.pause();
+
       try { playSound('fanfare'); } catch(e){}
 
       const victoryOverlay = document.getElementById('battleVictoryOverlay');
@@ -2916,6 +2952,7 @@
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) { videoEl.pause(); videoEl.currentTime = 0; videoEl.muted = true; }
       if (battleRoundInterval) clearInterval(battleRoundInterval);
+      if (battleClockInterval) clearInterval(battleClockInterval);
       isBattleInProgress = false;
       const arena = document.getElementById('battleArenaModal');
       if (arena) {
@@ -5282,13 +5319,13 @@ function runGameLoop() {
     });
   }
 
-  // At 14.0s: Finish line appears at horizon (z = 1.0)
-  if (elapsed >= 18.5 && runFinishLineZ === null) {
+  // Finish line appears at 17.0s and reaches dog at 20.0s
+  if (elapsed >= 17.0 && runFinishLineZ === null) {
     runFinishLineZ = 1.0;
   }
 
   // 3. Spawning Waves of 3D Farm Animals & Obstacles
-  if (elapsed < 18.2) {
+  if (elapsed < 18.0) {
     const waveInterval = runShieldTimer > 0 ? 1400 : 2200;
     if (now - runLastWaveTime > waveInterval) {
       runLastWaveTime = now;
@@ -5298,11 +5335,16 @@ function runGameLoop() {
 
   // 4. Update Finish Line
   if (runFinishLineZ !== null) {
-    runFinishLineZ -= 0.011 * speedMult;
-    if (runFinishLineZ <= runDog.z) {
+    runFinishLineZ -= 0.012 * speedMult;
+    if (runFinishLineZ <= runDog.z || elapsed >= RUN_GAME_DURATION) {
       triggerRunVictory();
       return;
     }
+  }
+
+  if (elapsed >= RUN_GAME_DURATION) {
+    triggerRunVictory();
+    return;
   }
 
   // 5. Update Obstacles (Moving towards camera)
