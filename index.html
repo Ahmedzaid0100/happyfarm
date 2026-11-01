@@ -4049,7 +4049,7 @@
         // Step 1: Free Daily Open
         container.innerHTML = `
           <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
-            <span>✨</span> OPEN FREE
+            <span>&#10024;</span> OPEN FREE
           </button>
         `;
       } else if (status.isPointsOpenAvailable) {
@@ -4057,10 +4057,10 @@
         container.innerHTML = `
           <div class="flex flex-col gap-1 w-full">
             <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1 rounded-lg text-white font-black text-[9.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
-              <span>⚡</span> Open (1,000 🪙)
+              <span>&#9889;</span> Open (1,000 &#129689;)
             </button>
             <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
-              ⏳ Free in ${formatTime(status.remainingSec)}
+              &#9203; Free in ${formatTime(status.remainingSec)}
             </div>
           </div>
         `;
@@ -4069,10 +4069,10 @@
         container.innerHTML = `
           <div class="flex flex-col gap-1 w-full">
             <button disabled class="w-full py-1 rounded-lg bg-amber-950/70 text-amber-400/80 font-bold text-[9px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
-              <span>🔒</span> Done Today (2/2)
+              <span>&#128274;</span> Done Today (2/2)
             </button>
             <div class="text-[7.5px] text-amber-300/80 font-bold text-center leading-none">
-              ⏳ Next Free in ${formatTime(status.remainingSec)}
+              &#9203; Next Free in ${formatTime(status.remainingSec)}
             </div>
           </div>
         `;
@@ -4086,7 +4086,7 @@
         if (!status.isPointsOpenAvailable) {
           try { playSound('click'); } catch(e){}
           if (typeof showWalletToast === 'function') {
-            showWalletToast(`⏳ Daily point open already used today! Next free box in ${formatTime(status.remainingSec)}`);
+            showWalletToast('\u23F3 Daily point open already used today! Next free box in ' + formatTime(status.remainingSec));
           }
           return;
         }
@@ -4095,9 +4095,9 @@
         if (points < COST) {
           try { playSound('click'); } catch(e){}
           if (typeof showWalletToast === 'function') {
-            showWalletToast(`⚠️ Need 1,000 Points to open Crazy Box! (You have ${points.toLocaleString()} pts)`);
+            showWalletToast('\u26A0\uFE0F Need 1,000 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
           } else {
-            alert(`⚠️ Need 1,000 Points to open Crazy Box! (You have ${points.toLocaleString()} pts)`);
+            alert('\u26A0\uFE0F Need 1,000 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
           }
           return;
         }
@@ -4106,7 +4106,7 @@
         currentCrazyBoxIsOpenWithPoints = true;
         updateDisplays();
         if (typeof showWalletToast === 'function') {
-          showWalletToast('⚡ Used 1,000 Points for Daily Crazy Box!');
+          showWalletToast('\u26A1 Used 1,000 Points for Daily Crazy Box!');
         }
       } else {
         if (!status.isFreeAvailable) {
@@ -4116,7 +4116,7 @@
           }
           try { playSound('click'); } catch(e){}
           if (typeof showWalletToast === 'function') {
-            showWalletToast(`⏳ Daily limit reached (1 Free + 1 with Points)! Next free box in ${formatTime(status.remainingSec)}`);
+            showWalletToast('\u23F3 Daily limit reached (1 Free + 1 with Points)! Next free box in ' + formatTime(status.remainingSec));
           }
           return;
         }
@@ -4134,7 +4134,7 @@
       const normalBtnText = document.getElementById('crazyBoxNormalBtnText');
 
       if (prizeEl) prizeEl.innerText = `+${currentCrazyBoxWin} CFC`;
-      if (usdEl) usdEl.innerText = `≈ $${(currentCrazyBoxWin * HFC_USD_RATE).toFixed(2)} USD`;
+      if (usdEl) usdEl.innerText = '\u2248 $' + (currentCrazyBoxWin * HFC_USD_RATE).toFixed(2) + ' USD';
       if (doubleBtnText) doubleBtnText.innerText = `Collect 2x (+${currentCrazyBoxWin * 2} CFC) with Ad`;
       if (normalBtnText) normalBtnText.innerText = `Collect +${currentCrazyBoxWin} CFC`;
 
@@ -4181,7 +4181,7 @@
       closeModal('crazyBoxModal');
       updateCrazyBoxUI();
 
-      showWalletToast(`🎁 Claimed +${amount} CFC from Crazy Box!`);
+      showWalletToast('\u{1F389} Claimed +' + amount + ' CFC from Crazy Box!');
     }
     // ==================== END CRAZY BOX ====================
 
