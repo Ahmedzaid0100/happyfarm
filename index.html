@@ -438,26 +438,26 @@
       <!-- FARM CARDS GRID (3 x 3) -->
       <div class="grid grid-cols-3 gap-2 pb-4">
 
-        <!-- 1. Mystery Farm (Coming Soon) -->
-        <div class="farm-card bg-gradient-to-b from-[#f3e8ff] via-[#e9d5ff] to-[#d8b4fe] rounded-2xl p-1.5 flex flex-col justify-between border-2 border-purple-400/80 shadow-md relative overflow-hidden group">
-          <div class="relative w-full h-[74px] rounded-xl overflow-hidden bg-purple-950/20 shadow-inner flex flex-col items-center justify-center border border-purple-300/40">
-            <div class="text-3xl animate-bounce" style="animation-duration: 2.2s;">
+        <!-- 1. Crazy Box (Daily 24h Mystery CFC Reward) -->
+        <div class="farm-card bg-gradient-to-b from-[#fefce8] via-[#fef08a] to-[#fde047] rounded-2xl p-1.5 flex flex-col justify-between border-2 border-[#eab308] shadow-md relative overflow-hidden group">
+          <div class="relative w-full h-[74px] rounded-xl overflow-hidden bg-gradient-to-tr from-amber-900/30 via-yellow-600/20 to-amber-400/30 shadow-inner flex flex-col items-center justify-center border border-amber-300/60">
+            <div class="text-4xl animate-bounce filter drop-shadow-md select-none" style="animation-duration: 1.8s;">
               &#127873;
             </div>
-            <div class="text-[8px] font-black text-purple-900 bg-white/80 px-2 py-0.5 rounded-full mt-1 border border-purple-300 shadow-sm">
-              &#10024; Mystery Pet
+            <div class="text-[7.5px] font-black text-amber-950 bg-white/90 px-1.5 py-0.2 rounded-full mt-0.5 border border-amber-400 shadow-sm leading-tight">
+              &#10024; Daily CFC Gift
             </div>
           </div>
           <div class="flex items-center justify-between px-0.5 pt-1.5 pb-1">
-            <span class="text-[10px] font-black text-purple-950 truncate leading-none">New Farm</span>
-            <span class="bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md leading-none shadow-sm">Soon</span>
+            <span class="text-[10px] font-black text-amber-950 truncate leading-none">Crazy Box</span>
+            <span class="bg-amber-600 text-white text-[7.5px] font-black px-1.5 py-0.2 rounded-md leading-none shadow-sm">Daily</span>
           </div>
-          <div class="flex items-center justify-center px-0.5 pb-1 text-[8px] font-bold text-purple-800">
-            <span>&#128274; Unlocks at Lv. 5</span>
+          <div class="flex items-center justify-center px-0.5 pb-0.5 text-[8px] font-bold text-amber-900">
+            <span>&#128176; Win 2-8 CFC Free!</span>
           </div>
-          <div class="mt-0.5">
-            <button disabled class="w-full py-1 rounded-lg bg-purple-300/80 text-purple-900/80 font-black text-[9px] flex items-center justify-center gap-0.5 shadow-inner cursor-not-allowed border border-purple-400/50">
-              <span>&#128274; Coming Soon</span>
+          <div class="mt-0.5" id="crazyBoxBtnContainer">
+            <button onclick="openCrazyBox()" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse">
+              <span>&#10024;</span> OPEN
             </button>
           </div>
         </div>
@@ -1680,6 +1680,40 @@
 
     <!-- ==================== MODALS ==================== -->
 
+    <!-- Crazy Box Reward Celebration Modal -->
+    <div id="crazyBoxModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center animate-in fade-in zoom-in duration-300">
+        <button onclick="closeModal('crazyBoxModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        
+        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-white mx-auto flex items-center justify-center text-5xl shadow-xl mb-3 relative animate-bounce" style="animation-duration: 1.5s;">
+          🎁
+          <span class="absolute -top-2 -right-2 text-2xl animate-spin" style="animation-duration: 4s;">✨</span>
+        </div>
+
+        <h3 class="text-2xl font-black text-amber-300 mb-0.5 filter drop-shadow">🎉 Crazy Box Opened!</h3>
+        <p class="text-xs text-amber-100 font-semibold mb-3">You received a lucky surprise gift:</p>
+
+        <!-- Prize Display Banner -->
+        <div class="bg-black/50 rounded-2xl p-3 mb-4 border border-yellow-400/50 flex flex-col items-center justify-center">
+          <div class="flex items-center gap-2">
+            <span class="text-3xl">&#129689;</span>
+            <span id="crazyBoxPrizeText" class="text-2xl font-black text-lime-300 tracking-wide">+5 CFC</span>
+          </div>
+          <span id="crazyBoxUsdText" class="text-[11px] text-amber-200/90 font-bold mt-0.5">≈ $0.14 USD</span>
+        </div>
+
+        <!-- Action Buttons: Normal Collect & 2x Double with Ad -->
+        <div class="space-y-2">
+          <button onclick="claimCrazyBoxReward(true)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+            <span>&#127916;</span> <span id="crazyBoxDoubleBtnText">Collect 2x (+10 CFC) with Ad</span>
+          </button>
+          <button onclick="claimCrazyBoxReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+            <span>&#129689;</span> <span id="crazyBoxNormalBtnText">Collect +5 CFC</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 0. Dog VIP TON Purchase Modal -->
     <div id="dogVipModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center">
@@ -2788,7 +2822,7 @@
 
     function triggerBattleVictory() {
       isBattleInProgress = false;
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
 
       const victoryOverlay = document.getElementById('battleVictoryOverlay');
       const rewardText = document.getElementById('battleWinRewardText');
@@ -2812,7 +2846,7 @@
 
     function claimBattleVictoryReward(isDouble = false) {
       playSound('coin');
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
 
       const mode = currentBattleMode;
       const basePoints = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
@@ -2934,6 +2968,7 @@
       document.getElementById('userLevelDisplay').innerText = userLevel;
       updateBeeFarmUI();
       updatePvpButtonsUI();
+      if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
 
       // Ensure Animal Farms are initialized and rendered
       if (typeof adFarms !== 'undefined' && !window._animalFarmsLoaded) {
@@ -3007,7 +3042,7 @@
         alert(`⚠️ You need 1,000 points to upgrade Bee Farm and your level to Lv. ${userLevel + 1}!\nCurrent Balance: ${points.toLocaleString()} points.\nRemaining needed: ${(1000 - points).toLocaleString()} points.`);
         return;
       }
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       points -= 1000;
       userLevel += 1; queueCloudSave();
       updateDisplays();
@@ -3101,13 +3136,14 @@
 
       // 24 hours completed: Collect reward!
       playSound('coin');
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       points += dailyRate;
       lastBeeCollectTimestamp = Date.now();
       beeMinedPoints = 0;
       try {
         localStorage.setItem('crazyfarm_bee_mined_pts', 0);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
       } catch(e){}
 
       queueCloudSave();
@@ -3292,6 +3328,7 @@
 
       updateBeeFarmUI();
       updatePvpButtonsUI();
+      if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
 
       // Real-time 8-Hour Animal Farms Countdown & Status
       if (typeof adFarms !== 'undefined') {
@@ -3521,6 +3558,92 @@
       alert(`🔒 ${name} is locked!\n\nYou need to reach Lv. ${reqLevel} to unlock this farm. Earn more points to level up!`);
     }
 
+    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT) ====================
+    const CRAZY_BOX_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+    let lastCrazyBoxOpenTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
+    let currentCrazyBoxWin = 0;
+
+    function updateCrazyBoxUI() {
+      const container = document.getElementById('crazyBoxBtnContainer');
+      if (!container) return;
+      const now = Date.now();
+      const elapsed = now - lastCrazyBoxOpenTimestamp;
+
+      if (lastCrazyBoxOpenTimestamp === 0 || elapsed >= CRAZY_BOX_COOLDOWN_MS) {
+        container.innerHTML = `
+          <button onclick="openCrazyBox()" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
+            <span>✨</span> OPEN
+          </button>
+        `;
+      } else {
+        const remainingSec = Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - elapsed) / 1000));
+        container.innerHTML = `
+          <button disabled class="w-full py-1 rounded-lg bg-amber-950/60 text-amber-300 font-bold text-[9px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
+            <span>⏳</span> ${formatTime(remainingSec)}
+          </button>
+        `;
+      }
+    }
+
+    function openCrazyBox() {
+      const now = Date.now();
+      const elapsed = now - lastCrazyBoxOpenTimestamp;
+      if (lastCrazyBoxOpenTimestamp > 0 && elapsed < CRAZY_BOX_COOLDOWN_MS) {
+        try { playSound('click'); } catch(e){}
+        const remainingSec = Math.floor((CRAZY_BOX_COOLDOWN_MS - elapsed) / 1000);
+        showWalletToast('⏳ Crazy Box is cooling down! Ready in ' + formatTime(remainingSec));
+        return;
+      }
+
+      try { playSound('fanfare'); } catch(e){}
+      // Possible rewards: strictly 2, 4, 5, 6, 8 CFC
+      const rewards = [2, 4, 5, 6, 8];
+      currentCrazyBoxWin = rewards[Math.floor(Math.random() * rewards.length)];
+
+      const prizeEl = document.getElementById('crazyBoxPrizeText');
+      const usdEl = document.getElementById('crazyBoxUsdText');
+      const doubleBtnText = document.getElementById('crazyBoxDoubleBtnText');
+      const normalBtnText = document.getElementById('crazyBoxNormalBtnText');
+
+      if (prizeEl) prizeEl.innerText = `+${currentCrazyBoxWin} CFC`;
+      if (usdEl) usdEl.innerText = `≈ $${(currentCrazyBoxWin * HFC_USD_RATE).toFixed(2)} USD`;
+      if (doubleBtnText) doubleBtnText.innerText = `Collect 2x (+${currentCrazyBoxWin * 2} CFC) with Ad`;
+      if (normalBtnText) normalBtnText.innerText = `Collect +${currentCrazyBoxWin} CFC`;
+
+      openModal('crazyBoxModal');
+    }
+
+    function claimCrazyBoxReward(isDouble) {
+      try { playSound('click'); } catch(e){}
+      if (isDouble) {
+        showUniversalAd(() => {
+          finalizeCrazyBoxClaim(true);
+        }, '2x Crazy Box Double Coins');
+      } else {
+        finalizeCrazyBoxClaim(false);
+      }
+    }
+
+    function finalizeCrazyBoxClaim(isDouble) {
+      try { playSound('fanfare'); } catch(e){}
+      const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
+      hfcBalance += amount;
+      lastCrazyBoxOpenTimestamp = Date.now();
+      try {
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
+        localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+      } catch(e) {}
+
+      updateDisplays();
+      if (typeof syncWalletView === 'function') syncWalletView();
+      queueCloudSave();
+      closeModal('crazyBoxModal');
+      updateCrazyBoxUI();
+
+      showWalletToast(`🎁 Claimed +${amount} CFC from Crazy Box!`);
+    }
+    // ==================== END CRAZY BOX ====================
+
     // VIP Dog Modal & Payment Handlers
     function openDogVipModal() {
       playSound('click');
@@ -3540,7 +3663,7 @@
     }
 
     function confirmTonPayment() {
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = 3000000000;
       const memo = 'CrazyFarm_VIP_' + tId;
@@ -3570,7 +3693,7 @@
       alert('Congratulations! 3 TON payment confirmed!\n\n👑 VIP Dog Activated:\n💸 Enjoy 100% Free Crypto Withdrawals (0 CFC Gas Fee deduction on all withdrawals)!');
     }
     function old_confirmTonPayment() {
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       isDogVipActive = true;
       try { localStorage.setItem('crazyfarm_is_vip', 'true'); } catch(e){}
       updateDisplays();
@@ -3607,7 +3730,7 @@
 
     // TON Connect Simulation
     function connectTonkeeper() {
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       connectTONWallet();
       document.getElementById('walletStatusText').innerText = 'Connected: EQB...7X19';
       document.getElementById('walletStatusText').className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700';
@@ -3615,7 +3738,7 @@
     }
 
     function connectTelegramWallet() {
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       connectTONWallet();
       document.getElementById('walletStatusText').innerText = 'Connected: TG-Wallet';
       document.getElementById('walletStatusText').className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700';
@@ -3634,7 +3757,7 @@
 
     // Tasks Claim
     function claimTask(btn, reward) {
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       points += reward;
       updateDisplays();
       btn.innerText = 'Claimed ✓';
@@ -3803,7 +3926,7 @@
       const m = inviteMilestones.find(item => item.id === id);
       if (!m || m.claimed || invitedFriendsCount < m.target) return;
 
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       m.claimed = true;
       hfcBalance += m.reward;
@@ -3953,7 +4076,7 @@
         return;
       }
       const reward = checkInRewards[checkInStreak - 1];
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       points += reward;
       hasCheckedInToday = true;
@@ -4025,7 +4148,7 @@
       const task = taskItems[key];
       if (!task || (task.state !== 'ready_to_claim' && (!task.target || invitedFriendsCount < task.target))) return;
 
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       points += bonus;
       task.state = 'claimed';
@@ -4111,7 +4234,7 @@
         alert(`⚠️ You need at least 1,000 Farm Points to convert!\nCurrent Balance: ${points.toLocaleString()} pts\nNeeded: ${(1000 - points).toLocaleString()} more pts`);
         return;
       }
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       const earned = canConvert;
       points -= earned * HFC_RATE;
       hfcBalance += earned;
@@ -4137,7 +4260,7 @@
         ? customAmount
         : hfcBalance;
 
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       const gasFee = (typeof isDogVipActive !== 'undefined' && isDogVipActive) ? 0 : 50;
       const netAmount = Math.max(withdrawAmount - gasFee, 0);
       const feeNotice = (typeof isDogVipActive !== 'undefined' && isDogVipActive)
@@ -4182,7 +4305,7 @@
       updateWalletConnectionUI();
       queueCloudSave();
 
-      playSound('fanfare');
+      try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       showWalletToast('✅ TON Wallet linked: ' + shortenAddress(connectedWalletAddress));
     }
@@ -4422,7 +4545,7 @@
         renderOtherAdSteps();
         queueCloudSave();
 
-        playSound('fanfare');
+        try { playSound('fanfare'); } catch(e){}
         playSound('coin');
         showWalletToast(`🎉 +${currentReward} Points added! (${otherAdsWatched}/5)`);
       }, `Bonus +${currentReward} Points Ad`);
@@ -4479,7 +4602,7 @@
       const newName = prompt('Enter your farmer nickname:', current);
       if (newName && newName.trim() !== '') {
         if (nameEl) nameEl.innerText = newName.trim();
-        playSound('fanfare');
+        try { playSound('fanfare'); } catch(e){}
         alert(`✅ Nickname updated to: ${newName.trim()}`);
       }
     }
@@ -4588,6 +4711,7 @@
             watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
             if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
+            if (data.farms_data.crazy_box_last) lastCrazyBoxOpenTimestamp = Math.max(lastCrazyBoxOpenTimestamp, Number(data.farms_data.crazy_box_last) || 0);
 
     calculateOfflineBeeMining();
           }
@@ -4630,7 +4754,8 @@
         farms_data: {
           watched: watchedAnimalFarms,
           bee_mined: beeMinedPoints,
-          bee_last_collect: lastBeeCollectTimestamp
+          bee_last_collect: lastBeeCollectTimestamp,
+          crazy_box_last: lastCrazyBoxOpenTimestamp
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -4644,6 +4769,7 @@
         localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
         localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
         localStorage.setItem('happyfarm_watched_animals', JSON.stringify(watchedAnimalFarms));
       } catch(e) {}
 
@@ -4692,6 +4818,9 @@
       }
       if (urlParams.get('vipDog') === '1') {
         isDogVipActive = true;
+      }
+      if (urlParams.get('testCrazyBox')) {
+        setTimeout(() => { openCrazyBox(); }, 300);
       }
       updatePvpButtonsUI();
       if (urlParams.get('openPrep')) {
