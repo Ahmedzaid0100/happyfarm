@@ -1856,12 +1856,10 @@
         </div>
 
         <!-- ==================== CENTER: 3D ANIMAL BATTLE VIDEO (FULL SPACE FROM GREEN TO GREEN) ==================== -->
-        <div class="relative w-full flex-1 flex items-center justify-center z-10 overflow-hidden bg-[#784618]/90">
+        <div class="relative w-full flex-1 flex items-center justify-center z-10 overflow-hidden bg-[#3d2310]" style="background: radial-gradient(circle at 50% 50%, #5d3618 0%, #2b170a 100%);">
           
           <!-- 3D Battle Video Element (Fills 100% from top green line to bottom green line) -->
-          <video id="arenaBattleVideo" muted loop playsinline webkit-playsinline preload="auto" class="w-full h-full object-cover pointer-events-none" style="will-change: transform; transform: translateZ(0);">
-            <source id="arenaVideoSource" src="assets/videos/battle_3vs3.mp4" type="video/mp4">
-          </video>
+          <video id="arenaBattleVideo" src="assets/videos/battle_3vs3.mp4" playsinline webkit-playsinline x5-playsinline muted loop preload="auto" class="w-full h-full object-cover pointer-events-none" style="will-change: transform; transform: translateZ(0);"></video>
 
           <!-- Cinema Lighting & Edge Vignette -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none"></div>
@@ -2446,8 +2444,9 @@
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
-        if (!videoEl.src.includes(targetSrc)) {
+        if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
           videoEl.src = targetSrc;
+          videoEl.muted = true;
           videoEl.preload = 'auto';
           videoEl.load();
         }
@@ -2663,16 +2662,16 @@
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
-        if (!videoEl.src.includes(targetSrc)) {
+        if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
           videoEl.src = targetSrc;
           videoEl.preload = 'auto';
           videoEl.load();
         }
         videoEl.loop = true;
-        videoEl.muted = false;
-        videoEl.volume = 1.0;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
         videoEl.pause();
-        videoEl.currentTime = 0;
+        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
       }
 
       const timerEl = document.getElementById('battleTimerDisplay');
@@ -2722,14 +2721,33 @@
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         videoEl.loop = true;
-        // Do NOT manually seek currentTime = 0 on onended - native loop does this jitter-free!
-        videoEl.onended = null;
-        videoEl.onpause = null;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+
+        // Auto-loop fail-safe: ensures uninterrupted playback for the full 20s
+        videoEl.onended = function() {
+          if (isBattleInProgress) {
+            try { videoEl.currentTime = 0; videoEl.play().catch(()=>{}); } catch(e){}
+          }
+        };
+
+        // Resume if accidentally paused during active battle
+        videoEl.onpause = function() {
+          if (isBattleInProgress) {
+            setTimeout(() => {
+              if (isBattleInProgress && videoEl.paused) {
+                videoEl.play().catch(()=>{});
+              }
+            }, 50);
+          }
+        };
+
+        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
 
         const p = videoEl.play();
         if (p !== undefined) {
           p.catch(e => {
-            console.warn('Playback error, falling back to muted smooth loop:', e);
+            console.warn('Video playback warning, retrying muted:', e);
             videoEl.muted = true;
             videoEl.play().catch(()=>{});
           });
@@ -2855,8 +2873,11 @@
       const aliveEnemies = enemySquad.filter(u => u.hp > 0);
       if (aliveEnemies.length === 0) return;
 
+      // Ensure video remains smoothly playing and muted (audio is handled via playSound WebAudio)
       const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl && videoEl.muted) { videoEl.muted = false; videoEl.volume = 1.0; }
+      if (videoEl && videoEl.paused && isBattleInProgress) {
+        videoEl.play().catch(()=>{});
+      }
 
       // Screen shake and slash VFX
       const innerFrame = document.getElementById('arenaInnerFrame');
@@ -2923,7 +2944,11 @@
       if (battleClockInterval) clearInterval(battleClockInterval);
 
       const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) videoEl.pause();
+      if (videoEl) {
+        videoEl.onpause = null;
+        videoEl.onended = null;
+        videoEl.pause();
+      }
 
       try { playSound('fanfare'); } catch(e){}
 
@@ -2983,7 +3008,13 @@
 
     function closeBattleArena() {
       const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) { videoEl.pause(); videoEl.currentTime = 0; videoEl.muted = true; }
+      if (videoEl) {
+        videoEl.onpause = null;
+        videoEl.onended = null;
+        videoEl.pause();
+        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
+        videoEl.muted = true;
+      }
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       if (battleClockInterval) clearInterval(battleClockInterval);
       isBattleInProgress = false;
@@ -3099,17 +3130,6 @@
       const profilePts = document.getElementById('profileTotalPoints');
       if (profilePts) profilePts.innerText = `${points.toLocaleString()} 🪙`;
 
-      const upgradeBtn = document.getElementById('upgradeBeeBtn');
-      if (upgradeBtn) {
-        if (points >= 1000) {
-          upgradeBtn.innerHTML = `<span>&#9889;</span> Lv.+1 (1,000 &#129689;)`;
-          upgradeBtn.className = 'btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[9px] flex items-center justify-center gap-0.5 shadow animate-pulse';
-        } else {
-          upgradeBtn.innerHTML = `<span>&#128274;</span> Lv.+1 (${points}/1k)`;
-          upgradeBtn.className = 'bg-slate-700/80 text-amber-200/80 w-full py-1 rounded-lg font-bold text-[9px] flex items-center justify-center gap-0.5 shadow cursor-not-allowed';
-        }
-      }
-
       // Profile Screen Dynamic Updates (Always rich and populated matching design)
       const profPageLevel = document.getElementById('profPageLevel');
       if (profPageLevel && userLevel > 5) profPageLevel.innerText = userLevel;
@@ -3145,18 +3165,34 @@
       }
     }
 
-    // Upgrade Bee Farm (Exact Rule: 1,000 Points per Level)
+    // Dynamic Level Upgrade Cost: Lv.1->1,000, Lv.2->5,000, Lv.3->10,000, Lv.4->15,000, etc.
+    function getBeeFarmUpgradeCost(level = userLevel) {
+      if (level <= 1) return 1000;
+      return (level - 1) * 5000;
+    }
+
+    // Upgrade Bee Farm (Progressive Cost: +5,000 per level)
     function upgradeBeeFarm() {
-      if (points < 1000) {
+      const upgradeCost = getBeeFarmUpgradeCost(userLevel);
+      if (points < upgradeCost) {
         playSound('click');
-        alert(`⚠️ You need 1,000 points to upgrade Bee Farm and your level to Lv. ${userLevel + 1}!\nCurrent Balance: ${points.toLocaleString()} points.\nRemaining needed: ${(1000 - points).toLocaleString()} points.`);
+        if (typeof showWalletToast === 'function') {
+          showWalletToast(`⚠️ Need ${upgradeCost.toLocaleString()} points for Lv.${userLevel + 1}! (${points.toLocaleString()} / ${upgradeCost.toLocaleString()})`);
+        } else {
+          alert(`⚠️ You need ${upgradeCost.toLocaleString()} points to upgrade Bee Farm and your level to Lv. ${userLevel + 1}!\nCurrent Balance: ${points.toLocaleString()} points.\nRemaining needed: ${(upgradeCost - points).toLocaleString()} points.`);
+        }
         return;
       }
       try { playSound('fanfare'); } catch(e){}
-      points -= 1000;
-      userLevel += 1; queueCloudSave();
+      points -= upgradeCost;
+      userLevel += 1;
+      queueCloudSave();
       updateDisplays();
-      alert(`🎉 Congratulations! Upgraded to Lv. ${userLevel}!\n⚡ Bee Farm mining speed is now: ${userLevel * 24} points/day (${userLevel} pts/hour)!`);
+      if (typeof showWalletToast === 'function') {
+        showWalletToast(`🎉 Upgraded to Lv. ${userLevel}! Mining speed: ${userLevel * 24} pts/day (${userLevel} pts/h)`);
+      } else {
+        alert(`🎉 Congratulations! Upgraded to Lv. ${userLevel}!\n⚡ Bee Farm mining speed is now: ${userLevel * 24} points/day (${userLevel} pts/hour)!`);
+      }
     }
 
     // Dynamic UI Update for Bee Farm Card (24-Hour Farming Cycle)
@@ -3175,24 +3211,27 @@
       const dailyRate = userLevel * 24;
       const currentMined = Math.min(dailyRate, Math.floor(elapsedSeconds * (dailyRate / 86400)));
 
+      const upgradeCost = getBeeFarmUpgradeCost(userLevel);
       const upgradeBtn = document.getElementById('upgradeBeeBtn');
       if (upgradeBtn) {
-        if (points >= 1000) {
+        const costStr = upgradeCost >= 1000 ? (upgradeCost / 1000) + 'k' : upgradeCost;
+        if (points >= upgradeCost) {
           upgradeBtn.innerHTML = `
             <div class="flex flex-col items-center leading-none">
               <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#9889;</span> Upgrade</span>
               <span class="text-[9px] font-extrabold text-amber-950 mt-1 flex items-center gap-0.5">
-                <span>Lv.+1</span> <span>(1,000 &#129689;)</span>
+                <span>Lv.+1</span> <span>(${costStr} &#129689;)</span>
               </span>
             </div>
           `;
-          upgradeBtn.className = 'btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer';
+          upgradeBtn.className = 'btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer animate-pulse';
         } else {
+          const ptsStr = points >= 1000 ? (points / 1000).toFixed(1) + 'k' : points;
           upgradeBtn.innerHTML = `
             <div class="flex flex-col items-center leading-none">
               <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#128274;</span> Upgrade</span>
               <span class="text-[9px] font-extrabold text-amber-200/80 mt-1 flex items-center gap-0.5">
-                <span>Lv.+1</span> <span>(${points.toLocaleString()}/1k)</span>
+                <span>Lv.+1</span> <span>(${ptsStr}/${costStr})</span>
               </span>
             </div>
           `;
@@ -3687,28 +3726,46 @@
 
       if (lastCrazyBoxOpenTimestamp === 0 || elapsed >= CRAZY_BOX_COOLDOWN_MS) {
         container.innerHTML = `
-          <button onclick="openCrazyBox()" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
-            <span>✨</span> OPEN
+          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
+            <span>✨</span> OPEN FREE
           </button>
         `;
       } else {
         const remainingSec = Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - elapsed) / 1000));
         container.innerHTML = `
-          <button disabled class="w-full py-1 rounded-lg bg-amber-950/60 text-amber-300 font-bold text-[9px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
-            <span>⏳</span> ${formatTime(remainingSec)}
-          </button>
+          <div class="flex flex-col gap-1 w-full">
+            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1 rounded-lg text-white font-black text-[9.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
+              <span>⚡</span> Open (1,000 🪙)
+            </button>
+            <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
+              ⏳ Free in ${formatTime(remainingSec)}
+            </div>
+          </div>
         `;
       }
     }
 
-    function openCrazyBox() {
+    function openCrazyBox(withPoints = false) {
       const now = Date.now();
       const elapsed = now - lastCrazyBoxOpenTimestamp;
-      if (lastCrazyBoxOpenTimestamp > 0 && elapsed < CRAZY_BOX_COOLDOWN_MS) {
-        try { playSound('click'); } catch(e){}
-        const remainingSec = Math.floor((CRAZY_BOX_COOLDOWN_MS - elapsed) / 1000);
-        showWalletToast('⏳ Crazy Box is cooling down! Ready in ' + formatTime(remainingSec));
-        return;
+      const isCooldown = (lastCrazyBoxOpenTimestamp > 0 && elapsed < CRAZY_BOX_COOLDOWN_MS);
+
+      if (withPoints || isCooldown) {
+        const COST = 1000;
+        if (points < COST) {
+          try { playSound('click'); } catch(e){}
+          if (typeof showWalletToast === 'function') {
+            showWalletToast(`⚠️ Need 1,000 Points to open Crazy Box! (You have ${points.toLocaleString()} pts)`);
+          } else {
+            alert(`⚠️ Need 1,000 Points to open Crazy Box! (You have ${points.toLocaleString()} pts)`);
+          }
+          return;
+        }
+        points -= COST;
+        updateDisplays();
+        if (typeof showWalletToast === 'function') {
+          showWalletToast('⚡ Used 1,000 Points to unlock Crazy Box!');
+        }
       }
 
       try { playSound('fanfare'); } catch(e){}
@@ -3748,10 +3805,7 @@
       try {
         localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
         localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
-        if (urlParams.get('testTab')) {
-        setTimeout(() => { switchTab(urlParams.get('testTab')); }, 250);
-      }
-    } catch(e) {}
+      } catch(e) {}
 
       updateDisplays();
       if (typeof syncWalletView === 'function') syncWalletView();
@@ -5122,6 +5176,18 @@
       if (urlParams.get('testCrazyBox')) {
         setTimeout(() => { openCrazyBox(); }, 300);
       }
+      if (urlParams.get('testCrazyBoxCooldown')) {
+        lastCrazyBoxOpenTimestamp = Date.now() - (2 * 3600 * 1000);
+        updateCrazyBoxUI();
+      }
+      if (urlParams.get('testLevel')) {
+        userLevel = parseInt(urlParams.get('testLevel'), 10) || 1;
+        updateDisplays();
+      }
+      if (urlParams.get('testPoints')) {
+        points = parseInt(urlParams.get('testPoints'), 10) || 0;
+        updateDisplays();
+      }
       if (urlParams.get('testAdModal')) {
         setTimeout(() => { showUniversalAd(() => {}, 'Reward Ad'); }, 300);
       }
@@ -5141,7 +5207,12 @@
       }
       if (urlParams.get('testArena')) {
         const tMode = parseInt(urlParams.get('testArena')) || 3;
-        setTimeout(() => { enterBattleArena(tMode); }, 300);
+        setTimeout(() => {
+          enterBattleArena(tMode);
+          if (urlParams.get('testFight')) {
+            setTimeout(() => { startLiveBattleRound(); }, 400);
+          }
+        }, 300);
       }
             if (urlParams.get('testRun')) {
         setTimeout(() => { startRunSprintGame(); }, 300);
