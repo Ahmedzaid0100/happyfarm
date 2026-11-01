@@ -1401,11 +1401,11 @@
       <!-- ==================== 5. OTHERS VIEW ==================== -->
       <div id="othersView" style="display: none;" class="space-y-3.5 pb-12">
 
-        <!-- Top Title Banner: Community -->
+        <!-- Top Title Banner: Arena -->
         <div class="flex justify-center pt-1">
           <div class="bg-gradient-to-b from-[#3c1d06] to-[#251002] px-8 py-1.5 rounded-2xl border-2 border-[#7a4214] shadow-lg text-center">
-            <h2 class="text-base font-black text-amber-300 tracking-wide drop-shadow-md" style="font-family: 'Fredoka', cursive;">
-              👥 Community
+            <h2 class="text-base font-black text-yellow-300 tracking-wide drop-shadow-md flex items-center justify-center gap-1.5" style="font-family: 'Fredoka', cursive;">
+              <span class="text-lg">&#9876;</span> Arena
             </h2>
           </div>
         </div>
@@ -1739,16 +1739,16 @@
         <span id="navHomeText" class="text-[11px] font-black text-amber-100 tracking-wide mt-1">Home Farm</span>
       </button>
 
-      <!-- 4. Wallet (TON Connect) -->
-      <button id="navWalletBtn" onclick="switchTab('wallet')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
-        <span class="text-2xl filter drop-shadow">👛</span>
-        <span class="text-[10px] font-bold text-amber-200">Wallet</span>
+      <!-- 4. Arena (PvP & Rewards) -->
+      <button id="navOthersBtn" onclick="switchTab('arena')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-2xl filter drop-shadow text-yellow-300">&#9876;</span>
+        <span class="text-[9px] font-bold text-amber-200 uppercase tracking-wide">Arena</span>
       </button>
 
-      <!-- 5. Others -->
-      <button id="navOthersBtn" onclick="switchTab('others')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
-        <span class="text-2xl filter drop-shadow text-amber-300">&#128101;</span>
-        <span class="text-[9px] font-bold text-amber-200 uppercase tracking-wide">Community</span>
+      <!-- 5. Wallet (TON Connect) -->
+      <button id="navWalletBtn" onclick="switchTab('wallet')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-2xl filter drop-shadow">&#128091;</span>
+        <span class="text-[10px] font-bold text-amber-200">Wallet</span>
       </button>
 
     </nav>
@@ -4393,7 +4393,7 @@
           navHomeIconBox.classList.add('opacity-75');
         }
         syncTasksView();
-      } else if (tab === 'others') {
+      } else if (tab === 'others' || tab === 'arena') {
         othersView.style.display = 'block';
         if (navOthersBtn) navOthersBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
         if (navHomeIconBox) {
