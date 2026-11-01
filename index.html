@@ -3292,7 +3292,9 @@
       try {
         localStorage.setItem('crazyfarm_bee_mined_pts', 0);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
-        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
       } catch(e){}
 
       queueCloudSave();
@@ -3713,32 +3715,62 @@
       alert(`🔒 ${name} is locked!\n\nYou need to reach Lv. ${reqLevel} to unlock this farm. Earn more points to level up!`);
     }
 
-    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT) ====================
+    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT: 1 FREE + 1 WITH POINTS) ====================
     const CRAZY_BOX_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-    let lastCrazyBoxOpenTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
+    let lastCrazyBoxFreeTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_free')) || Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
+    let lastCrazyBoxPointsTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_points')) || 0;
     let currentCrazyBoxWin = 0;
+    let currentCrazyBoxIsOpenWithPoints = false;
+
+    function getCrazyBoxStatus() {
+      const now = Date.now();
+      const freeElapsed = now - lastCrazyBoxFreeTimestamp;
+      const isFreeAvailable = (lastCrazyBoxFreeTimestamp === 0 || freeElapsed >= CRAZY_BOX_COOLDOWN_MS);
+      // Points open is available ONCE per daily 24h cycle, accessible after the free open is claimed
+      const isPointsOpenAvailable = !isFreeAvailable && (lastCrazyBoxPointsTimestamp < lastCrazyBoxFreeTimestamp);
+      const remainingSec = isFreeAvailable ? 0 : Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - freeElapsed) / 1000));
+
+      return {
+        isFreeAvailable,
+        isPointsOpenAvailable,
+        remainingSec
+      };
+    }
 
     function updateCrazyBoxUI() {
       const container = document.getElementById('crazyBoxBtnContainer');
       if (!container) return;
-      const now = Date.now();
-      const elapsed = now - lastCrazyBoxOpenTimestamp;
 
-      if (lastCrazyBoxOpenTimestamp === 0 || elapsed >= CRAZY_BOX_COOLDOWN_MS) {
+      const status = getCrazyBoxStatus();
+
+      if (status.isFreeAvailable) {
+        // Step 1: Free Daily Open
         container.innerHTML = `
           <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
             <span>✨</span> OPEN FREE
           </button>
         `;
-      } else {
-        const remainingSec = Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - elapsed) / 1000));
+      } else if (status.isPointsOpenAvailable) {
+        // Step 2: 1x Daily Open with 1,000 Points
         container.innerHTML = `
           <div class="flex flex-col gap-1 w-full">
             <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1 rounded-lg text-white font-black text-[9.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
               <span>⚡</span> Open (1,000 🪙)
             </button>
             <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
-              ⏳ Free in ${formatTime(remainingSec)}
+              ⏳ Free in ${formatTime(status.remainingSec)}
+            </div>
+          </div>
+        `;
+      } else {
+        // Step 3: Daily Limit Reached (Both 1 Free + 1 with Points used today)
+        container.innerHTML = `
+          <div class="flex flex-col gap-1 w-full">
+            <button disabled class="w-full py-1 rounded-lg bg-amber-950/70 text-amber-400/80 font-bold text-[9px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
+              <span>🔒</span> Done Today (2/2)
+            </button>
+            <div class="text-[7.5px] text-amber-300/80 font-bold text-center leading-none">
+              ⏳ Next Free in ${formatTime(status.remainingSec)}
             </div>
           </div>
         `;
@@ -3746,11 +3778,17 @@
     }
 
     function openCrazyBox(withPoints = false) {
-      const now = Date.now();
-      const elapsed = now - lastCrazyBoxOpenTimestamp;
-      const isCooldown = (lastCrazyBoxOpenTimestamp > 0 && elapsed < CRAZY_BOX_COOLDOWN_MS);
+      const status = getCrazyBoxStatus();
 
-      if (withPoints || isCooldown) {
+      if (withPoints) {
+        if (!status.isPointsOpenAvailable) {
+          try { playSound('click'); } catch(e){}
+          if (typeof showWalletToast === 'function') {
+            showWalletToast(`⏳ Daily point open already used today! Next free box in ${formatTime(status.remainingSec)}`);
+          }
+          return;
+        }
+
         const COST = 1000;
         if (points < COST) {
           try { playSound('click'); } catch(e){}
@@ -3761,11 +3799,26 @@
           }
           return;
         }
+
         points -= COST;
+        currentCrazyBoxIsOpenWithPoints = true;
         updateDisplays();
         if (typeof showWalletToast === 'function') {
-          showWalletToast('⚡ Used 1,000 Points to unlock Crazy Box!');
+          showWalletToast('⚡ Used 1,000 Points for Daily Crazy Box!');
         }
+      } else {
+        if (!status.isFreeAvailable) {
+          if (status.isPointsOpenAvailable) {
+            openCrazyBox(true);
+            return;
+          }
+          try { playSound('click'); } catch(e){}
+          if (typeof showWalletToast === 'function') {
+            showWalletToast(`⏳ Daily limit reached (1 Free + 1 with Points)! Next free box in ${formatTime(status.remainingSec)}`);
+          }
+          return;
+        }
+        currentCrazyBoxIsOpenWithPoints = false;
       }
 
       try { playSound('fanfare'); } catch(e){}
@@ -3801,9 +3854,22 @@
       try { playSound('fanfare'); } catch(e){}
       const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
       hfcBalance += amount;
-      lastCrazyBoxOpenTimestamp = Date.now();
+
+      const now = Date.now();
+      if (currentCrazyBoxIsOpenWithPoints) {
+        lastCrazyBoxPointsTimestamp = now;
+        try {
+          localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
+        } catch(e) {}
+      } else {
+        lastCrazyBoxFreeTimestamp = now;
+        try {
+          localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
+          localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
+        } catch(e) {}
+      }
+
       try {
-        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
         localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
       } catch(e) {}
 
@@ -5121,7 +5187,9 @@
         localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
         localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
-        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
         localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns));
         localStorage.setItem('happyfarm_watched_animals', JSON.stringify(watchedAnimalFarms));
       } catch(e) {}
@@ -5176,8 +5244,19 @@
       if (urlParams.get('testCrazyBox')) {
         setTimeout(() => { openCrazyBox(); }, 300);
       }
+      if (urlParams.get('testCrazyBoxFree')) {
+        lastCrazyBoxFreeTimestamp = 0;
+        lastCrazyBoxPointsTimestamp = 0;
+        updateCrazyBoxUI();
+      }
       if (urlParams.get('testCrazyBoxCooldown')) {
-        lastCrazyBoxOpenTimestamp = Date.now() - (2 * 3600 * 1000);
+        lastCrazyBoxFreeTimestamp = Date.now() - (2 * 3600 * 1000);
+        lastCrazyBoxPointsTimestamp = 0;
+        updateCrazyBoxUI();
+      }
+      if (urlParams.get('testCrazyBoxDone')) {
+        lastCrazyBoxFreeTimestamp = Date.now() - (2 * 3600 * 1000);
+        lastCrazyBoxPointsTimestamp = Date.now() - (1 * 3600 * 1000);
         updateCrazyBoxUI();
       }
       if (urlParams.get('testLevel')) {
