@@ -1769,7 +1769,7 @@
 
     
     <!-- ==================== BATTLE PREPARATION MODAL ==================== -->
-    <div id="battlePrepModal" onclick="if(event.target === this) closeModal('battlePrepModal')" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="battlePrepModal" onclick="if(event.target === this) closeModal('battlePrepModal')" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 text-center max-w-xs w-full text-white shadow-2xl relative border-amber-600">
         <button type="button" onclick="closeModal('battlePrepModal')" ontouchend="closeModal('battlePrepModal')" class="absolute top-3 left-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-lg border-2 border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50">&#10005;</button>
 
@@ -1811,7 +1811,7 @@
     </div>
 
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
-    <div id="battleArenaModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
+    <div id="battleArenaModal" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
       <!-- Inner Arena Frame with optional Screen Shake -->
       <div id="arenaInnerFrame" class="max-w-md w-full h-full max-h-[850px] relative rounded-3xl overflow-hidden border-4 border-[#451d02] shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#6cb83e] via-[#b6894c] to-[#4e9628] transition-transform">
@@ -1936,7 +1936,7 @@
     </div>
 
         <!-- ==================== RUN SPRINT (15s FARM RUSH) MINI-GAME MODAL ==================== -->
-    <div id="runGameModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[110] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
+    <div id="runGameModal" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[110] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       <!-- Game Card Container -->
       <div id="runGameFrame" class="max-w-md w-full h-full max-h-[820px] relative rounded-3xl overflow-hidden border-4 border-[#5c3a21] shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#78b14b] via-[#5c9932] to-[#3b731b] select-none">
         
@@ -2361,50 +2361,76 @@
       updatePvpButtonsUI();
     }
 
-        const BATTLE_COOLDOWN_MS = 0; // Cooldown eliminated: 100% UNLIMITED FREE PLAY
+    const BATTLE_COOLDOWN_MS = 8 * 60 * 60 * 1000; // 8 hours cooldown
     let pvpCooldowns = { 3: 0, 5: 0, 7: 0, run: 0 };
     try {
-      localStorage.removeItem('crazyfarm_pvp_cooldowns');
+      const saved = localStorage.getItem('crazyfarm_pvp_cooldowns');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        pvpCooldowns = Object.assign(pvpCooldowns, parsed);
+      }
     } catch(e){}
 
     function savePvpCooldowns() {
-      // Cooldown eliminated - no saving needed
+      try {
+        localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns));
+      } catch(e){}
+      if (typeof queueCloudSave === 'function') queueCloudSave();
     }
 
     function isBattleOnCooldown(mode) {
-      return false; // Unlimited Free Play - Always ready!
+      const lastTime = pvpCooldowns[mode] || 0;
+      return (Date.now() - lastTime) < BATTLE_COOLDOWN_MS;
     }
 
     function getBattleCooldownRemaining(mode) {
-      return 0;
+      const lastTime = pvpCooldowns[mode] || 0;
+      const rem = BATTLE_COOLDOWN_MS - (Date.now() - lastTime);
+      return Math.max(0, rem);
+    }
+
+    function formatBattleCooldown(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const hrs = Math.floor(totalSec / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      return (hrs < 10 ? '0' : '') + hrs + ':' + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
     }
 
     function updatePvpButtonsUI() {
-      const b3 = document.getElementById('pvpBadge-3');
-      const b5 = document.getElementById('pvpBadge-5');
-      const b7 = document.getElementById('pvpBadge-7');
-      const bRun = document.getElementById('pvpBadge-run');
+      const modes = [
+        { mode: 3, id: 'pvpBadge-3', icon: '⚔️' },
+        { mode: 5, id: 'pvpBadge-5', icon: '⚔️' },
+        { mode: 7, id: 'pvpBadge-7', icon: '⚔️' },
+        { mode: 'run', id: 'pvpBadge-run', icon: '🏃' }
+      ];
 
-      if (b3) {
-        b3.innerHTML = '&#9876; Free';
-        b3.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-      }
-      if (b5) {
-        b5.innerHTML = '&#9876; Free';
-        b5.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-      }
-      if (b7) {
-        b7.innerHTML = '&#9876; Free';
-        b7.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-      }
-      if (bRun) {
-        bRun.innerHTML = '&#127939; Free';
-        bRun.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
-      }
+      modes.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (!el) return;
+        if (isBattleOnCooldown(item.mode)) {
+          const rem = getBattleCooldownRemaining(item.mode);
+          el.innerHTML = '⏳ ' + formatBattleCooldown(rem);
+          el.className = 'bg-rose-950/90 text-rose-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full animate-pulse border border-rose-500/40';
+        } else {
+          el.innerHTML = item.icon + ' Free';
+          el.className = 'bg-emerald-950/90 text-emerald-300 text-[6.5px] font-black px-1 py-0.2 rounded leading-none truncate max-w-full';
+        }
+      });
     }
 
     function openBattlePrep(mode) {
       playSound('click');
+      if (isBattleOnCooldown(mode)) {
+        const remMs = getBattleCooldownRemaining(mode);
+        const timeStr = formatBattleCooldown(remMs);
+        if (typeof showWalletToast === 'function') {
+          showWalletToast('⏳ Cooldown active! Next ' + mode + 'v' + mode + ' battle in ' + timeStr);
+        } else {
+          alert('⏳ Battle on cooldown! Available in ' + timeStr);
+        }
+        return;
+      }
       currentBattleMode = mode;
       const modal = document.getElementById('battlePrepModal');
       const icon = document.getElementById('battlePrepIcon');
@@ -2442,6 +2468,16 @@
 
     function openBattleRunMode() {
       playSound('click');
+      if (isBattleOnCooldown('run')) {
+        const remMs = getBattleCooldownRemaining('run');
+        const timeStr = formatBattleCooldown(remMs);
+        if (typeof showWalletToast === 'function') {
+          showWalletToast('⏳ Cooldown active! Next RUN battle in ' + timeStr);
+        } else {
+          alert('⏳ RUN on cooldown! Available in ' + timeStr);
+        }
+        return;
+      }
       startRunSprintGame();
     }
 
@@ -2853,8 +2889,12 @@
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
-      // No cooldown saved - unlimited free play
-      // No cooldown saved
+      
+      // Save 8-hour cooldown for this battle mode
+      if (mode) {
+        pvpCooldowns[mode] = Date.now();
+        savePvpCooldowns();
+      }
 
       updateDisplays();
       syncWalletView();
@@ -4784,6 +4824,10 @@
             if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
             if (data.farms_data.crazy_box_last) lastCrazyBoxOpenTimestamp = Math.max(lastCrazyBoxOpenTimestamp, Number(data.farms_data.crazy_box_last) || 0);
+            if (data.farms_data.pvp_cooldowns && typeof data.farms_data.pvp_cooldowns === 'object') {
+              pvpCooldowns = Object.assign(pvpCooldowns, data.farms_data.pvp_cooldowns);
+              try { localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns)); } catch(e){}
+            }
 
     calculateOfflineBeeMining();
           }
@@ -4827,7 +4871,8 @@
           watched: watchedAnimalFarms,
           bee_mined: beeMinedPoints,
           bee_last_collect: lastBeeCollectTimestamp,
-          crazy_box_last: lastCrazyBoxOpenTimestamp
+          crazy_box_last: lastCrazyBoxOpenTimestamp,
+          pvp_cooldowns: pvpCooldowns
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -4842,6 +4887,7 @@
         localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
         localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp);
         localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxOpenTimestamp);
+        localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns));
         localStorage.setItem('happyfarm_watched_animals', JSON.stringify(watchedAnimalFarms));
       } catch(e) {}
 
@@ -4896,6 +4942,15 @@
       }
       if (urlParams.get('testAdModal')) {
         setTimeout(() => { showUniversalAd(() => {}, 'Reward Ad'); }, 300);
+      }
+      if (urlParams.get('testCooldown')) {
+        pvpCooldowns = {
+          3: Date.now() - (15 * 60 * 1000),
+          5: 0,
+          7: Date.now() - (30 * 60 * 1000),
+          run: Date.now() - (60 * 60 * 1000)
+        };
+        updatePvpButtonsUI();
       }
       updatePvpButtonsUI();
       if (urlParams.get('openPrep')) {
@@ -6307,8 +6362,10 @@ function claimRunSprintVictory(isDouble = false) {
   const finalPoints = isDouble ? ((100 * 2) + runBonusPoints) : basePoints;
 
   points += finalPoints;
-  // No cooldown saved - unlimited free play
-      // No cooldown saved
+  
+  // Save 8-hour cooldown for RUN mode
+  pvpCooldowns['run'] = Date.now();
+  savePvpCooldowns();
 
   updateDisplays();
   syncWalletView();
