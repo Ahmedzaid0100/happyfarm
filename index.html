@@ -1859,7 +1859,7 @@
         <div class="relative w-full flex-1 flex items-center justify-center z-10 overflow-hidden bg-[#784618]/90">
           
           <!-- 3D Battle Video Element (Fills 100% from top green line to bottom green line) -->
-          <video id="arenaBattleVideo" loop playsinline muted preload="none" class="w-full h-full object-cover pointer-events-none">
+          <video id="arenaBattleVideo" muted loop playsinline webkit-playsinline preload="auto" class="w-full h-full object-cover pointer-events-none" style="will-change: transform; transform: translateZ(0);">
             <source id="arenaVideoSource" src="assets/videos/battle_3vs3.mp4" type="video/mp4">
           </video>
 
@@ -2429,17 +2429,30 @@
 
     function openBattlePrep(mode) {
       playSound('click');
-      if (isBattleOnCooldown(mode)) {
-        const remMs = getBattleCooldownRemaining(mode);
+      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
+      currentBattleMode = m;
+      if (isBattleOnCooldown(m)) {
+        const remMs = getBattleCooldownRemaining(m);
         const timeStr = formatBattleCooldown(remMs);
         if (typeof showWalletToast === 'function') {
-          showWalletToast('⏳ Cooldown active! Next ' + mode + 'v' + mode + ' battle in ' + timeStr);
+          showWalletToast('⏳ Cooldown active! Next ' + (m === 'run' ? 'RUN' : (m + 'v' + m)) + ' battle in ' + timeStr);
         } else {
           alert('⏳ Battle on cooldown! Available in ' + timeStr);
         }
         return;
       }
-      currentBattleMode = mode;
+
+      // Preload video for this battle mode right now so it never stutters
+      const videoEl = document.getElementById('arenaBattleVideo');
+      if (videoEl) {
+        const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
+        if (!videoEl.src.includes(targetSrc)) {
+          videoEl.src = targetSrc;
+          videoEl.preload = 'auto';
+          videoEl.load();
+        }
+      }
+
       const modal = document.getElementById('battlePrepModal');
       const icon = document.getElementById('battlePrepIcon');
       const title = document.getElementById('battlePrepTitle');
@@ -2451,21 +2464,21 @@
 
       if (vipContainer) vipContainer.classList.add('hidden');
 
-      const pts = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
-      const iconEmoji = (mode === 'run') ? '&#127939;&#9889;' : ((mode === 7) ? '&#129351;' : (mode === 5 ? '&#129352;' : '&#129353;'));
+      const pts = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
+      const iconEmoji = (m === 'run') ? '&#127939;&#9889;' : ((m === 7) ? '&#129351;' : (m === 5 ? '&#129352;' : '&#129353;'));
 
       if (icon) icon.innerHTML = iconEmoji;
-      if (title) title.innerText = (mode === 'run') ? 'RUN Sprint Arena (Free Entry)' : (mode + ' vs ' + mode + ' Arena (Free Entry)');
+      if (title) title.innerText = (m === 'run') ? 'RUN Sprint Arena (Free Entry)' : (m + ' vs ' + m + ' Arena (Free Entry)');
       if (sub) sub.innerText = 'Fight and win to earn +' + pts + ' Farm Points! (Optional 2x Boost with Ad)';
       if (prize) prize.innerHTML = '<span>&#129689;</span> Win +' + pts + ' Farm Points (2x Boost = ' + (pts * 2) + ' Pts)';
 
       if (stepsContainer) {
-        stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All Farm Animals Ready.</div>';
+        stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All ' + (m === 'run' ? '7' : m) + ' Farm Animals Ready.</div>';
       }
 
       if (actionContainer) {
         actionContainer.classList.remove('hidden');
-        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(\'' + mode + '\')" ontouchend="enterBattleArena(\'' + mode + '\')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
+        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" ontouchend="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
       }
 
       if (modal) {
@@ -2512,10 +2525,11 @@
     }
 
     function buildSquadForBattle(mode) {
+      const m = (mode === 'run') ? 7 : (parseInt(mode, 10) || 3);
       let selectedKeys = [];
-      if (mode === 7 || mode === 'run') {
+      if (m === 7) {
         selectedKeys = ['dog', 'cows', 'chicken', 'duck', 'bunny', 'sheep', 'horse'];
-      } else if (mode === 5) {
+      } else if (m === 5) {
         selectedKeys = ['cows', 'chicken', 'duck', 'bunny', 'sheep'];
       } else {
         selectedKeys = ['cows', 'chicken', 'duck'];
@@ -2550,20 +2564,39 @@
       const container = document.getElementById(containerId);
       if (!container) return;
 
-      const sizeClass = 'w-10 h-10 sm:w-11 sm:h-11';
-      const badgeSize = 'text-[7px]';
-      const hpWidth = 'w-9';
+      const count = squad.length;
+
+      // Responsive sizing: adapts so 3, 5, or 7 animals fit comfortably in one row
+      let sizeClass = 'w-10 h-10';
+      let hpWidth = 'w-9';
+      let nameClass = 'text-[9px] max-w-[55px]';
+      let gapClass = 'gap-1.5 sm:gap-2';
+      let badgeSize = 'text-[8px]';
+
+      if (count >= 7) {
+        sizeClass = 'w-8 h-8 sm:w-8.5 sm:h-8.5';
+        hpWidth = 'w-7';
+        nameClass = 'text-[7px] max-w-[38px]';
+        gapClass = 'gap-0.5 sm:gap-1';
+        badgeSize = 'text-[6px]';
+      } else if (count >= 5) {
+        sizeClass = 'w-9 h-9 sm:w-9.5 sm:h-9.5';
+        hpWidth = 'w-8';
+        nameClass = 'text-[7.5px] max-w-[45px]';
+        gapClass = 'gap-1 sm:gap-1.5';
+        badgeSize = 'text-[7px]';
+      }
 
       const borderClass = isEnemy 
         ? 'border-2 border-rose-500 shadow-rose-600/40 ring-2 ring-red-400/50' 
         : 'border-2 border-sky-400 shadow-sky-600/40 ring-2 ring-cyan-300/50';
 
-      let html = '<div class="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2.5 max-w-full">';
+      let html = '<div class="flex items-center justify-center flex-nowrap ' + gapClass + ' max-w-full overflow-x-hidden px-1">';
       
       squad.forEach((unit) => {
         const imgSrc = (typeof getFarmAnimalImg === 'function') ? getFarmAnimalImg(unit.key) : '';
         html += 
-          '<div id="unitCard-' + unit.id + '" class="flex flex-col items-center transition-all duration-300 relative select-none">' +
+          '<div id="unitCard-' + unit.id + '" class="flex flex-col items-center shrink-0 transition-all duration-300 relative select-none">' +
             '<div class="' + hpWidth + ' bg-black/70 rounded-full h-1.5 mb-1 overflow-hidden border border-white/40 shadow">' +
               '<div id="hpBar-' + unit.id + '" class="bg-gradient-to-r from-emerald-400 to-green-500 h-full w-[100%] transition-all duration-200"></div>' +
             '</div>' +
@@ -2572,7 +2605,7 @@
               '<span class="absolute bottom-0 right-0 bg-black/70 text-white ' + badgeSize + ' font-bold px-1 rounded-tl-md">Lv.' + (unit.lvl || 1) + '</span>' +
               '<div id="skull-' + unit.id + '" class="absolute inset-0 bg-black/70 hidden flex items-center justify-center text-lg">ðŸ’€</div>' +
             '</div>' +
-            '<span class="text-[9px] font-black text-amber-100 drop-shadow mt-0.5 truncate max-w-[55px] leading-tight">' + unit.name + '</span>' +
+            '<span class="' + nameClass + ' font-black text-amber-100 drop-shadow mt-0.5 truncate leading-tight text-center">' + unit.name + '</span>' +
           '</div>';
       });
 
@@ -2584,10 +2617,11 @@
       try {
       closeModal('battlePrepModal');
 
-      currentBattleMode = mode;
+      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
+      currentBattleMode = m;
       isBattleInProgress = false;
 
-      const squads = buildSquadForBattle(mode);
+      const squads = buildSquadForBattle(m);
       playerSquad = squads.player;
       enemySquad = squads.enemy;
 
@@ -2606,13 +2640,13 @@
       if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
       // Mode badge removed per design
-      if (startTitle) startTitle.innerHTML = (mode === 'run') ? '&#127939;&#9889; RUN Sprint Battle' : (mode + ' vs ' + mode + ' Animal Battle');
+      if (startTitle) startTitle.innerHTML = (m === 'run') ? '&#127939;&#9889; RUN Sprint Battle' : (m + ' vs ' + m + ' Animal Battle');
       
-      let rewardHfcText = mode === 3 ? '+100 Farm Points' : (mode === 5 ? '+200 Farm Points' : '+300 Farm Points');
-      if (startDesc) startDesc.innerText = (mode === 'run') ? ('Unleash your full farm squad in high-speed sprint battle and claim ' + rewardHfcText + '!') : ('Lead your ' + mode + ' farm animals to victory and claim ' + rewardHfcText + '!');
+      let rewardHfcText = m === 3 ? '+100 Farm Points' : (m === 5 ? '+200 Farm Points' : '+300 Farm Points');
+      if (startDesc) startDesc.innerText = (m === 'run') ? ('Unleash your full farm squad in high-speed sprint battle and claim ' + rewardHfcText + '!') : ('Lead your ' + m + ' farm animals to victory and claim ' + rewardHfcText + '!');
 
-      renderSquadOnField(enemySquad, 'enemySquadContainer', true, mode);
-      renderSquadOnField(playerSquad, 'playerSquadContainer', false, mode);
+      renderSquadOnField(enemySquad, 'enemySquadContainer', true, m);
+      renderSquadOnField(playerSquad, 'playerSquadContainer', false, m);
 
       updateTeamHpBars();
 
@@ -2625,18 +2659,18 @@
         p1Avatar.innerHTML = '<img src="' + tgUser.photo_url + '" class="w-full h-full rounded-full object-cover" />';
       }
 
-      // Prepare matching 3D battle video (Paused initially - plays only when player taps START FIGHT)
+      // Prepare matching 3D battle video (Preloaded, seamless loop, no cut)
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
-        videoEl.src = (mode === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + mode + 'vs' + mode + '.mp4');
+        const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
+        if (!videoEl.src.includes(targetSrc)) {
+          videoEl.src = targetSrc;
+          videoEl.preload = 'auto';
+          videoEl.load();
+        }
         videoEl.loop = true;
         videoEl.muted = false;
         videoEl.volume = 1.0;
-        videoEl.onended = () => {
-          videoEl.currentTime = 0;
-          videoEl.play().catch(()=>{});
-        };
-        videoEl.load();
         videoEl.pause();
         videoEl.currentTime = 0;
       }
@@ -2684,21 +2718,18 @@
       isBattleInProgress = true;
       battleStartTime = Date.now();
 
-      // Start 3D battle video on START FIGHT click (loops continuously throughout the 20 seconds)
+      // Start 3D battle video on START FIGHT click (seamless hardware loop, non-blocking)
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         videoEl.loop = true;
-        videoEl.muted = false;
-        videoEl.volume = 1.0;
-        videoEl.currentTime = 0;
-        videoEl.onended = () => {
-          videoEl.currentTime = 0;
-          videoEl.play().catch(()=>{});
-        };
+        // Do NOT manually seek currentTime = 0 on onended - native loop does this jitter-free!
+        videoEl.onended = null;
+        videoEl.onpause = null;
+
         const p = videoEl.play();
         if (p !== undefined) {
           p.catch(e => {
-            console.warn('Playback error, falling back to muted:', e);
+            console.warn('Playback error, falling back to muted smooth loop:', e);
             videoEl.muted = true;
             videoEl.play().catch(()=>{});
           });
@@ -2902,7 +2933,8 @@
       const normalClaimPts = document.getElementById('battleNormalClaimPts');
 
       const mode = currentBattleMode;
-      const basePoints = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
+      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
+      const basePoints = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
       const doublePoints = basePoints * 2;
 
       if (rewardText) rewardText.innerHTML = `+${basePoints} Farm Points &#129689;`;
@@ -2921,14 +2953,15 @@
       try { playSound('fanfare'); } catch(e){}
 
       const mode = currentBattleMode;
-      const basePoints = (mode === 7 || mode === 'run') ? 300 : (mode === 5 ? 200 : 100);
+      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
+      const basePoints = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
       
       // Save 8-hour cooldown for this battle mode
-      if (mode) {
-        pvpCooldowns[mode] = Date.now();
+      if (m) {
+        pvpCooldowns[m] = Date.now();
         savePvpCooldowns();
       }
 
