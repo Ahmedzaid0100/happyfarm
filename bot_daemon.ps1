@@ -1,6 +1,12 @@
 $token = "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k"
 $apiUrl = "https://api.telegram.org/bot$token"
 $templatePath = "C:\Users\ALTAWKEEL\.gemini\antigravity\brain\544afc12-f424-4c5d-ae90-97d62f9bdc12\scratch\welcome_payload.json"
+
+if (-not (Test-Path $templatePath)) {
+    Write-Output "Template not found: $templatePath"
+    exit 1
+}
+
 $templateText = [System.IO.File]::ReadAllText($templatePath, [System.Text.Encoding]::UTF8)
 
 $offset = 0
