@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -2241,6 +2241,27 @@
       </div>
     </div>
 
+    <!-- Farm Harvest Collect Modal -->
+    <div id="farmCollectModal" style="display:none;" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] flex flex-col items-center justify-center p-4">
+      <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
+        <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127807;</div>
+        <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">HARVEST!</h2>
+        <p class="text-xs text-amber-200 font-bold mb-3" id="farmCollectFarmName">Farm Ready!</p>
+        <div class="bg-black/60 rounded-2xl p-3 mb-3 border border-yellow-500/60 text-center">
+          <span class="text-[10px] text-amber-300 font-bold uppercase block mb-1">Farm Harvest Reward</span>
+          <div class="text-2xl font-black text-yellow-300 drop-shadow" id="farmCollectRewardText">+100 Farm Points &#127807;</div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <button onclick="farmCollectWithAd()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 animate-bounce border border-yellow-200 cursor-pointer">
+            <span>&#127873;</span> <span id="farmCollectDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
+          </button>
+          <button onclick="farmCollectFree()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
+            <span>&#127807;</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 2. Wallet Modal (TON Connect) -->
     <div id="walletModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
@@ -3990,6 +4011,44 @@
       showWalletToast('&#127881; Collected +' + earned + ' points from ' + farm.name + (isDouble ? ' (2x Double Reward!)' : '!'));
     }
 
+    // ==================== FARM COLLECT MODAL ====================
+    let farmCollectCurrentKey = null;
+
+    function showFarmCollectModal(key) {
+      const farm = adFarms[key];
+      if (!farm || (farm.state !== 'ready_to_collect' && farm.state !== 'claimable')) return;
+      farmCollectCurrentKey = key;
+      const baseReward = getFarmCurrentReward(key);
+      const emojiMap = { chicken:'&#x1F413;', cows:'&#x1F404;', duck:'&#x1F986;', bunny:'&#x1F430;', dog:'&#x1F415;', sheep:'&#x1F411;', horse:'&#x1F434;', pig:'&#x1F437;' };
+      const emoji = emojiMap[key] || '&#127807;';
+      document.getElementById('farmCollectEmoji').innerHTML = emoji;
+      document.getElementById('farmCollectFarmName').innerText = (farm.name || key) + ' Ready to Harvest!';
+      document.getElementById('farmCollectRewardText').innerText = '+' + baseReward + ' Farm Points';
+      document.getElementById('farmCollectDoubleBtnText').innerText = '2x Boost: +' + (baseReward * 2) + ' Pts (Watch Ad)';
+      document.getElementById('farmCollectNormalPts').innerText = '+' + baseReward;
+      const modal = document.getElementById('farmCollectModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function hideFarmCollectModal() {
+      const modal = document.getElementById('farmCollectModal');
+      if (modal) modal.style.display = 'none';
+      farmCollectCurrentKey = null;
+    }
+
+    function farmCollectWithAd() {
+      const key = farmCollectCurrentKey;
+      hideFarmCollectModal();
+      if (key) collectFarmReward(key, true);
+    }
+
+    function farmCollectFree() {
+      const key = farmCollectCurrentKey;
+      hideFarmCollectModal();
+      if (key) collectFarmReward(key, false);
+    }
+    // ==================== END FARM COLLECT MODAL ====================
+
     // Render Action Button State for Each Animal Farm
         function renderAdFarmAction(key) {
       const farm = adFarms[key];
@@ -4074,14 +4133,9 @@
         `;
       } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
         container.innerHTML = `
-          <div class="grid grid-cols-2 gap-2 w-full mt-0.5">
-            <button onclick="collectFarmReward('${key}', false)" class="btn-3d-green py-1 px-0.5 rounded-xl text-white font-black text-[8px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform" title="Collect base points">
-              <span>ðŸŒ¾</span> +${currentReward}
-            </button>
-            <button onclick="collectFarmReward('${key}', true)" class="btn-3d-yellow py-1 px-0.5 rounded-xl text-amber-950 font-black text-[7.5px] flex items-center justify-center gap-0.5 shadow border border-yellow-200 active:scale-95 transition-transform animate-bounce" title="Watch Ad for Double Points">
-              <span>&#127916;</span> 2x (+${currentReward * 2})
-            </button>
-          </div>
+          <button onclick="showFarmCollectModal('${key}')" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow border border-yellow-300 active:scale-95 transition-transform animate-bounce cursor-pointer" title="Collect Farm Reward">
+            <span>&#127807;</span> Collect! (+${currentReward})
+          </button>
         `;
       }
 
@@ -4094,92 +4148,9 @@
           const pct = Math.min(100, Math.max(5, Math.round((elapsed / totalSec) * 100)));
           pBar.style.width = pct + '%';
         } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
-          pBar.style.width = '100%';
-        } else {
-          pBar.style.width = isUnlocked ? '100%' : '0%';
-        }
-      }
-    }
-
-    function renderAllAdFarms() {
-      if (typeof renderAdFarmAction === 'function' && typeof adFarms === 'object') {
-        Object.keys(adFarms).forEach(k => renderAdFarmAction(k));
-      }
-    }
-
-    // Backward compatibility aliases
-    function startAdFarm(key) { startFarmMining(key); }
-    function skip12h(key) { skipFarm8h(key); }
-    function collectAdFarm(key, isAuto = false) { collectFarmReward(key, false); }
-    function checkAdCollect(key) {
-      const farm = adFarms[key];
-      if (!farm) return;
-      if (farm.state === 'ready_to_collect') {
-        collectFarmReward(key, false);
-      } else if (farm.state === 'mining') {
-        playSound('click');
-        showWalletToast('&#9203; ' + farm.name + ' is farming! (' + formatTime(farm.remainingSeconds) + ' left)');
-      } else {
-        playSound('click');
-        showWalletToast('&#127809; Click Farm to start 8-hour farming for ' + farm.name + '!');
-      }
-    }
-
-    // Collect Coins Action (For Bee Farm)
-    function collectCoins(farmName, amount, btnElement) {
-      playSound('coin');
-      points += amount; queueCloudSave();
-      updateDisplays();
-
-      const rect = btnElement.getBoundingClientRect();
-      const floater = document.createElement('div');
-      floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-50';
-      floater.style.left = (rect.left + rect.width / 2 - 15) + 'px';
-      floater.style.top = (rect.top - 10) + 'px';
-      floater.innerText = `+${amount} ðŸŒ¾`;
-      document.getElementById('coinAnimationContainer').appendChild(floater);
-      setTimeout(() => floater.remove(), 800);
-    }
-
-    // Locked Card Alert
-    function lockedCardNotice(name, reqLevel) {
-      playSound('click');
-      alert(`ðŸ”’ ${name} is locked!\n\nYou need to reach Lv. ${reqLevel} to unlock this farm. Earn more points to level up!`);
-    }
-
-    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT: 1 FREE + 1 WITH POINTS) ====================
-    const CRAZY_BOX_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-    let lastCrazyBoxFreeTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_free')) || Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
-    let lastCrazyBoxPointsTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_points')) || 0;
-    let currentCrazyBoxWin = 0;
-    let currentCrazyBoxIsOpenWithPoints = false;
-
-    function getCrazyBoxStatus() {
-      const now = Date.now();
-      const freeElapsed = now - lastCrazyBoxFreeTimestamp;
-      const isFreeAvailable = (lastCrazyBoxFreeTimestamp === 0 || freeElapsed >= CRAZY_BOX_COOLDOWN_MS);
-      // Points open is available ONCE per daily 24h cycle, accessible after the free open is claimed
-      const isPointsOpenAvailable = !isFreeAvailable && (lastCrazyBoxPointsTimestamp < lastCrazyBoxFreeTimestamp);
-      const remainingSec = isFreeAvailable ? 0 : Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - freeElapsed) / 1000));
-
-      return {
-        isFreeAvailable,
-        isPointsOpenAvailable,
-        remainingSec
-      };
-    }
-
-    function updateCrazyBoxUI() {
-      const container = document.getElementById('crazyBoxBtnContainer');
-      if (!container) return;
-
-      const status = getCrazyBoxStatus();
-
-      if (status.isFreeAvailable) {
-        // Step 1: Free Daily Open
         container.innerHTML = `
-          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
-            <span>&#10024;</span> OPEN FREE
+          <button onclick="showFarmCollectModal('${key}')" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow border border-yellow-300 active:scale-95 transition-transform animate-bounce cursor-pointer" title="Collect Farm Reward">
+            <span>&#127807;</span> Collect! (+${currentReward})
           </button>
         `;
       } else if (status.isPointsOpenAvailable) {
