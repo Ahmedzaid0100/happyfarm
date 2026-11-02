@@ -12,8 +12,12 @@ import json
 try:
     import requests
     USE_REQUESTS = True
+    session = requests.Session()
+    # Explicitly ensure environment proxies are used
+    session.trust_env = True
 except ImportError:
     USE_REQUESTS = False
+    session = None
     import urllib.request
     import urllib.parse
 
@@ -30,16 +34,31 @@ PA_PROXY = os.getenv("http_proxy") or os.getenv("https_proxy") or "http://proxy.
 def api_request(method, data=None):
     url = f"{API_URL}/{method}"
     
-    if USE_REQUESTS:
-        try:
-            if data:
-                resp = requests.post(url, json=data, timeout=35)
-            else:
-                resp = requests.get(url, timeout=35)
-            return resp.json()
-        except Exception as e:
-            print(f"API Error [{method}]: {e}")
-            return None
+    if USE_REQUESTS and session:
+        for attempt in range(2):
+            try:
+                if data:
+                    resp = session.post(url, json=data, timeout=15)
+                else:
+                    resp = session.get(url, timeout=15)
+                
+                if resp.status_code == 200:
+                    return resp.json()
+                elif resp.status_code == 409:
+                    print("⚠️ Telegram 409 Conflict: Bot running in another location.")
+                    time.sleep(4)
+                    return None
+                else:
+                    time.sleep(2)
+            except Exception as e:
+                err_str = str(e)
+                if "503" in err_str or "Proxy" in err_str or "Tunnel" in err_str:
+                    # Proxy blip on PythonAnywhere - silent backoff
+                    time.sleep(3)
+                else:
+                    print(f"API Error [{method}]: {e}")
+                    time.sleep(2)
+        return None
     else:
         # Urllib fallback with proxy support
         try:
@@ -48,7 +67,7 @@ def api_request(method, data=None):
             headers = {"Content-Type": "application/json"}
             body = json.dumps(data).encode("utf-8") if data else None
             req = urllib.request.Request(url, data=body, headers=headers)
-            with opener.open(req, timeout=35) as response:
+            with opener.open(req, timeout=15) as response:
                 return json.loads(response.read().decode("utf-8"))
         except Exception as e:
             # Try without proxy if direct connection
@@ -56,10 +75,10 @@ def api_request(method, data=None):
                 headers = {"Content-Type": "application/json"}
                 body = json.dumps(data).encode("utf-8") if data else None
                 req = urllib.request.Request(url, data=body, headers=headers)
-                with urllib.request.urlopen(req, timeout=35) as response:
+                with urllib.request.urlopen(req, timeout=15) as response:
                     return json.loads(response.read().decode("utf-8"))
             except Exception as e2:
-                print(f"API Error [{method}]: {e2}")
+                time.sleep(2)
                 return None
 
 def send_welcome_message(chat_id, first_name, username):
@@ -142,7 +161,8 @@ def run_bot_polling():
     error_count = 0
     while True:
         try:
-            updates_res = api_request("getUpdates", {"offset": offset, "timeout": 20})
+            # Low polling timeout (5s) prevents PythonAnywhere proxy from dropping the tunnel with 503
+            updates_res = api_request("getUpdates", {"offset": offset, "timeout": 5})
             if updates_res and updates_res.get("ok"):
                 error_count = 0
                 for update in updates_res.get("result", []):
@@ -177,10 +197,8 @@ def run_bot_polling():
                             answer_callback(cb_id, how_text)
             else:
                 error_count += 1
-                if error_count > 3:
-                    time.sleep(5)
-                else:
-                    time.sleep(1)
+                # Calm backoff prevents triggering proxy rate limits on free cloud hosting
+                time.sleep(4)
 
         except KeyboardInterrupt:
             print("\n🛑 Bot stopped by user.")
