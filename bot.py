@@ -132,6 +132,10 @@ def set_bot_menu_button():
 
 def run_bot_polling():
     print("🚀 Starting Happy Farm Telegram Bot Polling...")
+    if USE_REQUESTS:
+        print("✅ Network: Using 'requests' with automated cloud proxy support.")
+    else:
+        print("ℹ️ Network: Using standard urllib with proxy handler.")
     set_bot_menu_button()
     
     offset = 0
