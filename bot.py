@@ -149,7 +149,26 @@ def set_bot_menu_button():
     if res and res.get("ok"):
         print("✅ Menu button set successfully to WebApp!")
 
+def kill_duplicate_instances():
+    """Automatically terminates any other running bot.py processes on the server to prevent 409 Conflict."""
+    my_pid = os.getpid()
+    try:
+        import subprocess
+        pids = subprocess.check_output(["pgrep", "-f", "bot.py"]).decode().strip().split()
+        for p in pids:
+            try:
+                pid = int(p)
+                if pid != my_pid:
+                    print(f"🧹 Terminating duplicate background bot instance (PID: {pid})...")
+                    os.kill(pid, 9)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
 def run_bot_polling():
+    kill_duplicate_instances()
+    time.sleep(1)
     print("🚀 Starting Happy Farm Telegram Bot Polling...")
     if USE_REQUESTS:
         print("✅ Network: Using 'requests' with automated cloud proxy support.")
