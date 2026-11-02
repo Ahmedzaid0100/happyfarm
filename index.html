@@ -18,6 +18,12 @@
     * {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+    }
+
+    /* Mobile Touch Ergonomics & Anti-Misclick */
+    button, a, [onclick], input {
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
       font-family: 'Fredoka', 'Tajawal', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', system-ui, -apple-system, sans-serif;
     }
 
@@ -713,7 +719,7 @@
           </div>
 
           <!-- Action Buttons (Connect Wallet & Activity History) -->
-          <div class="grid grid-cols-2 gap-2.5">
+          <div class="grid grid-cols-2 gap-3">
             <button onclick="connectTONWallet()" class="btn-3d-blue py-2.5 rounded-2xl text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
               <span>💎</span> Connect Wallet
             </button>
@@ -929,7 +935,7 @@
           </div>
 
           <!-- Withdraw & Buy CFC Buttons -->
-          <div class="grid grid-cols-2 gap-2.5">
+          <div class="grid grid-cols-2 gap-3">
             <button onclick="withdrawHFC()" class="py-2.5 rounded-2xl btn-3d-green text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
               <span>🚀</span> Claim at TGE
             </button>
@@ -960,7 +966,7 @@
           </div>
 
           <!-- Connect / Disconnect Row -->
-          <div class="grid grid-cols-2 gap-2.5">
+          <div class="grid grid-cols-2 gap-3">
             <button onclick="connectTONWallet()" class="py-2.5 rounded-2xl bg-gradient-to-b from-blue-500 to-blue-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md border-b-4 border-blue-900 active:scale-95 transition-all">
               <span>💎</span> Connect
             </button>
@@ -1307,7 +1313,7 @@
           </div>
 
           <!-- 6 Tasks Items with Interactive Start -> Claim -> Claimed -->
-          <div class="space-y-2">
+          <div class="space-y-3">
 
             <!-- Task 1: Watch YouTube -->
             <div class="bg-white border border-[#eedec0] rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
@@ -1569,7 +1575,7 @@
           </div>
 
           <!-- 4 Compact Battle Mode Buttons (3vs3, 5vs5, 7vs7, RUN) - Free to Play, 8h Cooldown, Points Reward -->
-          <div class="grid grid-cols-4 gap-1.5">
+          <div class="grid grid-cols-4 gap-2">
 
             <!-- 1. 3 vs 3 Battle Button -->
             <button onclick="openBattlePrep(3)" class="btn-3d-blue rounded-xl p-1.5 flex flex-col items-center justify-between gap-0.5 shadow-md active:scale-95 transition-all text-white border border-sky-300/40 relative group cursor-pointer">
@@ -1860,8 +1866,8 @@
         </div>
 
         <!-- Action Buttons: Normal Collect & 2x Double with Ad -->
-        <div class="space-y-2">
-          <button onclick="claimCrazyBoxReward(true)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+        <div class="space-y-3">
+          <button onclick="claimCrazyBoxReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
             <span>&#127916;</span> <span id="crazyBoxDoubleBtnText">Collect 2x (+10 CFC) with Ad</span>
           </button>
           <button onclick="claimCrazyBoxReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
@@ -1889,11 +1895,11 @@
         <div class="bg-amber-950/70 rounded-2xl p-3 text-left text-xs space-y-2 mb-4 border border-amber-800/80">
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">💸 100% Free Crypto Withdrawals <span class="text-cyan-300">(0% Gas Fee - 0 CFC Fee)</span></span>
+            <span class="text-amber-100 font-bold">💸 100% Free Airdrop Claims <span class="text-cyan-300">(0% Gas Fee - 0 CFC Fee)</span></span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">🛡️ VIP Golden Dog Badge &amp; Free Gas on all Withdrawals</span>
+            <span class="text-amber-100 font-bold">🛡️ VIP Golden Dog Badge &amp; Zero Gas on Airdrop Distributions</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-emerald-400 font-bold text-sm">✓</span>
@@ -2257,7 +2263,7 @@
         </div>
 
         <!-- TON Connect Buttons -->
-        <div class="space-y-2">
+        <div class="space-y-3">
           <button onclick="connectTonkeeper()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-xs flex items-center justify-center gap-2 border border-blue-400 shadow-md active:scale-95 transition-transform">
             <span>💎</span> Connect Tonkeeper
           </button>
@@ -2281,7 +2287,7 @@
           <p class="text-[11px] text-amber-200/80">Complete quests to earn points and upgrade your farm!</p>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-3">
           <!-- Task 1 -->
           <div class="bg-amber-950/70 border border-amber-800/80 rounded-xl p-2.5 flex items-center justify-between">
             <div>
@@ -2379,6 +2385,51 @@
 
   <!-- Interactive JavaScript Engine -->
   <script>
+    // ==================== SECURITY & ANTI-EXPLOIT UTILITIES ====================
+    // Safe HTML Escaping (Protects against XSS & script injection)
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        switch (m) {
+          case '&': return '&amp;';
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '"': return '&quot;';
+          case "'": return '&#39;';
+          default: return m;
+        }
+      });
+    }
+
+    // Safe URL Validator (Protects against javascript: execution & injection)
+    function sanitizeUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      const clean = url.trim();
+      if (/^(https?:\/\/|\/|assets\/)/i.test(clean)) {
+        return clean.replace(/[<>"']/g, '');
+      }
+      return '';
+    }
+
+    // Action Debouncer & Anti-Spam Click Lock (Eliminates accidental double-clicks & spam exploits)
+    const ActionLock = {
+      locks: {},
+      run(key, cooldownMs, fn) {
+        const now = Date.now();
+        if (this.locks[key] && (now - this.locks[key] < cooldownMs)) {
+          return false;
+        }
+        this.locks[key] = now;
+        try {
+          fn();
+          return true;
+        } catch (e) {
+          console.error('Error executing action:', key, e);
+          delete this.locks[key];
+          return false;
+        }
+      }
+    };
     // Web Audio Synthesizer (Zero External Dependencies)
     let audioCtx = null;
     let bgmEnabled = false; // BGM music completely removed per user request
@@ -2809,10 +2860,10 @@
       if (tgUser && p1Name) {
         const pStats = getPlayerBattlePower();
         const vipTag = pStats.isVip ? "&#128081; VIP" : ("Lv." + pStats.userLevel);
-        p1Name.innerHTML = (tgUser?.first_name || "Farmer") + ' (You) <span class="bg-amber-400 text-amber-950 font-black px-1.5 py-0.2 rounded text-[7px] shadow-sm">' + vipTag + ' &bull; &#9889; +' + pStats.powerPercent + '% Power</span>';
+        const safeName = escapeHtml(tgUser?.first_name || "Farmer"); p1Name.innerHTML = safeName + ' (You) <span class="bg-amber-400 text-amber-950 font-black px-1.5 py-0.2 rounded text-[7px] shadow-sm">' + vipTag + ' &bull; &#9889; +' + pStats.powerPercent + '% Power</span>';
       }
       if (tgUser && tgUser.photo_url && p1Avatar) {
-        p1Avatar.innerHTML = '<img src="' + tgUser.photo_url + '" class="w-full h-full rounded-full object-cover" />';
+        const safePhoto = sanitizeUrl(tgUser.photo_url); if (safePhoto) p1Avatar.innerHTML = '<img src="' + safePhoto + '" class="w-full h-full rounded-full object-cover" />';
       }
 
       // Prepare matching 3D battle video (Preloaded, seamless loop, no cut)
@@ -3214,7 +3265,7 @@
           // Header Avatar
           const headerAvatar = document.getElementById('headerAvatarDisplay');
           if (headerAvatar && tgUser.photo_url) {
-            headerAvatar.innerHTML = `<img src="${tgUser.photo_url}" class="w-full h-full rounded-full object-cover" />`;
+            const safeHPhoto = sanitizeUrl(tgUser.photo_url); if (safeHPhoto) headerAvatar.innerHTML = `<img src="${safeHPhoto}" class="w-full h-full rounded-full object-cover" />`;
           }
 
           // Profile Page
@@ -3226,7 +3277,7 @@
 
           const profPageAvatar = document.getElementById('profPageAvatar');
           if (profPageAvatar && tgUser.photo_url) {
-            profPageAvatar.innerHTML = `<img src="${tgUser.photo_url}" class="w-full h-full rounded-full object-cover" />`;
+            const safePPhoto = sanitizeUrl(tgUser.photo_url); if (safePPhoto) profPageAvatar.innerHTML = `<img src="${safePPhoto}" class="w-full h-full rounded-full object-cover" />`;
           }
         }
       } catch (err) {
@@ -3893,7 +3944,7 @@
     }
 
     // Collect Farm Reward (Collect = normal points, Collect 2x = Ad for Double points)
-    function collectFarmReward(key, isDouble = false) {
+    function collectFarmReward(key, isDouble = false) { if (!ActionLock.run("farm_" + key, 1000, () => _doCollectFarmReward(key, isDouble))) return; } function _doCollectFarmReward(key, isDouble = false) {
       const farm = adFarms[key];
       if (!farm || farm.state !== 'ready_to_collect') return;
 
@@ -4023,7 +4074,7 @@
         `;
       } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
         container.innerHTML = `
-          <div class="grid grid-cols-2 gap-1 w-full">
+          <div class="grid grid-cols-2 gap-2 w-full mt-0.5">
             <button onclick="collectFarmReward('${key}', false)" class="btn-3d-green py-1 px-0.5 rounded-xl text-white font-black text-[8px] flex items-center justify-center gap-0.5 shadow active:scale-95 transition-transform" title="Collect base points">
               <span>🌾</span> +${currentReward}
             </button>
@@ -4220,7 +4271,7 @@
       openModal('crazyBoxModal');
     }
 
-    function claimCrazyBoxReward(isDouble) {
+    function claimCrazyBoxReward(isDouble) { if (!ActionLock.run("crazybox", 1200, () => _doClaimCrazyBoxReward(isDouble))) return; } function _doClaimCrazyBoxReward(isDouble) {
       try { playSound('click'); } catch(e){}
       if (isDouble) {
         showUniversalAd(() => {
@@ -4310,7 +4361,7 @@
         dogBtn.innerHTML = '<span>&#9989;</span> 0% Fee';
         dogBtn.className = 'w-full py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow border border-emerald-300';
       }
-      alert('Congratulations! 3 TON payment confirmed!\n\n👑 VIP Dog Activated:\n💸 Enjoy 100% Free Crypto Withdrawals (0 CFC Gas Fee deduction on all withdrawals)!');
+      alert('Congratulations! 3 TON payment confirmed!\n\n👑 VIP Dog Activated:\n💸 Enjoy 100% Free Airdrop Claims (0 CFC Gas Fee deduction on all withdrawals)!');
     }
     function old_confirmTonPayment() {
       try { playSound('fanfare'); } catch(e){}
@@ -4701,7 +4752,7 @@
       updateAvailableTasksCounter();
     }
 
-    function claimDailyCheckIn() {
+    function claimDailyCheckIn() { if (!ActionLock.run("checkin", 1000, () => _doClaimDailyCheckIn())) return; } function _doClaimDailyCheckIn() {
       if (hasCheckedInToday) {
         playSound('click');
         showWalletToast('⚠️ You already checked in today! Come back tomorrow.');
@@ -4784,7 +4835,7 @@
       }, 1500);
     }
 
-    function claimTaskReward(key, bonus) {
+    function claimTaskReward(key, bonus) { if (!ActionLock.run("task_" + key, 800, () => _doClaimTaskReward(key, bonus))) return; } function _doClaimTaskReward(key, bonus) {
       const task = taskItems[key];
       if (!task || (task.state !== 'ready_to_claim' && (!task.target || invitedFriendsCount < task.target))) return;
 
@@ -4867,7 +4918,7 @@
       }
     }
 
-    function convertPointsToHFC() {
+    function convertPointsToHFC() { if (!ActionLock.run("convert", 800, () => _doConvertPointsToHFC())) return; } function _doConvertPointsToHFC() {
       const canConvert = Math.floor(points / HFC_RATE);
       if (canConvert < 1) {
         playSound('click');
