@@ -1531,27 +1531,48 @@
         </div>
 
         <!-- ==================== CRAZY BOX BANNER (Relocated to Community) ==================== -->
-        <div id="crazyBoxCard" class="wood-board rounded-2xl p-2.5 shadow-xl border-2 border-yellow-500/80 relative overflow-hidden select-none mt-3 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 min-w-0">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-2xl shadow-inner border border-amber-200 shrink-0 animate-bounce" style="animation-duration: 2s;">
-              &#127873;
-            </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap">
+        <div id="crazyBoxCard" class="wood-board rounded-2xl p-2.5 shadow-xl border-2 border-yellow-500/80 relative overflow-hidden select-none mt-3">
+          <!-- Header Banner -->
+          <div class="flex items-center justify-between border-b border-amber-900/60 pb-1.5 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base animate-bounce">&#127873;</span>
+              <div>
                 <h3 class="font-black text-xs text-yellow-300 uppercase tracking-wide leading-none" style="font-family: 'Fredoka', cursive;">
-                  Crazy Box
+                  Crazy Mystery Box
                 </h3>
-                <span class="bg-amber-600 text-white text-[7.5px] font-black px-1.5 py-0.2 rounded-md leading-none shadow-sm">Daily (2/2)</span>
+                <p class="text-[8.5px] text-amber-200/90 font-semibold leading-tight mt-0.5">
+                  Daily Lucky Rewards: Win 2 - 8 CFC &amp; Big Points!
+                </p>
               </div>
-              <p class="text-[8.5px] text-amber-200/90 font-semibold leading-tight mt-0.5 truncate">
-                Win 2-8 CFC Free or with Points every 24h!
-              </p>
             </div>
+            <span class="bg-amber-600/90 text-white text-[7.5px] font-black px-2 py-0.5 rounded-full border border-yellow-300 shadow animate-pulse">
+              DAILY (2/2) &#10024;
+            </span>
           </div>
-          <div id="crazyBoxBtnContainer" class="shrink-0">
-            <button onclick="openCrazyBox()" id="crazyBoxBtn" class="btn-3d-yellow py-1.5 px-3 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap">
-              <span>&#10024;</span> OPEN
-            </button>
+
+          <!-- Body / Showcase & Button -->
+          <div class="bg-black/40 rounded-xl p-2.5 border border-amber-900/40 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-3xl shadow-inner border border-amber-200 shrink-0 animate-bounce" style="animation-duration: 2s;">
+                &#127873;
+              </div>
+              <div class="flex flex-col justify-center leading-tight">
+                <span class="text-[10px] font-black text-amber-100 flex items-center gap-1">
+                  <span>💎</span> 2-8 CFC Tokens
+                </span>
+                <span class="text-[8.5px] font-bold text-lime-300 mt-0.5 flex items-center gap-1">
+                  <span>🌾</span> Free &amp; Points Boosts
+                </span>
+                <span class="text-[7.5px] text-amber-300/80 mt-0.5">
+                  Resets every 24 hours
+                </span>
+              </div>
+            </div>
+            <div id="crazyBoxBtnContainer" class="shrink-0 w-36">
+              <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2.5 px-3 rounded-xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
+                <span>&#10024;</span> OPEN FREE
+              </button>
+            </div>
           </div>
         </div>
 
@@ -4147,7 +4168,7 @@
       if (status.isFreeAvailable) {
         // Step 1: Free Daily Open
         container.innerHTML = `
-          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
+          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2.5 px-3 rounded-xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
             <span>&#10024;</span> OPEN FREE
           </button>
         `;
@@ -4155,7 +4176,7 @@
         // Step 2: 1x Daily Open with 1,000 Points
         container.innerHTML = `
           <div class="flex flex-col gap-1 w-full">
-            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1 rounded-lg text-white font-black text-[9.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
+            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-2 px-2.5 rounded-xl text-white font-black text-[10.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
               <span>⚡</span> Open (1,000 🌾)
             </button>
             <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
@@ -4167,7 +4188,7 @@
         // Step 3: Daily Limit Reached (Both 1 Free + 1 with Points used today)
         container.innerHTML = `
           <div class="flex flex-col gap-1 w-full">
-            <button disabled class="w-full py-1 rounded-lg bg-amber-950/70 text-amber-400/80 font-bold text-[9px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
+            <button disabled class="w-full py-2 px-2.5 rounded-xl bg-amber-950/70 text-amber-400/80 font-bold text-[10px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
               <span>&#128274;</span> Done Today (2/2)
             </button>
             <div class="text-[7.5px] text-amber-300/80 font-bold text-center leading-none">
