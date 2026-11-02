@@ -2242,10 +2242,10 @@
         </div>
         <div class="flex flex-col gap-2">
           <button onclick="farmCollectWithAd()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 animate-bounce border border-yellow-200 cursor-pointer">
-            <span>ðŸŽ</span> <span id="farmCollectDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
+            <span>&#127873;</span> <span id="farmCollectDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
           </button>
           <button onclick="farmCollectFree()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
-            <span>ðŸŒ¾</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
+            <span>&#127806;</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
           </button>
         </div>
       </div>
@@ -4128,7 +4128,7 @@
       } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
         container.innerHTML = `
           <button onclick="showFarmCollectModal('${key}')" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow border border-yellow-300 active:scale-95 transition-transform animate-bounce cursor-pointer" title="Collect Farm Reward">
-            <span>ðŸŒ¾</span> Collect! (+${currentReward})
+            <span>&#127806;</span> Collect! (+${currentReward})
           </button>
         `;
       }
