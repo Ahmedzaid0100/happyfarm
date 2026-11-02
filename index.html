@@ -2081,7 +2081,7 @@
                 <span>&#127873;</span> <span id="battleDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
               </button>
               <button onclick="claimBattleVictoryReward(false)" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
-                <span>🌾</span> Claim Free (<span id="battleNormalClaimPts">+100</span> Pts)
+                <span>&#127806;</span> Claim Free (<span id="battleNormalClaimPts">+100</span> Pts)
               </button>
             </div>
           </div>
@@ -2180,7 +2180,7 @@
               <span>&#127873;</span> <span id="runDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
             </button>
             <button onclick="claimRunSprintVictory(false)" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
-              <span>🌾</span> Claim Free (<span id="runNormalClaimPts">+100</span> Pts)
+              <span>&#127806;</span> Claim Free (<span id="runNormalClaimPts">+100</span> Pts)
             </button>
           </div>
         </div>
@@ -2231,21 +2231,21 @@
     </div>
 
     <!-- Farm Harvest Collect Modal -->
-    <div id="farmCollectModal" style="display:none;" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] flex flex-col items-center justify-center p-4">
+    <div id="farmCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
-        <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127807;</div>
+        <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127806;</div>
         <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">HARVEST!</h2>
         <p class="text-xs text-amber-200 font-bold mb-3" id="farmCollectFarmName">Farm Ready!</p>
         <div class="bg-black/60 rounded-2xl p-3 mb-3 border border-yellow-500/60 text-center">
           <span class="text-[10px] text-amber-300 font-bold uppercase block mb-1">Farm Harvest Reward</span>
-          <div class="text-2xl font-black text-yellow-300 drop-shadow" id="farmCollectRewardText">+100 Farm Points &#127807;</div>
+          <div class="text-2xl font-black text-yellow-300 drop-shadow" id="farmCollectRewardText">+100 Farm Points &#127806;</div>
         </div>
         <div class="flex flex-col gap-2">
           <button onclick="farmCollectWithAd()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 animate-bounce border border-yellow-200 cursor-pointer">
-            <span>&#127873;</span> <span id="farmCollectDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
+            <span>ðŸŽ</span> <span id="farmCollectDoubleBtnText">2x Boost: +200 Pts (Watch Ad)</span>
           </button>
           <button onclick="farmCollectFree()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
-            <span>&#127807;</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
+            <span>ðŸŒ¾</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
           </button>
         </div>
       </div>
@@ -4008,20 +4008,25 @@
       if (!farm || (farm.state !== 'ready_to_collect' && farm.state !== 'claimable')) return;
       farmCollectCurrentKey = key;
       const baseReward = getFarmCurrentReward(key);
-      const emojiMap = { chicken:'&#x1F413;', cows:'&#x1F404;', duck:'&#x1F986;', bunny:'&#x1F430;', dog:'&#x1F415;', sheep:'&#x1F411;', horse:'&#x1F434;', pig:'&#x1F437;' };
-      const emoji = emojiMap[key] || '&#127807;';
-      document.getElementById('farmCollectEmoji').innerHTML = emoji;
-      document.getElementById('farmCollectFarmName').innerText = (farm.name || key) + ' Ready to Harvest!';
-      document.getElementById('farmCollectRewardText').innerText = '+' + baseReward + ' Farm Points';
-      document.getElementById('farmCollectDoubleBtnText').innerText = '2x Boost: +' + (baseReward * 2) + ' Pts (Watch Ad)';
-      document.getElementById('farmCollectNormalPts').innerText = '+' + baseReward;
+      const emojiMap = { chicken: '\u{1F413}', cows: '\u{1F404}', duck: '\u{1F986}', bunny: '\u{1F430}', dog: '\u{1F415}', sheep: '\u{1F411}', horse: '\u{1F434}', pig: '\u{1F437}' };
+      const emoji = emojiMap[key] || '\u{1F33E}';
+      const elEmoji = document.getElementById('farmCollectEmoji');
+      if (elEmoji) elEmoji.innerText = emoji;
+      const elName = document.getElementById('farmCollectFarmName');
+      if (elName) elName.innerText = (farm.name || key) + ' Ready to Harvest!';
+      const elRew = document.getElementById('farmCollectRewardText');
+      if (elRew) elRew.innerText = '+' + baseReward + ' Farm Points \u{1F33E}';
+      const elDbl = document.getElementById('farmCollectDoubleBtnText');
+      if (elDbl) elDbl.innerText = '2x Boost: +' + (baseReward * 2) + ' Pts (Watch Ad)';
+      const elNorm = document.getElementById('farmCollectNormalPts');
+      if (elNorm) elNorm.innerText = '+' + baseReward;
       const modal = document.getElementById('farmCollectModal');
-      if (modal) modal.style.display = 'flex';
+      if (modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
     }
 
     function hideFarmCollectModal() {
       const modal = document.getElementById('farmCollectModal');
-      if (modal) modal.style.display = 'none';
+      if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
       farmCollectCurrentKey = null;
     }
 
@@ -4123,7 +4128,7 @@
       } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
         container.innerHTML = `
           <button onclick="showFarmCollectModal('${key}')" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow border border-yellow-300 active:scale-95 transition-transform animate-bounce cursor-pointer" title="Collect Farm Reward">
-            <span>&#127807;</span> Collect! (+${currentReward})
+            <span>ðŸŒ¾</span> Collect! (+${currentReward})
           </button>
         `;
       }
@@ -4137,9 +4142,92 @@
           const pct = Math.min(100, Math.max(5, Math.round((elapsed / totalSec) * 100)));
           pBar.style.width = pct + '%';
         } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
+          pBar.style.width = '100%';
+        } else {
+          pBar.style.width = isUnlocked ? '100%' : '0%';
+        }
+      }
+    }
+
+    function renderAllAdFarms() {
+      if (typeof renderAdFarmAction === 'function' && typeof adFarms === 'object') {
+        Object.keys(adFarms).forEach(k => renderAdFarmAction(k));
+      }
+    }
+
+    // Backward compatibility aliases
+    function startAdFarm(key) { startFarmMining(key); }
+    function skip12h(key) { skipFarm8h(key); }
+    function collectAdFarm(key, isAuto = false) { collectFarmReward(key, false); }
+    function checkAdCollect(key) {
+      const farm = adFarms[key];
+      if (!farm) return;
+      if (farm.state === 'ready_to_collect') {
+        collectFarmReward(key, false);
+      } else if (farm.state === 'mining') {
+        playSound('click');
+        showWalletToast('&#9203; ' + farm.name + ' is farming! (' + formatTime(farm.remainingSeconds) + ' left)');
+      } else {
+        playSound('click');
+        showWalletToast('&#127809; Click Farm to start 8-hour farming for ' + farm.name + '!');
+      }
+    }
+
+    // Collect Coins Action (For Bee Farm)
+    function collectCoins(farmName, amount, btnElement) {
+      playSound('coin');
+      points += amount; queueCloudSave();
+      updateDisplays();
+
+      const rect = btnElement.getBoundingClientRect();
+      const floater = document.createElement('div');
+      floater.className = 'absolute font-black text-yellow-300 text-sm coin-float pointer-events-none drop-shadow-md z-50';
+      floater.style.left = (rect.left + rect.width / 2 - 15) + 'px';
+      floater.style.top = (rect.top - 10) + 'px';
+      floater.innerText = `+${amount} 🌾`;
+      document.getElementById('coinAnimationContainer').appendChild(floater);
+      setTimeout(() => floater.remove(), 800);
+    }
+
+    // Locked Card Alert
+    function lockedCardNotice(name, reqLevel) {
+      playSound('click');
+      alert(`🔒 ${name} is locked!\n\nYou need to reach Lv. ${reqLevel} to unlock this farm. Earn more points to level up!`);
+    }
+
+    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT: 1 FREE + 1 WITH POINTS) ====================
+    const CRAZY_BOX_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+    let lastCrazyBoxFreeTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_free')) || Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
+    let lastCrazyBoxPointsTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_points')) || 0;
+    let currentCrazyBoxWin = 0;
+    let currentCrazyBoxIsOpenWithPoints = false;
+
+    function getCrazyBoxStatus() {
+      const now = Date.now();
+      const freeElapsed = now - lastCrazyBoxFreeTimestamp;
+      const isFreeAvailable = (lastCrazyBoxFreeTimestamp === 0 || freeElapsed >= CRAZY_BOX_COOLDOWN_MS);
+      // Points open is available ONCE per daily 24h cycle, accessible after the free open is claimed
+      const isPointsOpenAvailable = !isFreeAvailable && (lastCrazyBoxPointsTimestamp < lastCrazyBoxFreeTimestamp);
+      const remainingSec = isFreeAvailable ? 0 : Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - freeElapsed) / 1000));
+
+      return {
+        isFreeAvailable,
+        isPointsOpenAvailable,
+        remainingSec
+      };
+    }
+
+    function updateCrazyBoxUI() {
+      const container = document.getElementById('crazyBoxBtnContainer');
+      if (!container) return;
+
+      const status = getCrazyBoxStatus();
+
+      if (status.isFreeAvailable) {
+        // Step 1: Free Daily Open
         container.innerHTML = `
-          <button onclick="showFarmCollectModal('${key}')" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow border border-yellow-300 active:scale-95 transition-transform animate-bounce cursor-pointer" title="Collect Farm Reward">
-            <span>&#127807;</span> Collect! (+${currentReward})
+          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
+            <span>&#10024;</span> OPEN FREE
           </button>
         `;
       } else if (status.isPointsOpenAvailable) {
