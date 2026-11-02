@@ -24,7 +24,7 @@ except ImportError:
 # ==================== CONFIGURATION ====================
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k")
 WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
-CHANNEL_URL = "https://t.me/+hsG3joCzzOwxNTg0"
+CHANNEL_URL = "https://t.me/crazyfarmgamey"
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
@@ -83,38 +83,38 @@ def api_request(method, data=None):
 
 def send_welcome_message(chat_id, first_name, username):
     welcome_text = (
-        f"👋 <b>أهلاً بك يا {first_name} في عالم مزرعة Crazy Farm!</b> 🌾\n\n"
-        "🎮 <b>أقوى لعبة Web3 زراعية وقتالية على شبكة TON!</b>\n\n"
-        "🌟 <b>مميزات اللعبة:</b>\n"
-        "• 🐝 <b>مزرعة النحل:</b> تعدين مجاني لنقاط FARM وتطوير مستواك.\n"
-        "• 🐶 <b>سباق الجري RUN 3D:</b> تفادى العوائق واجمع عملات <b>CFC</b> ومكافآت الترتيب!\n"
-        "• ⚔️ <b>حلبة قتال الحيوانات PVP:</b> معارك تكتيكية 3v3 و 5v5 و 7v7 وجوائز كبرى.\n"
-        "• 💎 <b>إيردروب TON:</b> ربط المحفظة وحفظ حصتك من توزيع عملات CFC عند الإدراج.\n\n"
-        f"📢 <b>قناتنا الرسمية:</b> انضم لمتابعة التحديثات والجوائز:\n👉 {CHANNEL_URL}\n\n"
-        "👇 <b>اضغط على الزر أدناه لبدء اللعب الآن مباشرة:</b>"
+        f"👋 <b>Welcome {first_name} to Crazy Farm!</b> 🌾\n\n"
+        "🎮 <b>The premier Web3 farming & tactical battle game on TON!</b>\n\n"
+        "🌟 <b>Game Features:</b>\n"
+        "• 🐝 <b>Bee Farm:</b> Free automatic mining of Farm Points & hive upgrades.\n"
+        "• 🐶 <b>3D RUN Sprint:</b> Dodge obstacles, collect bones & earn CFC tokens!\n"
+        "• ⚔️ <b>PVP Animal Arena:</b> Tactical squad battles (3v3, 5v5, 7v7) with big rewards.\n"
+        "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFC tokens at TGE.\n\n"
+        f"📢 <b>Official Channel:</b> Join for announcements & airdrop updates:\n👉 {CHANNEL_URL}\n\n"
+        "👇 <b>Tap the button below to start playing:</b>"
     )
 
     keyboard = {
         "inline_keyboard": [
             [
                 {
-                    "text": "🎮 العب الآن | Play Crazy Farm",
+                    "text": "🎮 Play Crazy Farm",
                     "web_app": {"url": WEBAPP_URL}
                 }
             ],
             [
                 {
-                    "text": "📢 انضم للقناة الرسمية 🌾",
+                    "text": "📢 Official Channel 🌾",
                     "url": CHANNEL_URL
                 }
             ],
             [
                 {
-                    "text": "👥 دعوة الأصدقاء",
-                    "switch_inline_query": "تعال العب معي في Crazy Farm واجمع عملات CFC للإيردروب القادم! 🌾"
+                    "text": "👥 Invite Friends",
+                    "switch_inline_query": "Join me in Crazy Farm! Farm points & earn CFC tokens for the upcoming TON airdrop! 🌾"
                 },
                 {
-                    "text": "❓ كيفية اللعب ونظام المكافآت",
+                    "text": "❓ How to Play & Rewards",
                     "callback_data": "how_to_play"
                 }
             ]
@@ -207,11 +207,11 @@ def run_bot_polling():
                         data = cb.get("data")
                         if data == "how_to_play":
                             how_text = (
-                                "🌾 طريقة اللعب ونظام المكافآت:\n"
-                                "1. اجمع نقاط مزرعة النحل المجانية وطور مستواك.\n"
-                                "2. العب سباق الجري RUN 3D بالكلب وتفادَ العوائق لجمع عملات CFC.\n"
-                                "3. شارك في معارك الـ PVP واهزم الأعداء للحصول على جوائز إضافية.\n"
-                                "4. اربط محفظة TON لحفظ وتوثيق رصيدك لاستلام الإيردروب عند الإطلاق!"
+                                "🌾 How to Play & Reward System:\n\n"
+                                "1. Collect free points from your Bee Farm and upgrade your animals.\n"
+                                "2. Play the 3D Dog RUN Sprint, dodge obstacles and collect bones.\n"
+                                "3. Compete in PVP battles to win massive bonus farm points.\n"
+                                "4. Connect your TON wallet to register your on-chain share for TGE distribution!"
                             )
                             answer_callback(cb_id, how_text)
             else:

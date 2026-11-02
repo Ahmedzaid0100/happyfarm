@@ -5003,7 +5003,7 @@
       const gasFee = (typeof isDogVipActive !== 'undefined' && isDogVipActive) ? 0 : 50;
       const netAmount = Math.max(withdrawAmount - gasFee, 0);
       const feeNotice = (typeof isDogVipActive !== 'undefined' && isDogVipActive)
-        ? "VIP Dog Active: 0 CFC Gas Fee (سحب مجاني بالكامل بدون خصم رسوم)!"
+        ? "VIP Dog Active: 0 CFC Gas Fee (100% Free VIP Withdrawal with zero fees)!"
         : "Standard Gas Fee: 50 CFC deducted (Net: " + netAmount.toLocaleString() + " CFC). Tip: Buy VIP Dog for Free Withdrawals (0% Fee)!";
 
       alert('🎉 Web3 Airdrop Distribution Claim Registered!\n\n' +
@@ -5693,7 +5693,7 @@
           .from('players')
           .upsert(payload, { onConflict: 'telegram_id' });
         if (!error) {
-          console.log('â˜ï¸ Progress saved to Supabase for ID:', tId);
+          console.log('[Cloud] Progress saved to Supabase for ID:', tId);
         } else {
           console.warn('Cloud save response:', error);
         }
