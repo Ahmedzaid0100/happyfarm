@@ -413,9 +413,14 @@
             </div>
           </div>
 
-          <!-- Animal 3: Dog (Row 2, Left) - ALWAYS UNLOCKED, VIP 0% FEE -->
+          <!-- Animal 3: Dog (Row 2, Left) - VIP 3 TON -->
           <div id="farmCard-dog" class="absolute w-[45.2%] h-[20.2%]" style="left: 3.2%; top: 29.8%;">
-            <div class="absolute top-1 left-2 z-10">
+            <!-- Lock badge when not VIP -->
+            <div id="farmLockBadge-dog" onclick="openDogVipModal()" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10 cursor-pointer" title="VIP Dog Locked (3 TON)">
+              &#128274;
+            </div>
+            <!-- VIP Crown badge when VIP active -->
+            <div id="farmVipBadge-dog" class="absolute top-1 left-2 z-10" style="display: none;">
               <span class="bg-gradient-to-r from-yellow-500 to-amber-600 text-amber-950 text-[7px] font-black px-1.5 py-0.5 rounded-full border border-yellow-200 shadow flex items-center gap-0.5">
                 &#128081; VIP
               </span>
@@ -426,13 +431,13 @@
               </button>
             </div>
             <div id="actionContainer-dog" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
-              <button onclick="startFarmMining('dog')" class="btn-3d-green w-full py-1 rounded-xl text-white font-black text-[8.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer" title="0% Fee VIP Farm Active (+15 Pts)">
-                <span>&#9989;</span> 0% Fee (+15)
+              <button onclick="openDogVipModal()" id="dogFarmVipBtn" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer" title="Unlock VIP Dog for 3 TON">
+                <span>&#128081;</span> 3 TON
               </button>
             </div>
             <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
               <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
-                <div id="farmProgressBar-dog" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+                <div id="farmProgressBar-dog" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
               <button onclick="upgradeFarm('dog')" id="upgradeBtn-dog" class="hidden" title="Upgrade Farm Level"></button>
             </div>
@@ -3081,7 +3086,7 @@
     // Progression Unlock Level Requirements
     const FARM_UNLOCK_LEVELS = {
       chicken: 1, // Open from start
-      dog: 0,     // ALWAYS OPEN (No lock, VIP 0% Fee)
+      dog: 'VIP', // VIP Exclusive (Requires 3 TON)
       duck: 2,
       bunny: 3,
       sheep: 5,
@@ -3144,7 +3149,9 @@
     } catch(e) {}
 
     function isFarmUnlocked(key) {
-      if (key === 'dog') return true; // Dog is ALWAYS unlocked
+      if (key === 'dog') {
+        return (typeof isDogVipActive !== 'undefined' && isDogVipActive === true);
+      }
       const reqLvl = FARM_UNLOCK_LEVELS[key] || 1;
       return userLevel >= reqLvl;
     }
@@ -3167,6 +3174,11 @@
     function upgradeFarm(key) {
       playSound('click');
       if (!isFarmUnlocked(key)) {
+        if (key === 'dog') {
+          showWalletToast('👑 VIP Dog is locked! Unlock with 3 TON first.');
+          openDogVipModal();
+          return;
+        }
         const reqLvl = FARM_UNLOCK_LEVELS[key];
         showWalletToast('\u{1F512} Reach Level ' + reqLvl + ' to unlock this farm!');
         return;
@@ -3688,6 +3700,15 @@
 
     // Start 8-Hour Farm Mining (Green Farm Button -> Golden FARMING Button)
     function startFarmMining(key) {
+      if (!isFarmUnlocked(key)) {
+        if (key === 'dog') {
+          showWalletToast('👑 VIP Dog is locked! Unlock with 3 TON first.');
+          openDogVipModal();
+          return;
+        }
+        showWalletToast('\u{1F512} Farm is locked!');
+        return;
+      }
       const farm = adFarms[key];
       if (!farm || farm.state !== 'idle') return;
 
@@ -3803,11 +3824,11 @@
       // Update lock badge visibility
       const lockBadge = document.getElementById(`farmLockBadge-${key}`);
       if (lockBadge) {
-        if (key === 'dog') {
-          lockBadge.style.display = 'none';
-        } else {
-          lockBadge.style.display = isUnlocked ? 'none' : 'flex';
-        }
+        lockBadge.style.display = isUnlocked ? 'none' : 'flex';
+      }
+      const vipBadge = document.getElementById(`farmVipBadge-${key}`);
+      if (vipBadge) {
+        vipBadge.style.display = (key === 'dog' && isUnlocked) ? 'flex' : 'none';
       }
 
       // Update level badge button text and upgrade tooltip
@@ -3838,8 +3859,16 @@
 
       if (!container) return;
 
-      // If farm is locked by player level
+      // If farm is locked by player level or VIP
       if (!isUnlocked) {
+        if (key === 'dog') {
+          container.innerHTML = `
+            <button onclick="openDogVipModal()" id="dogFarmVipBtn" class="btn-3d-yellow w-full py-1 rounded-xl text-amber-950 font-black text-[8.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer" title="Unlock VIP Dog for 3 TON">
+              <span>&#128081;</span> 3 TON
+            </button>
+          `;
+          return;
+        }
         container.innerHTML = `
           <button onclick="showWalletToast('\u{1F512} Reach Level ${FARM_UNLOCK_LEVELS[key]} to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
             <span>\u{1F512}</span> Lv. ${FARM_UNLOCK_LEVELS[key]} Req
@@ -5655,6 +5684,7 @@
         }
         if (urlParams.get('vipDog') === '1') {
           isDogVipActive = true;
+          updateDisplays();
         }
         if (urlParams.get('testCrazyBox')) {
           setTimeout(() => { openCrazyBox(); }, 300);
