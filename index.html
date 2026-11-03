@@ -368,23 +368,21 @@
             <div id="farmLockBadge-chicken" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10" style="display: none;">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-chicken" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1 z-10">
+              <button onclick="upgradeFarm('chicken')" id="farmLevelBadge-chicken" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-chicken" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="startFarmMining('chicken')" class="btn-3d-green w-full py-1 rounded-xl text-white font-black text-[8.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer" title="Start 8-hour farming">
                 <span>&#127809;</span> Farm (+10 Pts)
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-chicken" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
               </div>
-              <button onclick="upgradeFarm('chicken')" id="upgradeBtn-chicken" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('chicken')" id="upgradeBtn-chicken" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -393,23 +391,21 @@
             <div id="farmLockBadge-duck" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-duck" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1.5 z-10">
+              <button onclick="upgradeFarm('duck')" id="farmLevelBadge-duck" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-duck" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 2 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 2 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-duck" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('duck')" id="upgradeBtn-duck" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('duck')" id="upgradeBtn-duck" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -420,23 +416,21 @@
                 &#128081; VIP
               </span>
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-dog" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1 z-10">
+              <button onclick="upgradeFarm('dog')" id="farmLevelBadge-dog" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-dog" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="startFarmMining('dog')" class="btn-3d-green w-full py-1 rounded-xl text-white font-black text-[8.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer" title="0% Fee VIP Farm Active (+15 Pts)">
                 <span>&#9989;</span> 0% Fee (+15)
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-dog" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
               </div>
-              <button onclick="upgradeFarm('dog')" id="upgradeBtn-dog" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('dog')" id="upgradeBtn-dog" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -445,23 +439,21 @@
             <div id="farmLockBadge-cows" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-cows" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1.5 z-10">
+              <button onclick="upgradeFarm('cows')" id="farmLevelBadge-cows" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-cows" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 7 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 7 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-cows" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('cows')" id="upgradeBtn-cows" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('cows')" id="upgradeBtn-cows" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -470,23 +462,21 @@
             <div id="farmLockBadge-sheep" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-sheep" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1 z-10">
+              <button onclick="upgradeFarm('sheep')" id="farmLevelBadge-sheep" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-sheep" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 5 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 5 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-sheep" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('sheep')" id="upgradeBtn-sheep" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('sheep')" id="upgradeBtn-sheep" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -495,23 +485,21 @@
             <div id="farmLockBadge-horse" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-horse" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1.5 z-10">
+              <button onclick="upgradeFarm('horse')" id="farmLevelBadge-horse" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-horse" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 12 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 12 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-horse" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('horse')" id="upgradeBtn-horse" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('horse')" id="upgradeBtn-horse" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -520,23 +508,21 @@
             <div id="farmLockBadge-pig" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-pig" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1 z-10">
+              <button onclick="upgradeFarm('pig')" id="farmLevelBadge-pig" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-pig" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 9 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 9 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-pig" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('pig')" id="upgradeBtn-pig" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('pig')" id="upgradeBtn-pig" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -545,23 +531,21 @@
             <div id="farmLockBadge-bunny" class="absolute top-1 left-2 bg-amber-950/90 text-amber-300 text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-amber-500 shadow-md z-10">
               &#128274;
             </div>
-            <div class="absolute top-1 right-2 z-10">
-              <span id="farmLevelBadge-bunny" class="bg-emerald-950/90 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow">
+            <div class="absolute top-0.5 right-1.5 z-10">
+              <button onclick="upgradeFarm('bunny')" id="farmLevelBadge-bunny" class="bg-gradient-to-r from-emerald-900 to-emerald-950 hover:from-emerald-800 hover:to-emerald-900 text-emerald-300 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-emerald-400 shadow-md active:scale-90 transition-transform cursor-pointer flex items-center gap-0.5" title="Upgrade Farm Level">
                 L1 &#11014;&#65039;
-              </span>
+              </button>
             </div>
             <div id="actionContainer-bunny" class="absolute w-[80%] left-[10%]" style="top: 56.5%;">
               <button onclick="showWalletToast('&#128274; Reach Level 3 to unlock this farm!')" class="w-full py-1 rounded-xl bg-amber-950/80 text-amber-300 font-extrabold text-[8px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-pointer">
                 <span>&#128274;</span> Lv. 3 Req
               </button>
             </div>
-            <div class="absolute w-[80%] left-[10%] flex items-center gap-1" style="top: 80.5%;">
-              <div class="flex-1 bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
+            <div class="absolute w-[80%] left-[10%]" style="top: 80.5%;">
+              <div class="w-full bg-amber-950/80 rounded-full h-1.5 p-0.5 border border-amber-800 shadow-inner overflow-hidden">
                 <div id="farmProgressBar-bunny" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
-              <button onclick="upgradeFarm('bunny')" id="upgradeBtn-bunny" class="btn-3d-orange px-1.5 py-0.5 rounded-full text-white font-extrabold text-[7.5px] shrink-0 active:scale-90 transition-transform shadow leading-tight" title="Upgrade Farm Level">
-                Up
-              </button>
+              <button onclick="upgradeFarm('bunny')" id="upgradeBtn-bunny" class="hidden" title="Upgrade Farm Level"></button>
             </div>
           </div>
 
@@ -3824,16 +3808,23 @@
         }
       }
 
-      // Update level badge text
+      // Update level badge button text and upgrade tooltip
       const lvlBadge = document.getElementById(`farmLevelBadge-${key}`);
+      const nextCost = getFarmUpgradeCost(key);
       if (lvlBadge) {
         lvlBadge.innerHTML = 'L' + currentFarmLvl + ' &#11014;&#65039;';
+        if (currentFarmLvl >= 5) {
+          lvlBadge.title = 'Max Level (Lv. 5)';
+          lvlBadge.classList.add('opacity-75');
+        } else if (nextCost !== null) {
+          lvlBadge.title = 'Upgrade to Lv. ' + (currentFarmLvl + 1) + ' (' + nextCost.toLocaleString() + ' Pts)';
+          lvlBadge.classList.remove('opacity-75');
+        }
       }
 
       // Update upgrade button tooltip and cost
       const upBtn = document.getElementById(`upgradeBtn-${key}`);
       if (upBtn) {
-        const nextCost = getFarmUpgradeCost(key);
         if (currentFarmLvl >= 5) {
           upBtn.title = 'Max Level (Lv. 5)';
           upBtn.classList.add('opacity-50', 'pointer-events-none');
