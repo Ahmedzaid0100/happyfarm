@@ -6,7 +6,7 @@
   <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- AdsGram Official Telegram Ads Monetization SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js" onload="if(typeof initAdsgram==='function')initAdsgram();"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -5101,51 +5101,89 @@
     // ==================== ADSGRAM MONETIZATION SDK & TEST AD SIMULATOR ====================
     const ADSGRAM_BLOCK_ID = "57530";
     let adsgramController = null;
+    let isAdLoadingOrShowing = false;
 
     function initAdsgram() {
-      if (window.Adsgram) {
+      if (window.Adsgram && !adsgramController) {
         try {
+          const isDebug = new URLSearchParams(window.location.search).get('adsgramDebug') === '1';
           adsgramController = window.Adsgram.init({
             blockId: ADSGRAM_BLOCK_ID,
-            debug: false
+            debug: isDebug
           });
-          console.log('✅ Adsgram SDK initialized with Block ID:', ADSGRAM_BLOCK_ID);
+          console.log('✅ Adsgram SDK initialized with Block ID:', ADSGRAM_BLOCK_ID, isDebug ? '(DEBUG MODE)' : '');
         } catch(e) {
           console.warn('Adsgram init note:', e);
         }
       }
+      return adsgramController;
     }
 
-    function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
-      const isInsideTelegram = !!(window.Telegram?.WebApp?.initData);
+    // Auto-init Adsgram when DOM is loaded and when window finishes loading
+    window.addEventListener('DOMContentLoaded', () => {
+      try { initAdsgram(); } catch(e){}
+    });
+    window.addEventListener('load', () => {
+      try { initAdsgram(); } catch(e){}
+    });
 
-      if (adsgramController && isInsideTelegram) {
+    function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
+      // 1. Anti-spam / Mutex check: prevent parallel requests or double-clicks
+      if (isAdLoadingOrShowing) {
+        console.warn('⚠️ Ad request already in progress, ignoring duplicate tap.');
+        return;
+      }
+
+      // 2. Just-In-Time init if Adsgram SDK was not ready at startup
+      if (!adsgramController && window.Adsgram) {
+        initAdsgram();
+      }
+
+      // 3. Official Adsgram Rewarded Video display
+      if (adsgramController) {
+        isAdLoadingOrShowing = true;
         showWalletToast('🎬 Loading sponsor ad...');
-        adsgramController.show()
-          .then((result) => {
-            if (result && (result.done === true || result.done === undefined)) {
-              console.log('🎉 Adsgram reward ad completed:', result);
-              try { playSound('fanfare'); } catch(e){}
-              if (typeof onSuccess === 'function') onSuccess();
-            } else {
-              showWalletToast('⚠️ You must watch the entire ad to claim your reward!');
-            }
-          })
-          .catch((err) => {
-            console.warn('⚠️ Adsgram ad error/skip:', err);
-            if (err && (err.state === 'skip' || err.done === false)) {
-              showWalletToast('⚠️ Ad skipped. Reward is only granted for full ad views!');
-            } else {
-              showWalletToast('⚠️ No ads available right now. Please try again shortly!');
-            }
-          });
+
+        try {
+          adsgramController.show()
+            .then((result) => {
+              isAdLoadingOrShowing = false;
+              // Adsgram Rewarded Video verification: only grant reward on full view
+              if (result && (result.done === true || result.done === undefined)) {
+                console.log('🎉 Adsgram reward ad completed:', result);
+                try { playSound('fanfare'); } catch(e){}
+                if (typeof onSuccess === 'function') onSuccess();
+              } else {
+                console.warn('⚠️ Adsgram ad finished without full view:', result);
+                showWalletToast('⚠️ You must watch the entire ad to claim your reward!');
+              }
+            })
+            .catch((err) => {
+              isAdLoadingOrShowing = false;
+              console.warn('⚠️ Adsgram ad error/skip:', err);
+              if (err && (err.state === 'skip' || err.done === false)) {
+                showWalletToast('⚠️ Ad skipped. Reward is only granted for full ad views!');
+              } else if (err && err.description && err.description.includes('already showing')) {
+                console.warn('Ad already showing, please wait.');
+              } else {
+                showWalletToast('⚠️ Ad network busy. Please try again shortly!');
+              }
+            });
+        } catch (syncErr) {
+          isAdLoadingOrShowing = false;
+          console.error('Adsgram synchronous call error:', syncErr);
+          showFallbackAdModal(onSuccess, adTitle);
+        }
       } else {
-        // Fallback simulation ONLY for local dev / non-Telegram browser testing
+        // Fallback simulation ONLY if Adsgram script completely failed to load (e.g. adblocker)
         showFallbackAdModal(onSuccess, adTitle);
       }
     }
 
     function showFallbackAdModal(onSuccess, adTitle = 'Reward Ad') {
+      if (isAdLoadingOrShowing) return;
+      isAdLoadingOrShowing = true;
+
       const modal = document.getElementById('adModal');
       const bar = document.getElementById('adProgressBar');
       const desc = document.getElementById('adDescription');
@@ -5167,6 +5205,7 @@
 
         if (progress >= 100) {
           clearInterval(interval);
+          isAdLoadingOrShowing = false;
           setTimeout(() => {
             if (modal) {
               modal.classList.add('hidden');
