@@ -875,10 +875,10 @@
 
           <!-- Rate Info -->
           <div class="bg-purple-900/40 rounded-xl px-3 py-2 mb-3 border border-purple-700/50 text-xs text-center">
-            <span class="text-purple-300 font-semibold">Rate: </span>
-            <span class="text-white font-black">1,000 Farm Points</span>
+            <span class="text-purple-300 font-semibold">Min: </span>
+            <span class="text-white font-black">5,000 Farm Points</span>
             <span class="text-purple-300"> → </span>
-            <span class="text-lime-300 font-black">1 CFC &#127808;</span> <span class="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-900/70 text-emerald-300 border border-emerald-500/60 font-black text-[10px]">100% FREE (0% Fee)</span>
+            <span class="text-lime-300 font-black">5 CFC Coins &#127808;</span> <span class="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-900/70 text-emerald-300 border border-emerald-500/60 font-black text-[10px]">100% FREE (0% Fee)</span>
           </div>
 
           <!-- Conversion Row -->
@@ -897,8 +897,8 @@
           </div>
 
           <!-- Convert Button -->
-          <button onclick="convertPointsToHFC()" class="w-full py-2.5 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-700 hover:brightness-110 text-white font-black text-sm shadow-xl border border-purple-400/60 active:scale-95 transition-all flex items-center justify-center gap-2">
-            <span>&#128260;</span> Convert Now (100% Free - 0% Fee)
+          <button onclick="convertPointsToHFC()" class="w-full py-2.5 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-700 hover:brightness-110 text-white font-black text-sm shadow-xl border border-purple-400/60 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span>&#128260;</span> Convert Now (Min: 5,000 Pts → 5 CFC)
           </button>
         </div>
 
@@ -4766,7 +4766,10 @@
       const from = document.getElementById('convertFromDisplay');
       const to = document.getElementById('convertToDisplay');
       if (from) from.innerText = points.toLocaleString();
-      if (to) to.innerText = Math.floor(points / HFC_RATE).toLocaleString();
+      if (to) {
+        const canEarn = Math.floor(points / HFC_RATE);
+        to.innerText = (canEarn >= 5) ? canEarn.toLocaleString() : '0';
+      }
 
       // CFC balance
       const hfcEl = document.getElementById('hfcBalanceDisplay');
@@ -4779,21 +4782,25 @@
       }
     }
 
+    const MIN_CONVERT_POINTS = 5000;
+
     function convertPointsToHFC() { if (!ActionLock.run("convert", 800, () => _doConvertPointsToHFC())) return; } function _doConvertPointsToHFC() {
-      const canConvert = Math.floor(points / HFC_RATE);
-      if (canConvert < 1) {
+      if (points < MIN_CONVERT_POINTS) {
         playSound('click');
-        alert(`⚠️ You need at least 1,000 Farm Points to convert!\nCurrent Balance: ${points.toLocaleString()} pts\nNeeded: ${(1000 - points).toLocaleString()} more pts`);
+        alert(`⚠️ Minimum conversion is 5,000 Farm Points (5 CFC Coins)!\n\nCurrent Balance: ${points.toLocaleString()} pts\nRemaining Needed: ${(MIN_CONVERT_POINTS - points).toLocaleString()} more pts`);
         return;
       }
+      const canConvert = Math.floor(points / HFC_RATE);
       try { playSound('fanfare'); } catch(e){}
+      playSound('coin');
       const earned = canConvert;
       points -= earned * HFC_RATE;
       hfcBalance += earned;
       updateDisplays();
       syncWalletView();
       initTonConnect();
-      showWalletToast(`🍀 Converted ${(earned * HFC_RATE).toLocaleString()} pts → ${earned} CFC!`);
+      queueCloudSave();
+      showWalletToast(`🍀 Converted ${(earned * HFC_RATE).toLocaleString()} pts → ${earned} CFC Coins!`);
     }
 
     function withdrawHFC(customAmount) {
