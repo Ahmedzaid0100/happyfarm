@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Monetag Official Telegram Ads Monetization SDK -->
+  <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup & In-App -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -5100,46 +5102,51 @@
     // ==================== MONETAG OFFICIAL MONETIZATION SDK ====================
     let isAdLoadingOrShowing = false;
 
-    // Monetag Official SDK Configuration
-    const MONETAG_ZONE_ID = "12182125";
-    const MONETAG_SDK_FN = "show_12182125";
+    // Monetag 3 Official Zone Configurations:
+    const MONETAG_ZONE_REWARDED_VIDEO = "12182125";      // happyfarmHFCbot_rewarded_interstitial
+    const MONETAG_ZONE_REWARDED_POPUP = "12182126";      // happyfarmHFCbot_rewarded_popup
+    const MONETAG_ZONE_INAPP_INTERSTITIAL = "12182127";  // happyfarmHFCbot_inapp_interstitial
 
     function showMonetagAd(onSuccess, onFail) {
-      const sdkFn = window[MONETAG_SDK_FN] || window['show_' + MONETAG_ZONE_ID];
-      if (typeof sdkFn === 'function') {
+      const rewardedFn = window['show_' + MONETAG_ZONE_REWARDED_VIDEO] || window.show_12182125;
+      const popupFn = window['show_' + MONETAG_ZONE_REWARDED_POPUP] || window.show_12182126 || rewardedFn;
+
+      if (typeof rewardedFn === 'function') {
         isAdLoadingOrShowing = true;
         showWalletToast('🎬 Loading sponsor ad...');
         try {
-          const adPromise = sdkFn();
+          const adPromise = rewardedFn();
           if (adPromise && typeof adPromise.then === 'function') {
             adPromise
               .then(() => {
                 isAdLoadingOrShowing = false;
-                console.log('🎉 Monetag reward ad completed successfully!');
+                console.log('🎉 Monetag Rewarded Video completed successfully!');
                 try { playSound('fanfare'); } catch(e){}
                 if (typeof onSuccess === 'function') onSuccess();
               })
               .catch((err) => {
-                console.warn('⚠️ Monetag standard format unavailable, trying Rewarded Pop fallback...', err);
-                try {
-                  const popPromise = sdkFn('pop');
-                  if (popPromise && typeof popPromise.then === 'function') {
-                    popPromise
-                      .then(() => {
-                        isAdLoadingOrShowing = false;
-                        console.log('🎉 Monetag Pop reward completed successfully!');
-                        try { playSound('fanfare'); } catch(e){}
-                        if (typeof onSuccess === 'function') onSuccess();
-                      })
-                      .catch((popErr) => {
-                        isAdLoadingOrShowing = false;
-                        console.warn('⚠️ Monetag Pop ad error:', popErr);
-                        if (typeof onFail === 'function') onFail(popErr);
-                      });
-                    return;
+                console.warn('⚠️ Monetag standard format unavailable, trying Rewarded Pop fallback (Zone 12182126)...', err);
+                if (typeof popupFn === 'function') {
+                  try {
+                    const popPromise = popupFn('pop') || popupFn();
+                    if (popPromise && typeof popPromise.then === 'function') {
+                      popPromise
+                        .then(() => {
+                          isAdLoadingOrShowing = false;
+                          console.log('🎉 Monetag Rewarded Popup completed successfully!');
+                          try { playSound('fanfare'); } catch(e){}
+                          if (typeof onSuccess === 'function') onSuccess();
+                        })
+                        .catch((popErr) => {
+                          isAdLoadingOrShowing = false;
+                          console.warn('⚠️ Monetag Pop ad error:', popErr);
+                          if (typeof onFail === 'function') onFail(popErr);
+                        });
+                      return;
+                    }
+                  } catch(popEx) {
+                    console.warn('Monetag Pop invocation error:', popEx);
                   }
-                } catch(popEx) {
-                  console.warn('Monetag Pop invocation error:', popEx);
                 }
                 isAdLoadingOrShowing = false;
                 if (typeof onFail === 'function') {
@@ -5164,12 +5171,12 @@
       }
     }
 
-    // Monetag Automatic In-App Interstitial Scheduler (Passive Monetization)
+    // Monetag Automatic In-App Interstitial Scheduler (Passive Monetization on Zone 12182127)
     function initMonetagInAppAds() {
-      const sdkFn = window[MONETAG_SDK_FN] || window['show_' + MONETAG_ZONE_ID];
-      if (typeof sdkFn === 'function') {
+      const inAppFn = window['show_' + MONETAG_ZONE_INAPP_INTERSTITIAL] || window.show_12182127 || window.show_12182125;
+      if (typeof inAppFn === 'function') {
         try {
-          sdkFn({
+          inAppFn({
             type: 'inApp',
             inAppSettings: {
               frequency: 2,
@@ -5179,7 +5186,7 @@
               everyPage: false
             }
           });
-          console.log('✅ Monetag In-App Interstitial schedule active');
+          console.log('✅ Monetag In-App Interstitial schedule active on Zone 12182127');
         } catch(e) {
           console.warn('Monetag inApp schedule note:', e);
         }
