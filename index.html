@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- AdsGram Official Telegram Ads Monetization SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js" onload="if(typeof initAdsgram==='function')initAdsgram();"></script>
   <!-- Monetag Official Telegram Ads Monetization SDK -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5118,9 +5116,7 @@
     function toggleFaq() {}
     // ==================== END OTHERS ====================
 
-    // ==================== ADS MONETIZATION MEDIATION (ADSGRAM & MONETAG WATERFALL) ====================
-    const ADSGRAM_BLOCK_ID = "57668";
-    let adsgramController = null;
+    // ==================== MONETAG OFFICIAL MONETIZATION SDK ====================
     let isAdLoadingOrShowing = false;
 
     // Monetag Official SDK Configuration
@@ -5131,7 +5127,7 @@
       const sdkFn = window[MONETAG_SDK_FN] || window['show_' + MONETAG_ZONE_ID];
       if (typeof sdkFn === 'function') {
         isAdLoadingOrShowing = true;
-        showWalletToast('🎬 Loading sponsor ad (Monetag)...');
+        showWalletToast('🎬 Loading sponsor ad...');
         try {
           const adPromise = sdkFn();
           if (adPromise && typeof adPromise.then === 'function') {
@@ -5209,28 +5205,7 @@
       }
     }
 
-    function initAdsgram() {
-      if (window.Adsgram && !adsgramController) {
-        try {
-          const isDebug = new URLSearchParams(window.location.search).get('adsgramDebug') === '1';
-          adsgramController = window.Adsgram.init({
-            blockId: ADSGRAM_BLOCK_ID,
-            debug: isDebug
-          });
-          console.log('✅ Adsgram SDK initialized with Block ID:', ADSGRAM_BLOCK_ID, isDebug ? '(DEBUG MODE)' : '');
-        } catch(e) {
-          console.warn('Adsgram init note:', e);
-        }
-      }
-      return adsgramController;
-    }
-
-    // Auto-init Adsgram when DOM is loaded and when window finishes loading
-    window.addEventListener('DOMContentLoaded', () => {
-      try { initAdsgram(); } catch(e){}
-    });
     window.addEventListener('load', () => {
-      try { initAdsgram(); } catch(e){}
       setTimeout(() => {
         try { initMonetagInAppAds(); } catch(e){}
       }, 5000);
@@ -5243,59 +5218,10 @@
         return;
       }
 
-      // 2. Just-In-Time init if Adsgram SDK was not ready at startup
-      if (!adsgramController && window.Adsgram) {
-        initAdsgram();
-      }
-
-      // 3. Mediation Waterfall:
-      // Try Network 1 (Adsgram) -> on fail/no-inventory -> Fallback to Network 2 (Monetag) -> on fail -> Simulated Ad
-      if (adsgramController) {
-        isAdLoadingOrShowing = true;
-        showWalletToast('🎬 Loading sponsor ad...');
-
-        try {
-          adsgramController.show()
-            .then((result) => {
-              isAdLoadingOrShowing = false;
-              // Adsgram Rewarded Video verification: only grant reward on full view
-              if (result && (result.done === true || result.done === undefined)) {
-                console.log('🎉 Adsgram reward ad completed:', result);
-                try { playSound('fanfare'); } catch(e){}
-                if (typeof onSuccess === 'function') onSuccess();
-              } else {
-                console.warn('⚠️ Adsgram ad finished without full view:', result);
-                showWalletToast('⚠️ You must watch the entire ad to claim your reward!');
-              }
-            })
-            .catch((err) => {
-              isAdLoadingOrShowing = false;
-              console.warn('⚠️ Adsgram ad error/skip:', err);
-              if (err && (err.state === 'skip' || err.done === false)) {
-                showWalletToast('⚠️ Ad skipped. Reward is only granted for full ad views!');
-              } else if (err && err.description && err.description.includes('already showing')) {
-                console.warn('Ad already showing, please wait.');
-              } else {
-                // Waterfall fallback: Adsgram failed or no fill -> try Monetag
-                console.log('🔄 Adsgram ad unavailable or error, falling back to Monetag...');
-                showMonetagAd(onSuccess, () => {
-                  showFallbackAdModal(onSuccess, adTitle);
-                });
-              }
-            });
-        } catch (syncErr) {
-          isAdLoadingOrShowing = false;
-          console.error('Adsgram synchronous call error:', syncErr);
-          showMonetagAd(onSuccess, () => {
-            showFallbackAdModal(onSuccess, adTitle);
-          });
-        }
-      } else {
-        // Adsgram controller not ready: try Monetag directly
-        showMonetagAd(onSuccess, () => {
-          showFallbackAdModal(onSuccess, adTitle);
-        });
-      }
+      // 2. Primary: Monetag Rewarded Video / Pop
+      showMonetagAd(onSuccess, () => {
+        showFallbackAdModal(onSuccess, adTitle);
+      });
     }
 
     function showFallbackAdModal(onSuccess, adTitle = 'Reward Ad') {
@@ -5335,7 +5261,7 @@
         }
       }, 700);
     }
-    // ==================== END ADSGRAM ====================
+    // ==================== END MONETAG ====================
 
     // Profile Actions & Handlers
     function copyTonWallet() {
@@ -5636,7 +5562,6 @@
 
     // Initial load
     initTelegram();
-    if (typeof initAdsgram === 'function') { try { initAdsgram(); } catch(e){} }
     const startupBeeVid = document.getElementById('beeAttackVideo');
     if (startupBeeVid) {
       startupBeeVid.pause();
