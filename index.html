@@ -5456,8 +5456,11 @@
             connectedWalletAddress = data.wallet_address;
             isWalletConnected = true;
           }
-          if (data.invited_friends_count !== undefined && data.invited_friends_count !== null) {
-            invitedFriendsCount = Math.max(invitedFriendsCount, Number(data.invited_friends_count) || 0);
+          const friendsCount = (data.farms_data && data.farms_data.invited_friends_count !== undefined) 
+            ? data.farms_data.invited_friends_count 
+            : data.invited_friends_count;
+          if (friendsCount !== undefined && friendsCount !== null) {
+            invitedFriendsCount = Math.max(invitedFriendsCount, Number(friendsCount) || 0);
             try { localStorage.setItem('crazyfarm_invited_friends_count', invitedFriendsCount); } catch(e){}
             if (typeof renderInviteTasks === 'function') renderInviteTasks();
           }
@@ -5505,7 +5508,7 @@
 
         const { data, error } = await dbClient
           .from('players')
-          .select('invited_friends_count')
+          .select('farms_data')
           .eq('telegram_id', inviterNum)
           .maybeSingle();
 
@@ -5514,10 +5517,14 @@
           return;
         }
 
-        const newCount = ((data && data.invited_friends_count) ? Number(data.invited_friends_count) : 0) + 1;
+        const currentFarms = data?.farms_data || {};
+        const newCount = ((currentFarms && currentFarms.invited_friends_count) ? Number(currentFarms.invited_friends_count) : 0) + 1;
+        currentFarms.invited_friends_count = newCount;
+
         await dbClient
           .from('players')
-          .upsert({ telegram_id: inviterNum, invited_friends_count: newCount }, { onConflict: 'telegram_id' });
+          .update({ farms_data: currentFarms })
+          .eq('telegram_id', inviterNum);
 
         console.log('🎉 Credited referral to inviter ID:', inviterNum, 'New friends count:', newCount);
       } catch (err) {
@@ -5571,9 +5578,9 @@
         hfc_balance: hfcBalance,
         user_level: userLevel,
         is_vip: isDogVipActive,
-        invited_friends_count: invitedFriendsCount,
         farms_data: {
           watched: watchedAnimalFarms,
+          invited_friends_count: invitedFriendsCount,
           bee_mined: beeMinedPoints,
           bee_last_collect: lastBeeCollectTimestamp,
           crazy_box_free: lastCrazyBoxFreeTimestamp,
