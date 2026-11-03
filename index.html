@@ -9,6 +9,8 @@
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
   <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
   <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127"></script>
+  <!-- TADS Official Telegram Ads Monetization SDK (Crypto / TON) -->
+  <script src="https://w.tads.me/widget.js" async></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -5199,6 +5201,59 @@
       }, 5000);
     });
 
+    // ==================== TADS OFFICIAL SDK (CRYPTO / TON ADS) ====================
+    const TADS_WIDGET_ID = 13073; // CrazyFarm_Reward (FULLSCREEN_REWARDED)
+
+    function showTadsAd(onSuccess, onFail) {
+      if (window.tads && typeof window.tads.init === 'function') {
+        isAdLoadingOrShowing = true;
+        showWalletToast('💎 Loading TON sponsor ad...');
+        try {
+          const tadsInstance = window.tads.init({
+            widgetId: TADS_WIDGET_ID,
+            onShowReward: (res) => {
+              isAdLoadingOrShowing = false;
+              console.log('🎉 TADS Fullscreen Rewarded completed successfully!', res);
+              try { playSound('fanfare'); } catch(e){}
+              if (typeof onSuccess === 'function') onSuccess();
+            },
+            onClickReward: (res) => {
+              isAdLoadingOrShowing = false;
+              console.log('🎉 TADS Rewarded by click!', res);
+              try { playSound('fanfare'); } catch(e){}
+              if (typeof onSuccess === 'function') onSuccess();
+            },
+            onAdsNotFound: () => {
+              isAdLoadingOrShowing = false;
+              console.warn('⚠️ TADS no inventory, falling back...');
+              if (typeof onFail === 'function') onFail(new Error('TADS no inventory'));
+            }
+          });
+
+          if (tadsInstance && typeof tadsInstance.showAd === 'function') {
+            tadsInstance.showAd()
+              .catch((err) => {
+                isAdLoadingOrShowing = false;
+                console.warn('⚠️ TADS showAd error:', err);
+                if (typeof onFail === 'function') onFail(err);
+              });
+          } else {
+            isAdLoadingOrShowing = false;
+            if (typeof onFail === 'function') onFail(new Error('TADS not ready'));
+          }
+        } catch (e) {
+          isAdLoadingOrShowing = false;
+          console.error('TADS invocation error:', e);
+          if (typeof onFail === 'function') onFail(e);
+        }
+      } else {
+        console.warn('TADS SDK not available yet.');
+        if (typeof onFail === 'function') onFail(new Error('TADS not loaded'));
+      }
+    }
+
+    let adEngineTurn = 0; // Alternates between Monetag (USD) and TADS (Crypto/TON)
+
     function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
       // 1. Anti-spam / Mutex check: prevent parallel requests or double-clicks
       if (isAdLoadingOrShowing) {
@@ -5206,10 +5261,27 @@
         return;
       }
 
-      // 2. Primary: Monetag Rewarded Video / Pop
-      showMonetagAd(onSuccess, () => {
-        showFallbackAdModal(onSuccess, adTitle);
-      });
+      adEngineTurn = (adEngineTurn + 1) % 2;
+
+      if (adEngineTurn === 1) {
+        // Turn A: Try TADS (Crypto / TON) -> Fallback to Monetag ($) -> Fallback to simulated ad
+        console.log('💎 Ad Engine: Trying TADS (Crypto) first...');
+        showTadsAd(onSuccess, () => {
+          console.log('🔄 TADS fallback -> Switching to Monetag ($)...');
+          showMonetagAd(onSuccess, () => {
+            showFallbackAdModal(onSuccess, adTitle);
+          });
+        });
+      } else {
+        // Turn B: Try Monetag ($) -> Fallback to TADS (Crypto / TON) -> Fallback to simulated ad
+        console.log('💵 Ad Engine: Trying Monetag ($) first...');
+        showMonetagAd(onSuccess, () => {
+          console.log('🔄 Monetag fallback -> Switching to TADS (Crypto)...');
+          showTadsAd(onSuccess, () => {
+            showFallbackAdModal(onSuccess, adTitle);
+          });
+        });
+      }
     }
 
     function showFallbackAdModal(onSuccess, adTitle = 'Reward Ad') {
