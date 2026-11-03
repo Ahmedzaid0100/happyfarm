@@ -1414,7 +1414,7 @@
               🎬 Watch More Earn More
             </h3>
             <p class="text-[11px] text-amber-200/90 font-semibold mt-0.5">
-              Watch ads to earn up to +240 Farm Points daily!
+              Claim daily bonus points &amp; 2x Boost with Ads!
             </p>
           </div>
 
@@ -1453,8 +1453,8 @@
           </div>
 
           <div id="otherAdActionContainer">
-            <button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce">
-              <span>▶️</span> Watch Ad (+20 Points) [1/5]
+            <button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
+              <span>&#127806;</span> Collect! (+20 Points) [1/5]
             </button>
           </div>
 
@@ -2037,6 +2037,28 @@
           </button>
           <button onclick="farmCollectFree()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
             <span>&#127806;</span> Claim Free (<span id="farmCollectNormalPts">+100</span> Pts)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watch More / Daily Bonus Collect Modal -->
+    <div id="watchMoreCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
+      <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
+        <button onclick="hideWatchMoreCollectModal()" class="absolute top-3 right-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs cursor-pointer">✕</button>
+        <div class="text-5xl mb-1 animate-bounce" id="watchMoreCollectEmoji">&#127873;</div>
+        <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">DAILY BONUS!</h2>
+        <p class="text-xs text-amber-200 font-bold mb-3" id="watchMoreCollectStepName">Bonus Step 1/5 Ready!</p>
+        <div class="bg-black/60 rounded-2xl p-3 mb-3 border border-yellow-500/60 text-center">
+          <span class="text-[10px] text-amber-300 font-bold uppercase block mb-1">Bonus Reward</span>
+          <div class="text-2xl font-black text-yellow-300 drop-shadow" id="watchMoreCollectRewardText">+20 Farm Points &#127806;</div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <button onclick="watchMoreCollectWithAd()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 animate-bounce border border-yellow-200 cursor-pointer">
+            <span>&#127873;</span> <span id="watchMoreCollectDoubleBtnText">2x Boost: +40 Pts (Watch Ad)</span>
+          </button>
+          <button onclick="watchMoreCollectFree()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
+            <span>&#127806;</span> Claim Free (<span id="watchMoreCollectNormalPts">+20</span> Pts)
           </button>
         </div>
       </div>
@@ -5063,7 +5085,7 @@
 
       if (statusText) {
         if (otherAdsWatched >= 5) {
-          statusText.innerText = 'Completed: 5 / 5 Ads (+240 Points Total)';
+          statusText.innerText = 'Completed: 5 / 5 Daily Bonuses Claimed!';
         } else {
           statusText.innerText = `Next: +${nextPts} Points (Step ${otherAdsWatched + 1}/5)`;
         }
@@ -5071,19 +5093,49 @@
 
       if (actionContainer) {
         if (otherAdsWatched >= 5) {
-          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> All 5 Daily Ads Completed (+240 Points Claimed)</button>';
+          actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> All 5 Daily Bonuses Claimed</button>';
         } else {
-          actionContainer.innerHTML = `<button onclick="watchOtherBonusAd()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce"><span>▶️</span> Watch Ad (+${nextPts} Points) [${otherAdsWatched + 1}/5]</button>`;
+          actionContainer.innerHTML = `<button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer"><span>&#127806;</span> Collect! (+${nextPts} Points) [${otherAdsWatched + 1}/5]</button>`;
         }
       }
     }
 
-    function watchOtherBonusAd() {
+    // ==================== WATCH MORE COLLECT MODAL ====================
+    function showWatchMoreCollectModal() {
       if (otherAdsWatched >= 5) return;
       playSound('click');
-      const currentReward = adPointRewards[otherAdsWatched];
+      const baseReward = adPointRewards[otherAdsWatched] || 20;
+      const stepNum = otherAdsWatched + 1;
+
+      const elStep = document.getElementById('watchMoreCollectStepName');
+      if (elStep) elStep.innerText = `Bonus Step ${stepNum}/5 Ready to Claim!`;
+
+      const elRew = document.getElementById('watchMoreCollectRewardText');
+      if (elRew) elRew.innerText = `+${baseReward} Farm Points \u{1F33E}`;
+
+      const elDbl = document.getElementById('watchMoreCollectDoubleBtnText');
+      if (elDbl) elDbl.innerText = `2x Boost: +${baseReward * 2} Pts (Watch Ad)`;
+
+      const elNorm = document.getElementById('watchMoreCollectNormalPts');
+      if (elNorm) elNorm.innerText = `+${baseReward}`;
+
+      const modal = document.getElementById('watchMoreCollectModal');
+      if (modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
+    }
+
+    function hideWatchMoreCollectModal() {
+      const modal = document.getElementById('watchMoreCollectModal');
+      if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+    }
+
+    function watchMoreCollectWithAd() {
+      hideWatchMoreCollectModal();
+      if (otherAdsWatched >= 5) return;
+      const baseReward = adPointRewards[otherAdsWatched];
+      const doubleReward = baseReward * 2;
+
       showUniversalAd(() => {
-        points += currentReward;
+        points += doubleReward;
         otherAdsWatched++;
         localStorage.setItem('crazyfarm_other_ads_count', String(otherAdsWatched));
         localStorage.setItem('crazyfarm_other_ads_day', new Date().toISOString().slice(0, 10));
@@ -5094,8 +5146,32 @@
 
         try { playSound('fanfare'); } catch(e){}
         playSound('coin');
-        showWalletToast(`🎉 +${currentReward} Points added! (${otherAdsWatched}/5)`);
-      }, `Bonus +${currentReward} Points Ad`);
+        showWalletToast(`\u{1F389} +${doubleReward} Points Added (2x Double Reward!) (${otherAdsWatched}/5)`);
+      }, `Daily Bonus 2x Boost (Step ${otherAdsWatched + 1}/5)`);
+    }
+
+    function watchMoreCollectFree() {
+      hideWatchMoreCollectModal();
+      if (otherAdsWatched >= 5) return;
+      playSound('click');
+      const baseReward = adPointRewards[otherAdsWatched];
+
+      points += baseReward;
+      otherAdsWatched++;
+      localStorage.setItem('crazyfarm_other_ads_count', String(otherAdsWatched));
+      localStorage.setItem('crazyfarm_other_ads_day', new Date().toISOString().slice(0, 10));
+
+      updateDisplays();
+      renderOtherAdSteps();
+      queueCloudSave();
+
+      playSound('coin');
+      showWalletToast(`\u{1F33E} +${baseReward} Points Added! (${otherAdsWatched}/5)`);
+    }
+
+    // Alias for backwards compatibility
+    function watchOtherBonusAd() {
+      showWatchMoreCollectModal();
     }
 
     function toggleFaq() {}
@@ -5538,6 +5614,10 @@
         }
         if (urlParams.get('testAdModal')) {
           setTimeout(() => { showUniversalAd(() => {}, 'Reward Ad'); }, 300);
+        }
+        if (urlParams.get('testWatchModal')) {
+          otherAdsWatched = parseInt(urlParams.get('testWatchModal'), 10) || 0;
+          setTimeout(() => { showWatchMoreCollectModal(); }, 350);
         }
         if (urlParams.get('testCooldown')) {
           pvpCooldowns = {
