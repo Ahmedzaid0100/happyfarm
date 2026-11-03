@@ -5187,6 +5187,28 @@
       }
     }
 
+    // Monetag Automatic In-App Interstitial Scheduler (Passive Monetization)
+    function initMonetagInAppAds() {
+      const sdkFn = window[MONETAG_SDK_FN] || window['show_' + MONETAG_ZONE_ID];
+      if (typeof sdkFn === 'function') {
+        try {
+          sdkFn({
+            type: 'inApp',
+            inAppSettings: {
+              frequency: 2,
+              capping: 0.1,
+              interval: 30,
+              timeout: 8,
+              everyPage: false
+            }
+          });
+          console.log('✅ Monetag In-App Interstitial schedule active');
+        } catch(e) {
+          console.warn('Monetag inApp schedule note:', e);
+        }
+      }
+    }
+
     function initAdsgram() {
       if (window.Adsgram && !adsgramController) {
         try {
@@ -5209,6 +5231,9 @@
     });
     window.addEventListener('load', () => {
       try { initAdsgram(); } catch(e){}
+      setTimeout(() => {
+        try { initMonetagInAppAds(); } catch(e){}
+      }, 5000);
     });
 
     function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
