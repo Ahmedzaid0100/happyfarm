@@ -1460,45 +1460,45 @@
         </div>
 
         <!-- ==================== CRAZY BOX BANNER (Relocated to Community) ==================== -->
-        <div id="crazyBoxCard" class="wood-board rounded-2xl p-3 shadow-xl border-2 border-yellow-500/80 relative overflow-hidden select-none mt-3">
+        <div id="crazyBoxCard" class="wood-board rounded-2xl p-2.5 sm:p-3 shadow-xl border-2 border-yellow-500/80 relative overflow-hidden select-none mt-3">
           <!-- Header Banner -->
-          <div class="flex items-center justify-between border-b border-amber-900/60 pb-1.5 mb-2">
-            <div class="flex items-center gap-2">
-              <span class="text-xl animate-bounce">&#127873;</span>
-              <div>
-                <h3 class="font-black text-sm text-yellow-300 uppercase tracking-wide leading-tight drop-shadow" style="font-family: 'Fredoka', cursive;">
+          <div class="flex items-center justify-between border-b border-amber-900/60 pb-1 mb-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-base sm:text-lg animate-bounce shrink-0">&#127873;</span>
+              <div class="truncate">
+                <h3 class="font-black text-xs sm:text-sm text-yellow-300 uppercase tracking-wide leading-tight drop-shadow truncate" style="font-family: 'Fredoka', cursive;">
                   Crazy Mystery Box
                 </h3>
-                <p class="text-[10px] text-amber-100 font-extrabold leading-tight mt-0.5 drop-shadow-sm">
-                  Win 2 - 8 CFC Tokens &amp; Free Farm Points!
+                <p class="text-[8.5px] sm:text-[9.5px] text-amber-100 font-extrabold leading-tight drop-shadow-sm truncate">
+                  Win 1,000 - 5,000 Farm Points!
                 </p>
               </div>
             </div>
-            <span class="bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 text-[8.5px] font-black px-2 py-0.5 rounded-lg border border-yellow-200 shadow animate-pulse">
+            <span id="crazyBoxDailyBadge" class="bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 text-[8px] font-black px-2 py-0.5 rounded-md border border-yellow-200 shadow shrink-0">
               DAILY (2/2) &#10024;
             </span>
           </div>
 
           <!-- Body / Showcase & Button -->
-          <div class="bg-black/50 rounded-2xl p-2.5 border border-amber-700/60 flex items-center justify-between gap-3 shadow-inner">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-13 h-13 rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-3xl shadow-lg border-2 border-yellow-200 shrink-0 animate-bounce" style="animation-duration: 2s;">
+          <div class="bg-black/50 rounded-xl p-2 border border-amber-700/60 flex items-center justify-between gap-2 shadow-inner">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-xl sm:text-2xl shadow-md border-2 border-yellow-200 shrink-0 animate-bounce" style="animation-duration: 2s;">
                 &#127873;
               </div>
-              <div class="flex flex-col justify-center leading-tight">
-                <span class="text-xs font-black text-yellow-200 flex items-center gap-1.5 drop-shadow">
-                  <span>💎</span> 2 - 8 CFC Tokens
+              <div class="flex flex-col justify-center leading-tight truncate">
+                <span class="text-[10.5px] sm:text-xs font-black text-yellow-200 flex items-center gap-1 drop-shadow truncate">
+                  <span>&#127806;</span> 1,000 - 5,000 Pts
                 </span>
-                <span class="text-[10.5px] font-black text-lime-300 mt-1 flex items-center gap-1.5 drop-shadow">
-                  <span>🌾</span> Free &amp; Points Boosts
+                <span class="text-[8.5px] sm:text-[9.5px] font-black text-lime-300 mt-0.5 flex items-center gap-1 drop-shadow truncate">
+                  <span>&#127873;</span> 2x Double with Ad
                 </span>
-                <span class="text-[9px] font-extrabold text-amber-200 mt-0.5 flex items-center gap-1">
-                  <span>&#9203;</span> Resets every 24 hours
+                <span class="text-[7.5px] sm:text-[8px] font-extrabold text-amber-200/90 mt-0.5 flex items-center gap-1 truncate">
+                  <span>&#9203;</span> Resets Daily (24h)
                 </span>
               </div>
             </div>
-            <div id="crazyBoxBtnContainer" class="shrink-0 w-36">
-              <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2.5 px-3 rounded-xl text-amber-950 font-black text-[11px] flex items-center justify-center gap-1.5 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
+            <div id="crazyBoxBtnContainer" class="shrink-0 w-28 sm:w-32">
+              <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
                 <span>&#10024;</span> OPEN FREE
               </button>
             </div>
@@ -1558,32 +1558,32 @@
     <!-- Crazy Box Reward Celebration Modal -->
     <div id="crazyBoxModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center animate-in fade-in zoom-in duration-300">
-        <button onclick="closeModal('crazyBoxModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        <button onclick="closeModal('crazyBoxModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold cursor-pointer">✕</button>
         
-        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-white mx-auto flex items-center justify-center text-5xl shadow-xl mb-3 relative animate-bounce" style="animation-duration: 1.5s;">
-          🎁
-          <span class="absolute -top-2 -right-2 text-2xl animate-spin" style="animation-duration: 4s;">✨</span>
+        <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-white mx-auto flex items-center justify-center text-4xl sm:text-5xl shadow-xl mb-3 relative animate-bounce" style="animation-duration: 1.5s;">
+          &#127873;
+          <span class="absolute -top-2 -right-2 text-2xl animate-spin" style="animation-duration: 4s;">&#10024;</span>
         </div>
 
-        <h3 class="text-2xl font-black text-amber-300 mb-0.5 filter drop-shadow">🎉 Crazy Box Opened!</h3>
+        <h3 class="text-xl sm:text-2xl font-black text-amber-300 mb-0.5 filter drop-shadow">&#127881; Crazy Box Opened!</h3>
         <p class="text-xs text-amber-100 font-semibold mb-3">You received a lucky surprise gift:</p>
 
         <!-- Prize Display Banner -->
         <div class="bg-black/50 rounded-2xl p-3 mb-4 border border-yellow-400/50 flex flex-col items-center justify-center">
           <div class="flex items-center gap-2">
-            <span class="text-3xl">💎</span>
-            <span id="crazyBoxPrizeText" class="text-2xl font-black text-lime-300 tracking-wide">+5 CFC</span>
+            <span class="text-3xl">&#127806;</span>
+            <span id="crazyBoxPrizeText" class="text-2xl font-black text-lime-300 tracking-wide">+3,000 Pts</span>
           </div>
-          <span id="crazyBoxUsdText" class="text-[11px] text-amber-200/90 font-bold mt-0.5">💎 Web3 Token Allocation</span>
+          <span id="crazyBoxUsdText" class="text-[11px] text-amber-200/90 font-bold mt-0.5">&#127806; Lucky Farm Points Drop</span>
         </div>
 
         <!-- Action Buttons: Normal Collect & 2x Double with Ad -->
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           <button onclick="claimCrazyBoxReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
-            <span>&#127916;</span> <span id="crazyBoxDoubleBtnText">Collect 2x (+10 CFC) with Ad</span>
+            <span>&#127916;</span> <span id="crazyBoxDoubleBtnText">Collect 2x (+6,000 Pts) with Ad</span>
           </button>
           <button onclick="claimCrazyBoxReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
-            <span>💎</span> <span id="crazyBoxNormalBtnText">Collect +5 CFC</span>
+            <span>&#127806;</span> <span id="crazyBoxNormalBtnText">Claim Free (+3,000 Pts)</span>
           </button>
         </div>
       </div>
@@ -3971,23 +3971,26 @@
 
     function updateCrazyBoxUI() {
       const container = document.getElementById('crazyBoxBtnContainer');
+      const dailyBadge = document.getElementById('crazyBoxDailyBadge');
       if (!container) return;
 
       const status = getCrazyBoxStatus();
 
       if (status.isFreeAvailable) {
+        if (dailyBadge) dailyBadge.innerHTML = 'DAILY (2/2) &#10024;';
         // Step 1: Free Daily Open
         container.innerHTML = `
-          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2.5 px-3 rounded-xl text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-transform animate-pulse cursor-pointer">
+          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
             <span>&#10024;</span> OPEN FREE
           </button>
         `;
       } else if (status.isPointsOpenAvailable) {
-        // Step 2: 1x Daily Open with 1,000 Points
+        if (dailyBadge) dailyBadge.innerHTML = 'DAILY (1/2) &#9889;';
+        // Step 2: 1x Daily Open with 500 Points (Reduced from 1,000)
         container.innerHTML = `
-          <div class="flex flex-col gap-1 w-full">
-            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-2 px-2.5 rounded-xl text-white font-black text-[10.5px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60">
-              <span>⚡</span> Open (1,000 🌾)
+          <div class="flex flex-col gap-0.5 w-full">
+            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1.5 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60 whitespace-nowrap">
+              <span>&#9889;</span> Open (500 &#127806;)
             </button>
             <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
               &#9203; Free in ${formatTime(status.remainingSec)}
@@ -3995,10 +3998,11 @@
           </div>
         `;
       } else {
+        if (dailyBadge) dailyBadge.innerHTML = 'DAILY (0/2) &#128274;';
         // Step 3: Daily Limit Reached (Both 1 Free + 1 with Points used today)
         container.innerHTML = `
-          <div class="flex flex-col gap-1 w-full">
-            <button disabled class="w-full py-2 px-2.5 rounded-xl bg-amber-950/70 text-amber-400/80 font-bold text-[10px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed">
+          <div class="flex flex-col gap-0.5 w-full">
+            <button disabled class="w-full py-1.5 px-2 rounded-xl bg-amber-950/70 text-amber-400/80 font-bold text-[9.5px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed whitespace-nowrap">
               <span>&#128274;</span> Done Today (2/2)
             </button>
             <div class="text-[7.5px] text-amber-300/80 font-bold text-center leading-none">
@@ -4021,13 +4025,13 @@
           return;
         }
 
-        const COST = 1000;
+        const COST = 500;
         if (points < COST) {
           try { playSound('click'); } catch(e){}
           if (typeof showWalletToast === 'function') {
-            showWalletToast('\u26A0\uFE0F Need 1,000 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
+            showWalletToast('\u26A0\uFE0F Need 500 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
           } else {
-            alert('\u26A0\uFE0F Need 1,000 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
+            alert('\u26A0\uFE0F Need 500 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
           }
           return;
         }
@@ -4036,7 +4040,7 @@
         currentCrazyBoxIsOpenWithPoints = true;
         updateDisplays();
         if (typeof showWalletToast === 'function') {
-          showWalletToast('\u26A1 Used 1,000 Points for Daily Crazy Box!');
+          showWalletToast('\u26A1 Used 500 Points for Daily Crazy Box!');
         }
       } else {
         if (!status.isFreeAvailable) {
@@ -4054,8 +4058,8 @@
       }
 
       try { playSound('fanfare'); } catch(e){}
-      // Possible rewards: strictly 2, 4, 5, 6, 8 CFC
-      const rewards = [2, 4, 5, 6, 8];
+      // Lucky points reward from 1,000 up to 5,000 Farm Points
+      const rewards = [1000, 2000, 3000, 4000, 5000];
       currentCrazyBoxWin = rewards[Math.floor(Math.random() * rewards.length)];
 
       const prizeEl = document.getElementById('crazyBoxPrizeText');
@@ -4063,10 +4067,10 @@
       const doubleBtnText = document.getElementById('crazyBoxDoubleBtnText');
       const normalBtnText = document.getElementById('crazyBoxNormalBtnText');
 
-      if (prizeEl) prizeEl.innerText = `+${currentCrazyBoxWin} CFC`;
-      if (usdEl) usdEl.innerText = '💎 CFC Token Airdrop Allocation';
-      if (doubleBtnText) doubleBtnText.innerText = `Collect 2x (+${currentCrazyBoxWin * 2} CFC) with Ad`;
-      if (normalBtnText) normalBtnText.innerText = `Collect +${currentCrazyBoxWin} CFC`;
+      if (prizeEl) prizeEl.innerText = `+${currentCrazyBoxWin.toLocaleString()} Pts`;
+      if (usdEl) usdEl.innerText = '🌾 Lucky Farm Points Drop';
+      if (doubleBtnText) doubleBtnText.innerText = `Collect 2x (+${(currentCrazyBoxWin * 2).toLocaleString()} Pts) with Ad`;
+      if (normalBtnText) normalBtnText.innerText = `Claim Free (+${currentCrazyBoxWin.toLocaleString()} Pts)`;
 
       openModal('crazyBoxModal');
     }
@@ -4076,7 +4080,7 @@
       if (isDouble) {
         showUniversalAd(() => {
           finalizeCrazyBoxClaim(true);
-        }, '2x Crazy Box Double Coins');
+        }, '2x Crazy Box Double Points');
       } else {
         finalizeCrazyBoxClaim(false);
       }
@@ -4085,7 +4089,7 @@
     function finalizeCrazyBoxClaim(isDouble) {
       try { playSound('fanfare'); } catch(e){}
       const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
-      hfcBalance += amount;
+      points += amount;
 
       const now = Date.now();
       if (currentCrazyBoxIsOpenWithPoints) {
@@ -4102,7 +4106,7 @@
       }
 
       try {
-        localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+        localStorage.setItem('crazyfarm_points', points);
       } catch(e) {}
 
       updateDisplays();
@@ -4111,7 +4115,7 @@
       closeModal('crazyBoxModal');
       updateCrazyBoxUI();
 
-      showWalletToast('\u{1F389} Claimed +' + amount + ' CFC from Crazy Box!');
+      showWalletToast('\u{1F389} Claimed +' + amount.toLocaleString() + ' Farm Points from Crazy Box!');
     }
     // ==================== END CRAZY BOX ====================
 
