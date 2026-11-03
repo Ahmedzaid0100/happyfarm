@@ -1956,6 +1956,7 @@
     <!-- Farm Harvest Collect Modal -->
     <div id="farmCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
+        <button onclick="hideFarmCollectModal()" class="absolute top-3 right-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs cursor-pointer">✕</button>
         <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127806;</div>
         <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">HARVEST!</h2>
         <p class="text-xs text-amber-200 font-bold mb-3" id="farmCollectFarmName">Farm Ready!</p>
@@ -2937,6 +2938,9 @@
     }
 
     function claimBattleVictoryReward(isDouble = false) {
+      if (!ActionLock.run('battle_claim', 1500, () => _doClaimBattleVictoryReward(isDouble))) return;
+    }
+    function _doClaimBattleVictoryReward(isDouble = false) {
       playSound('coin');
       try { playSound('fanfare'); } catch(e){}
 
@@ -3040,12 +3044,20 @@
       }
     }
 
-    // Game State (Local dual-persistence + Cloud sync)
-    let points = Number(localStorage.getItem('crazyfarm_points')) || 0;
-    let userLevel = Number(localStorage.getItem('crazyfarm_level')) || 1;
+    // Anti-Tamper & Number Sanitization Utility
+    function sanitizeNumber(val, defaultVal = 0, min = 0, max = 1000000000) {
+      const n = Number(val);
+      if (isNaN(n) || !isFinite(n) || n < min) return defaultVal;
+      return Math.min(n, max);
+    }
+
+    // Game State (Local dual-persistence + Cloud sync with Anti-Tamper protection)
+    let points = sanitizeNumber(localStorage.getItem('crazyfarm_points'), 0, 0, 1000000000);
+    let hfcBalance = sanitizeNumber(localStorage.getItem('crazyfarm_hfc_balance'), 0, 0, 100000000);
+    let userLevel = sanitizeNumber(localStorage.getItem('crazyfarm_level'), 1, 1, 100);
     let isDogVipActive = localStorage.getItem('crazyfarm_is_vip') === 'true';
-    let beeMinedPoints = Number(localStorage.getItem('crazyfarm_bee_mined_pts')) || 0;
-    let lastBeeCollectTimestamp = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || Date.now();
+    let beeMinedPoints = sanitizeNumber(localStorage.getItem('crazyfarm_bee_mined_pts'), 0, 0, 10000000);
+    let lastBeeCollectTimestamp = sanitizeNumber(localStorage.getItem('crazyfarm_bee_last_collect'), Date.now(), 0, Date.now() + 86400000);
     let audioEnabled = true;
 
     // Animal Farms System (8-Hour Mining with Normal Collect & 2x Ad Collect)
@@ -5050,6 +5062,9 @@
     }
 
     function watchMoreCollectWithAd() {
+      if (!ActionLock.run('watch_more', 1200, () => _doWatchMoreCollectWithAd())) return;
+    }
+    function _doWatchMoreCollectWithAd() {
       hideWatchMoreCollectModal();
       if (otherAdsWatched >= 5) return;
       const baseReward = adPointRewards[otherAdsWatched];
@@ -5072,6 +5087,9 @@
     }
 
     function watchMoreCollectFree() {
+      if (!ActionLock.run('watch_more', 1200, () => _doWatchMoreCollectFree())) return;
+    }
+    function _doWatchMoreCollectFree() {
       hideWatchMoreCollectModal();
       if (otherAdsWatched >= 5) return;
       playSound('click');
@@ -6980,6 +6998,10 @@ function triggerRunVictory() {
 }
 
 function claimRunSprintVictory(isDouble = false) {
+  if (!ActionLock.run('run_claim', 1500, () => _doClaimRunSprintVictory(isDouble))) return;
+}
+
+function _doClaimRunSprintVictory(isDouble = false) {
   playSound('coin');
   playSound('fanfare');
 
