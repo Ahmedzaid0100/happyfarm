@@ -1218,7 +1218,7 @@
               <h3 class="font-black text-base text-[#422108]">Tasks</h3>
             </div>
             <div class="bg-amber-100 text-amber-900 border border-amber-300 text-xs font-black px-2.5 py-0.5 rounded-full shadow-sm">
-              Available (<span id="availableTasksCount">9</span>)
+              Available (<span id="availableTasksCount">6</span>)
             </div>
           </div>
 
@@ -1333,59 +1333,7 @@
               </div>
             </div>
 
-            <!-- Task 7: Invite 1 Friend -->
-            <div class="bg-white border border-[#eedec0] rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 border border-emerald-300">
-                  🌱
-                </div>
-                <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Invite 1 Friend</div>
-                  <div class="text-[10px] text-amber-700 font-extrabold">+100 Points 🌾</div>
-                </div>
-              </div>
-              <div id="taskBtnContainer-inv_f1" class="shrink-0">
-                <button onclick="startTask('inv_f1', 100)" class="btn-3d-blue px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow">
-                  Invite
-                </button>
-              </div>
-            </div>
 
-            <!-- Task 8: Invite 3 Friends -->
-            <div class="bg-white border border-[#eedec0] rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-base shrink-0 border border-amber-300">
-                  👥
-                </div>
-                <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Invite 3 Friends</div>
-                  <div class="text-[10px] text-amber-700 font-extrabold">+300 Points 🌾</div>
-                </div>
-              </div>
-              <div id="taskBtnContainer-inv_f3" class="shrink-0">
-                <button onclick="startTask('inv_f3', 300)" class="btn-3d-blue px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow">
-                  Invite
-                </button>
-              </div>
-            </div>
-
-            <!-- Task 9: Invite 100 Friends -->
-            <div class="bg-white border border-[#eedec0] rounded-2xl p-2.5 flex items-center justify-between shadow-sm">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-base shrink-0 border border-purple-300">
-                  👑
-                </div>
-                <div class="min-w-0">
-                  <div class="font-bold text-xs text-amber-950 truncate">Invite 100 Friends</div>
-                  <div class="text-[10px] text-amber-700 font-extrabold">+1,000 Points 🌾</div>
-                </div>
-              </div>
-              <div id="taskBtnContainer-inv_f100" class="shrink-0">
-                <button onclick="startTask('inv_f100', 1000)" class="btn-3d-blue px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow">
-                  Invite
-                </button>
-              </div>
-            </div>
 
           </div>
 
@@ -4417,10 +4365,7 @@
       follow:   { name: 'Follow Crazy Farm on X', bonus: 100, state: 'idle' },
       react:    { name: 'React on Post', bonus: 50, state: 'idle' },
       rt:       { name: 'Like & Retweet', bonus: 50, state: 'idle' },
-      tg:       { name: 'Join Telegram Bot', bonus: 150, state: 'idle' },
-      inv_f1:   { name: 'Invite 1 Friend', bonus: 100, state: 'idle', target: 1 },
-      inv_f3:   { name: 'Invite 3 Friends', bonus: 300, state: 'idle', target: 3 },
-      inv_f100: { name: 'Invite 100 Friends', bonus: 1000, state: 'idle', target: 100 }
+      tg:       { name: 'Join Telegram Bot', bonus: 150, state: 'idle' }
     };
 
     // ==================== INVITE MILESTONES (EARN DIRECT FARM POINTS) ====================
@@ -4595,16 +4540,10 @@
               <span>✓</span> Done
             </span>
           `;
-        } else if (task.target && invitedFriendsCount >= task.target) {
+        } else if (task.state === 'ready_to_claim') {
           container.innerHTML = `
-            <button onclick="claimTaskReward('${key}', ${task.bonus})" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
+            <button onclick="claimTaskReward('${key}', ${task.bonus})" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1 cursor-pointer">
               <span>🌾</span> Claim
-            </button>
-          `;
-        } else if (task.target) {
-          container.innerHTML = `
-            <button onclick="startTask('${key}', ${task.bonus})" class="btn-3d-blue px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow flex items-center gap-1">
-              <span>👥</span> Invite (${invitedFriendsCount}/${task.target})
             </button>
           `;
         }
@@ -4642,26 +4581,6 @@
       const task = taskItems[key];
       if (!task || task.state === 'claimed') return;
 
-      // Special handling for friend invite tasks
-      if (key.startsWith('inv_f')) {
-        shareInviteLink();
-        const container = document.getElementById(`taskBtnContainer-${key}`);
-        if (invitedFriendsCount >= task.target) {
-          task.state = 'ready_to_claim';
-          playSound('coin');
-          if (container) {
-            container.innerHTML = `
-              <button onclick="claimTaskReward('${key}', ${bonus})" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
-                <span>🌾</span> Claim
-              </button>
-            `;
-          }
-        } else {
-          showWalletToast(`👥 Invite ${task.target} friends to unlock +${bonus} points! (${invitedFriendsCount}/${task.target})`);
-        }
-        return;
-      }
-
       if (key === 'sub' || key === 'tg') {
         if (window.Telegram?.WebApp?.openTelegramLink) {
           window.Telegram.WebApp.openTelegramLink('https://t.me/crazyfarmgamey');
@@ -4688,7 +4607,7 @@
         playSound('coin');
         if (container) {
           container.innerHTML = `
-            <button onclick="claimTaskReward('${key}', ${bonus})" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1">
+            <button onclick="claimTaskReward('${key}', ${bonus})" class="btn-3d-green px-3.5 py-1.5 rounded-xl text-white font-black text-[11px] shadow animate-bounce flex items-center gap-1 cursor-pointer">
               <span>🌾</span> Claim
             </button>
           `;
@@ -4698,7 +4617,7 @@
 
     function claimTaskReward(key, bonus) { if (!ActionLock.run("task_" + key, 800, () => _doClaimTaskReward(key, bonus))) return; } function _doClaimTaskReward(key, bonus) {
       const task = taskItems[key];
-      if (!task || (task.state !== 'ready_to_claim' && (!task.target || invitedFriendsCount < task.target))) return;
+      if (!task || task.state !== 'ready_to_claim') return;
 
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
