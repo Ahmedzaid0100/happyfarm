@@ -3696,20 +3696,6 @@
       showWalletToast('&#127809; ' + farm.name + ' started 8-hour farming!');
     }
 
-    // Fast-Forward 8 Hours (For Quick Testing)
-    function skipFarm8h(key) {
-      const farm = adFarms[key];
-      if (!farm || farm.state !== 'mining') return;
-
-      playSound('click');
-      farm.state = 'ready_to_collect';
-      farm.remainingSeconds = 0;
-      farm.startTime = Date.now() - (ANIMAL_FARM_DURATION_SEC * 1000) - 1000;
-      saveAnimalFarmsState();
-      renderAdFarmAction(key);
-      showWalletToast('&#9193; ' + farm.name + ' ready to collect!');
-    }
-
     // Collect Farm Reward (Collect = normal points, Collect 2x = Ad for Double points)
     function collectFarmReward(key, isDouble = false) { if (!ActionLock.run("farm_" + key, 1000, () => _doCollectFarmReward(key, isDouble))) return; } function _doCollectFarmReward(key, isDouble = false) {
       const farm = adFarms[key];
@@ -3884,9 +3870,6 @@
                 <span>🌾</span> +${currentReward} (${timeFormatted})
               </span>
             </button>
-            <button onclick="skipFarm8h('${key}')" class="text-[7px] text-yellow-300 hover:text-white font-black flex items-center justify-center gap-0.5 bg-emerald-700/80 hover:bg-emerald-600 px-1.5 py-0.2 rounded-full border border-emerald-400/60 shadow-sm mt-0.5 cursor-pointer active:scale-90 transition-transform">
-              <span>&#9193;</span> Skip (Test)
-            </button>
           </div>
         `;
       } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
@@ -3921,7 +3904,6 @@
 
     // Backward compatibility aliases
     function startAdFarm(key) { startFarmMining(key); }
-    function skip12h(key) { skipFarm8h(key); }
     function collectAdFarm(key, isAuto = false) { collectFarmReward(key, false); }
     function checkAdCollect(key) {
       const farm = adFarms[key];
