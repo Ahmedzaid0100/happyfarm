@@ -1655,7 +1655,7 @@
     <!-- ==================== BATTLE PREPARATION MODAL ==================== -->
     <div id="battlePrepModal" onclick="if(event.target === this) closeModal('battlePrepModal')" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 text-center max-w-xs w-full text-white shadow-2xl relative border-amber-600">
-        <button type="button" onclick="closeModal('battlePrepModal')" ontouchend="closeModal('battlePrepModal')" class="absolute top-3 left-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-lg border-2 border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50">&#10005;</button>
+        <button type="button" onclick="closeModal('battlePrepModal')" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-lg border-2 border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
 
         <div id="battlePrepIcon" class="text-4xl mb-1 animate-bounce">&#9876;</div>
         <h3 id="battlePrepTitle" class="text-lg font-black text-yellow-300 mb-0.5">3 vs 3 Arena (Free Entry)</h3>
@@ -1695,7 +1695,7 @@
     </div>
 
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
-    <div id="battleArenaModal" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
+    <div id="battleArenaModal" onclick="if(event.target === this) closeBattleArena()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
       <!-- Inner Arena Frame with optional Screen Shake -->
       <div id="arenaInnerFrame" class="max-w-md w-full h-full max-h-[850px] relative rounded-3xl overflow-hidden border-4 border-[#451d02] shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#6cb83e] via-[#b6894c] to-[#4e9628] transition-transform">
@@ -1707,7 +1707,7 @@
         </div>
 
         <!-- ==================== TOP BAR: PLAYER 2 (ENEMY) & MODE & CLOSE ==================== -->
-        <div class="relative z-30 w-full pt-2.5 px-3 pb-1 flex items-center justify-between gap-1.5 bg-gradient-to-b from-black/40 to-transparent">
+        <div class="relative z-[60] w-full pt-2.5 px-3 pb-1 flex items-center justify-between gap-1.5 bg-gradient-to-b from-black/40 to-transparent pointer-events-auto">
           <!-- Player 2 Box (Left) -->
           <div class="flex items-center gap-1.5 bg-black/75 backdrop-blur-sm p-1.5 rounded-2xl border border-red-500/80 max-w-[150px] w-full shadow-lg">
             <div class="w-7 h-7 rounded-full bg-red-900 border border-white/50 flex items-center justify-center text-xs shadow">👹</div>
@@ -1728,8 +1728,8 @@
             <span id="battleTimerDisplay" class="font-black text-xs text-yellow-300 font-mono tracking-wider">20.0s</span>
           </div>
 
-          <!-- Close Button (Right) -->
-          <button type="button" onclick="closeBattleArena()" ontouchend="closeBattleArena()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50">&#10005;</button>
+          <!-- Close Button (Right) - Elevated Z-Index so it is ALWAYS clickable -->
+          <button type="button" onclick="closeBattleArena()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-[70]" title="Exit Battle">&#10005;</button>
         </div>
 
         <!-- ==================== ENEMY SQUAD ROW (ON GREEN TOP) ==================== -->
@@ -1747,7 +1747,6 @@
 
           <!-- Cinema Lighting & Edge Vignette -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none"></div>
-
 
           <!-- Slash Strike VFX Flash Overlay -->
           <div id="slashVfxOverlay" class="absolute inset-0 bg-yellow-300/35 opacity-0 pointer-events-none transition-opacity duration-150"></div>
@@ -1787,13 +1786,17 @@
         <div id="battleEffectsContainer" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
 
         <!-- Center "START FIGHT!" Launch Overlay -->
-        <div id="battleFightOverlay" class="absolute inset-0 z-40 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
-          <div class="text-center bg-black/75 p-5 rounded-3xl border border-amber-500/40 shadow-2xl max-w-xs mx-auto">
+        <div id="battleFightOverlay" onclick="if(event.target === this) closeBattleArena()" class="absolute inset-0 z-40 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
+          <div class="text-center bg-black/75 p-5 rounded-3xl border border-amber-500/40 shadow-2xl max-w-xs mx-auto relative pointer-events-auto">
+            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600/80 hover:bg-red-600 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center text-xs shadow cursor-pointer" title="Cancel & Exit">&#10005;</button>
             <div class="text-5xl animate-bounce mb-1">⚔️</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-lg" style="font-family: 'Fredoka', cursive;" id="battleStartTitle">3 vs 3 Battle</h2>
             <p class="text-xs text-amber-100 font-bold mt-1" id="battleStartDesc">Win to earn big Farm Points! (Optional 2x Boost with Ad)</p>
-            <button onclick="startLiveBattleRound()" class="btn-3d-green w-full py-2.5 mt-3 rounded-2xl text-white font-black text-sm shadow-2xl animate-pulse active:scale-95 transition-transform flex items-center justify-center gap-2">
+            <button onclick="startLiveBattleRound()" class="btn-3d-green w-full py-2.5 mt-3 rounded-2xl text-white font-black text-sm shadow-2xl animate-pulse active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer">
               <span>⚡</span> START FIGHT!
+            </button>
+            <button type="button" onclick="closeBattleArena()" class="w-full py-1.5 mt-2 rounded-xl bg-black/60 hover:bg-black/80 text-amber-200 text-[11px] font-bold border border-amber-600/40 active:scale-95 transition-transform flex items-center justify-center gap-1 cursor-pointer">
+              <span>&#10005;</span> Cancel &amp; Exit
             </button>
           </div>
         </div>
@@ -1801,6 +1804,7 @@
         <!-- Victory Overlay with 2x Optional Ad Boost -->
         <div id="battleVictoryOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
           <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
+            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl mb-1 animate-bounce">&#127942;&#127881;</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">VICTORY!</h2>
             <p class="text-xs text-amber-200 font-bold mb-3">Enemy squad knocked out!</p>
@@ -1819,7 +1823,6 @@
           </div>
         </div>
       </div>
-    </div>
     </div>
 
         <!-- ==================== RUN SPRINT (15s FARM RUSH) MINI-GAME MODAL ==================== -->
@@ -2450,7 +2453,7 @@
 
       if (actionContainer) {
         actionContainer.classList.remove('hidden');
-        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" ontouchend="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
+        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
       }
 
       if (modal) {
@@ -2696,24 +2699,8 @@
         videoEl.loop = true;
         videoEl.muted = true;
         videoEl.playsInline = true;
-
-        // Auto-loop fail-safe: ensures uninterrupted playback for the full 20s
-        videoEl.onended = function() {
-          if (isBattleInProgress) {
-            try { videoEl.currentTime = 0; videoEl.play().catch(()=>{}); } catch(e){}
-          }
-        };
-
-        // Resume if accidentally paused during active battle
-        videoEl.onpause = function() {
-          if (isBattleInProgress) {
-            setTimeout(() => {
-              if (isBattleInProgress && videoEl.paused) {
-                videoEl.play().catch(()=>{});
-              }
-            }, 50);
-          }
-        };
+        videoEl.onpause = null;
+        videoEl.onended = null;
 
         try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
 
@@ -2983,22 +2970,31 @@
     }
 
     function closeBattleArena() {
+      isBattleInProgress = false;
+      if (battleRoundInterval) { clearInterval(battleRoundInterval); battleRoundInterval = null; }
+      if (battleClockInterval) { clearInterval(battleClockInterval); battleClockInterval = null; }
+
       const videoEl = document.getElementById('arenaBattleVideo');
       if (videoEl) {
         videoEl.onpause = null;
         videoEl.onended = null;
-        videoEl.pause();
+        try { videoEl.pause(); } catch(e){}
         try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
         videoEl.muted = true;
       }
-      if (battleRoundInterval) clearInterval(battleRoundInterval);
-      if (battleClockInterval) clearInterval(battleClockInterval);
-      isBattleInProgress = false;
+
       const arena = document.getElementById('battleArenaModal');
       if (arena) {
         arena.classList.add('hidden');
         arena.style.display = 'none';
       }
+
+      const fightOverlay = document.getElementById('battleFightOverlay');
+      if (fightOverlay) fightOverlay.classList.remove('hidden');
+
+      const victoryOverlay = document.getElementById('battleVictoryOverlay');
+      if (victoryOverlay) victoryOverlay.classList.add('hidden');
+
       resumeBgmAfterBattle();
     }
 
