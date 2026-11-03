@@ -7,6 +7,8 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- AdsGram Official Telegram Ads Monetization SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js" onload="if(typeof initAdsgram==='function')initAdsgram();"></script>
+  <!-- Monetag Official Telegram Ads Monetization SDK -->
+  <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -5116,10 +5118,54 @@
     function toggleFaq() {}
     // ==================== END OTHERS ====================
 
-    // ==================== ADSGRAM MONETIZATION SDK & TEST AD SIMULATOR ====================
+    // ==================== ADS MONETIZATION MEDIATION (ADSGRAM & MONETAG WATERFALL) ====================
     const ADSGRAM_BLOCK_ID = "57668";
     let adsgramController = null;
     let isAdLoadingOrShowing = false;
+
+    // Monetag Official SDK Configuration
+    const MONETAG_ZONE_ID = "12182125";
+    const MONETAG_SDK_FN = "show_12182125";
+
+    function showMonetagAd(onSuccess, onFail) {
+      const sdkFn = window[MONETAG_SDK_FN] || window['show_' + MONETAG_ZONE_ID];
+      if (typeof sdkFn === 'function') {
+        isAdLoadingOrShowing = true;
+        showWalletToast('🎬 Loading sponsor ad (Monetag)...');
+        try {
+          const adPromise = sdkFn();
+          if (adPromise && typeof adPromise.then === 'function') {
+            adPromise
+              .then(() => {
+                isAdLoadingOrShowing = false;
+                console.log('🎉 Monetag reward ad completed successfully!');
+                try { playSound('fanfare'); } catch(e){}
+                if (typeof onSuccess === 'function') onSuccess();
+              })
+              .catch((err) => {
+                isAdLoadingOrShowing = false;
+                console.warn('⚠️ Monetag ad error/dismissed:', err);
+                if (typeof onFail === 'function') {
+                  onFail(err);
+                } else {
+                  showWalletToast('⚠️ Ad unavailable. Please try again shortly!');
+                }
+              });
+          } else {
+            isAdLoadingOrShowing = false;
+            try { playSound('fanfare'); } catch(e){}
+            if (typeof onSuccess === 'function') onSuccess();
+          }
+        } catch(e) {
+          isAdLoadingOrShowing = false;
+          console.error('Monetag invocation error:', e);
+          if (typeof onFail === 'function') onFail(e);
+        }
+      } else {
+        console.warn('Monetag SDK function not available yet.');
+        if (typeof onFail === 'function') onFail(new Error('Monetag not ready'));
+      }
+    }
 
     function initAdsgram() {
       if (window.Adsgram && !adsgramController) {
@@ -5157,7 +5203,8 @@
         initAdsgram();
       }
 
-      // 3. Official Adsgram Rewarded Video display
+      // 3. Mediation Waterfall:
+      // Try Network 1 (Adsgram) -> on fail/no-inventory -> Fallback to Network 2 (Monetag) -> on fail -> Simulated Ad
       if (adsgramController) {
         isAdLoadingOrShowing = true;
         showWalletToast('🎬 Loading sponsor ad...');
@@ -5184,17 +5231,25 @@
               } else if (err && err.description && err.description.includes('already showing')) {
                 console.warn('Ad already showing, please wait.');
               } else {
-                showWalletToast('⚠️ Ad network busy. Please try again shortly!');
+                // Waterfall fallback: Adsgram failed or no fill -> try Monetag
+                console.log('🔄 Adsgram ad unavailable or error, falling back to Monetag...');
+                showMonetagAd(onSuccess, () => {
+                  showFallbackAdModal(onSuccess, adTitle);
+                });
               }
             });
         } catch (syncErr) {
           isAdLoadingOrShowing = false;
           console.error('Adsgram synchronous call error:', syncErr);
-          showFallbackAdModal(onSuccess, adTitle);
+          showMonetagAd(onSuccess, () => {
+            showFallbackAdModal(onSuccess, adTitle);
+          });
         }
       } else {
-        // Fallback simulation ONLY if Adsgram script completely failed to load (e.g. adblocker)
-        showFallbackAdModal(onSuccess, adTitle);
+        // Adsgram controller not ready: try Monetag directly
+        showMonetagAd(onSuccess, () => {
+          showFallbackAdModal(onSuccess, adTitle);
+        });
       }
     }
 
