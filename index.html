@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -335,231 +335,94 @@
           <button onclick="switchTab('wallet')" class="btn-3d-yellow px-3 py-1.5 rounded-xl text-amber-950 font-black text-[11px] shadow flex items-center gap-1 active:scale-95 transition-transform shrink-0" title="Convert Farm Points to CFC"><span>&#128259;</span><span>Convert</span></button>
         </div>
 
-        <!-- BEE FARM BANNER & CLEAN VIDEO CENTER -->
-        <div id="beeRaidBanner" class="wood-board rounded-2xl p-2.5 border-2 border-amber-500/80 shadow-2xl relative overflow-hidden select-none">
-          <!-- Top Ribbon: Bee Farm & Level on Left, Speed on Right -->
-          <div class="flex items-center justify-between px-1 pb-1.5 border-b border-amber-900/50 mb-1.5">
-            <!-- Left: Bee Farm + Level -->
-            <div class="flex items-center gap-1.5">
-              <span class="text-lg animate-bounce" style="animation-duration: 2s;">&#127969;</span>
-              <span class="text-xs font-black text-yellow-300 tracking-wide drop-shadow-sm uppercase" style="font-family: 'Fredoka', cursive;">Main Farm</span>
-              <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950 text-[8.5px] font-black px-1.5 py-0.2 rounded-md shadow leading-none border border-yellow-200">
-                <span id="beeFarmLevelBadge">Lv. 1</span>
-              </span>
-            </div>
+        <!-- ==================== CRAZY FARM INTERACTIVE LIVING MAP ==================== -->
+        <div id="crazyFarmMapContainer" class="relative w-full rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-900/90 my-2 select-none" style="aspect-ratio: 572 / 1024;">
+          
+          <!-- Pristine Map Graphic (100% Unaltered Original Artwork) -->
+          <img src="assets/crazy_farm_map.jpg" alt="Crazy Farm Map" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none" />
 
-            <!-- Right: Speed -->
-            <div class="flex items-center gap-1 text-[8.5px] font-black text-lime-300 bg-black/40 px-2 py-0.5 rounded-lg border border-amber-900/40">
-              <span class="text-amber-200 font-bold">Speed:</span>
-              <span id="beeFarmDailyRateText">24/d - 1/h</span>
+          <!-- ==================== INTERACTIVE TOUCH HOTSPOTS ==================== -->
+
+          <!-- 1. Red Barn (Main Farm) - Top Right -->
+          <div id="hotspot-main" onclick="openMainFarmModal()" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 60%; top: 12%; width: 38%; height: 16%;" title="Main Farm Barn">
+            <div id="mapBadge-main" class="absolute bottom-1 right-2 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-1 animate-bounce" style="animation-duration: 2.5s;">
+              <span>&#127969;</span> <span id="mapMainStatusText">Main Farm</span>
             </div>
           </div>
 
-          <!-- Center Visual: Farm Banner Image (Tap to Farm) -->
-          <div id="beeVideoContainer" class="relative w-full h-[210px] rounded-xl overflow-hidden border-2 border-amber-900/60 shadow-inner bg-black select-none cursor-pointer" onclick="tapToFarmClick(event)">
-            <img id="beeAttackPoster" src="assets/bee_farm_banner.jpg" alt="Farm Animals" class="w-full h-full object-cover object-center select-none pointer-events-none" />
+          <!-- 2. Cows - Top Left -->
+          <div id="hotspot-cows" onclick="onAnimalCardClick('cows')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 25%; width: 44%; height: 16%;" title="Cows Farm">
+            <div id="mapBadge-cows" class="absolute bottom-1 left-7 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-cows">&#128274;</span> <span id="mapStatus-cows">Lv.7</span>
+            </div>
           </div>
 
-          <!-- Bottom Action Buttons: Upgrade (Left) & Farming/Gold (Right) -->
-          <div class="grid grid-cols-2 gap-2 mt-2">
-            <!-- Upgrade Hive Button -->
-            <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()" class="btn-3d-yellow py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center shadow-md border border-yellow-300 active:scale-95 transition-transform cursor-pointer" title="Upgrade Main Farm">
-              <div class="flex flex-col items-center leading-none">
-                <span class="flex items-center gap-1 uppercase tracking-wide"><span>&#9889;</span> Upgrade</span>
-                <span class="text-[9px] font-extrabold text-amber-950 mt-1 flex items-center gap-0.5">
-                  <span>Lv.+1</span> <span>(1,000 🌾)</span>
-                </span>
-              </div>
-            </button>
-            
-            <!-- Farming & Gold Button (Replaces Auto-VIP) -->
-            <button id="collectBeeBtn" onclick="collectBeeMined(this)" class="btn-3d-green py-2 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center shadow-md border border-emerald-300 active:scale-95 transition-transform" title="Collect Mined Gold">
-              <div class="flex flex-col items-center leading-none">
-                <span class="uppercase tracking-wide font-black">FARMING</span>
-                <span class="text-[9.5px] font-extrabold text-lime-200 mt-1 flex items-center gap-1">
-                  <span>🌾</span> <span>+0</span>
-                </span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- ==================== ANIMAL FARMS 4x2 GRID (4 TOP â€¢ 4 BOTTOM) ==================== -->
-        <div class="flex items-center justify-between px-1 pt-1 select-none">
-          <div class="flex items-center gap-1.5">
-            <span class="text-sm">ðŸ¾</span>
-            <h3 class="text-xs font-black text-yellow-300 font-fredoka tracking-wide uppercase">Animal Farms (8 Farms)</h3>
-          </div>
-          <span class="text-[9px] text-amber-200/90 font-bold bg-black/40 px-2 py-0.5 rounded-full border border-amber-800/50">Tap farm to open</span>
-        </div>
-
-        <div id="happyFarmGridContainer" class="grid grid-cols-4 gap-2 my-1 select-none">
-
-          <!-- ROW 1: 4 ANIMALS ON TOP -->
-
-          <!-- 1. Chicken (Free / Lv. 1) -->
-          <div id="farmCard-chicken" onclick="onAnimalCardClick('chicken')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-chicken" class="absolute top-1 left-1.5 bg-emerald-600 text-white text-[7.5px] font-black px-1.5 py-0.2 rounded-full shadow">Lv.1</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/chicken.png" alt="Chicken" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 3. Horses - Top Right -->
+          <div id="hotspot-horse" onclick="onAnimalCardClick('horse')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 66%; top: 25%; width: 32%; height: 16%;" title="Horses Farm">
+            <div id="mapBadge-horse" class="absolute bottom-1 right-2 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-horse">&#128274;</span> <span id="mapStatus-horse">Lv.12</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Chicken</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-chicken" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-chicken" class="text-[7.5px] text-lime-300 font-extrabold">+10</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-chicken" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
-            </div>
-            <span id="farmLevelBadge-chicken" class="hidden"></span>
-            <span id="farmVipBadge-chicken" class="hidden"></span>
-            <div id="actionContainer-chicken" class="hidden"></div>
-            <button id="upgradeBtn-chicken" class="hidden"></button>
           </div>
 
-          <!-- 2. Duck (Lv. 2 Req) -->
-          <div id="farmCard-duck" onclick="onAnimalCardClick('duck')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-duck" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.2</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/duck.png" alt="Duck" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 4. Chickens - Upper Center Coop -->
+          <div id="hotspot-chicken" onclick="onAnimalCardClick('chicken')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 24%; top: 34%; width: 42%; height: 15%;" title="Chicken Coop">
+            <div id="mapBadge-chicken" class="absolute bottom-0.5 left-16 bg-emerald-600 text-white font-black text-[8px] px-1.5 py-0.5 rounded-full border border-white/60 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-chicken">&#127806;</span> <span id="mapStatus-chicken">Ready</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Duck</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-duck" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-duck" class="text-[7.5px] text-lime-300 font-extrabold">+20</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-duck" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-duck" class="hidden"></span>
-            <span id="farmVipBadge-duck" class="hidden"></span>
-            <div id="actionContainer-duck" class="hidden"></div>
-            <button id="upgradeBtn-duck" class="hidden"></button>
           </div>
 
-          <!-- 3. Dog (VIP 3 TON) -->
-          <div id="farmCard-dog" onclick="onAnimalCardClick('dog')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-400/70 bg-gradient-to-b from-amber-950 via-[#331a05] to-[#1f0f02]">
-            <span id="farmLockBadge-dog" class="absolute top-1 left-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 text-[7px] font-black px-1 rounded-full shadow">ðŸ‘‘ VIP</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/dog.png" alt="Dog" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 5. Ducks - Center Pond -->
+          <div id="hotspot-duck" onclick="onAnimalCardClick('duck')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 45%; top: 41%; width: 50%; height: 13%;" title="Ducks Pond">
+            <div id="mapBadge-duck" class="absolute bottom-0 right-14 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-duck">&#128274;</span> <span id="mapStatus-duck">Lv.2</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-300 font-fredoka truncate w-full pointer-events-none">Dog</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-dog" class="text-[7.5px] text-amber-300 font-bold truncate">VIP</span>
-              <span id="farmRateText-dog" class="text-[7.5px] text-lime-300 font-extrabold">+15</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-dog" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-dog" class="hidden"></span>
-            <span id="farmVipBadge-dog" class="hidden"></span>
-            <div id="actionContainer-dog" class="hidden"></div>
-            <button id="upgradeBtn-dog" class="hidden"></button>
           </div>
 
-          <!-- 4. Cows (Lv. 7 Req) -->
-          <div id="farmCard-cows" onclick="onAnimalCardClick('cows')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-cows" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.7</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/cows.png" alt="Cows" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 6. Pigs - Middle Left Mud Pen -->
+          <div id="hotspot-pig" onclick="onAnimalCardClick('pig')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 46%; width: 44%; height: 18%;" title="Pigs Pen">
+            <div id="mapBadge-pig" class="absolute bottom-1 left-16 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-pig">&#128274;</span> <span id="mapStatus-pig">Lv.9</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Cows</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-cows" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-cows" class="text-[7.5px] text-lime-300 font-extrabold">+50</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-cows" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-cows" class="hidden"></span>
-            <span id="farmVipBadge-cows" class="hidden"></span>
-            <div id="actionContainer-cows" class="hidden"></div>
-            <button id="upgradeBtn-cows" class="hidden"></button>
           </div>
 
-          <!-- ROW 2: 4 ANIMALS BELOW -->
-
-          <!-- 5. Bunny (Lv. 3 Req) -->
-          <div id="farmCard-bunny" onclick="onAnimalCardClick('bunny')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-bunny" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.3</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/bunny.png" alt="Bunny" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 7. Sheep - Middle Right -->
+          <div id="hotspot-sheep" onclick="onAnimalCardClick('sheep')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 65%; top: 46%; width: 33%; height: 16%;" title="Sheep Meadow">
+            <div id="mapBadge-sheep" class="absolute bottom-1 right-8 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-sheep">&#128274;</span> <span id="mapStatus-sheep">Lv.5</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Bunny</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-bunny" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-bunny" class="text-[7.5px] text-lime-300 font-extrabold">+30</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-bunny" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-bunny" class="hidden"></span>
-            <span id="farmVipBadge-bunny" class="hidden"></span>
-            <div id="actionContainer-bunny" class="hidden"></div>
-            <button id="upgradeBtn-bunny" class="hidden"></button>
           </div>
 
-          <!-- 6. Horse (Lv. 12 Req) -->
-          <div id="farmCard-horse" onclick="onAnimalCardClick('horse')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-horse" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.12</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/horse.png" alt="Horse" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 8. Rabbits (Bunnies) - Bottom Left -->
+          <div id="hotspot-bunny" onclick="onAnimalCardClick('bunny')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 65%; width: 35%; height: 22%;" title="Rabbits Burrow">
+            <div id="mapBadge-bunny" class="absolute bottom-1 left-8 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5">
+              <span id="mapLock-bunny">&#128274;</span> <span id="mapStatus-bunny">Lv.3</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Horse</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-horse" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-horse" class="text-[7.5px] text-lime-300 font-extrabold">+70</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-horse" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-horse" class="hidden"></span>
-            <span id="farmVipBadge-horse" class="hidden"></span>
-            <div id="actionContainer-horse" class="hidden"></div>
-            <button id="upgradeBtn-horse" class="hidden"></button>
           </div>
 
-          <!-- 7. Sheep (Lv. 5 Req) -->
-          <div id="farmCard-sheep" onclick="onAnimalCardClick('sheep')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-sheep" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.5</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/sheep.png" alt="Sheep" class="w-full h-full object-contain filter drop-shadow" />
+          <!-- 9. Dogs - Bottom Right (VIP 3 TON) -->
+          <div id="hotspot-dog" onclick="onAnimalCardClick('dog')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 68%; top: 68%; width: 30%; height: 20%;" title="Guard Dogs (VIP)">
+            <div id="mapBadge-dog" class="absolute bottom-1 right-7 bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5">
+              <span id="mapLock-dog">&#128081;</span> <span id="mapStatus-dog">VIP</span>
             </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Sheep</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-sheep" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-sheep" class="text-[7.5px] text-lime-300 font-extrabold">+40</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-sheep" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-sheep" class="hidden"></span>
-            <span id="farmVipBadge-sheep" class="hidden"></span>
-            <div id="actionContainer-sheep" class="hidden"></div>
-            <button id="upgradeBtn-sheep" class="hidden"></button>
           </div>
 
-          <!-- 8. Pig (Lv. 9 Req) -->
-          <div id="farmCard-pig" onclick="onAnimalCardClick('pig')" class="farm-grid-card rounded-2xl p-1.5 flex flex-col items-center justify-between text-center cursor-pointer shadow-md relative min-h-[95px] active:scale-95 transition-transform border-2 border-amber-800/80">
-            <span id="farmLockBadge-pig" class="absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow">Lv.9</span>
-            <div class="w-11 h-11 my-auto flex items-center justify-center pointer-events-none">
-              <img src="assets/farms/pig.png" alt="Pig" class="w-full h-full object-contain filter drop-shadow" />
-            </div>
-            <span class="text-[10px] font-black text-yellow-200 font-fredoka truncate w-full pointer-events-none">Pig</span>
-            <div class="w-full flex items-center justify-between px-0.5 mt-0.5 pointer-events-none">
-              <span id="farmStatusText-pig" class="text-[7.5px] text-amber-300 font-bold truncate">Ready</span>
-              <span id="farmRateText-pig" class="text-[7.5px] text-lime-300 font-extrabold">+60</span>
-            </div>
-            <div class="w-full bg-black/60 rounded-full h-1 overflow-hidden mt-0.5 pointer-events-none">
-              <div id="farmProgressBar-pig" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-            </div>
-            <span id="farmLevelBadge-pig" class="hidden"></span>
-            <span id="farmVipBadge-pig" class="hidden"></span>
-            <div id="actionContainer-pig" class="hidden"></div>
-            <button id="upgradeBtn-pig" class="hidden"></button>
+          <!-- Hidden legacy containers for total backwards compatibility -->
+          <div class="hidden" style="display: none;">
+            <span id="beeFarmLevelBadge">Lv. 1</span>
+            <span id="beeFarmDailyRateText">24/d - 1/h</span>
+            <button id="upgradeBeeBtn" onclick="upgradeBeeFarm()"></button>
+            <button id="collectBeeBtn" onclick="collectBeeMined(this)"></button>
+            <div id="actionContainer-chicken"></div><div id="farmProgressBar-chicken"></div><button id="upgradeBtn-chicken"></button>
+            <div id="actionContainer-duck"></div><div id="farmProgressBar-duck"></div><button id="upgradeBtn-duck"></button>
+            <div id="actionContainer-dog"></div><div id="farmProgressBar-dog"></div><button id="upgradeBtn-dog"></button>
+            <div id="actionContainer-cows"></div><div id="farmProgressBar-cows"></div><button id="upgradeBtn-cows"></button>
+            <div id="actionContainer-bunny"></div><div id="farmProgressBar-bunny"></div><button id="upgradeBtn-bunny"></button>
+            <div id="actionContainer-horse"></div><div id="farmProgressBar-horse"></div><button id="upgradeBtn-horse"></button>
+            <div id="actionContainer-sheep"></div><div id="farmProgressBar-sheep"></div><button id="upgradeBtn-sheep"></button>
+            <div id="actionContainer-pig"></div><div id="farmProgressBar-pig"></div><button id="upgradeBtn-pig"></button>
           </div>
 
-        </div> <!-- /#happyFarmGridContainer -->
+        </div> <!-- /#crazyFarmMapContainer -->
 
       </div> <!-- /homeView -->
 
@@ -1653,21 +1516,83 @@
     </div>
 
     
+    <!-- ==================== MAIN FARM (RED BARN) MODAL ==================== -->
+    <div id="mainFarmModal" onclick="if(event.target === this) closeMainFarmModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none">
+      <div class="wood-board rounded-3xl p-3.5 max-w-xs w-full shadow-2xl relative border-2 border-amber-600/90 text-white space-y-3">
+        
+        <!-- Header: Main Farm + Level + Close -->
+        <div class="flex items-center justify-between pb-2 border-b border-amber-800/70">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">&#127969;</span>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-black text-yellow-300 font-fredoka tracking-wide">Main Farm</h3>
+              <span id="mainFarmModalLevel" class="bg-gradient-to-r from-emerald-600 to-lime-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-emerald-400">Lv. 1</span>
+            </div>
+          </div>
+          <button type="button" onclick="closeMainFarmModal()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow border border-white/70 active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+        </div>
+
+        <!-- Visual Stage for Main Farm (Clean) -->
+        <div class="relative w-full h-52 rounded-2xl overflow-hidden border-2 border-amber-900 shadow-inner bg-gradient-to-b from-[#62b533] via-[#46961e] to-[#2b6810] flex items-center justify-center">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none"></div>
+          <div class="relative z-10 w-36 h-36 flex items-center justify-center animal-floating pointer-events-none">
+            <span class="text-7xl filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">&#127969;</span>
+          </div>
+        </div>
+
+        <!-- Speed & Rate info -->
+        <div class="bg-black/50 rounded-xl p-2 border border-amber-800/50 flex items-center justify-between px-3 text-center">
+          <div>
+            <span class="text-[9px] font-bold text-amber-300/80 uppercase">Daily Yield</span>
+            <div id="mainFarmModalDailyRate" class="text-xs font-black text-lime-300">+24 &#127806; / day</div>
+          </div>
+          <div class="border-l border-amber-800/50 pl-3">
+            <span class="text-[9px] font-bold text-amber-300/80 uppercase">Hourly Speed</span>
+            <div id="mainFarmModalHourlyRate" class="text-xs font-black text-yellow-300">1 &#127806; / hr</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <!-- Upgrade Main Farm Button -->
+          <button id="mainModalUpgradeBtn" onclick="upgradeMainFarmFromModal()" class="btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+            <span class="flex items-center gap-1 uppercase tracking-wide">
+              <span>&#9889;</span> UPGRADE
+            </span>
+            <span id="mainModalUpgradeCost" class="text-[9px] font-extrabold text-amber-900 mt-0.5">
+              Lv. 2 (1,000 &#127806;)
+            </span>
+          </button>
+
+          <!-- Collect / Farm Button -->
+          <button id="mainModalCollectBtn" onclick="collectMainFarmFromModal()" class="btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+            <span class="flex items-center gap-1 uppercase tracking-wide">
+              <span>&#127806;</span> COLLECT
+            </span>
+            <span id="mainModalMinedText" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
+              +0 Farm Points
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ==================== DEDICATED ANIMAL FARM MODAL ==================== -->
     <div id="animalFarmModal" onclick="if(event.target === this) closeAnimalFarmModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none">
       <div class="wood-board rounded-3xl p-3.5 max-w-xs w-full shadow-2xl relative border-2 border-amber-600/90 text-white space-y-3">
         
-        <!-- MODAL HEADER: ONLY Animal Name + Level + Close [âœ–] Button (No clutter text) -->
+        <!-- MODAL HEADER: ONLY Animal Name + Level + Close [X] Button (No clutter text) -->
         <div class="flex items-center justify-between pb-2 border-b border-amber-800/70">
           <div class="flex items-center gap-2">
-            <span id="animalModalIcon" class="text-2xl">ðŸ®</span>
+            <span id="animalModalIcon" class="text-2xl">&#128046;</span>
             <div class="flex items-center gap-2">
               <h3 id="animalModalName" class="text-base font-black text-yellow-300 font-fredoka tracking-wide">Cows</h3>
               <span id="animalModalLevel" class="bg-gradient-to-r from-emerald-600 to-lime-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-emerald-400">Lv. 3</span>
             </div>
           </div>
 
-          <!-- Close [âœ–] Button -->
+          <!-- Close [X] Button -->
           <button type="button" onclick="closeAnimalFarmModal()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow border border-white/70 active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
         </div>
 
@@ -1698,10 +1623,10 @@
           <!-- Upgrade Farm Button -->
           <button id="animalModalUpgradeBtn" onclick="upgradeCurrentAnimalFarm()" class="btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
             <span class="flex items-center gap-1 uppercase tracking-wide">
-              <span>âš¡</span> UPGRADE
+              <span>&#9889;</span> UPGRADE
             </span>
             <span id="animalModalUpgradeCost" class="text-[9px] font-extrabold text-amber-900 mt-0.5">
-              Lv. 4 (250 ðŸŒ¾)
+              Lv. 4 (250 &#127806;)
             </span>
           </button>
 
@@ -1709,7 +1634,7 @@
           <div id="animalModalActionContainer" class="w-full flex items-center justify-center">
             <button id="animalModalFarmBtn" onclick="startCurrentAnimalFarm()" class="btn-3d-green w-full py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
               <span class="flex items-center gap-1 uppercase tracking-wide">
-                <span>ðŸŒ¾</span> FARM
+                <span>&#127806;</span> FARM
               </span>
               <span id="animalModalYieldText" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
                 +45 Farm Points
@@ -3892,21 +3817,21 @@
     };
 
     const ANIMAL_EMOJIS = {
-      chicken: 'ðŸ”',
-      duck: 'ðŸ¦†',
-      dog: 'ðŸ¶',
-      cows: 'ðŸ®',
-      bunny: 'ðŸ°',
-      horse: 'ðŸ´',
-      sheep: 'ðŸ‘',
-      pig: 'ðŸ·'
+      chicken: '\u{1F413}',
+      duck: '\u{1F986}',
+      dog: '\u{1F415}',
+      cows: '\u{1F404}',
+      bunny: '\u{1F430}',
+      horse: '\u{1F434}',
+      sheep: '\u{1F411}',
+      pig: '\u{1F437}'
     };
 
     function onAnimalCardClick(key) {
       playSound('click');
       if (!isFarmUnlocked(key)) {
         if (key === 'dog') {
-          showWalletToast('ðŸ‘‘ VIP Dog is locked! Unlock with 3 TON first.');
+          showWalletToast('\u{1F451} VIP Dog is locked! Unlock with 3 TON first.');
           openDogVipModal();
           return;
         }
@@ -3923,7 +3848,7 @@
       if (!farm) return;
 
       const lvl = farmLevels[key] || 1;
-      const emoji = ANIMAL_EMOJIS[key] || 'ðŸ¾';
+      const emoji = ANIMAL_EMOJIS[key] || '\u{1F43E}';
       const name = ANIMAL_DISPLAY_NAMES[key] || farm.name;
 
       const modal = document.getElementById('animalFarmModal');
@@ -3988,7 +3913,7 @@
         if (lvl >= 5) {
           upCostEl.innerText = 'MAX (Lv. 5)';
         } else if (nextCost !== null) {
-          upCostEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + nextCost.toLocaleString() + ' ðŸŒ¾)';
+          upCostEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + nextCost.toLocaleString() + ' \u{1F33E})';
         }
       }
       if (upBtn) {
@@ -4020,10 +3945,10 @@
           actionContainer.innerHTML = `
             <button class="btn-3d-yellow w-full py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-default pointer-events-none">
               <span class="flex items-center gap-1 uppercase tracking-wide">
-                <span>â³</span> FARMING...
+                <span>\u23F3</span> FARMING...
               </span>
               <span class="text-[9px] font-extrabold text-amber-900 mt-0.5">
-                +${reward} ðŸŒ¾ (${timeFormatted})
+                +${reward} \u{1F33E} (${timeFormatted})
               </span>
             </button>
           `;
@@ -4037,7 +3962,7 @@
           actionContainer.innerHTML = `
             <button onclick="collectCurrentAnimalFarm()" class="btn-3d-green w-full py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer animate-bounce active:scale-95 transition-transform">
               <span class="flex items-center gap-1 uppercase tracking-wide">
-                <span>ðŸ’°</span> COLLECT!
+                <span>\u{1F4B0}</span> COLLECT!
               </span>
               <span class="text-[9px] font-extrabold text-lime-100 mt-0.5">
                 +${reward} Farm Points
@@ -4055,7 +3980,7 @@
           actionContainer.innerHTML = `
             <button onclick="startCurrentAnimalFarm()" class="btn-3d-green w-full py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
               <span class="flex items-center gap-1 uppercase tracking-wide">
-                <span>ðŸŒ¾</span> START FARMING
+                <span>\u{1F33E}</span> START FARMING
               </span>
               <span class="text-[9px] font-extrabold text-lime-100 mt-0.5">
                 +${reward} Farm Points
@@ -4067,6 +3992,69 @@
     }
 
     // Render Action Button State for Each Animal Farm in 4x2 Grid
+    // ==================== MAIN FARM (RED BARN) MODAL LOGIC ====================
+    function openMainFarmModal() {
+      playSound('click');
+      updateMainFarmModalUI();
+      const modal = document.getElementById('mainFarmModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeMainFarmModal() {
+      const modal = document.getElementById('mainFarmModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    function upgradeMainFarmFromModal() {
+      upgradeBeeFarm();
+      updateMainFarmModalUI();
+    }
+
+    function collectMainFarmFromModal() {
+      collectBeeMined();
+      updateMainFarmModalUI();
+    }
+
+    function updateMainFarmModalUI() {
+      const lvlEl = document.getElementById('mainFarmModalLevel');
+      if (lvlEl) lvlEl.innerText = 'Lv. ' + userLevel;
+
+      const dailyEl = document.getElementById('mainFarmModalDailyRate');
+      if (dailyEl) dailyEl.innerHTML = '+' + (userLevel * 24) + ' &#127806; / day';
+
+      const hourlyEl = document.getElementById('mainFarmModalHourlyRate');
+      if (hourlyEl) hourlyEl.innerHTML = userLevel + ' &#127806; / hr';
+
+      const upgradeCost = getBeeFarmUpgradeCost(userLevel);
+      const costStr = upgradeCost >= 1000 ? (upgradeCost / 1000) + 'k' : upgradeCost;
+      const upCostEl = document.getElementById('mainModalUpgradeCost');
+      if (upCostEl) upCostEl.innerHTML = 'Lv. ' + (userLevel + 1) + ' (' + costStr + ' &#127806;)';
+
+      const now = Date.now();
+      const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
+      const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
+      const dailyRate = userLevel * 24;
+      const currentMined = Math.min(dailyRate, Math.floor(elapsedSeconds * (dailyRate / 86400)));
+      const is24hComplete = elapsedSeconds >= 86400;
+
+      const minedEl = document.getElementById('mainModalMinedText');
+      if (minedEl) {
+        minedEl.innerText = is24hComplete ? ('+' + dailyRate + ' Ready to Collect!') : ('+' + currentMined + ' Mined (' + formatTime(Math.max(0, 86400 - elapsedSeconds)) + ')');
+      }
+
+      const mapMainStatus = document.getElementById('mapMainStatusText');
+      if (mapMainStatus) {
+        mapMainStatus.innerText = is24hComplete ? `Collect (+${dailyRate})` : `Farming (+${currentMined})`;
+      }
+    }
+
+    // Render Action Button State for Each Animal Farm on the Map
     function renderAdFarmAction(key) {
       const farm = adFarms[key];
       if (!farm) return;
@@ -4075,53 +4063,46 @@
       const currentFarmLvl = farmLevels[key] || 1;
       const currentReward = getFarmCurrentReward(key);
 
-      // 1. Update 4x2 Grid Lock/Level Badge
-      const lockBadge = document.getElementById(`farmLockBadge-${key}`);
-      if (lockBadge) {
-        if (key === 'dog') {
-          if (isUnlocked) {
-            lockBadge.className = 'absolute top-1 left-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 text-[7px] font-black px-1 rounded-full shadow';
-            lockBadge.innerHTML = 'ðŸ‘‘ VIP';
-          } else {
-            lockBadge.className = 'absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow';
-            lockBadge.innerHTML = 'ðŸ”’ 3 TON';
-          }
-        } else {
-          if (isUnlocked) {
-            lockBadge.className = 'absolute top-1 left-1.5 bg-emerald-600 text-white text-[7.5px] font-black px-1.5 py-0.2 rounded-full shadow';
-            lockBadge.innerHTML = 'Lv.' + currentFarmLvl;
-          } else {
-            lockBadge.className = 'absolute top-1 left-1.5 bg-amber-950/90 text-amber-300 text-[7.5px] font-black px-1.5 py-0.2 rounded-full border border-amber-500 shadow';
-            lockBadge.innerHTML = 'ðŸ”’ Lv.' + (FARM_UNLOCK_LEVELS[key] || 1);
-          }
-        }
-      }
+      // 1. Update Map Badge for this animal
+      const mapBadge = document.getElementById(`mapBadge-${key}`);
+      const mapLock = document.getElementById(`mapLock-${key}`);
+      const mapStatus = document.getElementById(`mapStatus-${key}`);
 
-      // 2. Update 4x2 Grid Status Text
-      const statusEl = document.getElementById(`farmStatusText-${key}`);
-      if (statusEl) {
+      if (mapBadge && mapLock && mapStatus) {
         if (!isUnlocked) {
-          statusEl.innerText = (key === 'dog') ? 'VIP Only' : 'Locked';
-          statusEl.className = 'text-[7.5px] text-amber-400/60 font-bold truncate';
-        } else if (farm.state === 'mining' || farm.state === 'farming') {
-          statusEl.innerText = 'âš¡ ' + formatTime(farm.remainingSeconds);
-          statusEl.className = 'text-[7.5px] text-yellow-300 font-black truncate';
-        } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
-          statusEl.innerText = 'ðŸ’° Claim!';
-          statusEl.className = 'text-[7.5px] text-emerald-300 font-black animate-pulse truncate';
+          if (key === 'dog') {
+            mapBadge.className = 'absolute bottom-1 right-7 bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5 cursor-pointer';
+            mapLock.innerHTML = '&#128274;';
+            mapStatus.innerText = '3 TON';
+          } else {
+            mapBadge.className = 'absolute bottom-1 bg-black/80 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5';
+            mapLock.innerHTML = '&#128274;';
+            mapStatus.innerText = 'Lv.' + (FARM_UNLOCK_LEVELS[key] || 1);
+          }
         } else {
-          statusEl.innerText = 'Ready';
-          statusEl.className = 'text-[7.5px] text-lime-300 font-bold truncate';
+          // Unlocked
+          if (key === 'dog') {
+            mapBadge.className = 'absolute bottom-1 right-7 bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5 cursor-pointer';
+            mapLock.innerHTML = '&#128081;';
+            mapStatus.innerText = 'VIP';
+          }
+          if (farm.state === 'mining' || farm.state === 'farming') {
+            mapBadge.className = 'absolute bottom-1 bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-400 shadow-md flex items-center gap-0.5 cursor-pointer';
+            mapLock.innerHTML = '&#9889;';
+            mapStatus.innerText = formatTime(farm.remainingSeconds);
+          } else if (farm.state === 'ready_to_collect' || farm.state === 'claimable') {
+            mapBadge.className = 'absolute bottom-1 bg-emerald-600 text-white font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5 animate-bounce cursor-pointer';
+            mapLock.innerHTML = '&#128176;';
+            mapStatus.innerText = 'Claim!';
+          } else if (key !== 'dog') {
+            mapBadge.className = 'absolute bottom-1 bg-emerald-700/85 backdrop-blur-sm text-emerald-200 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-emerald-400/60 shadow-md flex items-center gap-0.5 cursor-pointer';
+            mapLock.innerHTML = '&#127806;';
+            mapStatus.innerText = 'Farm';
+          }
         }
       }
 
-      // 3. Update 4x2 Grid Reward Rate Text
-      const rateEl = document.getElementById(`farmRateText-${key}`);
-      if (rateEl) {
-        rateEl.innerText = '+' + currentReward;
-      }
-
-      // 4. Update 4x2 Grid Progress Bar
+      // 2. Legacy Progress bar update
       const pBar = document.getElementById(`farmProgressBar-${key}`);
       if (pBar) {
         if (farm.state === 'mining' || farm.state === 'farming') {
@@ -4136,7 +4117,7 @@
         }
       }
 
-      // 5. Live update Dedicated Animal Farm Modal if open
+      // 3. Live update Dedicated Animal Farm Modal if open
       if (currentModalAnimalKey === key) {
         updateAnimalModalUI(key);
       }
