@@ -3894,11 +3894,29 @@
         dog: 'assets/farms/dog.mp4'
       };
 
+      const AVAILABLE_ANIMAL_POSTERS = {
+        chicken: 'assets/farms/chicken_poster.jpg',
+        pig: 'assets/farms/pig_poster.jpg',
+        sheep: 'assets/farms/sheep_poster.jpg',
+        cows: 'assets/farms/cows_poster.jpg',
+        cow: 'assets/farms/cows_poster.jpg',
+        horse: 'assets/farms/horse_poster.jpg',
+        horses: 'assets/farms/horse_poster.jpg'
+      };
+
       if (vidEl && vidSrc) {
         const videoSrcUrl = AVAILABLE_ANIMAL_VIDEOS[key];
+        const posterUrl = AVAILABLE_ANIMAL_POSTERS[key] || '';
+        vidEl.poster = posterUrl;
         if (videoSrcUrl) {
-          vidSrc.src = videoSrcUrl;
-          vidEl.load();
+          const currentLoadedAnimal = vidSrc.getAttribute('data-animal');
+          if (currentLoadedAnimal !== key) {
+            vidSrc.setAttribute('data-animal', key);
+            vidSrc.src = videoSrcUrl;
+            vidEl.load();
+          } else {
+            try { vidEl.currentTime = 0; } catch(e){}
+          }
           vidEl.style.display = 'block';
           vidEl.play().catch(()=>{});
           if (imgWrap) imgWrap.style.display = 'none';
