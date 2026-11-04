@@ -1529,13 +1529,14 @@
           <button type="button" onclick="closeMainFarmModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
         </div>
 
-        <!-- Visual Stage for Main Farm (Tall & Spacious) -->
-        <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-amber-700/80 shadow-[inset_0_4px_14px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#82cbfa] via-[#bfe89b] to-[#459624] flex items-center justify-center">
-          <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none"></div>
-          <div class="relative z-10 w-44 h-44 flex items-center justify-center animal-floating pointer-events-none select-none">
-            <span class="text-8xl filter drop-shadow-[0_12px_16px_rgba(0,0,0,0.5)]">&#127969;</span>
-          </div>
-          <div class="absolute bottom-5 w-32 h-6 bg-black/30 rounded-full blur-md pointer-events-none"></div>
+        <!-- Visual Stage for Main Farm (Tall & Spacious with Dedicated Video Player) -->
+        <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-amber-700/80 shadow-[inset_0_4px_14px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#3b1e08] via-[#261203] to-[#150901] flex items-center justify-center">
+          <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none z-20"></div>
+
+          <!-- Main Farm Looping Video Player -->
+          <video id="mainFarmModalVideo" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none select-none z-10">
+            <source src="assets/farms/main_farm.mp4" type="video/mp4">
+          </video>
         </div>
 
         <!-- Speed & Rate info (Sleek Glassmorphic Badges) -->
@@ -4039,6 +4040,13 @@
     // ==================== MAIN FARM (RED BARN) MODAL LOGIC ====================
     function openMainFarmModal() {
       updateMainFarmModalUI();
+      const vidEl = document.getElementById('mainFarmModalVideo');
+      if (vidEl) {
+        try {
+          vidEl.currentTime = 0;
+          vidEl.play().catch(()=>{});
+        } catch(e){}
+      }
       const modal = document.getElementById('mainFarmModal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -4047,6 +4055,10 @@
     }
 
     function closeMainFarmModal() {
+      const vidEl = document.getElementById('mainFarmModalVideo');
+      if (vidEl) {
+        try { vidEl.pause(); } catch(e){}
+      }
       const modal = document.getElementById('mainFarmModal');
       if (modal) {
         modal.classList.add('hidden');
@@ -7446,9 +7458,11 @@ function exitRunSprintGame() {
 document.addEventListener('visibilitychange', () => {
   const mapVideo = document.getElementById('crazyFarmMapVideo');
   const animalVid = document.getElementById('animalModalVideo');
+  const mainVid = document.getElementById('mainFarmModalVideo');
   if (document.hidden) {
     if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
     if (animalVid && !animalVid.paused) { try { animalVid.pause(); } catch(e){} }
+    if (mainVid && !mainVid.paused) { try { mainVid.pause(); } catch(e){} }
     try { saveProgressToCloud(); } catch(e){} 
   } else {
     const homeView = document.getElementById('homeView');
@@ -7458,6 +7472,10 @@ document.addEventListener('visibilitychange', () => {
     const animalModal = document.getElementById('animalFarmModal');
     if (animalModal && animalModal.style.display !== 'none' && animalVid && animalVid.paused && animalVid.style.display !== 'none') {
       try { animalVid.play().catch(()=>{}); } catch(e){} 
+    }
+    const mainModal = document.getElementById('mainFarmModal');
+    if (mainModal && mainModal.style.display !== 'none' && mainVid && mainVid.paused) {
+      try { mainVid.play().catch(()=>{}); } catch(e){} 
     }
   }
 });
