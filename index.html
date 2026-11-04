@@ -6,7 +6,7 @@
   <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -15,7 +15,7 @@
   <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup & In-App -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -23,7 +23,7 @@
 </script>
   <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -31,7 +31,7 @@
 </script>
   <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -40,7 +40,7 @@
   <!-- TADS Official Telegram Ads Monetization SDK (Crypto / TON) -->
   <script src="https://w.tads.me/widget.js" async>window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -48,7 +48,7 @@
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -57,7 +57,7 @@
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -65,7 +65,7 @@
 </script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js">window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
@@ -3931,23 +3931,22 @@
       if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
       if (imgEl) imgEl.src = 'assets/farms/' + key + '.png';
 
+      const AVAILABLE_ANIMAL_VIDEOS = {
+        duck: 'assets/farms/duck.mp4'
+      };
+
       if (vidEl && vidSrc) {
-        const testVideoPath = 'assets/farms/' + key + '.mp4';
-        fetch(testVideoPath, { method: 'HEAD' }).then(res => {
-          if (res.ok) {
-            vidSrc.src = testVideoPath;
-            vidEl.load();
-            vidEl.style.display = 'block';
-            vidEl.play().catch(()=>{});
-            if (imgWrap) imgWrap.style.display = 'none';
-          } else {
-            vidEl.style.display = 'none';
-            if (imgWrap) imgWrap.style.display = 'flex';
-          }
-        }).catch(() => {
+        const videoSrcUrl = AVAILABLE_ANIMAL_VIDEOS[key];
+        if (videoSrcUrl) {
+          vidSrc.src = videoSrcUrl;
+          vidEl.load();
+          vidEl.style.display = 'block';
+          vidEl.play().catch(()=>{});
+          if (imgWrap) imgWrap.style.display = 'none';
+        } else {
           vidEl.style.display = 'none';
           if (imgWrap) imgWrap.style.display = 'flex';
-        });
+        }
       }
 
       updateAnimalModalUI(key);
@@ -7485,7 +7484,7 @@ function exitRunSprintGame() {
 
 window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('cows'), 400);
+    setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
