@@ -4,17 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
   <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup & In-App -->
-  <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
-  <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
-  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
   <!-- TADS Official Telegram Ads Monetization SDK (Crypto / TON) -->
-  <script src="https://w.tads.me/widget.js" async></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://w.tads.me/widget.js" async>window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js">window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
+</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
@@ -1513,58 +1569,61 @@
     
     <!-- ==================== MAIN FARM (RED BARN) MODAL ==================== -->
     <div id="mainFarmModal" onclick="if(event.target === this) closeMainFarmModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none">
-      <div class="wood-board rounded-3xl p-3.5 max-w-xs w-full shadow-2xl relative border-2 border-amber-600/90 text-white space-y-3">
+      <div class="rounded-[2.2rem] p-4 max-w-sm w-full max-h-[92vh] shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_2px_4px_rgba(255,255,255,0.2)] relative border-[3.5px] border-[#f59e0b] bg-gradient-to-b from-[#3b1e08] via-[#261203] to-[#150901] text-white flex flex-col justify-between space-y-3.5">
         
         <!-- Header: Main Farm + Level + Close -->
-        <div class="flex items-center justify-between pb-2 border-b border-amber-800/70">
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">&#127969;</span>
+        <div class="flex items-center justify-between pb-2.5 border-b-2 border-amber-800/60 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-500 border-2 border-white shadow-lg flex items-center justify-center shrink-0">
+              <span class="text-2xl filter drop-shadow">&#127969;</span>
+            </div>
             <div class="flex items-center gap-2">
-              <h3 class="text-base font-black text-yellow-300 font-fredoka tracking-wide">Main Farm</h3>
-              <span id="mainFarmModalLevel" class="bg-gradient-to-r from-emerald-600 to-lime-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-emerald-400">Lv. 1</span>
+              <h3 class="text-lg font-black text-yellow-300 font-fredoka tracking-wide drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]">Main Farm</h3>
+              <span id="mainFarmModalLevel" class="bg-gradient-to-r from-emerald-500 to-lime-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md border border-emerald-300/80">Lv. 1</span>
             </div>
           </div>
-          <button type="button" onclick="closeMainFarmModal()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow border border-white/70 active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+          <button type="button" onclick="closeMainFarmModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
         </div>
 
-        <!-- Visual Stage for Main Farm (Clean) -->
-        <div class="relative w-full h-52 rounded-2xl overflow-hidden border-2 border-amber-900 shadow-inner bg-gradient-to-b from-[#62b533] via-[#46961e] to-[#2b6810] flex items-center justify-center">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none"></div>
-          <div class="relative z-10 w-36 h-36 flex items-center justify-center animal-floating pointer-events-none">
-            <span class="text-7xl filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">&#127969;</span>
+        <!-- Visual Stage for Main Farm (Tall & Spacious) -->
+        <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-amber-700/80 shadow-[inset_0_4px_14px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#82cbfa] via-[#bfe89b] to-[#459624] flex items-center justify-center">
+          <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none"></div>
+          <div class="relative z-10 w-44 h-44 flex items-center justify-center animal-floating pointer-events-none select-none">
+            <span class="text-8xl filter drop-shadow-[0_12px_16px_rgba(0,0,0,0.5)]">&#127969;</span>
           </div>
+          <div class="absolute bottom-5 w-32 h-6 bg-black/30 rounded-full blur-md pointer-events-none"></div>
         </div>
 
-        <!-- Speed & Rate info -->
-        <div class="bg-black/50 rounded-xl p-2 border border-amber-800/50 flex items-center justify-between px-3 text-center">
+        <!-- Speed & Rate info (Sleek Glassmorphic Badges) -->
+        <div class="bg-black/60 rounded-2xl p-2.5 border border-amber-700/60 flex items-center justify-between px-4 text-center shrink-0">
           <div>
-            <span class="text-[9px] font-bold text-amber-300/80 uppercase">Daily Yield</span>
+            <span class="text-[9.5px] font-black text-amber-300/90 uppercase tracking-tight">Daily Yield</span>
             <div id="mainFarmModalDailyRate" class="text-xs font-black text-lime-300">+24 &#127806; / day</div>
           </div>
-          <div class="border-l border-amber-800/50 pl-3">
-            <span class="text-[9px] font-bold text-amber-300/80 uppercase">Hourly Speed</span>
+          <div class="border-l border-amber-800/80 pl-4">
+            <span class="text-[9.5px] font-black text-amber-300/90 uppercase tracking-tight">Hourly Speed</span>
             <div id="mainFarmModalHourlyRate" class="text-xs font-black text-yellow-300">1 &#127806; / hr</div>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <div class="grid grid-cols-2 gap-3 pt-1 shrink-0">
           <!-- Upgrade Main Farm Button -->
-          <button id="mainModalUpgradeBtn" onclick="upgradeMainFarmFromModal()" class="btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+          <button id="mainModalUpgradeBtn" onclick="upgradeMainFarmFromModal()" class="btn-3d-yellow py-3 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-yellow-200">
             <span class="flex items-center gap-1 uppercase tracking-wide">
               <span>&#9889;</span> UPGRADE
             </span>
-            <span id="mainModalUpgradeCost" class="text-[9px] font-extrabold text-amber-900 mt-0.5">
+            <span id="mainModalUpgradeCost" class="text-[9.5px] font-extrabold text-amber-950 mt-0.5">
               Lv. 2 (1,000 &#127806;)
             </span>
           </button>
 
           <!-- Collect / Farm Button -->
-          <button id="mainModalCollectBtn" onclick="collectMainFarmFromModal()" class="btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+          <button id="mainModalCollectBtn" onclick="collectMainFarmFromModal()" class="btn-3d-green py-3 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300">
             <span class="flex items-center gap-1 uppercase tracking-wide">
               <span>&#127806;</span> COLLECT
             </span>
-            <span id="mainModalMinedText" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
+            <span id="mainModalMinedText" class="text-[9.5px] font-extrabold text-lime-100 mt-0.5">
               +0 Farm Points
             </span>
           </button>
@@ -1575,63 +1634,77 @@
 
     <!-- ==================== DEDICATED ANIMAL FARM MODAL ==================== -->
     <div id="animalFarmModal" onclick="if(event.target === this) closeAnimalFarmModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none">
-      <div class="wood-board rounded-3xl p-3.5 max-w-xs w-full shadow-2xl relative border-2 border-amber-600/90 text-white space-y-3">
+      <div class="rounded-[2.2rem] p-4 max-w-sm w-full max-h-[92vh] shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_2px_4px_rgba(255,255,255,0.2)] relative border-[3.5px] border-[#f59e0b] bg-gradient-to-b from-[#3b1e08] via-[#261203] to-[#150901] text-white flex flex-col justify-between space-y-3.5">
         
-        <!-- MODAL HEADER: ONLY Animal Name + Level + Close [X] Button (No clutter text) -->
-        <div class="flex items-center justify-between pb-2 border-b border-amber-800/70">
-          <div class="flex items-center gap-2">
-            <span id="animalModalIcon" class="text-2xl">&#128046;</span>
+        <!-- MODAL HEADER: 3D Wooden Bar + Animal Icon & Name + Level Pill + 3D Red Close Button -->
+        <div class="flex items-center justify-between pb-2.5 border-b-2 border-amber-800/60 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-500 border-2 border-white shadow-lg flex items-center justify-center shrink-0">
+              <span id="animalModalIcon" class="text-2xl filter drop-shadow">&#128046;</span>
+            </div>
             <div class="flex items-center gap-2">
-              <h3 id="animalModalName" class="text-base font-black text-yellow-300 font-fredoka tracking-wide">Cows</h3>
-              <span id="animalModalLevel" class="bg-gradient-to-r from-emerald-600 to-lime-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow border border-emerald-400">Lv. 3</span>
+              <h3 id="animalModalName" class="text-lg font-black text-yellow-300 font-fredoka tracking-wide drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]">Cows</h3>
+              <span id="animalModalLevel" class="bg-gradient-to-r from-emerald-500 to-lime-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md border border-emerald-300/80">Lv. 3</span>
             </div>
           </div>
 
-          <!-- Close [X] Button -->
-          <button type="button" onclick="closeAnimalFarmModal()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow border border-white/70 active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+          <!-- Tactile 3D Red Close Button -->
+          <button type="button" onclick="closeAnimalFarmModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
         </div>
 
-        <!-- HERO 3D ANIMATION STAGE (Completely Clean, Zero Text Overlays) -->
-        <div class="relative w-full h-52 rounded-2xl overflow-hidden border-2 border-amber-900 shadow-inner bg-gradient-to-b from-[#62b533] via-[#46961e] to-[#2b6810] flex items-center justify-center">
-          <!-- Green Field Vignette & Lighting (Clean) -->
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none"></div>
+        <!-- HERO ANIMAL VIDEO & ANIMATION STAGE (Spacious & Tall for High-Res Animal Video) -->
+        <div id="animalVideoContainer" class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-amber-700/80 shadow-[inset_0_4px_14px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#82cbfa] via-[#bfe89b] to-[#459624] flex items-center justify-center">
+          
+          <!-- Subtle Spotlight Glow from Above -->
+          <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none"></div>
 
-          <!-- Central Animal / Future 3D Model Canvas Anchor (Zero text, zero badges) -->
-          <div class="relative z-10 w-36 h-36 flex items-center justify-center animal-floating pointer-events-none">
-            <img id="animalModalImg" src="assets/farms/cows.png" alt="Animal" class="w-full h-full object-contain filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.45)]" />
+          <!-- Animal Looping Video Player (Ready for animal video clip) -->
+          <video id="animalModalVideo" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none select-none z-10" style="display: none;">
+            <source id="animalModalVideoSource" src="" type="video/mp4">
+          </video>
+
+          <!-- Animal Graphic Poster / Fallback Anchor -->
+          <div id="animalModalImgWrapper" class="relative z-10 w-44 h-44 flex items-center justify-center animal-floating pointer-events-none select-none">
+            <img id="animalModalImg" src="assets/farms/cows.png" alt="Animal" class="max-w-full max-h-full object-contain filter drop-shadow-[0_12px_14px_rgba(0,0,0,0.5)]" />
+          </div>
+
+          <!-- Realistic Soft Ground Shadow -->
+          <div class="absolute bottom-5 w-32 h-6 bg-black/30 rounded-full blur-md pointer-events-none"></div>
+        </div>
+
+        <!-- SHINY CAPSULE PROGRESS BAR -->
+        <div class="w-full shrink-0">
+          <div class="flex items-center justify-between text-[11px] font-black text-amber-200 mb-1 px-1">
+            <span id="animalModalStatusText" class="flex items-center gap-1"><span>&#127806;</span> Ready to Farm</span>
+            <span id="animalModalProgressPercent" class="text-yellow-300 font-black">0%</span>
+          </div>
+          <div class="w-full bg-black/75 rounded-full h-4 p-0.5 border border-amber-700/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.9)] overflow-hidden relative">
+            <div id="animalModalProgressBar" class="bg-gradient-to-r from-emerald-500 via-lime-400 to-yellow-400 h-full rounded-full transition-all duration-300 relative shadow-[0_0_10px_rgba(74,222,128,0.6)]" style="width: 0%;">
+              <!-- Top Highlight Gloss Line -->
+              <div class="absolute inset-x-0 top-0 h-1 bg-white/40 rounded-full"></div>
+            </div>
           </div>
         </div>
 
-        <!-- PROGRESS BAR -->
-        <div class="w-full">
-          <div class="flex items-center justify-between text-[10px] font-bold text-amber-200 mb-1 px-1">
-            <span id="animalModalStatusText">Ready to Farm</span>
-            <span id="animalModalProgressPercent">0%</span>
-          </div>
-          <div class="w-full bg-black/60 rounded-full h-3 p-0.5 border border-amber-800/80 shadow-inner">
-            <div id="animalModalProgressBar" class="bg-gradient-to-r from-emerald-500 via-lime-400 to-yellow-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-          </div>
-        </div>
-
-        <!-- BIG 3D ACTION BUTTONS (UPGRADE & FARM) -->
-        <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <!-- BIG TACTILE 3D ACTION BUTTONS (UPGRADE & FARM) -->
+        <div class="grid grid-cols-2 gap-3 pt-1 shrink-0">
           <!-- Upgrade Farm Button -->
-          <button id="animalModalUpgradeBtn" onclick="upgradeCurrentAnimalFarm()" class="btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+          <button id="animalModalUpgradeBtn" onclick="upgradeCurrentAnimalFarm()" class="btn-3d-yellow py-3 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-yellow-200">
             <span class="flex items-center gap-1 uppercase tracking-wide">
               <span>&#9889;</span> UPGRADE
             </span>
-            <span id="animalModalUpgradeCost" class="text-[9px] font-extrabold text-amber-900 mt-0.5">
+            <span id="animalModalUpgradeCost" class="text-[9.5px] font-extrabold text-amber-950 mt-0.5">
               Lv. 4 (250 &#127806;)
             </span>
           </button>
 
           <!-- Farm / Collect Button Container -->
           <div id="animalModalActionContainer" class="w-full flex items-center justify-center">
-            <button id="animalModalFarmBtn" onclick="startCurrentAnimalFarm()" class="btn-3d-green w-full py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform">
+            <button id="animalModalFarmBtn" onclick="startCurrentAnimalFarm()" class="btn-3d-green w-full py-3 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300">
               <span class="flex items-center gap-1 uppercase tracking-wide">
                 <span>&#127806;</span> FARM
               </span>
-              <span id="animalModalYieldText" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
+              <span id="animalModalYieldText" class="text-[9.5px] font-extrabold text-lime-100 mt-0.5">
                 +45 Farm Points
               </span>
             </button>
@@ -1640,7 +1713,6 @@
 
       </div>
     </div>
-
     <!-- ==================== BATTLE PREPARATION MODAL ==================== -->
     <div id="battlePrepModal" onclick="if(event.target === this) closeModal('battlePrepModal')" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 text-center max-w-xs w-full text-white shadow-2xl relative border-amber-600">
@@ -3850,11 +3922,33 @@
       const nameEl = document.getElementById('animalModalName');
       const lvlEl = document.getElementById('animalModalLevel');
       const imgEl = document.getElementById('animalModalImg');
+      const vidEl = document.getElementById('animalModalVideo');
+      const vidSrc = document.getElementById('animalModalVideoSource');
+      const imgWrap = document.getElementById('animalModalImgWrapper');
 
       if (iconEl) iconEl.innerText = emoji;
       if (nameEl) nameEl.innerText = name;
       if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
       if (imgEl) imgEl.src = 'assets/farms/' + key + '.png';
+
+      if (vidEl && vidSrc) {
+        const testVideoPath = 'assets/farms/' + key + '.mp4';
+        fetch(testVideoPath, { method: 'HEAD' }).then(res => {
+          if (res.ok) {
+            vidSrc.src = testVideoPath;
+            vidEl.load();
+            vidEl.style.display = 'block';
+            vidEl.play().catch(()=>{});
+            if (imgWrap) imgWrap.style.display = 'none';
+          } else {
+            vidEl.style.display = 'none';
+            if (imgWrap) imgWrap.style.display = 'flex';
+          }
+        }).catch(() => {
+          vidEl.style.display = 'none';
+          if (imgWrap) imgWrap.style.display = 'flex';
+        });
+      }
 
       updateAnimalModalUI(key);
 
@@ -3866,6 +3960,10 @@
 
     function closeAnimalFarmModal() {
       currentModalAnimalKey = null;
+      const vidEl = document.getElementById('animalModalVideo');
+      if (vidEl) {
+        try { vidEl.pause(); } catch(e){}
+      }
       const modal = document.getElementById('animalFarmModal');
       if (modal) {
         modal.classList.add('hidden');
@@ -7385,6 +7483,13 @@ function exitRunSprintGame() {
 }
 
 
+window.addEventListener('load', () => {
+  if (location.hash === '#previewAnimalModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewMainModal') {
+    setTimeout(() => openMainFarmModal(), 400);
+  }
+});
 </script>
 </body>
 </html>
