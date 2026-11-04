@@ -3229,6 +3229,10 @@
     }
 
     function upgradeFarm(key) {
+      if (!ActionLock.run('upgrade_' + key, 400, () => _doUpgradeFarm(key))) return;
+    }
+
+    function _doUpgradeFarm(key) {
       playSound('click');
       if (!isFarmUnlocked(key)) {
         if (key === 'dog') {
@@ -3944,6 +3948,7 @@
           vidEl.play().catch(()=>{});
           if (imgWrap) imgWrap.style.display = 'none';
         } else {
+          try { vidEl.pause(); } catch(e){}
           vidEl.style.display = 'none';
           if (imgWrap) imgWrap.style.display = 'flex';
         }
@@ -4660,6 +4665,14 @@
 
       window.scrollTo(0, 0);
       if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Video battery saver: pause background map video when leaving home tab, resume on return
+      const mapVideo = document.getElementById('crazyFarmMapVideo');
+      if (tab === 'home' || !tab) {
+        if (mapVideo && mapVideo.paused) { try { mapVideo.play().catch(()=>{}); } catch(e){} }
+      } else {
+        if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
+      }
     }
 
     // ==================== TASKS & DAILY CHECK-IN LOGIC ====================
@@ -7481,6 +7494,25 @@ function exitRunSprintGame() {
   if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
 }
 
+// Power & Performance Guard: Pause heavy video playback when game/tab is hidden, auto-save state
+document.addEventListener('visibilitychange', () => {
+  const mapVideo = document.getElementById('crazyFarmMapVideo');
+  const animalVid = document.getElementById('animalModalVideo');
+  if (document.hidden) {
+    if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
+    if (animalVid && !animalVid.paused) { try { animalVid.pause(); } catch(e){} }
+    try { saveProgressToCloud(); } catch(e){} 
+  } else {
+    const homeView = document.getElementById('homeView');
+    if (homeView && homeView.style.display !== 'none' && mapVideo && mapVideo.paused) {
+      try { mapVideo.play().catch(()=>{}); } catch(e){} 
+    }
+    const animalModal = document.getElementById('animalFarmModal');
+    if (animalModal && animalModal.style.display !== 'none' && animalVid && animalVid.paused && animalVid.style.display !== 'none') {
+      try { animalVid.play().catch(()=>{}); } catch(e){} 
+    }
+  }
+});
 
 window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
