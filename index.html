@@ -4,73 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
-  <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup & In-App -->
-  <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
-  <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
-  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup and In-App -->
+  <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
+  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127"></script>
   <!-- TADS Official Telegram Ads Monetization SDK (Crypto / TON) -->
-  <script src="https://w.tads.me/widget.js" async>window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
+  <script src="https://w.tads.me/widget.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TonConnect UI Official SDK for Telegram Mini Apps -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js">window.addEventListener('load', () => {
-  if (location.hash === '#previewAnimalModal') {
-    setTimeout(() => openAnimalFarmModal('duck'), 400);
-  } else if (location.hash === '#previewMainModal') {
-    setTimeout(() => openMainFarmModal(), 400);
-  }
-});
-</script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
@@ -3936,7 +3880,11 @@
       if (imgEl) imgEl.src = 'assets/farms/' + key + '.png';
 
       const AVAILABLE_ANIMAL_VIDEOS = {
-        duck: 'assets/farms/duck.mp4'
+        duck: 'assets/farms/duck.mp4',
+        cows: 'assets/farms/cows.mp4',
+        cow: 'assets/farms/cows.mp4',
+        horse: 'assets/farms/horse.mp4',
+        horses: 'assets/farms/horse.mp4'
       };
 
       if (vidEl && vidSrc) {
@@ -7517,6 +7465,10 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('load', () => {
   if (location.hash === '#previewAnimalModal') {
     setTimeout(() => openAnimalFarmModal('duck'), 400);
+  } else if (location.hash === '#previewCowsModal') {
+    setTimeout(() => openAnimalFarmModal('cows'), 400);
+  } else if (location.hash === '#previewHorseModal') {
+    setTimeout(() => openAnimalFarmModal('horse'), 400);
   } else if (location.hash === '#previewMainModal') {
     setTimeout(() => openMainFarmModal(), 400);
   }
