@@ -3828,7 +3828,6 @@
     };
 
     function onAnimalCardClick(key) {
-      playSound('click');
       if (!isFarmUnlocked(key)) {
         if (key === 'dog') {
           showWalletToast('\u{1F451} VIP Dog is locked! Unlock with 3 TON first.');
@@ -3994,7 +3993,6 @@
     // Render Action Button State for Each Animal Farm in 4x2 Grid
     // ==================== MAIN FARM (RED BARN) MODAL LOGIC ====================
     function openMainFarmModal() {
-      playSound('click');
       updateMainFarmModalUI();
       const modal = document.getElementById('mainFarmModal');
       if (modal) {
@@ -4341,8 +4339,11 @@
 
     // VIP Dog Modal & Payment Handlers
     function openDogVipModal() {
-      playSound('click');
-      openModal('dogVipModal');
+      const el = document.getElementById('dogVipModal');
+      if (el) {
+        el.classList.remove('hidden');
+        el.style.display = 'flex';
+      }
     }
 
     function triggerVipFeature() {
