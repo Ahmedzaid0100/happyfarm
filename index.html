@@ -281,12 +281,13 @@
       <!-- ===== NEW HOME LANDING VIEW ===== -->
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
-      <div id="homeView" class="-mx-3 -mt-3 relative w-[calc(100%+1.5rem)] overflow-hidden select-none pb-20">
+      <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
+      <div id="homeView" class="-mx-3 -mt-3 -mb-24 relative w-[calc(100%+1.5rem)] overflow-hidden select-none pb-0">
         
-        <div id="cyberHomeContainer" class="relative w-full overflow-hidden shadow-2xl" style="aspect-ratio: 571 / 1024;">
+        <div id="cyberHomeContainer" class="relative w-full overflow-hidden shadow-2xl" style="height: calc(100vh - 60px); height: calc(100dvh - 60px); min-height: 560px;">
           
-          <!-- High-Res Crazy Farm Master Artwork (Full Page Length Edge-to-Edge) -->
-          <img src="assets/cyber_home.jpg" alt="Crazy Farm" class="w-full h-full object-cover select-none pointer-events-none" />
+          <!-- High-Res Crazy Farm Master Artwork (Full Height to Nav Bar - Zero Gap) -->
+          <img src="assets/cyber_home.jpg" alt="Crazy Farm" class="w-full h-full object-fill select-none pointer-events-none" />
 
           <!-- ==================== DYNAMIC LIVE OVERLAYS ==================== -->
           <!-- 1. Player Info Top-Left -->
@@ -305,8 +306,8 @@
           </div>
 
           <!-- 3. Mining Rate Center Badge -->
-          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 28%; top: 32.5%; width: 44%; height: 4.2%;">
-            <span id="cyberMiningSpeed" class="text-xs font-black text-lime-300 tracking-wide drop-shadow animate-pulse">+24/d CFT</span>
+          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 35%; top: 31.8%; width: 30%; height: 3.8%;">
+            <span id="cyberMiningSpeed" class="text-[11px] font-black text-lime-300 tracking-wide drop-shadow">+24/d CFT</span>
           </div>
 
           <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
@@ -339,6 +340,7 @@
         </div> <!-- /#cyberHomeContainer -->
 
       </div>
+      <!-- ===== /CYBER FARM MASTER HOME VIEW ===== -->
       <!-- ===== /CYBER FARM MASTER HOME VIEW ===== -->
       <!-- 1. FARMS VIEW (Main 3x3 Farm Grid) -->
       <div id="farmsView" class="space-y-3" style="display:none;">
