@@ -1,14 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial, Rewarded Popup and In-App -->
+  <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial and Rewarded Popup (User-Action Only) -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
   <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
-  <script src="https://libtl.com/sdk.js" data-zone="12182127" data-sdk="show_12182127"></script>
   <!-- TADS Official Telegram Ads Monetization SDK (Crypto / TON) -->
   <script src="https://w.tads.me/widget.js" async></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -279,8 +278,63 @@
     <!-- MAIN SCROLLABLE CONTENT -->
     <div class="relative z-10 w-full px-3 pt-3 space-y-3">
 
-      <!-- 1. HOME VIEW (Main 3x3 Farm Grid) -->
-      <div id="homeView" class="space-y-3">
+      <!-- ===== NEW HOME LANDING VIEW ===== -->
+      <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
+      <div id="homeView" class="relative w-full overflow-hidden select-none pb-20">
+        
+        <div id="cyberHomeContainer" class="relative w-full rounded-3xl overflow-hidden shadow-2xl border-2 border-cyan-500/40" style="aspect-ratio: 571 / 1024;">
+          
+          <!-- High-Res Cyber Farm Master Artwork -->
+          <img src="assets/cyber_home.jpg" alt="Cyber Farm" class="w-full h-full object-cover select-none pointer-events-none" />
+
+          <!-- ==================== DYNAMIC LIVE OVERLAYS ==================== -->
+          <!-- 1. Player Info Top-Left (Overlaid on Name & Level) -->
+          <div onclick="switchTab('profile')" class="absolute cursor-pointer flex flex-col justify-center pl-2 select-none active:scale-95 transition-transform" style="left: 2%; top: 1.2%; width: 24%; height: 5.5%;" title="Open Profile">
+            <span id="cyberPlayerName" class="text-[10px] font-black text-cyan-200 truncate leading-tight drop-shadow">Farmer</span>
+            <span class="text-[8px] font-bold text-amber-300 leading-tight">Lv.<span id="cyberUserLevel">1</span></span>
+          </div>
+
+          <!-- 2. Wallet Pill Top-Right (Overlaid on CFT Wallet Pill) -->
+          <div onclick="switchTab('wallet')" class="absolute cursor-pointer flex items-center justify-end pr-2 select-none active:scale-95 transition-transform" style="left: 74%; top: 1.2%; width: 24%; height: 5.5%;" title="View Wallet">
+            <span id="cyberWalletShort" class="text-[9px] font-black text-cyan-300 truncate tracking-tight">Connect</span>
+          </div>
+
+          <!-- 3. Mining Rate Center Badge -->
+          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 30%; top: 30.5%; width: 40%; height: 4.2%;">
+            <span id="cyberMiningSpeed" class="text-xs font-black text-lime-300 tracking-wide drop-shadow animate-pulse">+24/d CFT</span>
+          </div>
+
+          <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
+          <!-- 4. Battles Hotspot (Left Swords Ring) -->
+          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2%; top: 25.5%; width: 22%; height: 11%;" title="Farm Battles"></div>
+
+          <!-- 5. Daily Login Hotspot (Left Gift Box Ring) -->
+          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2%; top: 38.5%; width: 24%; height: 13%;" title="Daily Check-In"></div>
+
+          <!-- 6. Lucky Spin Hotspot (Right Roulette Ring) -->
+          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77%; top: 25.5%; width: 22%; height: 11%;" title="Lucky Spin Crazy Box"></div>
+
+          <!-- 7. Run Hotspot (Right Cyber Runner Character Ring) -->
+          <div onclick="openBattlePrep('run')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77%; top: 37%; width: 22%; height: 11%;" title="Farm Run Sprint"></div>
+
+          <!-- 8. Giant Center CFT Coin - Interactive Tap-to-Mine with Haptic Feedback & Floating Points! -->
+          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 26%; top: 38%; width: 48%; height: 26%;" title="Tap to Mine CFT!">
+            <!-- Visual click ripple indicator -->
+            <div class="w-full h-full rounded-full border border-yellow-400/20 hover:border-yellow-400/60 transition-colors"></div>
+          </div>
+
+          <!-- 9. Upgrade Button (Bottom Left) -->
+          <div onclick="switchTab('farms')" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 82.5%; width: 32%; height: 6.8%;" title="Upgrade Animals & Farms"></div>
+
+          <!-- 10. Claim Button (Bottom Right) -->
+          <div onclick="onCyberHomeClaim()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 82.5%; width: 32%; height: 6.8%;" title="Claim Farm Earnings"></div>
+
+        </div> <!-- /#cyberHomeContainer -->
+
+      </div>
+      <!-- ===== /CYBER FARM MASTER HOME VIEW ===== -->
+      <!-- 1. FARMS VIEW (Main 3x3 Farm Grid) -->
+      <div id="farmsView" class="space-y-3" style="display:none;">
 
         <!-- TOP BAR: Profile, Logo, VIP Badge -->
         <!-- TOP BAR: Profile & Level (Left), Centered Logo "Crazy Farm" (Center), VIP Badge (Right) -->
@@ -355,49 +409,49 @@
 
           <!-- 2. Cows - Enclosure Hotspot + Under Sign Badge -->
           <div id="hotspot-cows" onclick="onAnimalCardClick('cows')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 25%; width: 44%; height: 16%;" title="Cows Farm"></div>
-          <div id="mapBadge-cows" onclick="onAnimalCardClick('cows')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 15.5%; top: 38%; transform: translateX(-50%);">
+          <div id="mapBadge-cows" onclick="onAnimalCardClick('cows')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 19.2%; top: 38%; transform: translateX(-50%);">
             <span id="mapLock-cows">&#128274;</span> <span id="mapStatus-cows">Lv.7</span>
           </div>
 
           <!-- 3. Horses - Enclosure Hotspot + Under Sign Badge -->
           <div id="hotspot-horse" onclick="onAnimalCardClick('horse')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 66%; top: 25%; width: 32%; height: 16%;" title="Horses Farm"></div>
-          <div id="mapBadge-horse" onclick="onAnimalCardClick('horse')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 88%; top: 38%; transform: translateX(-50%);">
+          <div id="mapBadge-horse" onclick="onAnimalCardClick('horse')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 90%; top: 38%; transform: translateX(-50%);">
             <span id="mapLock-horse">&#128274;</span> <span id="mapStatus-horse">Lv.12</span>
           </div>
 
           <!-- 4. Chickens - Coop Hotspot + Under Sign Badge -->
           <div id="hotspot-chicken" onclick="onAnimalCardClick('chicken')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 24%; top: 33%; width: 42%; height: 16%;" title="Chicken Coop"></div>
-          <div id="mapBadge-chicken" onclick="onAnimalCardClick('chicken')" class="absolute bg-emerald-700/85 backdrop-blur-sm text-emerald-100 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-emerald-400/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 57%; top: 41.5%; transform: translateX(-50%);">
+          <div id="mapBadge-chicken" onclick="onAnimalCardClick('chicken')" class="absolute bg-emerald-700/85 backdrop-blur-sm text-emerald-100 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-emerald-400/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 54.7%; top: 41.5%; transform: translateX(-50%);">
             <span id="mapLock-chicken">&#127806;</span> <span id="mapStatus-chicken">Farm</span>
           </div>
 
           <!-- 5. Ducks - Pond Hotspot + Under Sign Badge -->
           <div id="hotspot-duck" onclick="onAnimalCardClick('duck')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 45%; top: 41%; width: 50%; height: 15%;" title="Ducks Pond"></div>
-          <div id="mapBadge-duck" onclick="onAnimalCardClick('duck')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 63.5%; top: 53.5%; transform: translateX(-50%);">
+          <div id="mapBadge-duck" onclick="onAnimalCardClick('duck')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 68.9%; top: 54%; transform: translateX(-50%);">
             <span id="mapLock-duck">&#128274;</span> <span id="mapStatus-duck">Lv.2</span>
           </div>
 
           <!-- 6. Pigs - Mud Pen Hotspot + Under Sign Badge -->
           <div id="hotspot-pig" onclick="onAnimalCardClick('pig')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 46%; width: 44%; height: 18%;" title="Pigs Pen"></div>
-          <div id="mapBadge-pig" onclick="onAnimalCardClick('pig')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 26%; top: 61.5%; transform: translateX(-50%);">
+          <div id="mapBadge-pig" onclick="onAnimalCardClick('pig')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 32%; top: 62.2%; transform: translateX(-50%);">
             <span id="mapLock-pig">&#128274;</span> <span id="mapStatus-pig">Lv.9</span>
           </div>
 
           <!-- 7. Sheep - Meadow Hotspot + Under Sign Badge -->
           <div id="hotspot-sheep" onclick="onAnimalCardClick('sheep')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 65%; top: 46%; width: 33%; height: 17%;" title="Sheep Meadow"></div>
-          <div id="mapBadge-sheep" onclick="onAnimalCardClick('sheep')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 80%; top: 60.5%; transform: translateX(-50%);">
+          <div id="mapBadge-sheep" onclick="onAnimalCardClick('sheep')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 84.4%; top: 61.5%; transform: translateX(-50%);">
             <span id="mapLock-sheep">&#128274;</span> <span id="mapStatus-sheep">Lv.5</span>
           </div>
 
           <!-- 8. Rabbits (Bunnies) - Burrow Hotspot + Under Sign Badge -->
           <div id="hotspot-bunny" onclick="onAnimalCardClick('bunny')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 65%; width: 35%; height: 26%;" title="Rabbits Burrow"></div>
-          <div id="mapBadge-bunny" onclick="onAnimalCardClick('bunny')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 17.5%; top: 88.5%; transform: translateX(-50%);">
+          <div id="mapBadge-bunny" onclick="onAnimalCardClick('bunny')" class="absolute bg-black/85 backdrop-blur-sm text-yellow-300 font-black text-[8px] px-1.5 py-0.5 rounded-full border border-amber-500/80 shadow-md flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 21.2%; top: 91.5%; transform: translateX(-50%);">
             <span id="mapLock-bunny">&#128274;</span> <span id="mapStatus-bunny">Lv.3</span>
           </div>
 
           <!-- 9. Dogs - Guard Pen Hotspot + Under Sign Badge (VIP 3 TON) -->
           <div id="hotspot-dog" onclick="onAnimalCardClick('dog')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 68%; top: 68%; width: 30%; height: 23%;" title="Guard Dogs (VIP)"></div>
-          <div id="mapBadge-dog" onclick="onAnimalCardClick('dog')" class="absolute bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 85%; top: 88.5%; transform: translateX(-50%);">
+          <div id="mapBadge-dog" onclick="onAnimalCardClick('dog')" class="absolute bg-gradient-to-r from-yellow-400 to-amber-500 text-amber-950 font-black text-[8px] px-2 py-0.5 rounded-full border border-white shadow-lg flex items-center gap-0.5 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 86.5%; top: 91.5%; transform: translateX(-50%);">
             <span id="mapLock-dog">&#128081;</span> <span id="mapStatus-dog">VIP</span>
           </div>
 
@@ -1191,10 +1245,7 @@
 
         </div>
 
-      </div> <!-- /tasksView -->
 
-      <!-- ==================== 5. OTHERS VIEW ==================== -->
-      <div id="othersView" style="display: none;" class="space-y-3.5 pb-12">
 
         <!-- Top Title Banner: Arena -->
         <div class="flex justify-center pt-1">
@@ -1374,46 +1425,45 @@
         </div>
 
 
-
-      </div> <!-- /othersView -->
+      </div> <!-- /tasksView -->
 
     </div> <!-- /MAIN SCROLLABLE CONTENT -->
 
     <!-- BOTTOM WOODEN FENCE NAVIGATION BAR (Fixed at bottom) -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto wood-nav z-40 px-2 py-2 flex items-center justify-around text-amber-100">
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto wood-nav z-40 px-1 py-2 flex items-center justify-around text-amber-100">
       
-      <!-- 1. Profile -->
-      <button id="navProfileBtn" onclick="switchTab('profile')" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-2xl hover:bg-white/10 active:scale-95 transition-all">
-        <span id="navAvatarDisplay" class="text-2xl filter drop-shadow">👨‍🌾</span>
-        <span id="navProfileText" class="text-[10px] font-bold text-amber-200">Profile</span>
+      <!-- 1. Home -->
+      <button id="navNewHomeBtn" onclick="switchTab('home')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
+        <span class="text-xl filter drop-shadow">&#127968;</span>
+        <span class="text-[9px] font-bold text-amber-200">Home</span>
       </button>
 
       <!-- 2. Tasks -->
       <button id="navTasksBtn" onclick="switchTab('tasks')" class="relative flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
         <span class="absolute top-0 right-3 w-4 h-4 bg-red-600 border border-white text-white rounded-full text-[9px] font-extrabold flex items-center justify-center animate-ping"></span>
         <span class="absolute top-0 right-3 w-4 h-4 bg-red-600 border border-white text-white rounded-full text-[9px] font-extrabold flex items-center justify-center">!</span>
-        <span class="text-2xl filter drop-shadow">📋</span>
+        <span class="text-xl filter drop-shadow">&#128203;</span>
         <span class="text-[10px] font-bold text-amber-200">Tasks</span>
       </button>
 
-      <!-- 3. Home Farm (Center Raised) -->
-      <button id="navHomeBtn" onclick="switchTab('home')" class="flex flex-col items-center relative -top-3 active:scale-95 transition-transform">
-        <div id="navHomeIconBox" class="w-14 h-14 rounded-2xl bg-gradient-to-t from-red-600 via-rose-500 to-red-400 border-4 border-amber-300 shadow-xl flex items-center justify-center text-3xl active-nav-glow">
-          🏠
+      <!-- 3. Farms (Center Raised Button) -->
+      <button id="navHomeBtn" onclick="switchTab('farms')" class="flex flex-col items-center relative -top-3 active:scale-95 transition-transform">
+        <div id="navHomeIconBox" class="w-11 h-11 rounded-2xl bg-gradient-to-t from-red-600 via-rose-500 to-red-400 border-4 border-amber-300 shadow-xl flex items-center justify-center text-2xl active-nav-glow">
+          &#127969;
         </div>
-        <span id="navHomeText" class="text-[11px] font-black text-amber-100 tracking-wide mt-1">Home Farm</span>
+        <span id="navHomeText" class="text-[11px] font-black text-amber-100 tracking-wide mt-1">Farms</span>
       </button>
 
-      <!-- 4. Arena (PvP & Rewards) -->
-      <button id="navOthersBtn" onclick="switchTab('arena')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
-        <span class="text-2xl filter drop-shadow text-yellow-300">&#9876;</span>
-        <span class="text-[9px] font-bold text-amber-200 uppercase tracking-wide">Arena</span>
-      </button>
-
-      <!-- 5. Wallet (TON Connect) -->
+      <!-- 4. Wallet -->
       <button id="navWalletBtn" onclick="switchTab('wallet')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
-        <span class="text-2xl filter drop-shadow">&#128091;</span>
+        <span class="text-xl filter drop-shadow">&#128091;</span>
         <span class="text-[10px] font-bold text-amber-200">Wallet</span>
+      </button>
+
+      <!-- 5. Profile -->
+      <button id="navProfileBtn" onclick="switchTab('profile')" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-2xl hover:bg-white/10 active:scale-95 transition-all">
+        <span id="navAvatarDisplay" class="text-xl filter drop-shadow">&#128104;&#8205;&#127806;</span>
+        <span id="navProfileText" class="text-[10px] font-bold text-amber-200">Profile</span>
       </button>
 
     </nav>
@@ -3223,12 +3273,83 @@
     }
 
     // Update Displays with Exact User Math
+        // ==================== CYBER HOME TAP-TO-MINE INTERACTIVITY ====================
+    function onCyberCoinTap(event) {
+      playSound('coin');
+      points += 1;
+      updateDisplays();
+
+      // Telegram Haptic
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('medium'); } catch(e){}
+      }
+
+      // Floating text effect
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX || (rect.left + rect.width / 2);
+      const y = event.clientY || (rect.top + rect.height / 2);
+
+      const floater = document.createElement('div');
+      floater.style.position = 'fixed';
+      floater.style.pointerEvents = 'none';
+      floater.style.color = '#fde047';
+      floater.style.fontWeight = '900';
+      floater.style.fontSize = '14px';
+      floater.style.zIndex = '9999';
+      floater.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
+      floater.style.left = (x - 15) + 'px';
+      floater.style.top = (y - 20) + 'px';
+      floater.style.transition = 'all 0.6s ease-out';
+      floater.innerText = '+1 CFT';
+      document.body.appendChild(floater);
+
+      requestAnimationFrame(() => {
+        floater.style.transform = 'translateY(-35px) scale(1.2)';
+        floater.style.opacity = '0';
+      });
+
+      setTimeout(() => floater.remove(), 650);
+
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+    }
+
+    function onCyberHomeClaim() {
+      playSound('fanfare');
+      if (typeof collectBeeMined === 'function' && typeof beeMinedPoints !== 'undefined' && beeMinedPoints >= 1) {
+        collectBeeMined();
+      } else {
+        points += 10;
+        updateDisplays();
+        showWalletToast('\u{1F389} Claimed +10 CFT Daily Mining Boost!');
+        if (typeof queueCloudSave === 'function') queueCloudSave();
+      }
+    }
+
     function updateDisplays() {
       renderAllAdFarms();
       const dailyBeeRate = userLevel * 24;
       const hourlyBeeRate = userLevel;
 
-      document.getElementById('farmPointsDisplay').innerText = points.toLocaleString();
+            document.getElementById('farmPointsDisplay').innerText = points.toLocaleString();
+
+      // Cyber Home Dynamic Elements
+      const cyberName = document.getElementById('cyberPlayerName');
+      if (cyberName) cyberName.innerText = playerName || 'Farmer';
+      const cyberLvl = document.getElementById('cyberUserLevel');
+      if (cyberLvl) cyberLvl.innerText = userLevel;
+      const cyberWlt = document.getElementById('cyberWalletShort');
+      if (cyberWlt) {
+        if (connectedWalletAddress) {
+          cyberWlt.innerText = connectedWalletAddress.slice(0, 4) + '...' + connectedWalletAddress.slice(-4);
+        } else {
+          cyberWlt.innerText = 'Connect';
+        }
+      }
+      const cyberSpeed = document.getElementById('cyberMiningSpeed');
+      if (cyberSpeed) {
+        const rate = (userLevel * 24).toLocaleString();
+        cyberSpeed.innerText = '+' + rate + '/d CFT';
+      }
       document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/d (Lv. ${userLevel})`;
       document.getElementById('walletFarmBalance').innerText = `${points.toLocaleString()} FARM Points`;
       document.getElementById('userLevelDisplay').innerText = userLevel;
@@ -4581,72 +4702,59 @@
       if (pAv) pAv.innerText = emoji;
     }
 
-    // Tab Navigation (Home Farm <-> Profile <-> Wallet <-> Tasks <-> Others inside the same page seamlessly)
+    // Tab Navigation: Home | Farms | Profile | Wallet | Tasks | Arena
     function switchTab(tab) {
       playSound('click');
-      const homeView = document.getElementById('homeView');
+      const homeView    = document.getElementById('homeView');
+      const farmsView   = document.getElementById('farmsView');
       const profileView = document.getElementById('profileView');
-      const walletView = document.getElementById('walletView');
-      const tasksView = document.getElementById('tasksView');
-      const othersView = document.getElementById('othersView');
+      const walletView  = document.getElementById('walletView');
+      const tasksView   = document.getElementById('tasksView');
+      // othersView removed - content merged into tasksView
+      const navNewHomeBtn = document.getElementById('navNewHomeBtn');
       const navProfileBtn = document.getElementById('navProfileBtn');
-      const navWalletBtn = document.getElementById('navWalletBtn');
-      const navTasksBtn = document.getElementById('navTasksBtn');
-      const navOthersBtn = document.getElementById('navOthersBtn');
+      const navWalletBtn  = document.getElementById('navWalletBtn');
+      const navTasksBtn   = document.getElementById('navTasksBtn');
+      // navOthersBtn removed
       const navHomeIconBox = document.getElementById('navHomeIconBox');
       const container = document.getElementById('mainAppContainer');
 
-      // Hide all views
-      if (homeView) homeView.style.display = 'none';
+      // Hide ALL views
+      if (homeView)    homeView.style.display    = 'none';
+      if (farmsView)   farmsView.style.display   = 'none';
       if (profileView) profileView.style.display = 'none';
-      if (walletView) walletView.style.display = 'none';
-      if (tasksView) tasksView.style.display = 'none';
-      if (othersView) othersView.style.display = 'none';
+      if (walletView)  walletView.style.display  = 'none';
+      if (tasksView)   tasksView.style.display   = 'none';
+      // othersView hide removed
 
       // Remove all active states
+      if (navNewHomeBtn) navNewHomeBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
       if (navProfileBtn) navProfileBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
-      if (navWalletBtn) navWalletBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
-      if (navTasksBtn) navTasksBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
-      if (navOthersBtn) navOthersBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
+      if (navWalletBtn)  navWalletBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
+      if (navTasksBtn)   navTasksBtn.classList.remove('bg-white/25', 'text-yellow-300', 'scale-105');
 
-      if (tab === 'profile') {
+      if (navHomeIconBox) { navHomeIconBox.classList.remove('active-nav-glow'); navHomeIconBox.classList.add('opacity-75'); }
+
+      if (tab === 'farms') {
+        if (farmsView) farmsView.style.display = 'block';
+        if (navHomeIconBox) { navHomeIconBox.classList.add('active-nav-glow'); navHomeIconBox.classList.remove('opacity-75'); }
+      } else if (tab === 'profile') {
         profileView.style.display = 'block';
-        navProfileBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
-        if (navHomeIconBox) {
-          navHomeIconBox.classList.remove('active-nav-glow');
-          navHomeIconBox.classList.add('opacity-75');
-        }
+        if (navProfileBtn) navProfileBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
       } else if (tab === 'wallet') {
         walletView.style.display = 'block';
         if (navWalletBtn) navWalletBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
-        if (navHomeIconBox) {
-          navHomeIconBox.classList.remove('active-nav-glow');
-          navHomeIconBox.classList.add('opacity-75');
-        }
         syncWalletView();
-      initTonConnect();
+        initTonConnect();
       } else if (tab === 'tasks') {
         tasksView.style.display = 'block';
         if (navTasksBtn) navTasksBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
-        if (navHomeIconBox) {
-          navHomeIconBox.classList.remove('active-nav-glow');
-          navHomeIconBox.classList.add('opacity-75');
-        }
         syncTasksView();
-      } else if (tab === 'others' || tab === 'arena') {
-        othersView.style.display = 'block';
-        if (navOthersBtn) navOthersBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
-        if (navHomeIconBox) {
-          navHomeIconBox.classList.remove('active-nav-glow');
-          navHomeIconBox.classList.add('opacity-75');
-        }
-        syncOthersView();
+
       } else {
-        homeView.style.display = 'block';
-        if (navHomeIconBox) {
-          navHomeIconBox.classList.add('active-nav-glow');
-          navHomeIconBox.classList.remove('opacity-75');
-        }
+        // Default / tab==='home': Home landing page
+        if (homeView) homeView.style.display = 'block';
+        if (navNewHomeBtn) navNewHomeBtn.classList.add('bg-white/25', 'text-yellow-300', 'scale-105');
       }
 
       // Smoothly scroll back to the very top
@@ -4656,7 +4764,7 @@
 
       // Video battery saver: pause background map video when leaving home tab, resume on return
       const mapVideo = document.getElementById('crazyFarmMapVideo');
-      if (tab === 'home' || !tab) {
+      if (tab === 'farms') {
         if (mapVideo && mapVideo.paused) { try { mapVideo.play().catch(()=>{}); } catch(e){} }
       } else {
         if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
@@ -4664,9 +4772,71 @@
     }
 
     // ==================== TASKS & DAILY CHECK-IN LOGIC ====================
-    let checkInStreak = Number(localStorage.getItem('crazyfarm_checkin_streak')) || 1; // Day 1 to 10
-    let hasCheckedInToday = localStorage.getItem('crazyfarm_last_checkin_date') === new Date().toDateString();
+    let checkInStreak = 1; // Day 1 to 10
+    let hasCheckedInToday = false;
     const checkInRewards = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+    // Accurate Calendar-Day difference calculator (time-zone resilient)
+    function getDailyCheckInDiffDays() {
+      const lastDateStr = localStorage.getItem('crazyfarm_last_checkin_date');
+      if (!lastDateStr) return null;
+      const lastDate = new Date(lastDateStr);
+      if (isNaN(lastDate.getTime())) return null;
+
+      const now = new Date();
+      const dNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const dLast = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+      const diffMs = dNow.getTime() - dLast.getTime();
+      return Math.round(diffMs / (1000 * 60 * 60 * 24));
+    }
+
+    // Dynamic Streak & Day Evaluator
+    function refreshDailyCheckInState() {
+      const diff = getDailyCheckInDiffDays();
+      let storedStreak = parseInt(localStorage.getItem('crazyfarm_checkin_streak'), 10) || 1;
+      if (storedStreak < 1 || storedStreak > 10) storedStreak = 1;
+
+      if (diff === null) {
+        // Brand new player, never checked in before
+        checkInStreak = 1;
+        hasCheckedInToday = false;
+      } else if (diff === 0) {
+        // Already claimed today
+        checkInStreak = storedStreak;
+        hasCheckedInToday = true;
+      } else if (diff === 1) {
+        // Consecutive next calendar day! Advance to next day in streak
+        hasCheckedInToday = false;
+        checkInStreak = (storedStreak >= 10) ? 1 : (storedStreak + 1);
+        try { localStorage.setItem('crazyfarm_checkin_streak', checkInStreak); } catch(e){}
+      } else {
+        // Missed one or more days -> Reset streak back to Day 1
+        hasCheckedInToday = false;
+        checkInStreak = 1;
+        try { localStorage.setItem('crazyfarm_checkin_streak', 1); } catch(e){}
+      }
+    }
+
+    // Developer / User Test Helpers for Check-in Streak
+    window.simNextCheckInDay = function() {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      localStorage.setItem('crazyfarm_last_checkin_date', yesterday.toDateString());
+      refreshDailyCheckInState();
+      syncTasksView();
+      showWalletToast('\u{1F9EA} Simulated next calendar day! Day ' + checkInStreak + ' is now ready to claim.');
+    };
+
+    window.simResetCheckIn = function() {
+      localStorage.removeItem('crazyfarm_last_checkin_date');
+      localStorage.setItem('crazyfarm_checkin_streak', 1);
+      refreshDailyCheckInState();
+      syncTasksView();
+      showWalletToast('\u{1F9EA} Reset check-in back to Day 1.');
+    };
+
+    // Initialize state on boot
+    refreshDailyCheckInState();
 
     const taskItems = {
       yt:       { name: 'Watch Crazy Farm YouTube', bonus: 100, state: 'idle' },
@@ -4784,6 +4954,8 @@
     }
 
     function syncTasksView() {
+      refreshDailyCheckInState();
+      try { if (typeof syncOthersView === 'function') syncOthersView(); } catch(e){}
       // 1. Update Streak text
       const streakEl = document.getElementById('currentCheckInDay');
       if (streakEl) streakEl.innerText = checkInStreak;
@@ -4861,10 +5033,15 @@
       updateAvailableTasksCounter();
     }
 
-    function claimDailyCheckIn() { if (!ActionLock.run("checkin", 1000, () => _doClaimDailyCheckIn())) return; } function _doClaimDailyCheckIn() {
+        function claimDailyCheckIn() { 
+      if (!ActionLock.run("checkin", 1000, () => _doClaimDailyCheckIn())) return; 
+    } 
+
+    function _doClaimDailyCheckIn() {
+      refreshDailyCheckInState();
       if (hasCheckedInToday) {
         playSound('click');
-        showWalletToast('⚠️ You already checked in today! Come back tomorrow.');
+        showWalletToast('\u26A0\uFE0F You already checked in today! Come back tomorrow.');
         return;
       }
       const reward = checkInRewards[checkInStreak - 1] || 10;
@@ -4872,17 +5049,16 @@
       playSound('coin');
       points += reward;
       hasCheckedInToday = true;
+
       try {
         localStorage.setItem('crazyfarm_last_checkin_date', new Date().toDateString());
         localStorage.setItem('crazyfarm_checkin_streak', checkInStreak);
-        if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+      } catch(e) {}
+
       updateDisplays();
       syncTasksView();
       if (typeof queueCloudSave === 'function') queueCloudSave();
-      showWalletToast(`🎉 Claimed Day ${checkInStreak} Daily Bonus: +${reward} Points!`);
+      showWalletToast('\u{1F389} Claimed Day ' + checkInStreak + ' Daily Bonus: +' + reward + ' Points!');
     }
 
     // Task Execution: Start -> Claim -> Claimed ✓
@@ -5489,33 +5665,8 @@
       }
     }
 
-    // Monetag Automatic In-App Interstitial Scheduler (Passive Monetization on Zone 12182127)
-    function initMonetagInAppAds() {
-      const inAppFn = window['show_' + MONETAG_ZONE_INAPP_INTERSTITIAL] || window.show_12182127 || window.show_12182125;
-      if (typeof inAppFn === 'function') {
-        try {
-          inAppFn({
-            type: 'inApp',
-            inAppSettings: {
-              frequency: 2,
-              capping: 0.1,
-              interval: 30,
-              timeout: 8,
-              everyPage: false
-            }
-          });
-          console.log('✅ Monetag In-App Interstitial schedule active on Zone 12182127');
-        } catch(e) {
-          console.warn('Monetag inApp schedule note:', e);
-        }
-      }
-    }
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        try { initMonetagInAppAds(); } catch(e){}
-      }, 5000);
-    });
+    // Automatic In-App interstitial disabled - Ads only show when player explicitly requests rewarded actions
+    function initMonetagInAppAds() {}
 
     // ==================== TADS OFFICIAL SDK (CRYPTO / TON ADS) ====================
     const TADS_WIDGET_ID = 13073; // CrazyFarm_Reward (FULLSCREEN_REWARDED)
@@ -5799,7 +5950,17 @@
             localStorage.setItem('crazyfarm_level', userLevel);
             localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
             localStorage.setItem('crazyfarm_invited_friends_count', invitedFriendsCount);
+            if (data.farms_data && data.farms_data.checkin_last_date) {
+              const cDate = data.farms_data.checkin_last_date;
+              const cStreak = Number(data.farms_data.checkin_streak) || 1;
+              const lDate = localStorage.getItem('crazyfarm_last_checkin_date');
+              if (!lDate || new Date(cDate) > new Date(lDate)) {
+                localStorage.setItem('crazyfarm_last_checkin_date', cDate);
+                localStorage.setItem('crazyfarm_checkin_streak', cStreak);
+              }
+            }
           } catch(e) {}
+          refreshDailyCheckInState();
 
           updateDisplays();
           syncWalletView();
@@ -5902,7 +6063,9 @@
           crazy_box_free: lastCrazyBoxFreeTimestamp,
           crazy_box_points: lastCrazyBoxPointsTimestamp,
           crazy_box_last: lastCrazyBoxFreeTimestamp,
-          pvp_cooldowns: pvpCooldowns
+          pvp_cooldowns: pvpCooldowns,
+          checkin_streak: checkInStreak,
+          checkin_last_date: localStorage.getItem('crazyfarm_last_checkin_date') || ''
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -7493,8 +7656,8 @@ document.addEventListener('visibilitychange', () => {
     if (mainVid && !mainVid.paused) { try { mainVid.pause(); } catch(e){} }
     try { saveProgressToCloud(); } catch(e){} 
   } else {
-    const homeView = document.getElementById('homeView');
-    if (homeView && homeView.style.display !== 'none' && mapVideo && mapVideo.paused) {
+    const farmsViewVis = document.getElementById('farmsView');
+    if (farmsViewVis && farmsViewVis.style.display !== 'none' && mapVideo && mapVideo.paused) {
       try { mapVideo.play().catch(()=>{}); } catch(e){} 
     }
     const animalModal = document.getElementById('animalFarmModal');
@@ -7522,6 +7685,5 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
 
 
