@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -280,53 +280,61 @@
 
       <!-- ===== NEW HOME LANDING VIEW ===== -->
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
-      <div id="homeView" class="relative w-full overflow-hidden select-none pb-20">
+      <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
+      <div id="homeView" class="-mx-3 -mt-3 relative w-[calc(100%+1.5rem)] overflow-hidden select-none pb-20">
         
-        <div id="cyberHomeContainer" class="relative w-full rounded-3xl overflow-hidden shadow-2xl border-2 border-cyan-500/40" style="aspect-ratio: 571 / 925;">
+        <div id="cyberHomeContainer" class="relative w-full overflow-hidden shadow-2xl" style="aspect-ratio: 571 / 1024;">
           
-          <!-- High-Res Cyber Farm Master Artwork (Clean Full Interface - No Bottom Duplicate Panel) -->
-          <img src="assets/cyber_home.jpg" alt="Cyber Farm" class="w-full h-full object-cover select-none pointer-events-none" />
+          <!-- High-Res Crazy Farm Master Artwork (Full Page Length Edge-to-Edge) -->
+          <img src="assets/cyber_home.jpg" alt="Crazy Farm" class="w-full h-full object-cover select-none pointer-events-none" />
 
           <!-- ==================== DYNAMIC LIVE OVERLAYS ==================== -->
-          <!-- 1. Player Info Top-Left (Overlaid on Name & Level) -->
-          <div onclick="switchTab('profile')" class="absolute cursor-pointer flex flex-col justify-center pl-2 select-none active:scale-95 transition-transform" style="left: 2%; top: 1.3%; width: 24%; height: 6.1%;" title="Open Profile">
-            <span id="cyberPlayerName" class="text-[10px] font-black text-cyan-200 truncate leading-tight drop-shadow">Farmer</span>
-            <span class="text-[8px] font-bold text-amber-300 leading-tight">Lv.<span id="cyberUserLevel">1</span></span>
+          <!-- 1. Player Info Top-Left -->
+          <div onclick="switchTab('profile')" class="absolute cursor-pointer flex items-center gap-1.5 bg-black/45 backdrop-blur-md border border-cyan-400/40 rounded-full px-2 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="left: 3%; top: 1.5%; max-width: 32%;" title="Open Profile">
+            <span class="text-xs">&#128104;&#8205;&#127806;</span>
+            <div class="flex flex-col leading-tight overflow-hidden text-left">
+              <span id="cyberPlayerName" class="text-[9.5px] font-black text-cyan-200 truncate drop-shadow">Farmer</span>
+              <span class="text-[8px] font-bold text-amber-300">Lv.<span id="cyberUserLevel">1</span></span>
+            </div>
           </div>
 
-          <!-- 2. Wallet Pill Top-Right (Overlaid on CFT Wallet Pill) -->
-          <div onclick="switchTab('wallet')" class="absolute cursor-pointer flex items-center justify-end pr-2 select-none active:scale-95 transition-transform" style="left: 74%; top: 1.3%; width: 24%; height: 6.1%;" title="View Wallet">
+          <!-- 2. Wallet Pill Top-Right -->
+          <div onclick="switchTab('wallet')" class="absolute cursor-pointer flex items-center gap-1 bg-black/45 backdrop-blur-md border border-cyan-400/40 rounded-full px-2.5 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="right: 3%; top: 1.5%; max-width: 35%;" title="View Wallet">
+            <span class="text-xs">&#128091;</span>
             <span id="cyberWalletShort" class="text-[9px] font-black text-cyan-300 truncate tracking-tight">Connect</span>
           </div>
 
           <!-- 3. Mining Rate Center Badge -->
-          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 30%; top: 33.7%; width: 40%; height: 4.5%;">
+          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 28%; top: 32.5%; width: 44%; height: 4.2%;">
             <span id="cyberMiningSpeed" class="text-xs font-black text-lime-300 tracking-wide drop-shadow animate-pulse">+24/d CFT</span>
           </div>
 
           <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
           <!-- 4. Battles Hotspot (Left Swords Ring) -->
-          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2%; top: 28%; width: 22%; height: 12%;" title="Farm Battles"></div>
+          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Farm Battles"></div>
 
           <!-- 5. Daily Login Hotspot (Left Gift Box Ring) -->
-          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2%; top: 42%; width: 24%; height: 14%;" title="Daily Check-In"></div>
+          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 37.8%; width: 17%; height: 9.5%;" title="Daily Check-In"></div>
 
           <!-- 6. Lucky Spin Hotspot (Right Roulette Ring) -->
-          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77%; top: 28%; width: 22%; height: 12%;" title="Lucky Spin Crazy Box"></div>
+          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Lucky Spin Crazy Box"></div>
 
           <!-- 7. Run Hotspot (Right Cyber Runner Character Ring) -->
-          <div onclick="openBattlePrep('run')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77%; top: 41%; width: 22%; height: 12%;" title="Farm Run Sprint"></div>
+          <div onclick="openBattlePrep('run')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 37.2%; width: 17%; height: 9.5%;" title="Farm Run Sprint"></div>
 
-          <!-- 8. Giant Center CFT Coin - Interactive Tap-to-Mine with Haptic Feedback & Floating Points! -->
-          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 26%; top: 42%; width: 48%; height: 28%;" title="Tap to Mine CFT!">
+          <!-- 8. Gift Box Hotspot (Right Gold Gift Box Ring) -->
+          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80%; top: 48.2%; width: 17%; height: 9.5%;" title="Mystery Gift Box"></div>
+
+          <!-- 9. Giant Center CFT Coin - Interactive Tap-to-Mine with Haptic Feedback & Floating Points! -->
+          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 28%; top: 39.5%; width: 44%; height: 23%;" title="Tap to Mine CFT!">
             <div class="w-full h-full rounded-full border border-yellow-400/20 hover:border-yellow-400/60 transition-colors"></div>
           </div>
 
-          <!-- 9. Upgrade Button (Bottom Left) -->
-          <div onclick="switchTab('farms')" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 91%; width: 32%; height: 7.5%;" title="Upgrade Animals & Farms"></div>
+          <!-- 10. Upgrade Button (Bottom Left) -->
+          <div onclick="switchTab('farms')" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 81%; width: 33%; height: 8.5%;" title="Upgrade Animals & Farms"></div>
 
-          <!-- 10. Claim Button (Bottom Right) -->
-          <div onclick="onCyberHomeClaim()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 91%; width: 32%; height: 7.5%;" title="Claim Farm Earnings"></div>
+          <!-- 11. Claim Button (Bottom Right) -->
+          <div onclick="onCyberHomeClaim()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 81%; width: 33%; height: 8.5%;" title="Claim Farm Earnings"></div>
 
         </div> <!-- /#cyberHomeContainer -->
 
