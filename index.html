@@ -913,6 +913,71 @@
           </div>
         </div>
 
+        <!-- BANNER 1: Crazy Farm Point Holding -->
+        <div class="bg-gradient-to-b from-[#2e1d08] via-[#201303] to-[#120a01] border-2 border-[#f59e0b] rounded-3xl p-4 shadow-xl text-white relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 flex items-center justify-center text-xl shadow border border-amber-300">🌾</div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-amber-200 tracking-wide drop-shadow">Crazy Farm Point Holding</h3>
+                <div class="text-[10px] text-amber-400/90 font-bold">Hold Points & Earn Daily CFT (Every 24h)</div>
+              </div>
+            </div>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-wider">Daily Dividends</span>
+          </div>
+
+          <!-- Current Status Banner -->
+          <div class="bg-black/50 border border-amber-600/40 rounded-2xl p-2.5 mb-3 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-amber-300/80 font-bold">Your Farm Points:</div>
+              <div id="pointHoldingCurrentDisplay" class="text-base font-black text-amber-200 drop-shadow">0 🌾</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[10px] text-amber-300/80 font-bold">Current Tier:</div>
+              <div id="pointHoldingTierBadge" class="text-xs font-black text-yellow-300">No Tier Active</div>
+            </div>
+          </div>
+
+          <!-- 3 Tiers Grid -->
+          <div class="grid grid-cols-3 gap-2 mb-3.5">
+            <!-- Tier 1 -->
+            <div id="pointTierCard1" class="bg-black/40 border border-amber-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-amber-300/80">Tier 1</div>
+              <div class="text-xs font-black text-white mt-0.5">1M 🌾</div>
+              <div class="mt-1.5 pt-1.5 border-t border-amber-800/40">
+                <span class="text-xs font-black text-emerald-300">+5</span>
+                <span class="text-[9px] font-bold text-emerald-400">CFT/d</span>
+              </div>
+            </div>
+            <!-- Tier 2 -->
+            <div id="pointTierCard2" class="bg-black/40 border border-amber-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-amber-300/80">Tier 2</div>
+              <div class="text-xs font-black text-white mt-0.5">3M 🌾</div>
+              <div class="mt-1.5 pt-1.5 border-t border-amber-800/40">
+                <span class="text-xs font-black text-emerald-300">+10</span>
+                <span class="text-[9px] font-bold text-emerald-400">CFT/d</span>
+              </div>
+            </div>
+            <!-- Tier 3 -->
+            <div id="pointTierCard3" class="bg-black/40 border border-amber-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-amber-300/80">Tier 3 👑</div>
+              <div class="text-xs font-black text-yellow-300 mt-0.5">5M 🌾</div>
+              <div class="mt-1.5 pt-1.5 border-t border-amber-800/40">
+                <span class="text-xs font-black text-yellow-300">+15</span>
+                <span class="text-[9px] font-bold text-yellow-400">CFT/d</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Claim Action Button -->
+          <button id="claimPointHoldingBtn" onclick="claimPointHoldingReward()" class="w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition-all btn-3d-yellow text-amber-950">
+            <span>🎁</span> Claim Daily CFT Reward
+          </button>
+        </div>
+
         <!-- CARD 3: CFT Balance -->
         <div class="bg-gradient-to-b from-[#0d3d1a] to-[#061a0b] border-2 border-[#2a8c4a] rounded-3xl p-4 shadow-xl text-white">
           <!-- Header -->
@@ -974,6 +1039,74 @@
               <span>🔌</span> Disconnect
             </button>
           </div>
+        </div>
+
+        <!-- BANNER 2: CFT Holding -->
+        <div class="bg-gradient-to-b from-[#082a3d] via-[#051c29] to-[#020e17] border-2 border-[#0ea5e9] rounded-3xl p-4 shadow-xl text-white relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-400 to-blue-600 flex items-center justify-center text-xl shadow border border-sky-300">🪙</div>
+              <div>
+                <h3 class="font-black text-sm sm:text-base text-sky-200 tracking-wide drop-shadow">CFT Holding</h3>
+                <div class="text-[10px] text-sky-400/90 font-bold">Hold CFT in Wallet & Earn Daily Points (Every 24h)</div>
+              </div>
+            </div>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 uppercase tracking-wider">TON Holding</span>
+          </div>
+
+          <!-- Current Status Banner -->
+          <div class="bg-black/50 border border-sky-600/40 rounded-2xl p-2.5 mb-3 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-sky-300/80 font-bold flex items-center gap-1">
+                <span>Wallet Held CFT:</span>
+                <button onclick="promptEditHeldCft()" class="text-[9px] text-sky-400 hover:text-sky-200 underline font-normal" title="Simulate / set held CFT">(Edit)</button>
+              </div>
+              <div id="cftHoldingCurrentDisplay" class="text-base font-black text-sky-200 drop-shadow">0 CFT</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[10px] text-sky-300/80 font-bold">Current Tier:</div>
+              <div id="cftHoldingTierBadge" class="text-xs font-black text-sky-300">No Tier Active</div>
+            </div>
+          </div>
+
+          <!-- 3 Tiers Grid -->
+          <div class="grid grid-cols-3 gap-2 mb-3.5">
+            <!-- Tier 1 -->
+            <div id="cftTierCard1" class="bg-black/40 border border-sky-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-sky-300/80">Tier 1</div>
+              <div class="text-xs font-black text-white mt-0.5">1,000 CFT</div>
+              <div class="mt-1.5 pt-1.5 border-t border-sky-800/40">
+                <span class="text-xs font-black text-lime-300">+5k</span>
+                <span class="text-[9px] font-bold text-lime-400">🌾/d</span>
+              </div>
+            </div>
+            <!-- Tier 2 -->
+            <div id="cftTierCard2" class="bg-black/40 border border-sky-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-sky-300/80">Tier 2</div>
+              <div class="text-xs font-black text-white mt-0.5">5,000 CFT</div>
+              <div class="mt-1.5 pt-1.5 border-t border-sky-800/40">
+                <span class="text-xs font-black text-lime-300">+10k</span>
+                <span class="text-[9px] font-bold text-lime-400">🌾/d</span>
+              </div>
+            </div>
+            <!-- Tier 3 -->
+            <div id="cftTierCard3" class="bg-black/40 border border-sky-700/50 rounded-2xl p-2 text-center transition-all">
+              <div class="text-[10px] font-bold text-yellow-300 mt-0.5">Tier 3 👑</div>
+              <div class="text-xs font-black text-yellow-300 mt-0.5">10,000 CFT</div>
+              <div class="mt-1.5 pt-1.5 border-t border-sky-800/40">
+                <span class="text-xs font-black text-yellow-300">+20k</span>
+                <span class="text-[9px] font-bold text-yellow-400">🌾/d</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Claim Action Button -->
+          <button id="claimCftHoldingBtn" onclick="claimCftHoldingReward()" class="w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition-all btn-3d-blue text-white">
+            <span>🎁</span> Claim Daily Farm Points
+          </button>
         </div>
 
         </div> <!-- /walletView -->
@@ -5798,6 +5931,11 @@
       if (feeNoticeEl) {
         feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 CFT (VIP FREE)</b>" : "Gas Fee: <b>50 CFT</b> (0 with VIP Dog)";
       }
+
+      // Sync Holding Rewards Banners (Crazy Farm Point Holding & CFT Holding)
+      if (typeof syncHoldingBannersUI === 'function') {
+        syncHoldingBannersUI();
+      }
     }
 
     const MIN_CONVERT_POINTS = 5000;
@@ -5956,7 +6094,301 @@
           ? 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700'
           : 'text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700';
       }
+
+      if (typeof syncHoldingBannersUI === 'function') {
+        syncHoldingBannersUI();
+      }
     }
+
+    // ==================== DAILY HOLDING REWARDS (POINT HOLDING & CFT HOLDING) ====================
+    const HOLDING_24H_MS = 24 * 60 * 60 * 1000;
+
+    function formatRemainingCooldown(ms) {
+      if (ms <= 0) return '00:00:00';
+      const totalSecs = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSecs / 3600);
+      const minutes = Math.floor((totalSecs % 3600) / 60);
+      const seconds = totalSecs % 60;
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function getConnectedWalletCftHolding() {
+      if (!isWalletConnected && !connectedWalletAddress) return 0;
+      const override = localStorage.getItem('crazyfarm_wallet_held_cft');
+      if (override !== null && !isNaN(parseFloat(override))) {
+        return parseFloat(override);
+      }
+      return typeof cftBalance === 'number' ? cftBalance : (hfcBalance || 0);
+    }
+
+    function syncHoldingBannersUI() {
+      const now = Date.now();
+
+      // ----------------- 1. CRAZY FARM POINT HOLDING -----------------
+      const pointDisplay = document.getElementById('pointHoldingCurrentDisplay');
+      const pointTierBadge = document.getElementById('pointHoldingTierBadge');
+      const claimPointBtn = document.getElementById('claimPointHoldingBtn');
+      const cardP1 = document.getElementById('pointTierCard1');
+      const cardP2 = document.getElementById('pointTierCard2');
+      const cardP3 = document.getElementById('pointTierCard3');
+
+      if (pointDisplay) {
+        pointDisplay.innerText = Number(points || 0).toLocaleString() + ' 🌾';
+      }
+
+      // Check Point Tiers:
+      // Tier 1: 1M pts -> 5 CFT/d
+      // Tier 2: 3M pts -> 10 CFT/d
+      // Tier 3: 5M pts -> 15 CFT/d
+      let pTier = 0;
+      let pReward = 0;
+      if (points >= 5000000) {
+        pTier = 3;
+        pReward = 15;
+      } else if (points >= 3000000) {
+        pTier = 2;
+        pReward = 10;
+      } else if (points >= 1000000) {
+        pTier = 1;
+        pReward = 5;
+      }
+
+      [cardP1, cardP2, cardP3].forEach((card, idx) => {
+        if (!card) return;
+        const tierNum = idx + 1;
+        if (pTier === tierNum) {
+          card.className = "bg-amber-500/25 border-2 border-amber-400 rounded-2xl p-2 text-center ring-2 ring-amber-400/50 shadow-lg scale-[1.03] transition-all";
+        } else if (pTier > tierNum) {
+          card.className = "bg-emerald-950/40 border border-emerald-500/50 rounded-2xl p-2 text-center opacity-85 transition-all";
+        } else {
+          card.className = "bg-black/40 border border-amber-700/40 rounded-2xl p-2 text-center opacity-60 transition-all";
+        }
+      });
+
+      if (pointTierBadge) {
+        if (pTier === 3) pointTierBadge.innerHTML = '<span class="text-yellow-300 font-black">👑 Tier 3 (+15 CFT)</span>';
+        else if (pTier === 2) pointTierBadge.innerHTML = '<span class="text-amber-300 font-black">⭐ Tier 2 (+10 CFT)</span>';
+        else if (pTier === 1) pointTierBadge.innerHTML = '<span class="text-emerald-300 font-black">🌱 Tier 1 (+5 CFT)</span>';
+        else {
+          const need = (1000000 - points).toLocaleString();
+          pointTierBadge.innerHTML = `<span class="text-slate-400 font-semibold">Need ${need} for T1</span>`;
+        }
+      }
+
+      const lastPointClaim = parseInt(localStorage.getItem('crazyfarm_point_holding_claim') || '0', 10);
+      const timeSincePointClaim = now - lastPointClaim;
+      const pointCooldownRemaining = HOLDING_24H_MS - timeSincePointClaim;
+
+      if (claimPointBtn) {
+        if (pTier === 0) {
+          claimPointBtn.disabled = true;
+          claimPointBtn.className = "w-full py-2.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed";
+          claimPointBtn.innerHTML = '<span>🔒</span> Hold 1,000,000 Points to Unlock';
+        } else if (pointCooldownRemaining > 0) {
+          claimPointBtn.disabled = true;
+          claimPointBtn.className = "w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 bg-amber-950/70 text-amber-300 border border-amber-700/80 cursor-wait";
+          claimPointBtn.innerHTML = `<span>⏳</span> Next Claim in ${formatRemainingCooldown(pointCooldownRemaining)}`;
+        } else {
+          claimPointBtn.disabled = false;
+          claimPointBtn.className = "w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition-all btn-3d-green text-white cursor-pointer active:scale-95 animate-pulse";
+          claimPointBtn.innerHTML = `<span>🎁</span> Claim +${pReward} CFT Daily Reward`;
+        }
+      }
+
+      // ----------------- 2. CFT HOLDING (TON WALLET) -----------------
+      const cftDisplay = document.getElementById('cftHoldingCurrentDisplay');
+      const cftTierBadge = document.getElementById('cftHoldingTierBadge');
+      const claimCftBtn = document.getElementById('claimCftHoldingBtn');
+      const cardC1 = document.getElementById('cftTierCard1');
+      const cardC2 = document.getElementById('cftTierCard2');
+      const cardC3 = document.getElementById('cftTierCard3');
+
+      const isConn = isWalletConnected && !!connectedWalletAddress;
+      const heldCft = isConn ? getConnectedWalletCftHolding() : 0;
+
+      if (cftDisplay) {
+        if (!isConn) {
+          cftDisplay.innerHTML = '<span class="text-xs text-rose-300 font-bold">⚠️ Wallet Not Connected</span>';
+        } else {
+          cftDisplay.innerText = Number(heldCft).toLocaleString() + ' CFT';
+        }
+      }
+
+      // Check CFT Tiers:
+      // Tier 1: 1,000 CFT -> 5,000 pts/d
+      // Tier 2: 5,000 CFT -> 10,000 pts/d
+      // Tier 3: 10,000 CFT -> 20,000 pts/d
+      let cTier = 0;
+      let cRewardPoints = 0;
+      if (isConn) {
+        if (heldCft >= 10000) {
+          cTier = 3;
+          cRewardPoints = 20000;
+        } else if (heldCft >= 5000) {
+          cTier = 2;
+          cRewardPoints = 10000;
+        } else if (heldCft >= 1000) {
+          cTier = 1;
+          cRewardPoints = 5000;
+        }
+      }
+
+      [cardC1, cardC2, cardC3].forEach((card, idx) => {
+        if (!card) return;
+        const tierNum = idx + 1;
+        if (cTier === tierNum) {
+          card.className = "bg-sky-500/25 border-2 border-sky-400 rounded-2xl p-2 text-center ring-2 ring-sky-400/50 shadow-lg scale-[1.03] transition-all";
+        } else if (cTier > tierNum) {
+          card.className = "bg-emerald-950/40 border border-emerald-500/50 rounded-2xl p-2 text-center opacity-85 transition-all";
+        } else {
+          card.className = "bg-black/40 border border-sky-700/40 rounded-2xl p-2 text-center opacity-60 transition-all";
+        }
+      });
+
+      if (cftTierBadge) {
+        if (!isConn) {
+          cftTierBadge.innerHTML = '<span class="text-rose-400 font-bold">Connect Wallet</span>';
+        } else if (cTier === 3) {
+          cftTierBadge.innerHTML = '<span class="text-yellow-300 font-black">👑 Tier 3 (+20k 🌾)</span>';
+        } else if (cTier === 2) {
+          cftTierBadge.innerHTML = '<span class="text-sky-300 font-black">⭐ Tier 2 (+10k 🌾)</span>';
+        } else if (cTier === 1) {
+          cftTierBadge.innerHTML = '<span class="text-lime-300 font-black">🌱 Tier 1 (+5k 🌾)</span>';
+        } else {
+          const need = (1000 - heldCft).toLocaleString();
+          cftTierBadge.innerHTML = `<span class="text-slate-400 font-semibold">Need ${need} for T1</span>`;
+        }
+      }
+
+      const lastCftClaim = parseInt(localStorage.getItem('crazyfarm_cft_holding_claim') || '0', 10);
+      const timeSinceCftClaim = now - lastCftClaim;
+      const cftCooldownRemaining = HOLDING_24H_MS - timeSinceCftClaim;
+
+      if (claimCftBtn) {
+        if (!isConn) {
+          claimCftBtn.disabled = false;
+          claimCftBtn.className = "w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 btn-3d-blue text-white cursor-pointer active:scale-95";
+          claimCftBtn.innerHTML = '<span>💎</span> Connect TON Wallet to Verify CFT';
+          claimCftBtn.onclick = () => connectTONWallet();
+        } else if (cTier === 0) {
+          claimCftBtn.disabled = true;
+          claimCftBtn.className = "w-full py-2.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed";
+          claimCftBtn.innerHTML = '<span>🔒</span> Hold 1,000 CFT in Wallet to Unlock';
+          claimCftBtn.onclick = () => claimCftHoldingReward();
+        } else if (cftCooldownRemaining > 0) {
+          claimCftBtn.disabled = true;
+          claimCftBtn.className = "w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 bg-sky-950/70 text-sky-300 border border-sky-700/80 cursor-wait";
+          claimCftBtn.innerHTML = `<span>⏳</span> Next Claim in ${formatRemainingCooldown(cftCooldownRemaining)}`;
+          claimCftBtn.onclick = () => claimCftHoldingReward();
+        } else {
+          claimCftBtn.disabled = false;
+          claimCftBtn.className = "w-full py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition-all btn-3d-green text-white cursor-pointer active:scale-95 animate-pulse";
+          claimCftBtn.innerHTML = `<span>🎁</span> Claim +${cRewardPoints.toLocaleString()} Points Daily`;
+          claimCftBtn.onclick = () => claimCftHoldingReward();
+        }
+      }
+    }
+
+    function claimPointHoldingReward() {
+      const now = Date.now();
+      const lastPointClaim = parseInt(localStorage.getItem('crazyfarm_point_holding_claim') || '0', 10);
+      const remaining = HOLDING_24H_MS - (now - lastPointClaim);
+
+      let pReward = 0;
+      if (points >= 5000000) pReward = 15;
+      else if (points >= 3000000) pReward = 10;
+      else if (points >= 1000000) pReward = 5;
+
+      if (pReward === 0) {
+        playSound('click');
+        alert('🌾 Crazy Farm Point Holding\n\nYou need at least 1,000,000 Farm Points to claim daily CFT rewards!\n\nCurrent Points: ' + Number(points || 0).toLocaleString() + ' 🌾');
+        return;
+      }
+
+      if (remaining > 0) {
+        playSound('click');
+        alert('⏳ Daily Reward Cooldown\n\nYou have already claimed your Point Holding reward today!\n\nNext claim available in: ' + formatRemainingCooldown(remaining));
+        return;
+      }
+
+      // Award CFT
+      cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + pReward;
+      hfcBalance = Math.floor(cftBalance);
+      localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+      localStorage.setItem('crazyfarm_point_holding_claim', now.toString());
+
+      try { playSound('fanfare'); } catch(e){}
+      playSound('coin');
+      updateDisplays();
+      syncWalletView();
+      queueCloudSave();
+
+      showWalletToast(`🌾 Claimed +${pReward} CFT Point Holding Daily Reward!`);
+    }
+
+    function claimCftHoldingReward() {
+      if (!isWalletConnected || !connectedWalletAddress) {
+        connectTONWallet();
+        return;
+      }
+
+      const now = Date.now();
+      const lastCftClaim = parseInt(localStorage.getItem('crazyfarm_cft_holding_claim') || '0', 10);
+      const remaining = HOLDING_24H_MS - (now - lastCftClaim);
+
+      const heldCft = getConnectedWalletCftHolding();
+      let cRewardPoints = 0;
+      if (heldCft >= 10000) cRewardPoints = 20000;
+      else if (heldCft >= 5000) cRewardPoints = 10000;
+      else if (heldCft >= 1000) cRewardPoints = 5000;
+
+      if (cRewardPoints === 0) {
+        playSound('click');
+        alert('💎 CFT Holding Reward\n\nYou need to hold at least 1,000 CFT tokens in your connected TON wallet to claim daily Farm Points!\n\nCurrent Held CFT: ' + Number(heldCft).toLocaleString() + ' CFT');
+        return;
+      }
+
+      if (remaining > 0) {
+        playSound('click');
+        alert('⏳ Daily Reward Cooldown\n\nYou have already claimed your CFT Holding reward today!\n\nNext claim available in: ' + formatRemainingCooldown(remaining));
+        return;
+      }
+
+      // Award Points
+      points = (typeof points === 'number' ? points : 0) + cRewardPoints;
+      localStorage.setItem('crazyfarm_points', points);
+      localStorage.setItem('crazyfarm_cft_holding_claim', now.toString());
+
+      try { playSound('fanfare'); } catch(e){}
+      playSound('coin');
+      updateDisplays();
+      syncWalletView();
+      queueCloudSave();
+
+      showWalletToast(`💎 Claimed +${cRewardPoints.toLocaleString()} Farm Points CFT Holding Reward!`);
+    }
+
+    function promptEditHeldCft() {
+      const current = getConnectedWalletCftHolding();
+      const val = prompt('Enter CFT tokens held in your connected TON wallet (for simulation / testnet):', current);
+      if (val !== null) {
+        const parsed = parseFloat(val);
+        if (!isNaN(parsed) && parsed >= 0) {
+          localStorage.setItem('crazyfarm_wallet_held_cft', parsed.toString());
+          playSound('coin');
+          syncWalletView();
+          showWalletToast('✅ Updated held CFT to: ' + parsed.toLocaleString() + ' CFT');
+        }
+      }
+    }
+
+    // Dynamic 1s timer loop for smooth live countdown display
+    setInterval(() => {
+      const wv = document.getElementById('walletView');
+      if (wv && wv.style.display !== 'none') {
+        syncHoldingBannersUI();
+      }
+    }, 1000);
 
     async function connectTONWallet() {
       playSound('click');
