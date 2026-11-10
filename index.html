@@ -7711,37 +7711,14 @@ window.addEventListener('load', () => {
       const status = getCrazyBoxStatus();
 
       if (status.isFreeAvailable) {
-        stateBox.innerHTML = 
-          <div class="text-sm font-black text-yellow-300 mb-0.5">&#127881; Daily Free Gift is Ready!</div>
-          <div class="text-[11px] text-amber-100 font-semibold">Open now for a lucky points drop (up to 5,000 Pts)!</div>
-        ;
-        actionBox.innerHTML = 
-          <button onclick="executeOpenGift(false)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer">
-            <span>&#10024;</span> OPEN FREE GIFT
-          </button>
-        ;
+        stateBox.innerHTML = '<div class="text-sm font-black text-yellow-300 mb-0.5">&#127881; Daily Free Gift is Ready!</div><div class="text-[11px] text-amber-100 font-semibold">Open now for a lucky points drop (up to 5,000 Pts)!</div>';
+        actionBox.innerHTML = '<button onclick="executeOpenGift(false)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer"><span>&#10024;</span> OPEN FREE GIFT</button>';
       } else if (status.isPointsOpenAvailable) {
-        stateBox.innerHTML = 
-          <div class="text-xs font-black text-amber-300 mb-0.5">&#9889; Free Gift Claimed Today!</div>
-          <div class="text-[11px] text-yellow-200 font-bold">Unlock 1 Extra Mystery Gift for 500 Farm Points!</div>
-          <div class="text-[10px] text-sky-200 mt-1">&#9203; Next Free in: </div>
-        ;
-        actionBox.innerHTML = 
-          <button onclick="executeOpenGift(true)" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/60">
-            <span>&#9889;</span> OPEN EXTRA GIFT (500 Pts)
-          </button>
-        ;
+        stateBox.innerHTML = '<div class="text-xs font-black text-amber-300 mb-0.5">&#9889; Free Gift Claimed Today!</div><div class="text-[11px] text-yellow-200 font-bold">Unlock 1 Extra Mystery Gift for 500 Farm Points!</div><div class="text-[10px] text-sky-200 mt-1">&#9203; Next Free in: ' + formatTime(status.remainingSec) + '</div>';
+        actionBox.innerHTML = '<button onclick="executeOpenGift(true)" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/60"><span>&#9889;</span> OPEN EXTRA GIFT (500 Pts)</button>';
       } else {
-        stateBox.innerHTML = 
-          <div class="text-xs font-black text-amber-400 mb-1">&#128274; All Daily Gifts Claimed (2/2)!</div>
-          <div class="text-[11px] text-yellow-300 font-bold">&#9203; Next Free Gift in:</div>
-          <div class="text-xl font-mono font-black text-lime-400 mt-1"></div>
-        ;
-        actionBox.innerHTML = 
-          <button onclick="closeGiftModal()" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
-            <span>&#10005;</span> Close
-          </button>
-        ;
+        stateBox.innerHTML = '<div class="text-xs font-black text-amber-400 mb-1">&#128274; All Daily Gifts Claimed (2/2)!</div><div class="text-[11px] text-yellow-300 font-bold">&#9203; Next Free Gift in:</div><div class="text-xl font-mono font-black text-lime-400 mt-1">' + formatTime(status.remainingSec) + '</div>';
+        actionBox.innerHTML = '<button onclick="closeGiftModal()" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"><span>&#10005;</span> Close</button>';
       }
     }
 
@@ -7768,22 +7745,11 @@ window.addEventListener('load', () => {
       const actionBox = document.getElementById('giftModalActionContainer');
 
       if (stateBox) {
-        stateBox.innerHTML = 
-          <div class="text-xs font-black text-yellow-300 mb-1">&#127881; Congratulations! You Won:</div>
-          <div class="text-3xl font-black text-lime-300 drop-shadow my-1">+ Pts &#127806;</div>
-          <div class="text-[10.5px] text-amber-200 font-bold">&#127806; Lucky Farm Points Drop!</div>
-        ;
+        stateBox.innerHTML = '<div class="text-xs font-black text-yellow-300 mb-1">&#127881; Congratulations! You Won:</div><div class="text-3xl font-black text-lime-300 drop-shadow my-1">+' + currentCrazyBoxWin.toLocaleString() + ' Pts &#127806;</div><div class="text-[10.5px] text-amber-200 font-bold">&#127806; Lucky Farm Points Drop!</div>';
       }
 
       if (actionBox) {
-        actionBox.innerHTML = 
-          <button onclick="claimGiftReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer">
-            <span>&#127916;</span> Collect 2x (+ Pts) with Ad
-          </button>
-          <button onclick="claimGiftReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
-            <span>&#127806;</span> Claim Free (+ Pts)
-          </button>
-        ;
+        actionBox.innerHTML = '<button onclick="claimGiftReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer"><span>&#127916;</span> Collect 2x (+' + (currentCrazyBoxWin * 2).toLocaleString() + ' Pts) with Ad</button><button onclick="claimGiftReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"><span>&#127806;</span> Claim Free (+' + currentCrazyBoxWin.toLocaleString() + ' Pts)</button>';
       }
     }
 
@@ -7825,6 +7791,7 @@ window.addEventListener('load', () => {
       showWalletToast('\u{1F389} Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
       closeGiftModal();
     }
+
 </script>
 </body>
 </html>
