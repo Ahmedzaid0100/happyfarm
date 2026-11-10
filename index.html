@@ -313,30 +313,30 @@
 
           <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
           <!-- 4. Battles Hotspot (Left Swords Ring) -->
-          <div onclick="openBattlesModal()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Farm Battles"></div>
+          <div onclick="openBattlesModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Farm Battles"></div>
 
           <!-- 5. Daily Login Hotspot (Left Gift Box Ring) -->
-          <div onclick="openDailyLoginModal()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 37.8%; width: 17%; height: 9.5%;" title="Daily Check-In"></div>
+          <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 37.8%; width: 17%; height: 9.5%;" title="Daily Check-In"></div>
 
           <!-- 6. Lucky Spin Hotspot (Right Roulette Ring) -->
-          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Lucky Spin Crazy Box"></div>
+          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Lucky Spin Crazy Box"></div>
 
           <!-- 7. Run Hotspot (Right Cyber Runner Character Ring) -->
-          <div onclick="openBattlePrep('run')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 37.2%; width: 17%; height: 9.5%;" title="Farm Run Sprint"></div>
+          <div onclick="openBattlePrep('run')" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 37.2%; width: 17%; height: 9.5%;" title="Farm Run Sprint"></div>
 
           <!-- 8. Gift Box Hotspot (Right Gold Gift Box Ring) -->
-          <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80%; top: 48.2%; width: 17%; height: 9.5%;" title="Mystery Gift Box"></div>
+          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80%; top: 48.2%; width: 17%; height: 9.5%;" title="Mystery Gift Box"></div>
 
           <!-- 9. Giant Center CFT Coin - Interactive Tap-to-Mine with Haptic Feedback & Floating Points! -->
-          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 28%; top: 39.5%; width: 44%; height: 23%;" title="Tap to Mine CFT!">
+          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 28%; top: 39.5%; width: 44%; height: 23%;" title="Tap to Mine CFT!">
             <div class="w-full h-full rounded-full border border-yellow-400/20 hover:border-yellow-400/60 transition-colors"></div>
           </div>
 
           <!-- 10. Upgrade Button (Bottom Left) -->
-          <div onclick="onCyberHomeUpgrade()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 81%; width: 33%; height: 8.5%;" title="Upgrade Animals & Farms"></div>
+          <div onclick="onCyberHomeUpgrade()" class="absolute z-20 cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 81%; width: 33%; height: 8.5%;" title="Upgrade Animals & Farms"></div>
 
           <!-- 11. Claim Button (Bottom Right) -->
-          <div onclick="onCyberHomeClaim()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 81%; width: 33%; height: 8.5%;" title="Claim Farm Earnings"></div>
+          <div onclick="onCyberHomeClaim()" class="absolute z-20 cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 81%; width: 33%; height: 8.5%;" title="Claim Farm Earnings"></div>
 
         </div> <!-- /#cyberHomeContainer -->
 
@@ -1335,7 +1335,7 @@
     <!-- ==================== MODALS ==================== -->
 
     <!-- ==================== HOME BATTLES SELECTION MODAL ==================== -->
-    <div id="homeBattlesModal" onclick="if(event.target === this) closeBattlesModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
+    <div id="homeBattlesModal" onclick="if(event.target === this) closeBattlesModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
       <div class="relative w-full max-w-sm wood-board border-2 border-amber-500/90 rounded-3xl p-4 shadow-2xl text-white animate-in fade-in zoom-in duration-200">
         <!-- Header -->
         <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
@@ -1391,7 +1391,7 @@
     </div>
 
     <!-- ==================== HOME DAILY LOGIN MODAL ==================== -->
-    <div id="homeDailyLoginModal" onclick="if(event.target === this) closeDailyLoginModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
+    <div id="homeDailyLoginModal" onclick="if(event.target === this) closeDailyLoginModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
       <div class="relative w-full max-w-sm wood-board border-2 border-amber-500/90 rounded-3xl p-4 shadow-2xl text-white animate-in fade-in zoom-in duration-200">
         <!-- Header -->
         <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
@@ -2473,7 +2473,7 @@
       updatePvpButtonsUI();
       const m = document.getElementById('homeBattlesModal');
       if (m) {
-        m.classList.remove('hidden');
+        m.classList.remove('hidden', 'pointer-events-none');
         m.style.display = 'flex';
       }
     }
@@ -2481,7 +2481,7 @@
     function closeBattlesModal() {
       const m = document.getElementById('homeBattlesModal');
       if (m) {
-        m.classList.add('hidden');
+        m.classList.add('hidden', 'pointer-events-none');
         m.style.display = 'none';
       }
     }
@@ -2491,7 +2491,7 @@
       syncTasksView();
       const m = document.getElementById('homeDailyLoginModal');
       if (m) {
-        m.classList.remove('hidden');
+        m.classList.remove('hidden', 'pointer-events-none');
         m.style.display = 'flex';
       }
     }
@@ -2499,7 +2499,7 @@
     function closeDailyLoginModal() {
       const m = document.getElementById('homeDailyLoginModal');
       if (m) {
-        m.classList.add('hidden');
+        m.classList.add('hidden', 'pointer-events-none');
         m.style.display = 'none';
       }
     }
@@ -4350,18 +4350,7 @@
       switchTab('home');
       try { playSound('fanfare'); } catch(e){}
       showWalletToast('ðŸšœ Welcome to Main Farm! Mining CFT Live!');
-      return;
-          vidEl.currentTime = 0;
-          vidEl.play().catch(()=>{});
-        } catch(e){}
-      }
-      const modal = document.getElementById('mainFarmModal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
     }
-
     function closeMainFarmModal() {
       const vidEl = document.getElementById('mainFarmModalVideo');
       if (vidEl) {
