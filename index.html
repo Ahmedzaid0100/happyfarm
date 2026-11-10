@@ -313,10 +313,10 @@
 
           <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
           <!-- 4. Battles Hotspot (Left Swords Ring) -->
-          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Farm Battles"></div>
+          <div onclick="openBattlesModal()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Farm Battles"></div>
 
           <!-- 5. Daily Login Hotspot (Left Gift Box Ring) -->
-          <div onclick="switchTab('tasks')" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 37.8%; width: 17%; height: 9.5%;" title="Daily Check-In"></div>
+          <div onclick="openDailyLoginModal()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.5%; top: 37.8%; width: 17%; height: 9.5%;" title="Daily Check-In"></div>
 
           <!-- 6. Lucky Spin Hotspot (Right Roulette Ring) -->
           <div onclick="openCrazyBox()" class="absolute cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 26.5%; width: 17%; height: 9.5%;" title="Lucky Spin Crazy Box"></div>
@@ -902,90 +902,6 @@
           </p>
         </div>
 
-        <!-- ==================== SECTION 1: DAILY CHECK-IN ==================== -->
-        <div class="bg-gradient-to-b from-[#96531d] via-[#68350d] to-[#4a2104] border-2 border-[#3d1b02] rounded-3xl p-3.5 shadow-xl text-white">
-          
-          <!-- Header: Daily Check in | Day X of 10 -->
-          <div class="flex items-center justify-between mb-3 pb-2 border-b border-amber-900/60">
-            <div class="flex items-center gap-2">
-              <span class="text-xl">📅</span>
-              <h3 class="font-black text-base text-amber-200">Daily Check in</h3>
-            </div>
-            <div class="bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-700 text-xs font-extrabold text-yellow-300">
-              Day <span id="currentCheckInDay">1</span> of 10
-            </div>
-          </div>
-
-          <!-- 10-Day Grid (5 columns x 2 rows) -->
-          <div class="grid grid-cols-5 gap-1.5 mb-3" id="dailyCheckInGrid">
-            <!-- Day 1 -->
-            <div id="checkInBox-1" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D1</span>
-              <span class="text-[10px] font-black text-yellow-300">+10</span>
-              <div id="checkInMark-1" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 2 -->
-            <div id="checkInBox-2" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D2</span>
-              <span class="text-[10px] font-black text-yellow-300">+20</span>
-              <div id="checkInMark-2" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 3 -->
-            <div id="checkInBox-3" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D3</span>
-              <span class="text-[10px] font-black text-yellow-300">+30</span>
-              <div id="checkInMark-3" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 4 -->
-            <div id="checkInBox-4" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D4</span>
-              <span class="text-[10px] font-black text-yellow-300">+40</span>
-              <div id="checkInMark-4" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 5 -->
-            <div id="checkInBox-5" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D5</span>
-              <span class="text-[10px] font-black text-yellow-300">+50</span>
-              <div id="checkInMark-5" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 6 -->
-            <div id="checkInBox-6" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D6</span>
-              <span class="text-[10px] font-black text-yellow-300">+60</span>
-              <div id="checkInMark-6" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 7 -->
-            <div id="checkInBox-7" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D7</span>
-              <span class="text-[10px] font-black text-yellow-300">+70</span>
-              <div id="checkInMark-7" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 8 -->
-            <div id="checkInBox-8" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D8</span>
-              <span class="text-[10px] font-black text-yellow-300">+80</span>
-              <div id="checkInMark-8" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 9 -->
-            <div id="checkInBox-9" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D9</span>
-              <span class="text-[10px] font-black text-yellow-300">+90</span>
-              <div id="checkInMark-9" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-            <!-- Day 10 -->
-            <div id="checkInBox-10" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
-              <span class="text-[9px] font-bold text-amber-300">D10</span>
-              <span class="text-[10px] font-black text-yellow-300">+100</span>
-              <div id="checkInMark-10" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
-            </div>
-          </div>
-
-          <!-- Check-in Action Button -->
-          <button id="dailyCheckInBtn" onclick="claimDailyCheckIn()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all">
-            <span>🎁</span> Check in today (+10 🌾)
-          </button>
-        </div>
-
         <!-- ==================== SECTION 2: FRIEND INVITE MILESTONES (EARN DIRECT FARM POINTS) ==================== -->
         <div class="bg-gradient-to-b from-[#2e1805] via-[#442308] to-[#251002] border-2 border-[#b45309] rounded-3xl p-3.5 shadow-xl text-white">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-amber-900/60">
@@ -1323,72 +1239,6 @@
         </div>
 
 
-        <!-- ==================== BATTLE ARENA (PVP) - RELOCATED TO COMMUNITY ==================== -->
-        <div id="battleArenaCard" class="wood-board rounded-2xl p-3 sm:p-4 shadow-2xl border-2 border-amber-500/80 relative overflow-hidden select-none mt-3">
-          <!-- Header Banner -->
-          <div class="flex items-center justify-between border-b border-amber-900/60 pb-2 mb-2.5">
-            <div class="flex items-center gap-2">
-              <span class="text-xl animate-bounce">&#9876;</span>
-              <div>
-                <h3 class="font-black text-sm sm:text-base text-yellow-300 uppercase tracking-wide leading-none drop-shadow" style="font-family: 'Fredoka', cursive;">
-                  Farm Battle Arena (PvP)
-                </h3>
-                <p class="text-[10px] sm:text-xs text-amber-200 font-extrabold leading-tight mt-0.5">
-                  Fight in Battles &amp; Sprint to Earn Big Farm Points!
-                </p>
-              </div>
-            </div>
-            <span class="bg-red-600 text-white text-[9px] font-black px-2.5 py-0.5 rounded-full border border-red-300 shadow animate-pulse tracking-wide">
-              LIVE &#128293;
-            </span>
-          </div>
-
-          <!-- 4 Battle Mode Buttons (Row 1: 3vs3 & 5vs5 | Row 2: 7vs7 & RUN) - 2x2 Grid, Enlarged Double Height -->
-          <div class="grid grid-cols-2 gap-3 mt-1">
-
-            <!-- 1. 3 vs 3 Battle Button -->
-            <button onclick="openBattlePrep(3)" class="btn-3d-blue rounded-2xl p-3 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-white border border-sky-300/40 relative group cursor-pointer min-h-[110px]">
-              <span id="pvpBadge-3" class="bg-emerald-950/90 text-emerald-300 text-[8.5px] font-black px-2 py-0.5 rounded-full leading-none truncate max-w-full">&#9876; Free</span>
-              <div class="text-3xl my-1 group-hover:scale-110 transition-transform">&#129353;</div>
-              <div class="font-black text-xs sm:text-sm text-yellow-200 leading-tight">3 vs 3 BATTLE</div>
-              <div class="bg-sky-950/90 rounded-lg px-2 py-1 text-[9px] font-black text-lime-300 w-full text-center leading-tight">
-                +100 Farm Points
-              </div>
-            </button>
-
-            <!-- 2. 5 vs 5 Battle Button -->
-            <button onclick="openBattlePrep(5)" class="btn-3d-yellow rounded-2xl p-3 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-amber-950 border border-yellow-200/60 relative group cursor-pointer min-h-[110px]">
-              <span id="pvpBadge-5" class="bg-emerald-950/90 text-emerald-300 text-[8.5px] font-black px-2 py-0.5 rounded-full leading-none truncate max-w-full">&#9876; Free</span>
-              <div class="text-3xl my-1 group-hover:scale-110 transition-transform">&#129352;</div>
-              <div class="font-black text-xs sm:text-sm text-amber-950 leading-tight">5 vs 5 BATTLE</div>
-              <div class="bg-amber-950/90 rounded-lg px-2 py-1 text-[9px] font-black text-yellow-200 w-full text-center leading-tight">
-                +200 Farm Points
-              </div>
-            </button>
-
-            <!-- 3. 7 vs 7 Battle Button -->
-            <button onclick="openBattlePrep(7)" class="btn-3d-green rounded-2xl p-3 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-white border border-yellow-300/80 relative group cursor-pointer min-h-[110px]">
-              <span id="pvpBadge-7" class="bg-emerald-950/90 text-emerald-300 text-[8.5px] font-black px-2 py-0.5 rounded-full leading-none truncate max-w-full">&#9876; Free</span>
-              <div class="text-3xl my-1 group-hover:scale-110 transition-transform animate-bounce">&#129351;</div>
-              <div class="font-black text-xs sm:text-sm text-yellow-300 leading-tight">7 vs 7 CHAMPION</div>
-              <div class="bg-emerald-950/90 rounded-lg px-2 py-1 text-[9px] font-black text-lime-200 w-full text-center leading-tight">
-                +300 Farm Points
-              </div>
-            </button>
-
-            <!-- 4. RUN Battle Button -->
-            <button onclick="openBattleRunMode()" class="btn-3d-red rounded-2xl p-3 flex flex-col items-center justify-between gap-1 shadow-lg active:scale-95 transition-all text-white border border-rose-300/70 relative group cursor-pointer min-h-[110px]">
-              <span id="pvpBadge-run" class="bg-emerald-950/90 text-emerald-300 text-[8.5px] font-black px-2 py-0.5 rounded-full leading-none truncate max-w-full">&#127939; Free</span>
-              <div class="text-3xl my-1 group-hover:scale-110 transition-transform">&#127939;</div>
-              <div class="font-black text-xs sm:text-sm text-yellow-300 leading-tight tracking-wider uppercase">3D RUN SPRINT</div>
-              <div class="bg-rose-950/90 rounded-lg px-2 py-1 text-[9px] font-black text-yellow-300 w-full text-center leading-tight">
-                +100 Farm Points
-              </div>
-            </button>
-
-          </div>
-        </div>
-
         <!-- ==================== CRAZY BOX BANNER (Relocated to Community) ==================== -->
         <div id="crazyBoxCard" class="wood-board rounded-2xl p-2.5 sm:p-3 shadow-xl border-2 border-yellow-500/80 relative overflow-hidden select-none mt-3">
           <!-- Header Banner -->
@@ -1484,6 +1334,155 @@
 
     <!-- ==================== MODALS ==================== -->
 
+    <!-- ==================== HOME BATTLES SELECTION MODAL ==================== -->
+    <div id="homeBattlesModal" onclick="if(event.target === this) closeBattlesModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
+      <div class="relative w-full max-w-sm wood-board border-2 border-amber-500/90 rounded-3xl p-4 shadow-2xl text-white animate-in fade-in zoom-in duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl animate-bounce">âš”ï¸</span>
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-yellow-300 uppercase tracking-wide leading-none drop-shadow" style="font-family: 'Fredoka', cursive;">Farm Battles Arena</h3>
+              <span class="text-[10px] text-amber-200 font-bold">Choose your battle mode</span>
+            </div>
+          </div>
+          <button onclick="closeBattlesModal()" class="w-8 h-8 rounded-full bg-red-600/90 text-white font-black text-sm flex items-center justify-center border border-white/60 active:scale-90 transition-transform cursor-pointer shadow">âœ•</button>
+        </div>
+
+        <!-- Battles 3 Modes List -->
+        <div class="space-y-2.5">
+          <!-- 1. 3 vs 3 -->
+          <button onclick="closeBattlesModal(); openBattlePrep(3)" class="btn-3d-blue w-full rounded-2xl p-3 flex items-center justify-between shadow-lg active:scale-95 transition-all text-white border border-sky-300/40 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">ðŸ¥‰</span>
+              <div class="text-left">
+                <div class="font-black text-xs sm:text-sm text-yellow-200 leading-tight">3 vs 3 BATTLE</div>
+                <div class="text-[9.5px] text-sky-200 font-bold">+100 Farm Points</div>
+              </div>
+            </div>
+            <span id="pvpBadge-3" class="bg-sky-950/90 text-lime-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-sky-400/50 shrink-0">âš”ï¸ Free</span>
+          </button>
+
+          <!-- 2. 5 vs 5 -->
+          <button onclick="closeBattlesModal(); openBattlePrep(5)" class="btn-3d-yellow w-full rounded-2xl p-3 flex items-center justify-between shadow-lg active:scale-95 transition-all text-amber-950 border border-yellow-200/60 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">ðŸ¥ˆ</span>
+              <div class="text-left">
+                <div class="font-black text-xs sm:text-sm text-amber-950 leading-tight">5 vs 5 BATTLE</div>
+                <div class="text-[9.5px] text-amber-900 font-extrabold">+200 Farm Points</div>
+              </div>
+            </div>
+            <span id="pvpBadge-5" class="bg-amber-950/90 text-yellow-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-amber-600 shrink-0">âš”ï¸ Free</span>
+          </button>
+
+          <!-- 3. 7 vs 7 Champion -->
+          <button onclick="closeBattlesModal(); openBattlePrep(7)" class="btn-3d-green w-full rounded-2xl p-3 flex items-center justify-between shadow-lg active:scale-95 transition-all text-white border border-yellow-300/80 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl animate-bounce">ðŸ¥‡</span>
+              <div class="text-left">
+                <div class="font-black text-xs sm:text-sm text-yellow-300 leading-tight">7 vs 7 CHAMPION</div>
+                <div class="text-[9.5px] text-emerald-200 font-bold">+500 Farm Points</div>
+              </div>
+            </div>
+            <span id="pvpBadge-7" class="bg-emerald-950/90 text-lime-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-emerald-400 shrink-0">âš”ï¸ Free</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== HOME DAILY LOGIN MODAL ==================== -->
+    <div id="homeDailyLoginModal" onclick="if(event.target === this) closeDailyLoginModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
+      <div class="relative w-full max-w-sm wood-board border-2 border-amber-500/90 rounded-3xl p-4 shadow-2xl text-white animate-in fade-in zoom-in duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl animate-bounce">ðŸ“…</span>
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-yellow-300 uppercase tracking-wide leading-none drop-shadow" style="font-family: 'Fredoka', cursive;">Daily Check-In</h3>
+              <span class="text-[10px] text-amber-200 font-bold">Streak Bonus (10 Days Cycle)</span>
+            </div>
+          </div>
+          <button onclick="closeDailyLoginModal()" class="w-8 h-8 rounded-full bg-red-600/90 text-white font-black text-sm flex items-center justify-center border border-white/60 active:scale-90 transition-transform cursor-pointer shadow">âœ•</button>
+        </div>
+
+        <!-- Streak Tracker -->
+        <div class="flex items-center justify-between bg-black/40 px-3 py-1.5 rounded-2xl border border-amber-700/60 mb-2.5">
+          <span class="text-[11px] font-bold text-amber-200">Current Progress</span>
+          <div class="bg-amber-950/90 px-2.5 py-0.5 rounded-full border border-amber-600 text-xs font-black text-yellow-300">
+            Day <span id="currentCheckInDay">1</span> of 10
+          </div>
+        </div>
+
+        <!-- 10-Day Grid (5 columns x 2 rows) -->
+        <div class="grid grid-cols-5 gap-1.5 mb-3" id="dailyCheckInGrid">
+          <!-- Day 1 -->
+          <div id="checkInBox-1" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D1</span>
+            <span class="text-[10px] font-black text-yellow-300">+10</span>
+            <div id="checkInMark-1" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 2 -->
+          <div id="checkInBox-2" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D2</span>
+            <span class="text-[10px] font-black text-yellow-300">+20</span>
+            <div id="checkInMark-2" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 3 -->
+          <div id="checkInBox-3" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D3</span>
+            <span class="text-[10px] font-black text-yellow-300">+30</span>
+            <div id="checkInMark-3" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 4 -->
+          <div id="checkInBox-4" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D4</span>
+            <span class="text-[10px] font-black text-yellow-300">+40</span>
+            <div id="checkInMark-4" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 5 -->
+          <div id="checkInBox-5" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D5</span>
+            <span class="text-[10px] font-black text-yellow-300">+50</span>
+            <div id="checkInMark-5" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 6 -->
+          <div id="checkInBox-6" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D6</span>
+            <span class="text-[10px] font-black text-yellow-300">+60</span>
+            <div id="checkInMark-6" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 7 -->
+          <div id="checkInBox-7" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D7</span>
+            <span class="text-[10px] font-black text-yellow-300">+70</span>
+            <div id="checkInMark-7" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 8 -->
+          <div id="checkInBox-8" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D8</span>
+            <span class="text-[10px] font-black text-yellow-300">+80</span>
+            <div id="checkInMark-8" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 9 -->
+          <div id="checkInBox-9" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D9</span>
+            <span class="text-[10px] font-black text-yellow-300">+90</span>
+            <div id="checkInMark-9" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+          <!-- Day 10 -->
+          <div id="checkInBox-10" class="bg-black/40 border border-amber-700/60 rounded-xl p-1.5 flex flex-col items-center gap-1 transition-all">
+            <span class="text-[9px] font-bold text-amber-300">D10</span>
+            <span class="text-[10px] font-black text-yellow-300">+100</span>
+            <div id="checkInMark-10" class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-950/60 flex items-center justify-center text-[9px] font-bold"></div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="dailyCheckInBtn" onclick="claimDailyCheckIn()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <span>ðŸŽ</span> Check in today (+10 ðŸŒ¾)
+        </button>
+      </div>
+    </div>
     <!-- Crazy Box Reward Celebration Modal -->
     <div id="crazyBoxModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center animate-in fade-in zoom-in duration-300">
@@ -2466,6 +2465,43 @@
           el.className = 'bg-emerald-950/90 text-emerald-300 text-[8.5px] font-black px-2 py-0.5 rounded-full leading-none truncate max-w-full';
         }
       });
+    }
+
+    // ==================== HOME BATTLES & DAILY LOGIN MODAL CONTROLS ====================
+    function openBattlesModal() {
+      playSound('click');
+      updatePvpButtonsUI();
+      const m = document.getElementById('homeBattlesModal');
+      if (m) {
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
+    }
+
+    function closeBattlesModal() {
+      const m = document.getElementById('homeBattlesModal');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+    }
+
+    function openDailyLoginModal() {
+      playSound('click');
+      syncTasksView();
+      const m = document.getElementById('homeDailyLoginModal');
+      if (m) {
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
+    }
+
+    function closeDailyLoginModal() {
+      const m = document.getElementById('homeDailyLoginModal');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
     }
 
     function openBattlePrep(mode) {
