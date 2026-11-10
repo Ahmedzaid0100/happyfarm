@@ -305,9 +305,10 @@
             <span id="cyberWalletShort" class="text-[9px] font-black text-cyan-300 truncate tracking-tight">Connect</span>
           </div>
 
-          <!-- 3. Mining Rate Center Badge -->
-          <div class="absolute flex items-center justify-center pointer-events-none select-none" style="left: 35%; top: 31.8%; width: 30%; height: 3.8%;">
-            <span id="cyberMiningSpeed" class="text-[11px] font-black text-lime-300 tracking-wide drop-shadow">+24/d CFT</span>
+          <!-- 3. Mining Rate Center Badge (Real-Time Live Ticker) -->
+          <div class="absolute flex flex-col items-center justify-center pointer-events-none select-none" style="left: 32%; top: 31.0%; width: 36%; height: 5.2%;">
+            <span id="cyberMiningLiveMined" class="text-[11.5px] font-black text-lime-300 tracking-wide drop-shadow font-mono leading-none">+0.0000 CFT</span>
+            <span id="cyberMiningSpeed" class="text-[8px] font-bold text-cyan-200/90 leading-tight mt-0.5">âš¡ 12/d (Lv.1)</span>
           </div>
 
           <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
@@ -332,7 +333,7 @@
           </div>
 
           <!-- 10. Upgrade Button (Bottom Left) -->
-          <div onclick="switchTab('farms')" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 81%; width: 33%; height: 8.5%;" title="Upgrade Animals & Farms"></div>
+          <div onclick="onCyberHomeUpgrade()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17%; top: 81%; width: 33%; height: 8.5%;" title="Upgrade Animals & Farms"></div>
 
           <!-- 11. Claim Button (Bottom Right) -->
           <div onclick="onCyberHomeClaim()" class="absolute cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52%; top: 81%; width: 33%; height: 8.5%;" title="Claim Farm Earnings"></div>
@@ -3281,15 +3282,75 @@
 
     // Update Displays with Exact User Math
         // ==================== CYBER HOME TAP-TO-MINE INTERACTIVITY ====================
-    function onCyberCoinTap(event) {
-      playSound('coin');
-      points += 1;
-      updateDisplays();
+    // ==========================================
+    // ===== MAIN FARM (CFT MINING ENGINE) ======
+    // ==========================================
+    let cftBalance = parseFloat(localStorage.getItem('crazyfarm_cft_balance'));
+    if (isNaN(cftBalance) || cftBalance === null) {
+      cftBalance = Number(hfcBalance) || 0;
+    }
+    let cftLastCollectTime = Number(localStorage.getItem('crazyfarm_cft_last_collect')) || Date.now();
+    let cftTapBonus = parseFloat(localStorage.getItem('crazyfarm_cft_tap_bonus')) || 0;
 
-      // Telegram Haptic
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('medium'); } catch(e){}
+    // Upgrade Cost in Farm Points for Levels 1 to 100
+    // Lv. 1->2 is 2,000 pts (doubled). Progressive RPG scaling curve up to Lv. 100
+    function getMainFarmUpgradeCost(lvl = userLevel) {
+      if (lvl >= 100) return null; // MAX LEVEL (100)
+      if (lvl === 1) return 2000;
+      const raw = Math.round(2000 * Math.pow(lvl, 1.3));
+      if (raw < 10000) return Math.round(raw / 100) * 100;
+      return Math.round(raw / 500) * 500;
+    }
+
+    // Daily Production: level * 12 CFT per day (Halved from 24)
+    function getMainFarmDailyRate(lvl = userLevel) {
+      return lvl * 12;
+    }
+
+    // CFT Rate per Second: (level * 12) / 86400 = level / 7200
+    function getMainFarmRatePerSec(lvl = userLevel) {
+      return (lvl * 12) / 86400;
+    }
+
+    // Currently uncollected / pending mined CFT
+    function getPendingMinedCft() {
+      const now = Date.now();
+      const elapsedSec = Math.max(0, (now - cftLastCollectTime) / 1000);
+      const ratePerSec = getMainFarmRatePerSec(userLevel);
+      return (elapsedSec * ratePerSec) + cftTapBonus;
+    }
+
+    // Real-Time Live Mining Ticker Loop (Runs every 250ms for smooth live counter)
+    function updateLiveCftMiningTicker() {
+      const liveEl = document.getElementById('cyberMiningLiveMined');
+      const speedEl = document.getElementById('cyberMiningSpeed');
+      const pending = getPendingMinedCft();
+      
+      if (liveEl) {
+        liveEl.innerText = '+' + pending.toFixed(4) + ' CFT';
       }
+      if (speedEl) {
+        const daily = getMainFarmDailyRate(userLevel);
+        const maxTag = userLevel >= 100 ? ' (MAX)' : ` (Lv.${userLevel})`;
+        speedEl.innerText = `âš¡ ${daily}/d${maxTag}`;
+      }
+    }
+
+    // Start Live Ticker immediately
+    if (window._cftTickerInterval) clearInterval(window._cftTickerInterval);
+    window._cftTickerInterval = setInterval(updateLiveCftMiningTicker, 250);
+
+    // Tap to mine on center CFT coin
+    function onCyberCoinTap(event) {
+      playSound('pop');
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
+
+      const tapBonusAmount = 0.0050; // Each tap adds bonus CFT to the claimable pool
+      cftTapBonus += tapBonusAmount;
+      localStorage.setItem('crazyfarm_cft_tap_bonus', cftTapBonus);
+      updateLiveCftMiningTicker();
 
       // Floating text effect
       const rect = event.currentTarget.getBoundingClientRect();
@@ -3301,40 +3362,99 @@
       floater.style.pointerEvents = 'none';
       floater.style.color = '#fde047';
       floater.style.fontWeight = '900';
-      floater.style.fontSize = '14px';
+      floater.style.fontSize = '13px';
       floater.style.zIndex = '9999';
       floater.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
       floater.style.left = (x - 15) + 'px';
       floater.style.top = (y - 20) + 'px';
       floater.style.transition = 'all 0.6s ease-out';
-      floater.innerText = '+1 CFT';
+      floater.innerText = `+${tapBonusAmount.toFixed(3)} CFT`;
       document.body.appendChild(floater);
 
       requestAnimationFrame(() => {
-        floater.style.transform = 'translateY(-35px) scale(1.2)';
+        floater.style.transform = 'translateY(-35px) scale(1.15)';
         floater.style.opacity = '0';
       });
 
       setTimeout(() => floater.remove(), 650);
+    }
 
+    // Claim Mined CFT (Instant collection of any amount mined)
+    function onCyberHomeClaim() {
+      const pending = getPendingMinedCft();
+      if (pending < 0.0001) {
+        playSound('click');
+        showWalletToast('âš¡ Mining in progress... keep waiting to claim your CFT!');
+        return;
+      }
+
+      try { playSound('fanfare'); } catch(e){}
+      cftBalance += pending;
+      hfcBalance = Math.floor(cftBalance); // sync integer balance
+      cftLastCollectTime = Date.now();
+      cftTapBonus = 0;
+
+      localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+      localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+      localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
+      localStorage.setItem('crazyfarm_cft_tap_bonus', 0);
+
+      // Trigger coin burst animation
+      if (typeof triggerCoinBurstAnimation === 'function') {
+        triggerCoinBurstAnimation();
+      }
+
+      showWalletToast(`ðŸŽ‰ Claimed +${pending.toFixed(4)} CFT to Wallet!`);
+      updateDisplays();
+      updateLiveCftMiningTicker();
       if (typeof queueCloudSave === 'function') queueCloudSave();
     }
 
-    function onCyberHomeClaim() {
-      playSound('fanfare');
-      if (typeof collectBeeMined === 'function' && typeof beeMinedPoints !== 'undefined' && beeMinedPoints >= 1) {
-        collectBeeMined();
-      } else {
-        points += 10;
-        updateDisplays();
-        showWalletToast('\u{1F389} Claimed +10 CFT Daily Mining Boost!');
-        if (typeof queueCloudSave === 'function') queueCloudSave();
+    // Upgrade Main Farm (Level 1 to 100)
+    function onCyberHomeUpgrade() {
+      if (userLevel >= 100) {
+        playSound('click');
+        showWalletToast('ðŸ† Main Farm is already at MAX Level (Lv. 100)!');
+        return;
       }
-    }
 
+      const cost = getMainFarmUpgradeCost(userLevel);
+      if (points < cost) {
+        playSound('click');
+        showWalletToast(`âš ï¸ Need ${cost.toLocaleString()} Farm Points for Lv. ${userLevel + 1}! (${points.toLocaleString()} / ${cost.toLocaleString()} pts)`);
+        return;
+      }
+
+      // Auto-claim any pending CFT before upgrading so no mining time is lost
+      const pending = getPendingMinedCft();
+      if (pending > 0.0001) {
+        cftBalance += pending;
+        hfcBalance = Math.floor(cftBalance);
+        localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+        localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+      }
+
+      points -= cost;
+      userLevel += 1;
+      cftLastCollectTime = Date.now();
+      cftTapBonus = 0;
+
+      localStorage.setItem('crazyfarm_level', userLevel);
+      localStorage.setItem('crazyfarm_farm_points', points);
+      localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
+      localStorage.setItem('crazyfarm_cft_tap_bonus', 0);
+
+      try { playSound('fanfare'); } catch(e){}
+      const newSpeed = getMainFarmDailyRate(userLevel);
+      showWalletToast(`ðŸŽ‰ Upgraded to Lv. ${userLevel}! Mining Speed: ${newSpeed} CFT/day! âš¡`);
+
+      updateDisplays();
+      updateLiveCftMiningTicker();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+    }
     function updateDisplays() {
       renderAllAdFarms();
-      const dailyBeeRate = userLevel * 24;
+      const dailyBeeRate = userLevel * 12;
       const hourlyBeeRate = userLevel;
 
             document.getElementById('farmPointsDisplay').innerText = points.toLocaleString();
@@ -3399,9 +3519,9 @@
       const statTotalPoints = document.getElementById('statTotalPoints');
       if (statTotalPoints) statTotalPoints.innerText = points.toLocaleString();
       const statHFC = document.getElementById('statHoneyCoins');
-      if (statHFC) statHFC.innerText = hfcBalance.toLocaleString() + " CFC";
+      if (statHFC) statHFC.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString()) + " CFT";
       const statFarmingSpeed = document.getElementById('statFarmingPower');
-      if (statFarmingSpeed) statFarmingSpeed.innerText = `+${userLevel * 24}/day`;
+      if (statFarmingSpeed) statFarmingSpeed.innerText = `+${userLevel * 12}/day`;
       const statPvPPower = document.getElementById('statTotalEarnings');
       if (statPvPPower && typeof getPlayerBattlePower === 'function') {
         statPvPPower.innerText = `+${getPlayerBattlePower().powerPercent}% Power`;
@@ -4191,10 +4311,10 @@
     // Render Action Button State for Each Animal Farm in 4x2 Grid
     // ==================== MAIN FARM (RED BARN) MODAL LOGIC ====================
     function openMainFarmModal() {
-      updateMainFarmModalUI();
-      const vidEl = document.getElementById('mainFarmModalVideo');
-      if (vidEl) {
-        try {
+      switchTab('home');
+      try { playSound('fanfare'); } catch(e){}
+      showWalletToast('ðŸšœ Welcome to Main Farm! Mining CFT Live!');
+      return;
           vidEl.currentTime = 0;
           vidEl.play().catch(()=>{});
         } catch(e){}
@@ -5135,7 +5255,7 @@
 
     function syncWalletView() {
       const statHFCWallet = document.getElementById('statHoneyCoins');
-      if (statHFCWallet) statHFCWallet.innerText = hfcBalance.toLocaleString() + " CFC";
+      if (statHFC) statHFC.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString()) + " CFT";
       // Sync avatar & level
       const av = document.getElementById('walletAvatarDisplay');
       const hAv = document.getElementById('headerAvatarDisplay');
@@ -5150,7 +5270,7 @@
 
       // Speed badge
       const spd = document.getElementById('walletSpeedBadge');
-      if (spd) spd.innerText = `+${userLevel * 24}/day`;
+      if (spd) spd.innerText = `+${userLevel * 12}/day`;
       const activeFarmsList = typeof getActiveOrWatchedFarmsCount === "function" ? getActiveOrWatchedFarmsCount() : [];
       const farmBadge = document.getElementById("walletFarmsActiveBadge");
       if (farmBadge) farmBadge.innerText = activeFarmsList.length + " Active";
@@ -5169,7 +5289,7 @@
       // CFC balance
       const hfcEl = document.getElementById('hfcBalanceDisplay');
       const usdEl = document.getElementById('hfcUsdDisplay');
-      if (hfcEl) hfcEl.innerText = hfcBalance.toLocaleString();
+      if (hfcEl) hfcEl.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString());
       if (usdEl) usdEl.innerText = isWalletConnected ? "Wallet Verified (Queued for TGE)" : "Accumulating for TGE";
       const feeNoticeEl = document.getElementById("withdrawFeeNotice");
       if (feeNoticeEl) {
@@ -5190,7 +5310,7 @@
       playSound('coin');
       const earned = canConvert;
       points -= earned * HFC_RATE;
-      hfcBalance += earned;
+      cftBalance += earned; hfcBalance = Math.floor(cftBalance); localStorage.setItem('crazyfarm_cft_balance', cftBalance);
       updateDisplays();
       syncWalletView();
       initTonConnect();
@@ -5926,6 +6046,8 @@
           if (data.farms_data && Array.isArray(data.farms_data.watched)) {
             watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
             if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
+            if (data.farms_data.cft_last_collect) cftLastCollectTime = Number(data.farms_data.cft_last_collect) || cftLastCollectTime;
+            if (data.farms_data.cft_balance) cftBalance = Math.max(cftBalance, Number(data.farms_data.cft_balance) || 0);
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
             if (data.farms_data.crazy_box_last) lastCrazyBoxOpenTimestamp = Math.max(lastCrazyBoxOpenTimestamp, Number(data.farms_data.crazy_box_last) || 0);
             if (data.farms_data.pvp_cooldowns && typeof data.farms_data.pvp_cooldowns === 'object') {
@@ -6057,7 +6179,10 @@
           crazy_box_last: lastCrazyBoxFreeTimestamp,
           pvp_cooldowns: pvpCooldowns,
           checkin_streak: checkInStreak,
-          checkin_last_date: localStorage.getItem('crazyfarm_last_checkin_date') || ''
+          checkin_last_date: localStorage.getItem('crazyfarm_last_checkin_date') || '',
+          cft_balance: cftBalance,
+          cft_last_collect: cftLastCollectTime,
+          cft_tap_bonus: cftTapBonus
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -6067,6 +6192,8 @@
       try {
         localStorage.setItem('crazyfarm_points', points);
         localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+        localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+        localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
         localStorage.setItem('crazyfarm_level', userLevel);
         localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
         localStorage.setItem('crazyfarm_bee_mined_pts', beeMinedPoints);
