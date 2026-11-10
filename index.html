@@ -3778,7 +3778,7 @@
 
       // Cyber Home Dynamic Elements
       const cyberName = document.getElementById('cyberPlayerName');
-      if (cyberName) cyberName.innerText = playerName || 'Farmer';
+      if (cyberName) cyberName.innerText = (typeof tgUser !== 'undefined' && tgUser?.first_name) ? tgUser.first_name : 'Farmer';
       const cyberLvl = document.getElementById('cyberUserLevel');
       if (cyberLvl) cyberLvl.innerText = userLevel;
       const cyberWlt = document.getElementById('cyberWalletShort');
