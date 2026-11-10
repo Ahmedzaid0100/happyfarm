@@ -1516,6 +1516,18 @@
             </div>
             <span id="pvpBadge-7" class="bg-emerald-950/90 text-lime-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-emerald-400 shrink-0">&#9876; Free</span>
           </button>
+
+          <!-- 4. Farm Run Sprint (Dog Runner) -->
+          <button onclick="closeBattlesModal(); openBattlePrep('run')" class="btn-3d-yellow w-full rounded-2xl p-3 flex items-center justify-between shadow-lg active:scale-95 transition-all text-amber-950 border border-yellow-200/60 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl animate-pulse">&#127939;</span>
+              <div class="text-left">
+                <div class="font-black text-xs sm:text-sm text-amber-950 leading-tight">FARM RUN SPRINT</div>
+                <div class="text-[9.5px] text-amber-900 font-extrabold">+100 to +300 Pts (15s Dog Run)</div>
+              </div>
+            </div>
+            <span id="pvpBadge-run" class="bg-amber-950/90 text-yellow-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-amber-600 shrink-0">&#127939; Free</span>
+          </button>
         </div>
       </div>
     </div>
@@ -2650,22 +2662,24 @@
         const remMs = getBattleCooldownRemaining(m);
         const timeStr = formatBattleCooldown(remMs);
         if (typeof showWalletToast === 'function') {
-          showWalletToast('⏳ Cooldown active! Next ' + (m === 'run' ? 'RUN' : (m + 'v' + m)) + ' battle in ' + timeStr);
+          showWalletToast('⏳ Cooldown active! Next ' + (m === 'run' ? 'RUN' : (m + 'v' + m)) + ' in ' + timeStr);
         } else {
-          alert('⏳ Battle on cooldown! Available in ' + timeStr);
+          alert('⏳ Cooldown active! Available in ' + timeStr);
         }
         return;
       }
 
-      // Preload video for this battle mode right now so it never stutters
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
-        if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
-          videoEl.src = targetSrc;
-          videoEl.muted = true;
-          videoEl.preload = 'auto';
-          videoEl.load();
+      // Preload video for this battle mode right now so it never stutters (Only for 3v3, 5v5, 7v7)
+      if (m !== 'run') {
+        const videoEl = document.getElementById('arenaBattleVideo');
+        if (videoEl) {
+          const targetSrc = 'assets/videos/battle_' + m + 'vs' + m + '.mp4';
+          if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
+            videoEl.src = targetSrc;
+            videoEl.muted = true;
+            videoEl.preload = 'auto';
+            videoEl.load();
+          }
         }
       }
 
@@ -2680,21 +2694,35 @@
 
       if (vipContainer) vipContainer.classList.add('hidden');
 
-      const pts = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
-      const iconEmoji = (m === 'run') ? '&#127939;&#9889;' : ((m === 7) ? '&#129351;' : (m === 5 ? '&#129352;' : '&#129353;'));
+      if (m === 'run') {
+        if (icon) icon.innerHTML = '&#127939;&#9889;';
+        if (title) title.innerText = 'Farm Run Sprint (Free Entry)';
+        if (sub) sub.innerText = 'Dodge farm obstacles, collect golden wheat & sprint to victory in 15 seconds!';
+        if (prize) prize.innerHTML = '<span>🌾</span> Win +100 to +300 Farm Points (Optional 2x Boost with Ad)';
+        if (stepsContainer) {
+          stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>🐕</span> 3 Lives &bull; 15s Challenge &bull; Instant Dog Runner</div>';
+        }
+        if (actionContainer) {
+          actionContainer.classList.remove('hidden');
+          actionContainer.innerHTML = '<button type="button" onclick="closeModal(\'battlePrepModal\'); startRunSprintGame();" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>🏃</span> START RUN SPRINT (FREE)!</button>';
+        }
+      } else {
+        const pts = (m === 7) ? 500 : (m === 5 ? 200 : 100);
+        const iconEmoji = (m === 7) ? '&#129351;' : (m === 5 ? '&#129352;' : '&#129353;');
 
-      if (icon) icon.innerHTML = iconEmoji;
-      if (title) title.innerText = (m === 'run') ? 'RUN Sprint Arena (Free Entry)' : (m + ' vs ' + m + ' Arena (Free Entry)');
-      if (sub) sub.innerText = 'Fight and win to earn +' + pts + ' Farm Points! (Optional 2x Boost with Ad)';
-      if (prize) prize.innerHTML = '<span>🌾</span> Win +' + pts + ' Farm Points (2x Boost = ' + (pts * 2) + ' Pts)';
+        if (icon) icon.innerHTML = iconEmoji;
+        if (title) title.innerText = m + ' vs ' + m + ' Arena (Free Entry)';
+        if (sub) sub.innerText = 'Fight and win to earn +' + pts + ' Farm Points! (Optional 2x Boost with Ad)';
+        if (prize) prize.innerHTML = '<span>🌾</span> Win +' + pts + ' Farm Points (2x Boost = ' + (pts * 2) + ' Pts)';
 
-      if (stepsContainer) {
-        stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All ' + (m === 'run' ? '7' : m) + ' Farm Animals Ready.</div>';
-      }
+        if (stepsContainer) {
+          stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All ' + m + ' Farm Animals Ready.</div>';
+        }
 
-      if (actionContainer) {
-        actionContainer.classList.remove('hidden');
-        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + (m === 'run' ? '\'run\'' : m) + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
+        if (actionContainer) {
+          actionContainer.classList.remove('hidden');
+          actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + m + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
+        }
       }
 
       if (modal) {
@@ -2833,7 +2861,12 @@
       try {
       closeModal('battlePrepModal');
 
-      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
+      if (mode === 'run') {
+        startRunSprintGame();
+        return;
+      }
+
+      const m = parseInt(mode, 10) || 3;
       currentBattleMode = m;
       isBattleInProgress = false;
 
