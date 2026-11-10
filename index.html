@@ -5136,7 +5136,7 @@
 
     function syncWalletView() {
       const statHFCWallet = document.getElementById('statHoneyCoins');
-      if (statHFC) statHFC.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString()) + " CFT";
+      if (statHFCWallet) statHFCWallet.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString()) + ' CFT';
       // Sync avatar & level
       const av = document.getElementById('walletAvatarDisplay');
       const hAv = document.getElementById('headerAvatarDisplay');
@@ -5174,7 +5174,7 @@
       if (usdEl) usdEl.innerText = isWalletConnected ? "Wallet Verified (Queued for TGE)" : "Accumulating for TGE";
       const feeNoticeEl = document.getElementById("withdrawFeeNotice");
       if (feeNoticeEl) {
-        feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 CFC (VIP FREE)</b>" : "Gas Fee: <b>50 CFC</b> (0 with VIP Dog)";
+        feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 CFT (VIP FREE)</b>" : "Gas Fee: <b>50 CFT</b> (0 with VIP Dog)";
       }
     }
 
