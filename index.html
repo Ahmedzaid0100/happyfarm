@@ -5338,6 +5338,10 @@
 
     async function connectTONWallet() {
       playSound('click');
+      if (!tonConnectUI) {
+        initTonConnect();
+      }
+
       if (tonConnectUI) {
         try {
           await tonConnectUI.openModal();
@@ -5347,7 +5351,18 @@
         }
       }
 
-      // Fallback manual prompt for the player's personal wallet address
+      // If SDK not ready yet, try once more after short delay
+      if (typeof TON_CONNECT_UI !== 'undefined' && !tonConnectUI) {
+        try {
+          initTonConnect();
+          if (tonConnectUI) {
+            await tonConnectUI.openModal();
+            return;
+          }
+        } catch(e) {}
+      }
+
+      // Fallback manual prompt only if TonConnect SDK is completely blocked/unavailable
       const playerInput = prompt('Enter your personal TON Wallet address (e.g. UQ... or EQ...):', connectedWalletAddress || '');
       if (playerInput && playerInput.trim().length > 10) {
         handleWalletConnected(playerInput.trim());
@@ -5366,10 +5381,7 @@
       if (tonConnectUI && tonConnectUI.connected) {
         try {
           await tonConnectUI.disconnect();
-          if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+        } catch(e) {}
       }
       handleWalletDisconnected();
     }
@@ -5385,10 +5397,18 @@
     }
 
     function initTonConnect() {
+      if (tonConnectUI) return tonConnectUI;
+
       if (typeof TON_CONNECT_UI !== 'undefined') {
         try {
+          const isLocal = window.location.protocol.startsWith('http') && 
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+          const manifest = isLocal 
+            ? window.location.origin + '/tonconnect-manifest.json'
+            : 'https://ahmedzaid0100.github.io/happyfarm/tonconnect-manifest.json';
+
           tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://ahmedzaid0100.github.io/happyfarm/tonconnect-manifest.json',
+            manifestUrl: manifest,
             buttonRootId: null
           });
 
@@ -5399,10 +5419,7 @@
                 if (TON_CONNECT_UI.toUserFriendlyAddress) {
                   addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
                 }
-                if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+              } catch(e) {}
               handleWalletConnected(addr);
             } else if (!wallet && isWalletConnected) {
               handleWalletDisconnected();
@@ -5415,10 +5432,7 @@
               if (TON_CONNECT_UI.toUserFriendlyAddress) {
                 addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
               }
-              if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+            } catch(e) {}
             handleWalletConnected(addr);
           }
         } catch(e) {
@@ -5433,7 +5447,11 @@
         isWalletConnected = true;
       }
       updateWalletConnectionUI();
+      return tonConnectUI;
     }
+
+    // Initialize TonConnect immediately on script load
+    try { initTonConnect(); } catch(e) {}
 
     function showWalletToast(msg) {
       playSound('coin');
@@ -7672,6 +7690,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.addEventListener('load', () => {
+  try { initTonConnect(); } catch(e){}
   if (location.hash === '#previewAnimalModal') {
     setTimeout(() => openAnimalFarmModal('duck'), 400);
   } else if (location.hash === '#previewCowsModal') {
