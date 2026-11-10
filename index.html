@@ -323,7 +323,7 @@
           <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.0%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Daily Check-In"></div>
 
           <!-- 6. Gift Hotspot (Right Top Gift Box Ring) -->
-          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 17.5%; width: 18.5%; height: 11.0%;" title="Daily Mystery Gift Box"></div>
+          <div onclick="openGiftModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77.0%; top: 16.5%; width: 22.0%; height: 13.0%;" title="Daily Mystery Gift Box"></div>
 
           <!-- 7. Run Hotspot (Right Bottom Sneaker Ring) -->
           <div onclick="openBattlePrep('run')" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Farm Run Sprint"></div>
@@ -1418,40 +1418,43 @@
         </button>
       </div>
     </div>
-    <!-- Crazy Box Reward Celebration Modal -->
-    <div id="crazyBoxModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-      <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center animate-in fade-in zoom-in duration-300">
-        <button onclick="closeModal('crazyBoxModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold cursor-pointer">✕</button>
-        
-        <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-white mx-auto flex items-center justify-center text-4xl sm:text-5xl shadow-xl mb-3 relative animate-bounce" style="animation-duration: 1.5s;">
-          &#127873;
-          <span class="absolute -top-2 -right-2 text-2xl animate-spin" style="animation-duration: 4s;">&#10024;</span>
-        </div>
-
-        <h3 class="text-xl sm:text-2xl font-black text-amber-300 mb-0.5 filter drop-shadow">&#127881; Crazy Box Opened!</h3>
-        <p class="text-xs text-amber-100 font-semibold mb-3">You received a lucky surprise gift:</p>
-
-        <!-- Prize Display Banner -->
-        <div class="bg-black/50 rounded-2xl p-3 mb-4 border border-yellow-400/50 flex flex-col items-center justify-center">
+    <!-- ==================== HOME GIFT (CRAZY BOX) MODAL ==================== -->
+    <div id="homeGiftModal" onclick="if(event.target === this) closeGiftModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
+      <div class="relative w-full max-w-sm wood-board border-2 border-yellow-400/90 rounded-3xl p-5 shadow-2xl text-white animate-in fade-in zoom-in duration-200 text-center">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
           <div class="flex items-center gap-2">
-            <span class="text-3xl">&#127806;</span>
-            <span id="crazyBoxPrizeText" class="text-2xl font-black text-lime-300 tracking-wide">+3,000 Pts</span>
+            <span class="text-2xl animate-bounce">&#127873;</span>
+            <div class="text-left">
+              <h3 class="text-sm sm:text-base font-black text-yellow-300 uppercase tracking-wide leading-none drop-shadow" style="font-family: 'Fredoka', cursive;">Mystery Gift Box</h3>
+              <span class="text-[10px] text-amber-200 font-bold">Daily Lucky Farm Rewards</span>
+            </div>
           </div>
-          <span id="crazyBoxUsdText" class="text-[11px] text-amber-200/90 font-bold mt-0.5">&#127806; Lucky Farm Points Drop</span>
+          <button onclick="closeGiftModal()" class="w-8 h-8 rounded-full bg-red-600/90 text-white font-black text-sm flex items-center justify-center border border-white/60 active:scale-90 transition-transform cursor-pointer shadow">&#10005;</button>
         </div>
 
-        <!-- Action Buttons: Normal Collect & 2x Double with Ad -->
-        <div class="space-y-2.5">
-          <button onclick="claimCrazyBoxReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
-            <span>&#127916;</span> <span id="crazyBoxDoubleBtnText">Collect 2x (+6,000 Pts) with Ad</span>
-          </button>
-          <button onclick="claimCrazyBoxReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
-            <span>&#127806;</span> <span id="crazyBoxNormalBtnText">Claim Free (+3,000 Pts)</span>
+        <!-- Animated 3D Gift Box Visual -->
+        <div class="relative w-24 h-24 mx-auto my-2 flex items-center justify-center">
+          <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-white flex items-center justify-center text-5xl shadow-2xl animate-bounce" style="animation-duration: 2s;">
+            &#127873;
+          </div>
+          <span class="absolute -top-1 -right-1 text-2xl animate-spin" style="animation-duration: 5s;">&#10024;</span>
+        </div>
+
+        <!-- Dynamic State Content (Ready to Open, Prize Revealed, or Cooldown) -->
+        <div id="giftModalStateBox" class="bg-black/50 rounded-2xl p-3 mb-3.5 border border-amber-700/60 text-center">
+          <div class="text-xs font-black text-yellow-300 mb-0.5">&#127881; Today's Free Gift is Ready!</div>
+          <div class="text-[10px] text-amber-200">Win up to 5,000 Farm Points instantly!</div>
+        </div>
+
+        <!-- Action Buttons Container -->
+        <div id="giftModalActionContainer" class="space-y-2">
+          <button onclick="executeOpenGift(false)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer">
+            <span>&#10024;</span> OPEN FREE GIFT
           </button>
         </div>
       </div>
     </div>
-
     <!-- 0. Dog VIP TON Purchase Modal -->
     <div id="dogVipModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center">
@@ -4529,112 +4532,9 @@
         `;
       }
     }
-
-    function openCrazyBox(withPoints = false) {
-      const status = getCrazyBoxStatus();
-
-      if (withPoints) {
-        if (!status.isPointsOpenAvailable) {
-          try { playSound('click'); } catch(e){}
-          if (typeof showWalletToast === 'function') {
-            showWalletToast('\u23F3 Daily point open already used today! Next free box in ' + formatTime(status.remainingSec));
-          }
-          return;
-        }
-
-        const COST = 500;
-        if (points < COST) {
-          try { playSound('click'); } catch(e){}
-          if (typeof showWalletToast === 'function') {
-            showWalletToast('\u26A0\uFE0F Need 500 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
-          } else {
-            alert('\u26A0\uFE0F Need 500 Points to open Crazy Box! (You have ' + points.toLocaleString() + ' pts)');
-          }
-          return;
-        }
-
-        points -= COST;
-        currentCrazyBoxIsOpenWithPoints = true;
-        updateDisplays();
-        if (typeof showWalletToast === 'function') {
-          showWalletToast('\u26A1 Used 500 Points for Daily Crazy Box!');
-        }
-      } else {
-        if (!status.isFreeAvailable) {
-          if (status.isPointsOpenAvailable) {
-            openCrazyBox(true);
-            return;
-          }
-          try { playSound('click'); } catch(e){}
-          if (typeof showWalletToast === 'function') {
-            showWalletToast('\u23F3 Daily limit reached (1 Free + 1 with Points)! Next free box in ' + formatTime(status.remainingSec));
-          }
-          return;
-        }
-        currentCrazyBoxIsOpenWithPoints = false;
-      }
-
-      try { playSound('fanfare'); } catch(e){}
-      // Lucky points reward from 1,000 up to 5,000 Farm Points
-      const rewards = [1000, 2000, 3000, 4000, 5000];
-      currentCrazyBoxWin = rewards[Math.floor(Math.random() * rewards.length)];
-
-      const prizeEl = document.getElementById('crazyBoxPrizeText');
-      const usdEl = document.getElementById('crazyBoxUsdText');
-      const doubleBtnText = document.getElementById('crazyBoxDoubleBtnText');
-      const normalBtnText = document.getElementById('crazyBoxNormalBtnText');
-
-      if (prizeEl) prizeEl.innerText = `+${currentCrazyBoxWin.toLocaleString()} Pts`;
-      if (usdEl) usdEl.innerText = '🌾 Lucky Farm Points Drop';
-      if (doubleBtnText) doubleBtnText.innerText = `Collect 2x (+${(currentCrazyBoxWin * 2).toLocaleString()} Pts) with Ad`;
-      if (normalBtnText) normalBtnText.innerText = `Claim Free (+${currentCrazyBoxWin.toLocaleString()} Pts)`;
-
-      openModal('crazyBoxModal');
+    function openCrazyBox() {
+      openGiftModal();
     }
-
-    function claimCrazyBoxReward(isDouble) { if (!ActionLock.run("crazybox", 1200, () => _doClaimCrazyBoxReward(isDouble))) return; } function _doClaimCrazyBoxReward(isDouble) {
-      try { playSound('click'); } catch(e){}
-      if (isDouble) {
-        showUniversalAd(() => {
-          finalizeCrazyBoxClaim(true);
-        }, '2x Crazy Box Double Points');
-      } else {
-        finalizeCrazyBoxClaim(false);
-      }
-    }
-
-    function finalizeCrazyBoxClaim(isDouble) {
-      try { playSound('fanfare'); } catch(e){}
-      const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
-      points += amount;
-
-      const now = Date.now();
-      if (currentCrazyBoxIsOpenWithPoints) {
-        lastCrazyBoxPointsTimestamp = now;
-        try {
-          localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
-        } catch(e) {}
-      } else {
-        lastCrazyBoxFreeTimestamp = now;
-        try {
-          localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
-          localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
-        } catch(e) {}
-      }
-
-      try {
-        localStorage.setItem('crazyfarm_points', points);
-      } catch(e) {}
-
-      updateDisplays();
-      if (typeof syncWalletView === 'function') syncWalletView();
-      queueCloudSave();
-      closeModal('crazyBoxModal');
-      updateCrazyBoxUI();
-
-      showWalletToast('\u{1F389} Claimed +' + amount.toLocaleString() + ' Farm Points from Crazy Box!');
-    }
-    // ==================== END CRAZY BOX ====================
 
     // VIP Dog Modal & Payment Handlers
     function openDogVipModal() {
@@ -7782,6 +7682,149 @@ window.addEventListener('load', () => {
     setTimeout(() => openMainFarmModal(), 400);
   }
 });
+
+    // ==================== HOME GIFT MODAL CONTROLS ====================
+    function openGiftModal() {
+      try { playSound('click'); } catch(e){}
+      renderGiftModalUI();
+      const m = document.getElementById('homeGiftModal');
+      if (m) {
+        m.classList.remove('hidden', 'pointer-events-none');
+        m.style.display = 'flex';
+      }
+    }
+
+    function closeGiftModal() {
+      try { playSound('click'); } catch(e){}
+      const m = document.getElementById('homeGiftModal');
+      if (m) {
+        m.classList.add('hidden', 'pointer-events-none');
+        m.style.display = 'none';
+      }
+    }
+
+    function renderGiftModalUI() {
+      const stateBox = document.getElementById('giftModalStateBox');
+      const actionBox = document.getElementById('giftModalActionContainer');
+      if (!stateBox || !actionBox) return;
+
+      const status = getCrazyBoxStatus();
+
+      if (status.isFreeAvailable) {
+        stateBox.innerHTML = 
+          <div class="text-sm font-black text-yellow-300 mb-0.5">&#127881; Daily Free Gift is Ready!</div>
+          <div class="text-[11px] text-amber-100 font-semibold">Open now for a lucky points drop (up to 5,000 Pts)!</div>
+        ;
+        actionBox.innerHTML = 
+          <button onclick="executeOpenGift(false)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer">
+            <span>&#10024;</span> OPEN FREE GIFT
+          </button>
+        ;
+      } else if (status.isPointsOpenAvailable) {
+        stateBox.innerHTML = 
+          <div class="text-xs font-black text-amber-300 mb-0.5">&#9889; Free Gift Claimed Today!</div>
+          <div class="text-[11px] text-yellow-200 font-bold">Unlock 1 Extra Mystery Gift for 500 Farm Points!</div>
+          <div class="text-[10px] text-sky-200 mt-1">&#9203; Next Free in: </div>
+        ;
+        actionBox.innerHTML = 
+          <button onclick="executeOpenGift(true)" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/60">
+            <span>&#9889;</span> OPEN EXTRA GIFT (500 Pts)
+          </button>
+        ;
+      } else {
+        stateBox.innerHTML = 
+          <div class="text-xs font-black text-amber-400 mb-1">&#128274; All Daily Gifts Claimed (2/2)!</div>
+          <div class="text-[11px] text-yellow-300 font-bold">&#9203; Next Free Gift in:</div>
+          <div class="text-xl font-mono font-black text-lime-400 mt-1"></div>
+        ;
+        actionBox.innerHTML = 
+          <button onclick="closeGiftModal()" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+            <span>&#10005;</span> Close
+          </button>
+        ;
+      }
+    }
+
+    function executeOpenGift(withPoints) {
+      if (withPoints) {
+        const COST = 500;
+        if (points < COST) {
+          try { playSound('click'); } catch(e){}
+          showWalletToast('\u26A0\uFE0F Need 500 Farm Points to open! (You have ' + points.toLocaleString() + ' pts)');
+          return;
+        }
+        points -= COST;
+        currentCrazyBoxIsOpenWithPoints = true;
+        updateDisplays();
+      } else {
+        currentCrazyBoxIsOpenWithPoints = false;
+      }
+
+      try { playSound('fanfare'); } catch(e){}
+      const rewards = [1000, 2000, 3000, 4000, 5000];
+      currentCrazyBoxWin = rewards[Math.floor(Math.random() * rewards.length)];
+
+      const stateBox = document.getElementById('giftModalStateBox');
+      const actionBox = document.getElementById('giftModalActionContainer');
+
+      if (stateBox) {
+        stateBox.innerHTML = 
+          <div class="text-xs font-black text-yellow-300 mb-1">&#127881; Congratulations! You Won:</div>
+          <div class="text-3xl font-black text-lime-300 drop-shadow my-1">+ Pts &#127806;</div>
+          <div class="text-[10.5px] text-amber-200 font-bold">&#127806; Lucky Farm Points Drop!</div>
+        ;
+      }
+
+      if (actionBox) {
+        actionBox.innerHTML = 
+          <button onclick="claimGiftReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer">
+            <span>&#127916;</span> Collect 2x (+ Pts) with Ad
+          </button>
+          <button onclick="claimGiftReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+            <span>&#127806;</span> Claim Free (+ Pts)
+          </button>
+        ;
+      }
+    }
+
+    function claimGiftReward(isDouble) {
+      if (!ActionLock.run('gift_claim', 1200, () => _doClaimGiftReward(isDouble))) return;
+    }
+
+    function _doClaimGiftReward(isDouble) {
+      try { playSound('click'); } catch(e){}
+      if (isDouble) {
+        showUniversalAd(() => {
+          finalizeGiftClaim(true);
+        }, '2x Mystery Gift Double Points');
+      } else {
+        finalizeGiftClaim(false);
+      }
+    }
+
+    function finalizeGiftClaim(isDouble) {
+      const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
+      points += amount;
+      const now = Date.now();
+
+      if (currentCrazyBoxIsOpenWithPoints) {
+        lastCrazyBoxPointsTimestamp = now;
+        localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
+      } else {
+        lastCrazyBoxFreeTimestamp = now;
+        localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
+        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
+      }
+
+      localStorage.setItem('crazyfarm_farm_points', points);
+      try { playSound('fanfare'); } catch(e){}
+      if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
+      updateDisplays();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+
+      showWalletToast('\u{1F389} Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
+      closeGiftModal();
+    }
 </script>
 </body>
 </html>
