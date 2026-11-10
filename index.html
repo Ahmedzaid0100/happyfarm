@@ -891,6 +891,64 @@
           </p>
         </div>
 
+        <!-- ==================== TOP CARD: WATCH MORE EARN MORE ==================== -->
+        <div class="bg-gradient-to-b from-[#874312] via-[#612b07] to-[#3d1802] border-2 border-[#2b1001] rounded-3xl p-3.5 shadow-xl text-white">
+          
+          <!-- Header -->
+          <div class="text-center mb-2.5 pb-2 border-b border-amber-800/60">
+            <h3 class="font-black text-base text-yellow-300 uppercase tracking-wide">
+              🎬 Watch More Earn More
+            </h3>
+            <p class="text-[11px] text-amber-200/90 font-semibold mt-0.5">
+              Claim daily bonus points &amp; 2x Boost with Ads!
+            </p>
+          </div>
+
+          <!-- 5 Steps / Boxes Grid -->
+          <div class="grid grid-cols-5 gap-1.5 mb-3" id="watchAdStepsGrid">
+            <div id="adStep-1" class="bg-black/50 border-2 border-amber-600 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all">
+              <span class="text-[10px] font-black text-amber-200">1</span>
+              <span id="adStepIcon-1" class="text-[10px] font-black text-yellow-300">+20</span>
+            </div>
+            <div id="adStep-2" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
+              <span class="text-[10px] font-black text-amber-200">2</span>
+              <span id="adStepIcon-2" class="text-[10px] font-black text-yellow-300">+30</span>
+            </div>
+            <div id="adStep-3" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
+              <span class="text-[10px] font-black text-amber-200">3</span>
+              <span id="adStepIcon-3" class="text-[10px] font-black text-yellow-300">+40</span>
+            </div>
+            <div id="adStep-4" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
+              <span class="text-[10px] font-black text-amber-200">4</span>
+              <span id="adStepIcon-4" class="text-[10px] font-black text-yellow-300">+50</span>
+            </div>
+            <div id="adStep-5" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
+              <span class="text-[10px] font-black text-amber-200">5</span>
+              <span id="adStepIcon-5" class="text-[10px] font-black text-yellow-300">+100</span>
+            </div>
+          </div>
+
+          <!-- Reward Text & Action Button -->
+          <div class="bg-black/40 rounded-2xl p-2.5 mb-2.5 text-center border border-amber-700/60">
+            <span class="text-xs font-black text-yellow-300">
+              🌾 Earn Points: +20, +30, +40, +50, +100
+            </span>
+            <div class="text-[10px] text-amber-300 font-bold mt-0.5" id="otherAdStatusText">
+              Next: +20 Points (Step 1/5)
+            </div>
+          </div>
+
+          <div id="otherAdActionContainer">
+            <button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
+              <span>&#127806;</span> Collect! (+20 Points) [1/5]
+            </button>
+          </div>
+
+        </div>
+
+
+
+
         <!-- ==================== SECTION 2: FRIEND INVITE MILESTONES (EARN DIRECT FARM POINTS) ==================== -->
         <div class="bg-gradient-to-b from-[#2e1805] via-[#442308] to-[#251002] border-2 border-[#b45309] rounded-3xl p-3.5 shadow-xl text-white">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-amber-900/60">
@@ -1161,71 +1219,6 @@
 
         </div>
 
-
-
-        <!-- Top Title Banner: Arena -->
-        <div class="flex justify-center pt-1">
-          <div class="bg-gradient-to-b from-[#3c1d06] to-[#251002] px-8 py-1.5 rounded-2xl border-2 border-[#7a4214] shadow-lg text-center">
-            <h2 class="text-base font-black text-yellow-300 tracking-wide drop-shadow-md flex items-center justify-center gap-1.5" style="font-family: 'Fredoka', cursive;">
-              <span class="text-lg">&#9876;</span> Arena
-            </h2>
-          </div>
-        </div>
-
-        <!-- ==================== TOP CARD: WATCH MORE EARN MORE ==================== -->
-        <div class="bg-gradient-to-b from-[#874312] via-[#612b07] to-[#3d1802] border-2 border-[#2b1001] rounded-3xl p-3.5 shadow-xl text-white">
-          
-          <!-- Header -->
-          <div class="text-center mb-2.5 pb-2 border-b border-amber-800/60">
-            <h3 class="font-black text-base text-yellow-300 uppercase tracking-wide">
-              🎬 Watch More Earn More
-            </h3>
-            <p class="text-[11px] text-amber-200/90 font-semibold mt-0.5">
-              Claim daily bonus points &amp; 2x Boost with Ads!
-            </p>
-          </div>
-
-          <!-- 5 Steps / Boxes Grid -->
-          <div class="grid grid-cols-5 gap-1.5 mb-3" id="watchAdStepsGrid">
-            <div id="adStep-1" class="bg-black/50 border-2 border-amber-600 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all">
-              <span class="text-[10px] font-black text-amber-200">1</span>
-              <span id="adStepIcon-1" class="text-[10px] font-black text-yellow-300">+20</span>
-            </div>
-            <div id="adStep-2" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-[10px] font-black text-amber-200">2</span>
-              <span id="adStepIcon-2" class="text-[10px] font-black text-yellow-300">+30</span>
-            </div>
-            <div id="adStep-3" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-[10px] font-black text-amber-200">3</span>
-              <span id="adStepIcon-3" class="text-[10px] font-black text-yellow-300">+40</span>
-            </div>
-            <div id="adStep-4" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-[10px] font-black text-amber-200">4</span>
-              <span id="adStepIcon-4" class="text-[10px] font-black text-yellow-300">+50</span>
-            </div>
-            <div id="adStep-5" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
-              <span class="text-[10px] font-black text-amber-200">5</span>
-              <span id="adStepIcon-5" class="text-[10px] font-black text-yellow-300">+100</span>
-            </div>
-          </div>
-
-          <!-- Reward Text & Action Button -->
-          <div class="bg-black/40 rounded-2xl p-2.5 mb-2.5 text-center border border-amber-700/60">
-            <span class="text-xs font-black text-yellow-300">
-              🌾 Earn Points: +20, +30, +40, +50, +100
-            </span>
-            <div class="text-[10px] text-amber-300 font-bold mt-0.5" id="otherAdStatusText">
-              Next: +20 Points (Step 1/5)
-            </div>
-          </div>
-
-          <div id="otherAdActionContainer">
-            <button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
-              <span>&#127806;</span> Collect! (+20 Points) [1/5]
-            </button>
-          </div>
-
-        </div>
 
 
       </div> <!-- /tasksView -->
