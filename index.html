@@ -282,68 +282,89 @@
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
       <!-- ===== CYBER FARM MASTER HOME VIEW ===== -->
+      <!-- ===== MASTER HOME VIEW (SUNNY CRAZY FARM) ===== -->
       <div id="homeView" class="-mx-3 -mt-3 mb-0 relative w-[calc(100%+1.5rem)] overflow-hidden select-none pb-0">
         
         <div id="cyberHomeContainer" class="relative w-full overflow-hidden shadow-2xl" style="height: calc(100vh - 60px); height: calc(100dvh - 60px); min-height: 560px;">
           
-          <!-- High-Res Crazy Farm Master Artwork (Full Height to Nav Bar - Zero Gap) -->
+          <!-- Master Sunny Crazy Farm Artwork (Zero Gap Full Bleed) -->
           <img src="assets/cyber_home.jpg" alt="Crazy Farm" class="w-full h-full object-fill select-none pointer-events-none" />
 
-          <!-- ==================== DYNAMIC LIVE OVERLAYS ==================== -->
+          <!-- ==================== TOP DYNAMIC OVERLAYS ==================== -->
           <!-- 1. Player Info Top-Left -->
-          <div onclick="switchTab('profile')" class="absolute cursor-pointer flex items-center gap-1.5 bg-black/45 backdrop-blur-md border border-cyan-400/40 rounded-full px-2 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="left: 3%; top: 1.5%; max-width: 32%;" title="Open Profile">
+          <div onclick="switchTab('profile')" class="absolute cursor-pointer flex items-center gap-1.5 bg-amber-950/80 backdrop-blur-md border border-amber-400/70 rounded-full px-2.5 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="left: 3%; top: 1.5%; max-width: 35%;" title="Open Profile">
             <span class="text-xs">&#128104;&#8205;&#127806;</span>
             <div class="flex flex-col leading-tight overflow-hidden text-left">
-              <span id="cyberPlayerName" class="text-[9.5px] font-black text-cyan-200 truncate drop-shadow">Farmer</span>
-              <span class="text-[8px] font-bold text-amber-300">Lv.<span id="cyberUserLevel">1</span></span>
+              <span id="cyberPlayerName" class="text-[10px] font-black text-amber-200 truncate drop-shadow">Farmer</span>
+              <span class="text-[8.5px] font-bold text-yellow-300">Lv.<span id="cyberUserLevel">1</span></span>
             </div>
           </div>
 
           <!-- 2. Wallet Pill Top-Right -->
-          <div onclick="switchTab('wallet')" class="absolute cursor-pointer flex items-center gap-1 bg-black/45 backdrop-blur-md border border-cyan-400/40 rounded-full px-2.5 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="right: 3%; top: 1.5%; max-width: 35%;" title="View Wallet">
+          <div onclick="switchTab('wallet')" class="absolute cursor-pointer flex items-center gap-1.5 bg-amber-950/80 backdrop-blur-md border border-amber-400/70 rounded-full px-2.5 py-1 select-none active:scale-95 transition-transform shadow-lg z-20" style="right: 3%; top: 1.5%; max-width: 36%;" title="View Wallet">
             <span class="text-xs">&#128091;</span>
-            <span id="cyberWalletShort" class="text-[9px] font-black text-cyan-300 truncate tracking-tight">Connect</span>
+            <span id="cyberWalletShort" class="text-[9.5px] font-black text-yellow-300 truncate tracking-tight">Connect</span>
           </div>
 
-          <!-- 3. Mining Rate Center Badge (Real-Time Live Ticker) -->
-          <div class="absolute flex flex-col items-center justify-center pointer-events-none select-none bg-black/55 backdrop-blur-md border border-cyan-400/40 rounded-2xl px-2.5 py-0.5 shadow-lg" style="left: 28%; top: 30.5%; width: 44%; height: 5.8%;">
-            <span id="cyberMiningLiveMined" class="text-[12px] font-black text-lime-300 tracking-wide drop-shadow font-mono leading-none">+0.0000 CFT</span>
-            <span id="cyberMiningSpeed" class="text-[8.5px] font-bold text-cyan-200 leading-tight mt-0.5">&#9889; 12/d (Lv.1)</span>
+          <!-- 3. Live Mining Ticker (Sunbeams Plaque above Center CFT Coin) -->
+          <div class="absolute flex flex-col items-center justify-center pointer-events-none select-none bg-gradient-to-b from-[#381e08]/90 to-[#221103]/95 backdrop-blur-md border-2 border-yellow-500/85 rounded-2xl px-3 py-1 shadow-2xl z-20" style="left: 23%; top: 18.0%; width: 54%; height: 7.2%;">
+            <div class="flex items-center gap-1 leading-none">
+              <span class="text-[9px] font-bold text-yellow-200/90 uppercase tracking-wider">Mined:</span>
+              <span id="cyberMiningLiveMined" class="text-[13px] font-black text-lime-400 tracking-wide drop-shadow font-mono">+0.0000 CFT</span>
+            </div>
+            <span id="cyberMiningSpeed" class="text-[9px] font-bold text-amber-200 leading-tight mt-0.5">&#9889; 12/d (Lv.1)</span>
           </div>
 
-          <!-- ==================== INTERACTIVE CLICKABLE HOTSPOTS ==================== -->
-          <!-- 4. Battles Hotspot (Left Swords Ring) -->
-          <div onclick="openBattlesModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2.5%; top: 15.0%; width: 18%; height: 10%;" title="Farm Battles"></div>
+          <!-- ==================== SIDE HOTSPOTS ==================== -->
+          <!-- 4. Battles Hotspot (Left Top Swords Ring) -->
+          <div onclick="openBattlesModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 3.5%; top: 17.5%; width: 18.5%; height: 11.0%;" title="Farm Battles Arena"></div>
 
-          <!-- 5. Daily Login Hotspot (Left Gift Box Ring) -->
-          <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 2.5%; top: 26.5%; width: 18%; height: 10%;" title="Daily Check-In"></div>
+          <!-- 5. Daily Login Hotspot (Left Bottom Calendar Ring) -->
+          <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.0%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Daily Check-In"></div>
 
-          <!-- 6. Lucky Spin Hotspot (Right Roulette Ring) -->
-          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80.5%; top: 25.5%; width: 18%; height: 10%;" title="Lucky Spin Crazy Box"></div>
+          <!-- 6. Gift Hotspot (Right Top Gift Box Ring) -->
+          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 17.5%; width: 18.5%; height: 11.0%;" title="Daily Mystery Gift Box"></div>
 
-          <!-- 7. Run Hotspot (Right Cyber Runner Character Ring) -->
-          <div onclick="openBattlePrep('run')" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80.5%; top: 36.8%; width: 18%; height: 9.5%;" title="Farm Run Sprint"></div>
+          <!-- 7. Run Hotspot (Right Bottom Sneaker Ring) -->
+          <div onclick="openBattlePrep('run')" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Farm Run Sprint"></div>
 
-          <!-- 8. Gift Box Hotspot (Right Gold Gift Box Ring) -->
-          <div onclick="openCrazyBox()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 80.5%; top: 48.5%; width: 18%; height: 9.5%;" title="Mystery Gift Box"></div>
-
-          <!-- 9. Giant Center CFT Coin - Interactive Tap-to-Mine with Haptic Feedback & Floating Points! -->
-          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform flex items-center justify-center" style="left: 28.5%; top: 38.5%; width: 43%; height: 23%;" title="Tap to Mine CFT!">
-            <div class="w-full h-full rounded-full border border-yellow-400/20 hover:border-yellow-400/60 transition-colors"></div>
+          <!-- ==================== CENTER GIANT CFT COIN ==================== -->
+          <!-- 8. Interactive Tap-to-Mine with Haptic Feedback & Floating Tokens -->
+          <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute z-20 cursor-pointer rounded-full active:scale-95 transition-transform flex items-center justify-center" style="left: 27.5%; top: 33.5%; width: 45.0%; height: 25.5%;" title="Tap to Mine CFT!">
+            <div class="w-full h-full rounded-full border-2 border-yellow-400/0 hover:border-yellow-400/40 transition-colors"></div>
           </div>
 
-          <!-- 10. Upgrade Button (Bottom Left) -->
-          <div onclick="onCyberHomeUpgrade()" class="absolute z-20 cursor-pointer rounded-2xl active:scale-95 transition-transform" style="left: 17.5%; top: 81.5%; width: 34%; height: 9%;" title="Upgrade Animals & Farms"></div>
+          <!-- ==================== BOTTOM FENCE CONTROL PANEL ==================== -->
+          <!-- 9. Level & Upgrade Progress Bar -->
+          <div class="absolute z-20 pointer-events-none select-none flex flex-col items-center justify-center" style="left: 15%; top: 77.8%; width: 70%; height: 4.8%;">
+            <div class="w-full h-3 bg-black/60 rounded-full border border-amber-500/80 p-0.5 overflow-hidden shadow-inner relative">
+              <div id="cyberHomeLvlBar" class="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-lime-400 rounded-full transition-all duration-300" style="width: 15%;"></div>
+            </div>
+            <span id="cyberHomeLvlText" class="text-[8.5px] font-black text-yellow-200 mt-0.5 drop-shadow leading-none">Lv. 1 (Upgrade: 2,000 Pts)</span>
+          </div>
 
-          <!-- 11. Claim Button (Bottom Right) -->
-          <div onclick="onCyberHomeClaim()" class="absolute z-20 cursor-pointer rounded-2xl active:scale-95 transition-transform animate-pulse" style="left: 52.5%; top: 81.5%; width: 34%; height: 9%;" title="Claim Farm Earnings"></div>
+          <!-- 10. 3D UPGRADE Button (Bottom Left) -->
+          <button onclick="onCyberHomeUpgrade()" class="btn-3d-yellow absolute z-20 rounded-2xl flex flex-col items-center justify-center p-1.5 shadow-2xl active:scale-95 transition-transform border-2 border-yellow-300 cursor-pointer" style="left: 6%; top: 83.5%; width: 42%; height: 9.8%;" title="Upgrade Main Farm & Boost Daily CFT">
+            <div class="flex items-center gap-1 leading-none">
+              <span class="text-sm">&#11014;&#65039;</span>
+              <span class="text-xs sm:text-sm font-black text-amber-950 uppercase tracking-wide">UPGRADE</span>
+            </div>
+            <span id="cyberHomeUpgradeCostLabel" class="text-[9.5px] font-black text-amber-900 leading-tight mt-0.5">2,000 Pts</span>
+          </button>
+
+          <!-- 11. 3D CLAIM Button (Bottom Right) -->
+          <button onclick="onCyberHomeClaim()" class="btn-3d-green absolute z-20 rounded-2xl flex flex-col items-center justify-center p-1.5 shadow-2xl active:scale-95 transition-transform border-2 border-emerald-300 cursor-pointer animate-pulse" style="left: 52%; top: 83.5%; width: 42%; height: 9.8%;" title="Instant Claim All Mined CFT">
+            <div class="flex items-center gap-1 leading-none">
+              <span class="text-sm">&#127806;</span>
+              <span class="text-xs sm:text-sm font-black text-white uppercase tracking-wide drop-shadow">CLAIM</span>
+            </div>
+            <span id="cyberHomeClaimSubLabel" class="text-[9.5px] font-black text-lime-200 leading-tight mt-0.5 drop-shadow">Instant CFT</span>
+          </button>
 
         </div> <!-- /#cyberHomeContainer -->
 
       </div>
-      <!-- ===== /CYBER FARM MASTER HOME VIEW ===== -->
-      <!-- ===== /CYBER FARM MASTER HOME VIEW ===== -->
-      <!-- 1. FARMS VIEW (Main 3x3 Farm Grid) -->
+      <!-- ===== /MASTER HOME VIEW ===== -->
       <div id="farmsView" class="space-y-3" style="display:none;">
 
         <!-- TOP BAR: Profile, Logo, VIP Badge -->
@@ -3331,7 +3352,13 @@
       const pending = getPendingMinedCft();
       
       if (liveEl) {
+      if (liveEl) {
         liveEl.innerText = '+' + pending.toFixed(4) + ' CFT';
+      }
+      const claimSub = document.getElementById('cyberHomeClaimSubLabel');
+      if (claimSub) {
+        claimSub.innerText = pending > 0.0001 ? '+' + pending.toFixed(4) + ' CFT' : 'Instant CFT';
+      }
       }
       if (speedEl) {
         const daily = getMainFarmDailyRate(userLevel);
@@ -3479,7 +3506,22 @@
       const cyberSpeed = document.getElementById('cyberMiningSpeed');
       if (cyberSpeed) {
         const rate = getMainFarmDailyRate(userLevel).toLocaleString();
-        cyberSpeed.innerText = '+' + rate + '/d CFT';
+        cyberSpeed.innerHTML = '&#9889; ' + rate + '/d (Lv.' + userLevel + ')';
+      }
+      // Home Upgrade Button & Level Progress
+      const upgradeCost = getMainFarmUpgradeCost(userLevel);
+      const upCostEl = document.getElementById('cyberHomeUpgradeCostLabel');
+      if (upCostEl) {
+        upCostEl.innerText = userLevel >= 100 ? 'MAX LVL' : upgradeCost.toLocaleString() + ' Pts';
+      }
+      const lvlBar = document.getElementById('cyberHomeLvlBar');
+      const lvlText = document.getElementById('cyberHomeLvlText');
+      if (lvlBar) {
+        const pct = (userLevel >= 100) ? 100 : Math.min(100, Math.max(5, (points / upgradeCost) * 100));
+        lvlBar.style.width = pct + '%';
+      }
+      if (lvlText) {
+        lvlText.innerText = userLevel >= 100 ? 'Level 100 (MAX)' : 'Lv. ' + userLevel + ' (Cost: ' + upgradeCost.toLocaleString() + ' Pts)';
       }
       document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/d (Lv. ${userLevel})`;
       document.getElementById('walletFarmBalance').innerText = `${points.toLocaleString()} FARM Points`;
