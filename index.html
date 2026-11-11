@@ -79,6 +79,20 @@
       background: linear-gradient(180deg, #ffca28 0%, #ffa000 70%, #e65100 100%);
       box-shadow: 0 3px 0 #b26a00, 0 4px 6px rgba(0,0,0,0.25);
     }
+    .btn-3d-yellow:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #b26a00, 0 2px 3px rgba(0,0,0,0.2);
+    }
+
+    .btn-3d-purple {
+      background: linear-gradient(180deg, #c084fc 0%, #9333ea 70%, #6b21a8 100%);
+      box-shadow: 0 3px 0 #581c87, 0 4px 6px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-purple:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #581c87, 0 2px 3px rgba(0,0,0,0.2);
+    }
 
     .card-shadow {
       box-shadow: 0 5px 0 rgba(0,0,0,0.15), 0 8px 15px rgba(0,0,0,0.1);
@@ -1183,6 +1197,23 @@
             <button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
               <span>&#127806;</span> Collect! (+20 Points) [1/5]
             </button>
+          </div>
+
+          <!-- Divider & Ad Boost Section -->
+          <div class="mt-3 pt-2.5 border-t border-amber-800/60">
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-200 mb-1.5 px-1">
+              <span class="flex items-center gap-1 text-purple-300 font-black">
+                <span>⚡</span> Ad Boost (1 Min Cooldown)
+              </span>
+              <span id="adBoostCounterBadge" class="bg-purple-950/80 border border-purple-500/60 text-purple-200 text-[10px] font-black px-2 py-0.5 rounded-full">
+                0/10
+              </span>
+            </div>
+            <div id="adBoostActionContainer">
+              <button id="adBoostBtn" onclick="triggerAdBoost()" class="btn-3d-purple w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+                <span>⚡</span> <span id="adBoostBtnText">Ad Boost (+10 Pts) [1/10]</span>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -7309,6 +7340,7 @@
 
     function syncOthersView() {
       renderOtherAdSteps();
+      renderAdBoostBtn();
     }
 
     function renderOtherAdSteps() {
@@ -7349,6 +7381,110 @@
           actionContainer.innerHTML = `<button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer"><span>&#127806;</span> Collect! (+${nextPts} Points) [${otherAdsWatched + 1}/5]</button>`;
         }
       }
+    }
+
+    // ==================== AD BOOST FEATURE (OPTION B: LINEAR +10 PTS, 1 MIN COOLDOWN, 10 ADS MAX) ====================
+    const AD_BOOST_MAX = 10;
+    const AD_BOOST_COOLDOWN_MS = 60 * 1000; // 60 seconds
+    let adBoostCount = Number(localStorage.getItem('crazyfarm_ad_boost_count') || 0);
+    let adBoostLastTime = Number(localStorage.getItem('crazyfarm_ad_boost_time') || 0);
+    const lastAdBoostDay = localStorage.getItem('crazyfarm_ad_boost_day');
+    const todayAdBoostStr = new Date().toISOString().slice(0, 10);
+
+    if (lastAdBoostDay !== todayAdBoostStr) {
+      adBoostCount = 0;
+      localStorage.setItem('crazyfarm_ad_boost_day', todayAdBoostStr);
+      localStorage.setItem('crazyfarm_ad_boost_count', '0');
+    }
+
+    function getAdBoostRemainingCooldownSec() {
+      const elapsed = Date.now() - adBoostLastTime;
+      if (elapsed >= AD_BOOST_COOLDOWN_MS) return 0;
+      return Math.ceil((AD_BOOST_COOLDOWN_MS - elapsed) / 1000);
+    }
+
+    function renderAdBoostBtn() {
+      const container = document.getElementById('adBoostActionContainer');
+      const badge = document.getElementById('adBoostCounterBadge');
+      if (!container) return;
+
+      const remSec = getAdBoostRemainingCooldownSec();
+      const currentStep = Math.min(AD_BOOST_MAX, adBoostCount + 1);
+      const nextPts = currentStep * 10; // Option B: 10, 20, 30, ..., 100
+
+      if (badge) {
+        badge.innerText = `${adBoostCount}/${AD_BOOST_MAX}`;
+        if (adBoostCount >= AD_BOOST_MAX) {
+          badge.className = 'bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full';
+        } else {
+          badge.className = 'bg-purple-950/80 border border-purple-500/60 text-purple-200 text-[10px] font-black px-2 py-0.5 rounded-full';
+        }
+      }
+
+      if (adBoostCount >= AD_BOOST_MAX) {
+        container.innerHTML = `
+          <button disabled class="w-full py-2.5 rounded-2xl bg-emerald-900/80 border border-emerald-500/80 text-emerald-200 font-black text-xs shadow flex items-center justify-center gap-1.5 cursor-not-allowed">
+            <span>✅</span> All 10 Ad Boosts Completed Today
+          </button>
+        `;
+      } else if (remSec > 0) {
+        container.innerHTML = `
+          <button disabled class="w-full py-2.5 rounded-2xl bg-purple-950/80 border border-purple-700/60 text-purple-300 font-bold text-xs shadow flex items-center justify-center gap-2 cursor-not-allowed opacity-85">
+            <span class="animate-spin">⏳</span> Ad Boost Ready in ${remSec}s [${currentStep}/${AD_BOOST_MAX}]
+          </button>
+        `;
+      } else {
+        container.innerHTML = `
+          <button onclick="triggerAdBoost()" class="btn-3d-purple w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse">
+            <span>⚡</span> Ad Boost (+${nextPts} Pts) [${currentStep}/${AD_BOOST_MAX}]
+          </button>
+        `;
+      }
+    }
+
+    // Active 1-second timer loop for dynamic cooldown updates
+    setInterval(() => {
+      const container = document.getElementById('adBoostActionContainer');
+      if (container && adBoostCount < AD_BOOST_MAX) {
+        const rem = getAdBoostRemainingCooldownSec();
+        if (rem >= 0) renderAdBoostBtn();
+      }
+    }, 1000);
+
+    function triggerAdBoost() {
+      if (adBoostCount >= AD_BOOST_MAX) {
+        showWalletToast('✅ You have reached the maximum 10 Ad Boosts today!');
+        return;
+      }
+      const rem = getAdBoostRemainingCooldownSec();
+      if (rem > 0) {
+        showWalletToast(`⏳ Please wait ${rem}s for the next Ad Boost!`);
+        return;
+      }
+
+      if (!ActionLock.run('ad_boost', 1500, () => _doTriggerAdBoost())) return;
+    }
+
+    function _doTriggerAdBoost() {
+      const awardStep = adBoostCount + 1;
+      const awardPts = awardStep * 10;
+
+      showUniversalAd(() => {
+        points += awardPts;
+        adBoostCount++;
+        adBoostLastTime = Date.now();
+        localStorage.setItem('crazyfarm_ad_boost_count', String(adBoostCount));
+        localStorage.setItem('crazyfarm_ad_boost_time', String(adBoostLastTime));
+        localStorage.setItem('crazyfarm_ad_boost_day', new Date().toISOString().slice(0, 10));
+
+        updateDisplays();
+        renderAdBoostBtn();
+        queueCloudSave();
+
+        try { playSound('fanfare'); } catch(e){}
+        playSound('coin');
+        showWalletToast(`⚡ Ad Boost: +${awardPts} Points Added! (${adBoostCount}/${AD_BOOST_MAX})`);
+      }, `Ad Boost (+${awardPts} Pts) [${awardStep}/${AD_BOOST_MAX}]`);
     }
 
     // ==================== WATCH MORE COLLECT MODAL ====================
