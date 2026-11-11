@@ -2244,11 +2244,11 @@
           <div class="flex items-center justify-around gap-2 text-center">
             <div class="flex-1 bg-black/40 rounded-xl py-1.5 px-2 border border-white/10">
               <div class="text-[10px] text-amber-300/80 font-bold">Finish Line</div>
-              <div class="text-sm font-black text-yellow-300">🌾 +20 Pts</div>
+              <div class="text-sm font-black text-yellow-300">🌾 +50 Pts</div>
             </div>
             <div class="flex-1 bg-black/40 rounded-xl py-1.5 px-2 border border-yellow-400/40">
               <div class="text-[10px] text-yellow-300 font-bold">🎁 With Ad Boost</div>
-              <div class="text-sm font-black text-lime-400">🌾 +50 Pts</div>
+              <div class="text-sm font-black text-lime-400">🌾 +100 Pts</div>
             </div>
           </div>
         </div>
@@ -2343,7 +2343,7 @@
               Sprint Victory Reward
             </span>
             <div class="text-2xl font-black text-yellow-300 mb-0.5" id="runWinPointsText">
-              🌾 +20 Farm Points
+              🌾 +50 Farm Points
             </div>
             <div id="runStatsSummary" class="text-[10px] text-amber-300/80 mt-1.5 pt-1.5 border-t border-white/10">
               Coins Collected: <span id="runStatCoins" class="text-yellow-300 font-bold">0</span> &bull; <span>Sprint: <span class="text-lime-300 font-bold">40s Completed!</span></span>
@@ -2352,10 +2352,10 @@
 
           <div class="flex flex-col gap-2 w-full max-w-xs">
             <button onclick="claimRunDoubleRewardWithAd()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 animate-bounce border border-yellow-200 cursor-pointer">
-              <span>&#127873;</span> <span id="runDoubleBtnText">🎁 2x Boost: +50 Pts (Watch Ad)</span>
+              <span>&#127873;</span> <span id="runDoubleBtnText">🎁 2x Boost: +100 Pts (Watch Ad)</span>
             </button>
             <button onclick="claimRunSprintVictory(false)" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
-              <span>&#127806;</span> Claim Free (<span id="runNormalClaimPts">+20</span> Pts)
+              <span>&#127806;</span> Claim Free (<span id="runNormalClaimPts">+50</span> Pts)
             </button>
           </div>
         </div>
@@ -8394,13 +8394,17 @@
         }
       }
 
-      // Reset Collections
+      // Reset Collections & State
+      if (run3D.finishLine && run3D.scene) {
+        try { run3D.scene.remove(run3D.finishLine); } catch(e){}
+      }
+      run3D.finishLine = null;
+      run3D.finishSpawned = false;
+      run3D.honeySpawned1 = false;
+      run3D.honeySpawned2 = false;
       run3D.obstacles = [];
       run3D.collectibles = [];
       run3D.lastWaveTime = Date.now();
-      run3D.honeySpawned1 = false;
-      run3D.honeySpawned2 = false;
-      run3D.finishSpawned = false;
       run3D.currentLane = 1;
       run3D.playerX = 0;
       run3D.targetX = 0;
@@ -8413,8 +8417,24 @@
       const gameOverOverlay = document.getElementById('runGameOverOverlay');
       if (!modal) return;
 
-      if (victoryOverlay) victoryOverlay.classList.add('hidden');
-      if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
+      if (victoryOverlay) {
+        victoryOverlay.classList.add('hidden');
+        victoryOverlay.style.display = 'none';
+      }
+      if (gameOverOverlay) {
+        gameOverOverlay.classList.add('hidden');
+        gameOverOverlay.style.display = 'none';
+      }
+      if (run3D.finishLine && run3D.scene) {
+        try { run3D.scene.remove(run3D.finishLine); } catch(e){}
+      }
+      run3D.finishLine = null;
+      run3D.finishSpawned = false;
+      run3D.honeySpawned1 = false;
+      run3D.honeySpawned2 = false;
+      run3D.obstacles = [];
+      run3D.collectibles = [];
+
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
 
@@ -8512,18 +8532,28 @@
         const speedMult = runShieldTimer > 0 ? 1.45 : 1.0;
         const currentSpeed = run3D.baseSpeed * speedMult;
 
-        // Player Movement & Procedural Running Animation
+        // Player Movement & Fluid Cartoon Running Animation
         run3D.playerX += (run3D.targetX - run3D.playerX) * 0.24;
         if (run3D.player) {
           run3D.player.position.x = run3D.playerX;
-          const runPhase = elapsed * 15 * speedMult;
-          run3D.player.position.y = 0.72 + Math.abs(Math.sin(runPhase)) * 0.15;
+          const runPhase = elapsed * 17 * speedMult;
+          const stepBounce = Math.abs(Math.sin(runPhase));
           const turnDelta = run3D.targetX - run3D.playerX;
-          run3D.player.rotation.z = -turnDelta * 0.32;
-          run3D.player.rotation.y = Math.PI + Math.sin(runPhase) * 0.05;
+
+          // Athletic forward running lean & springy hop
+          run3D.player.position.y = 0.72 + stepBounce * 0.16;
+          run3D.player.rotation.x = 0.16 + stepBounce * 0.05;
+          run3D.player.rotation.y = Math.PI + Math.cos(runPhase) * 0.07;
+          run3D.player.rotation.z = (-turnDelta * 0.36) + (Math.sin(runPhase) * 0.08);
+
+          // Cartoon squash and stretch on each stride impact
+          const squishY = 1.45 * (1.0 + (stepBounce - 0.5) * 0.10);
+          const stretchXZ = 1.45 * (1.0 - (stepBounce - 0.5) * 0.07);
+          run3D.player.scale.set(stretchXZ, squishY, stretchXZ);
+
           if (run3D.playerShadow) {
             run3D.playerShadow.position.x = run3D.playerX;
-            run3D.playerShadow.scale.setScalar(1.0 - (run3D.player.position.y - 0.72) * 1.1);
+            run3D.playerShadow.scale.setScalar(Math.max(0.4, 1.0 - (run3D.player.position.y - 0.72) * 1.8));
           }
         }
 
@@ -8556,10 +8586,10 @@
           spawn3DFinishLine();
         }
 
-        // Update Finish Line
-        if (run3D.finishLine) {
+        // Update Finish Line (Only valid near end of run after 36s)
+        if (run3D.finishLine && run3D.finishSpawned) {
           run3D.finishLine.position.z += currentSpeed * dt;
-          if (run3D.finishLine.position.z >= 0.5 || elapsed >= RUN_GAME_DURATION) {
+          if (elapsed >= 36.0 && (run3D.finishLine.position.z >= 0.5 || elapsed >= RUN_GAME_DURATION)) {
             triggerRunVictory();
             return;
           }
@@ -8957,14 +8987,17 @@
       if (cStat) cStat.innerText = runCoinsCollectedCount;
       if (bonusStat) bonusStat.innerText = '+' + runCoinsCollectedCount;
 
-      const basePoints = 20;
-      const doublePoints = 50;
+      const basePoints = 50;
+      const doublePoints = 100;
 
       if (runWinPointsText) runWinPointsText.innerHTML = `🌾 +${basePoints} Farm Points`;
       if (runDoubleBtnText) runDoubleBtnText.innerText = `🎁 2x Boost: +${doublePoints} Pts (Watch Ad)`;
       if (runNormalClaimPts) runNormalClaimPts.innerText = `+${basePoints}`;
 
-      if (overlay) overlay.classList.remove('hidden');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex';
+      }
 
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
@@ -8979,7 +9012,7 @@
       playSound('coin');
       playSound('fanfare');
 
-      const finalPoints = isDouble ? 50 : 20;
+      const finalPoints = isDouble ? 100 : 50;
 
       points += finalPoints;
 
@@ -9007,7 +9040,10 @@
       const elapsed = Math.min((Date.now() - runGameStartTime) / 1000, RUN_GAME_DURATION);
 
       if (timeSurvivedEl) timeSurvivedEl.innerText = elapsed.toFixed(1) + 's';
-      if (overlay) overlay.classList.remove('hidden');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex';
+      }
 
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
@@ -9030,9 +9066,20 @@
       const modal = document.getElementById('runGameModal');
       if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
       const victoryOverlay = document.getElementById('runVictoryOverlay');
-      if (victoryOverlay) victoryOverlay.classList.add('hidden');
+      if (victoryOverlay) { victoryOverlay.classList.add('hidden'); victoryOverlay.style.display = 'none'; }
       const gameOverOverlay = document.getElementById('runGameOverOverlay');
-      if (gameOverOverlay) gameOverOverlay.classList.add('hidden');
+      if (gameOverOverlay) { gameOverOverlay.classList.add('hidden'); gameOverOverlay.style.display = 'none'; }
+
+      // Clear finish line and obstacles so next run starts completely clean
+      if (run3D.finishLine && run3D.scene) {
+        try { run3D.scene.remove(run3D.finishLine); } catch(e){}
+      }
+      run3D.finishLine = null;
+      run3D.finishSpawned = false;
+      run3D.honeySpawned1 = false;
+      run3D.honeySpawned2 = false;
+      run3D.obstacles = [];
+      run3D.collectibles = [];
     }
 
 
