@@ -4266,10 +4266,10 @@
       // Crazy Farm 2: 7 New Animal Farms
       goats:   { name: 'Goats Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bulls:   { name: 'Bulls Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      geese:   { name: 'Geese Farm',   bonus: 130, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      geese:   { name: 'Geese Farm',   bonus: 120, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bears:   { name: 'Bears Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       donkeys: { name: 'Donkeys Farm', bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      cats:    { name: 'Cats Farm',    bonus: 220, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      cats:    { name: 'Cats Farm',    bonus: 250, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bees:    { name: 'Bees Farm',    bonus: 260, state: 'idle', startTime: 0, remainingSeconds: 0 }
     };
 
@@ -4396,8 +4396,8 @@
         rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       geese: {
-        costs:   { 2: 2800, 3: 6000, 4: 13000, 5: 28000 },
-        rewards: { 1: 130, 2: 270, 3: 450, 4: 660, 5: 1050 }
+        costs:   { 2: 600, 3: 1500, 4: 3000, 5: 6000, 6: 12000, 7: 24000, 8: 48000, 9: 96000, 10: 192000 },
+        rewards: { 1: 120, 2: 220, 3: 360, 4: 550, 5: 800, 6: 1150, 7: 1600, 8: 2200, 9: 2900, 10: 3800 }
       },
       bears: {
         costs:   { 2: 1500, 3: 3500, 4: 7500, 5: 15000, 6: 30000, 7: 60000, 8: 120000, 9: 240000, 10: 480000, 11: 800000, 12: 1200000, 13: 1800000, 14: 2500000, 15: 3500000 },
@@ -4408,8 +4408,8 @@
         rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       cats: {
-        costs:   { 2: 4000, 3: 9000, 4: 20000, 5: 42000 },
-        rewards: { 1: 220, 2: 450, 3: 720, 4: 1050, 5: 1650 }
+        costs:   { 2: 1000, 3: 2500, 4: 5000, 5: 10000, 6: 20000, 7: 40000, 8: 80000, 9: 160000, 10: 320000 },
+        rewards: { 1: 250, 2: 450, 3: 750, 4: 1150, 5: 1700, 6: 2400, 7: 3300, 8: 4500, 9: 6000, 10: 8000 }
       },
       bees: {
         costs:   { 2: 4500, 3: 10000, 4: 24000, 5: 50000 },
@@ -5249,7 +5249,7 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears' || key === 'bulls' || key === 'goats') {
+      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears' || key === 'bulls' || key === 'goats' || key === 'geese' || key === 'cats') {
         // Direct instant collect without ads
         collectFarmReward(key, false);
         return;
@@ -5489,7 +5489,7 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears' || currentModalAnimalKey === 'bulls' || currentModalAnimalKey === 'goats') {
+      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears' || currentModalAnimalKey === 'bulls' || currentModalAnimalKey === 'goats' || currentModalAnimalKey === 'geese' || currentModalAnimalKey === 'cats') {
         collectFarmReward(currentModalAnimalKey, false);
         updateAnimalModalUI(currentModalAnimalKey);
         return;
