@@ -2323,7 +2323,7 @@
               🌾 +20 Farm Points
             </div>
             <div id="runStatsSummary" class="text-[10px] text-amber-300/80 mt-1.5 pt-1.5 border-t border-white/10">
-              Bones: <span id="runStatBones" class="text-yellow-300 font-bold">0</span> &bull; Coins: <span id="runStatCoins" class="text-yellow-300 font-bold">0</span> &bull; Bonus: <span id="runStatBonus" class="text-lime-300 font-bold">+0 pts</span>
+              Coins Collected: <span id="runStatCoins" class="text-yellow-300 font-bold">0</span> &bull; <span>Sprint: <span class="text-lime-300 font-bold">40s Completed!</span></span>
             </div>
           </div>
 
@@ -8830,10 +8830,10 @@
 
       if (bStat) bStat.innerText = runBonesCollected;
       if (cStat) cStat.innerText = runCoinsCollectedCount;
-      if (bonusStat) bonusStat.innerText = '+' + runBonusPoints + ' pts';
+      if (bonusStat) bonusStat.innerText = '+' + runCoinsCollectedCount;
 
-      const basePoints = 20 + runBonusPoints;
-      const doublePoints = 50 + runBonusPoints;
+      const basePoints = 20;
+      const doublePoints = 50;
 
       if (runWinPointsText) runWinPointsText.innerHTML = `🌾 +${basePoints} Farm Points`;
       if (runDoubleBtnText) runDoubleBtnText.innerText = `🎁 2x Boost: +${doublePoints} Pts (Watch Ad)`;
@@ -8854,8 +8854,7 @@
       playSound('coin');
       playSound('fanfare');
 
-      const basePoints = 20 + runBonusPoints;
-      const finalPoints = isDouble ? (50 + runBonusPoints) : basePoints;
+      const finalPoints = isDouble ? 50 : 20;
 
       points += finalPoints;
 
