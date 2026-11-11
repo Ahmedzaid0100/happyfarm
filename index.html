@@ -3022,6 +3022,10 @@
         }
       }
 
+      const texLoader = new THREE.TextureLoader();
+      const girlRedTex = texLoader.load('assets/models/character_girl_red_texture.png');
+      girlRedTex.flipY = false;
+
       keys.forEach(key => {
         loader.load(modelPaths[key], gltf => {
           gltf.scene.traverse(c => {
@@ -3029,6 +3033,11 @@
               c.material.metalness = 0.05;
               c.material.roughness = 0.55;
               if (c.material.emissive) c.material.emissive.setHex(0x000000);
+              if (key === 'girl') {
+                c.material = c.material.clone();
+                c.material.map = girlRedTex;
+                c.material.needsUpdate = true;
+              }
             }
           });
           run3D.models[key] = gltf.scene;
@@ -3222,10 +3231,10 @@
       battle3D.scene.background = new THREE.Color(0x38bdf8); // Sky blue
       battle3D.scene.fog = new THREE.FogExp2(0x93c5fd, 0.016);
 
-      // Vertical Arena Camera: Overlooking from bottom foreground towards top background
-      battle3D.camera = new THREE.PerspectiveCamera(46, w / h, 0.1, 100);
-      battle3D.camera.position.set(0, 5.0, 5.8);
-      battle3D.camera.lookAt(0, 0.4, 0.2);
+      // Vertical Arena Camera: Closer & more immersive, making animals larger & prominent
+      battle3D.camera = new THREE.PerspectiveCamera(44, w / h, 0.1, 100);
+      battle3D.camera.position.set(0, 4.3, 5.0);
+      battle3D.camera.lookAt(0, 0.35, 0.05);
 
       battle3D.clock = new THREE.Clock();
 
