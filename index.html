@@ -572,13 +572,13 @@
                   Unlock this mystical land with <b>7 brand new animal farms</b> (Goats, Bulls, Geese, Bears, Donkeys, Cats, Bees)!
                 </p>
                 <div class="mt-2 text-xs font-black text-lime-400">
-                  Cost: 300,000 Farm Points 🌾
+                  Cost: 1,000,000 Farm Points 🌾 (1M)
                 </div>
               </div>
 
               <!-- Unlock Button -->
               <button onclick="unlockCrazyFarm2()" class="relative z-10 btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
-                <span>🔓</span> Unlock Crazy Farm 2 (300,000 🌾)
+                <span>🔓</span> Unlock Crazy Farm 2 (1M 🌾)
               </button>
 
               <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
@@ -5339,7 +5339,7 @@
     function onCf2AnimalClick(key) {
       if (!isCrazyFarm2Unlocked) {
         playSound('click');
-        showWalletToast('🔒 Unlock Crazy Farm 2 with 300,000 points first!');
+        showWalletToast('🔒 Unlock Crazy Farm 2 with 1,000,000 points (1M) first!');
         return;
       }
       onAnimalCardClick(key);
@@ -6496,7 +6496,7 @@
 
     function unlockCrazyFarm2() {
       playSound('click');
-      const UNLOCK_COST = 300000;
+      const UNLOCK_COST = 1000000;
 
       if (isCrazyFarm2Unlocked) {
         showWalletToast('🌾 Crazy Farm 2 is already unlocked!');
@@ -6506,11 +6506,11 @@
       if (points < UNLOCK_COST) {
         const remaining = UNLOCK_COST - points;
         showWalletToast(`⚠️ Need ${UNLOCK_COST.toLocaleString()} points! (${remaining.toLocaleString()} more needed)`);
-        alert(`🔒 Crazy Farm 2 requires 300,000 Farm Points to unlock!\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${remaining.toLocaleString()} Points`);
+        alert(`🔒 Crazy Farm 2 requires 1,000,000 Farm Points (1M) to unlock!\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${remaining.toLocaleString()} Points`);
         return;
       }
 
-      if (!confirm('Unlock Crazy Farm 2 for 300,000 Farm Points?')) return;
+      if (!confirm('Unlock Crazy Farm 2 for 1,000,000 Farm Points (1M)?')) return;
 
       points -= UNLOCK_COST;
       isCrazyFarm2Unlocked = true;
