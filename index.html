@@ -496,7 +496,7 @@
           <!-- 7. Sheep - Meadow Hotspot + Under Sign Badge -->
           <div id="hotspot-sheep" onclick="onAnimalCardClick('sheep')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 65%; top: 46%; width: 33%; height: 17%;" title="Sheep Meadow"></div>
           <div id="mapBadge-sheep" onclick="onAnimalCardClick('sheep')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 80.9%; top: 60.0%; transform: translateX(-50%);">
-            <span id="mapLock-sheep">&#128274;</span> <span id="mapStatus-sheep">4k 🌾</span>
+            <span id="mapLock-sheep">&#128274;</span> <span id="mapStatus-sheep">25k 🌾</span>
           </div>
 
           <!-- 8. Rabbits (Bunnies) - Burrow Hotspot + Under Sign Badge -->
@@ -4251,7 +4251,7 @@
     // Animal Farms System (Per-farm duration: Chicken is 24-Hour, others 8-Hour)
     const ANIMAL_FARM_DURATION_SEC = 8 * 3600;
     function getFarmDurationSec(key) {
-      if (key === 'chicken' || key === 'duck' || key === 'bunny' || key === 'dog') return 24 * 3600; // 24 Hours (86,400 sec)
+      if (key === 'chicken' || key === 'duck' || key === 'bunny' || key === 'dog' || key === 'sheep') return 24 * 3600; // 24 Hours (86,400 sec)
       return ANIMAL_FARM_DURATION_SEC;
     }
 
@@ -4259,7 +4259,7 @@
       chicken: { name: 'Chicken Farm', bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
       duck:    { name: 'Duck Farm',    bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bunny:   { name: 'Bunny Farm',   bonus: 120, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      sheep:   { name: 'Sheep Farm',   bonus: 40, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      sheep:   { name: 'Sheep Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       cows:    { name: 'Cows Farm',    bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
       pig:     { name: 'Pig Farm',     bonus: 60, state: 'idle', startTime: 0, remainingSeconds: 0 },
       horse:   { name: 'Horse Farm',   bonus: 70, state: 'idle', startTime: 0, remainingSeconds: 0 },
@@ -4280,7 +4280,7 @@
       chicken: 0,
       duck: 500,
       bunny: 5000,
-      sheep: 4000,
+      sheep: 25000,
       cows: 8000,
       pig: 15000,
       horse: 25000,
@@ -4369,8 +4369,8 @@
         rewards: { 1: 120, 2: 220, 3: 360, 4: 550, 5: 800, 6: 1150, 7: 1600, 8: 2200, 9: 2900, 10: 3800 }
       },
       sheep: {
-        costs:   { 2: 800, 3: 2000, 4: 4000, 5: 8000 },
-        rewards: { 1: 40, 2: 80, 3: 130, 4: 200, 5: 300 }
+        costs:   { 2: 1500, 3: 3500, 4: 7500, 5: 15000, 6: 30000, 7: 60000, 8: 120000, 9: 240000, 10: 480000, 11: 800000, 12: 1200000, 13: 1800000, 14: 2500000, 15: 3500000 },
+        rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       cows: {
         costs:   { 2: 1000, 3: 2500, 4: 5000, 5: 10000 },
@@ -5251,9 +5251,9 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog') {
-        // Dog Farm is 100% ad-free: Direct instant collect
-        collectFarmReward('dog', false);
+      if (key === 'dog' || key === 'sheep') {
+        // Dog & Sheep Farms are 100% ad-free: Direct instant collect
+        collectFarmReward(key, false);
         return;
       }
       const farm = adFarms[key];
@@ -5491,9 +5491,9 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog') {
-        collectFarmReward('dog', false);
-        updateAnimalModalUI('dog');
+      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep') {
+        collectFarmReward(currentModalAnimalKey, false);
+        updateAnimalModalUI(currentModalAnimalKey);
         return;
       }
       showFarmCollectModal(currentModalAnimalKey);
