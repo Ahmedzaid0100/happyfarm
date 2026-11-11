@@ -1814,58 +1814,6 @@
         </div>
       </div>
     </div>
-    <!-- 0. Dog VIP TON Purchase Modal -->
-    <div id="dogVipModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-2 border-yellow-400 text-center">
-        <button onclick="closeModal('dogVipModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
-        
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-white mx-auto flex items-center justify-center text-4xl shadow-lg mb-2 relative">
-          🐶
-          <span class="absolute -top-2 -right-2 text-xl">👑</span>
-        </div>
-
-        <h3 class="text-xl font-black text-amber-300 mb-1">Buy Dog Farm VIP (3 TON)</h3>
-        <span class="inline-block px-3 py-0.5 rounded-full bg-blue-600/80 text-blue-200 border border-blue-400 text-[11px] font-bold mb-3">
-          💎 Exclusively on TON Network
-        </span>
-
-        <div class="bg-amber-950/70 rounded-2xl p-3 text-left text-xs space-y-2 mb-4 border border-amber-800/80">
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">💸 100% Free Airdrop Claims <span class="text-cyan-300">(0% Gas Fee - 0 CFC Fee)</span></span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-bold">🛡️ VIP Golden Dog Badge &amp; Zero Gas on Airdrop Distributions</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold text-sm">✓</span>
-            <span class="text-amber-100 font-semibold text-[11px]">⚡ Instant processing on TON blockchain with zero deductions!</span>
-          </div>
-        </div>
-
-        <!-- Price & Buy Button -->
-        <div class="bg-gradient-to-r from-blue-900/60 to-indigo-950/80 p-2.5 rounded-xl border border-blue-500/50 mb-3 flex items-center justify-between">
-          <span class="text-xs text-blue-200 font-bold">Price:</span>
-          <span class="text-base font-black text-white flex items-center gap-1">
-            <span>💎</span> 3 TON
-          </span>
-        </div>
-
-        <!-- Official Recipient TON Address Box -->
-        <div class="bg-black/50 p-2.5 rounded-xl border border-yellow-400/40 mb-3 text-left">
-          <div class="flex items-center justify-between text-[10px] text-amber-200 mb-1">
-            <span class="font-bold flex items-center gap-1"><span>&#128142;</span> Official TON Recipient:</span>
-            <button type="button" onclick="copyTonOwnerWallet()" class="text-yellow-300 underline font-extrabold hover:text-white cursor-pointer active:scale-95">Copy</button>
-          </div>
-          <div class="text-[10px] font-mono text-lime-300 truncate select-all bg-amber-950/60 p-1 rounded border border-amber-800/60" id="vipOwnerAddressText">UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ</div>
-        </div>
-
-        <button onclick="confirmTonPayment()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 hover:brightness-110 text-amber-950 font-black text-sm shadow-xl border-2 border-yellow-200 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
-          <span>&#128142;</span> Pay 3 TON via Tonkeeper / Wallet
-        </button>
-      </div>
-    </div>
 
     
     <!-- ==================== MAIN FARM (RED BARN) MODAL ==================== -->
@@ -2015,8 +1963,8 @@
 
       </div>
     </div>
-    <!-- ==================== BATTLE PREPARATION MODAL ==================== -->
-    <div id="battlePrepModal" onclick="if(event.target === this) closeModal('battlePrepModal')" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <!-- ==================== BATTLE PREPARATION MODAL (DISABLED - SKIPPED DIRECTLY TO ARENA) ==================== -->
+    <div id="battlePrepModal" style="display: none !important;" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden pointer-events-none">
       <div class="wood-board rounded-3xl p-5 text-center max-w-xs w-full text-white shadow-2xl relative border-amber-600">
         <button type="button" onclick="closeModal('battlePrepModal')" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-lg border-2 border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
 
@@ -2041,16 +1989,6 @@
         <div id="battlePrepActionContainer">
           <button onclick="enterBattleArena(currentBattleMode)" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
             <span>&#9876;</span> ENTER BATTLE (FREE)!
-          </button>
-        </div>
-
-        <!-- VIP Prompt for 7vs7 if locked -->
-        <div id="battlePrepVipContainer" class="hidden space-y-2">
-          <p class="text-xs text-amber-200 leading-relaxed font-semibold">
-            ?? The 7 vs 7 Championship Arena is reserved exclusively for VIP Dog owners!
-          </p>
-          <button onclick="closeModal('battlePrepModal'); openDogVipModal();" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce">
-            <span>??</span> Buy VIP Dog (3 TON)
           </button>
         </div>
 
@@ -2921,38 +2859,9 @@
         }
       }
 
-      const modal = document.getElementById('battlePrepModal');
-      const icon = document.getElementById('battlePrepIcon');
-      const title = document.getElementById('battlePrepTitle');
-      const sub = document.getElementById('battlePrepSub');
-      const prize = document.getElementById('battlePrepPrize');
-      const stepsContainer = document.getElementById('battlePrepSteps');
-      const actionContainer = document.getElementById('battlePrepActionContainer');
-      const vipContainer = document.getElementById('battlePrepVipContainer');
-
-      if (vipContainer) vipContainer.classList.add('hidden');
-
-      const pts = (m === 7) ? 500 : (m === 5 ? 200 : 100);
-      const iconEmoji = (m === 7) ? '&#129351;' : (m === 5 ? '&#129352;' : '&#129353;');
-
-      if (icon) icon.innerHTML = iconEmoji;
-      if (title) title.innerText = m + ' vs ' + m + ' Arena (Free Entry)';
-      if (sub) sub.innerText = 'Fight and win to earn +' + pts + ' Farm Points! (Optional 2x Boost with Ad)';
-      if (prize) prize.innerHTML = '<span>🌾</span> Win +' + pts + ' Farm Points (2x Boost = ' + (pts * 2) + ' Pts)';
-
-      if (stepsContainer) {
-        stepsContainer.innerHTML = '<div class="flex items-center justify-center gap-2 py-1 text-emerald-300 text-xs font-black"><span>&#9989;</span> Free Play Ready! All ' + m + ' Farm Animals Ready.</div>';
-      }
-
-      if (actionContainer) {
-        actionContainer.classList.remove('hidden');
-        actionContainer.innerHTML = '<button type="button" onclick="enterBattleArena(' + m + ')" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer pointer-events-auto"><span>&#9876;</span> ENTER BATTLE (FREE)!</button>';
-      }
-
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
+      // Directly enter battle arena (Banner 2 with Exit button) skipping Banner 1
+      closeBattlesModal();
+      enterBattleArena(m);
     }
 
     function openBattleRunMode() {
@@ -2975,13 +2884,12 @@
       const levelBonus = (typeof userLevel !== 'undefined' ? (userLevel - 1) : 0) * 0.15;
       const adsCount = (typeof otherAdsWatched !== 'undefined') ? otherAdsWatched : 0;
       const adsBonus = (activeFarms * 0.12) + (adsCount * 0.05);
-      const vipBonus = (typeof isDogVipActive !== 'undefined' && isDogVipActive) ? 0.50 : 0.0;
 
-      const totalMultiplier = 1.0 + levelBonus + adsBonus + vipBonus;
+      const totalMultiplier = 1.0 + levelBonus + adsBonus;
       return {
         multiplier: totalMultiplier,
-        defenseFactor: 1.0 + (vipBonus * 0.5),
-        isVip: (typeof isDogVipActive !== 'undefined' && isDogVipActive),
+        defenseFactor: 1.0,
+        isVip: false,
         userLevel: (typeof userLevel !== 'undefined' ? userLevel : 1),
         powerPercent: Math.round((totalMultiplier - 1.0) * 100)
       };
@@ -3778,7 +3686,7 @@
           else startTitle.innerHTML = '⚔️ 3 vs 3 Animal Battle (+Leader)';
         }
         
-        let rewardHfcText = m === 7 ? '+300 Farm Points' : (m === 5 ? '+200 Farm Points' : '+100 Farm Points');
+        let rewardHfcText = m === 7 ? '+500 Farm Points' : (m === 5 ? '+200 Farm Points' : '+100 Farm Points');
         if (startDesc) {
           startDesc.innerText = 'Lead your squad (Girl Leader + ' + (m === 7 ? 6 : m) + ' animals) to victory and claim ' + rewardHfcText + '!';
         }
@@ -4086,7 +3994,7 @@
 
       const mode = currentBattleMode;
       const m = parseInt(mode, 10) || 3;
-      const basePoints = (m === 7) ? 300 : (m === 5 ? 200 : 100);
+      const basePoints = (m === 7) ? 500 : (m === 5 ? 200 : 100);
       const doublePoints = basePoints * 2;
 
       if (rewardText) rewardText.innerHTML = `+${basePoints} Farm Points 🌾`;
@@ -4109,7 +4017,7 @@
 
       const mode = currentBattleMode;
       const m = parseInt(mode, 10) || 3;
-      const basePoints = (m === 7) ? 300 : (m === 5 ? 200 : 100);
+      const basePoints = (m === 7) ? 500 : (m === 5 ? 200 : 100);
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
@@ -4243,7 +4151,7 @@
     let points = sanitizeNumber(localStorage.getItem('crazyfarm_points'), 0, 0, 1000000000);
     let hfcBalance = sanitizeNumber(localStorage.getItem('crazyfarm_hfc_balance'), 0, 0, 100000000);
     let userLevel = sanitizeNumber(localStorage.getItem('crazyfarm_level'), 1, 1, 100);
-    let isDogVipActive = localStorage.getItem('crazyfarm_is_vip') === 'true';
+    let isDogVipActive = false; // VIP Dog feature retired; Dog Farm is 100% normal farm
     let beeMinedPoints = sanitizeNumber(localStorage.getItem('crazyfarm_bee_mined_pts'), 0, 0, 10000000);
     let lastBeeCollectTimestamp = sanitizeNumber(localStorage.getItem('crazyfarm_bee_last_collect'), Date.now(), 0, Date.now() + 86400000);
     let audioEnabled = true;
@@ -4788,18 +4696,6 @@
 
       const profProgressCollected = document.getElementById('profProgressCollected');
       if (profProgressCollected) profProgressCollected.innerText = points.toLocaleString();
-      const dogVipBtnEl = document.getElementById('dogFarmVipBtn');
-      if (dogVipBtnEl) {
-        if (isDogVipActive) {
-          dogVipBtnEl.innerHTML = '<span>&#9989;</span> 0% Fee';
-          dogVipBtnEl.className = 'w-full py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow border border-emerald-300';
-          dogVipBtnEl.title = 'VIP Dog Active: Free Withdrawals (0% CFC Fee)';
-        } else {
-          dogVipBtnEl.innerHTML = '<span>&#128081;</span> 3 TON';
-          dogVipBtnEl.className = 'w-full btn-3d-yellow py-1 rounded-lg text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform';
-          dogVipBtnEl.title = 'VIP Dog (Free Crypto Withdrawals - 0% Fee)';
-        }
-      }
     }
 
     // Upgrade Cost mirrors Main Farm economy (100 levels)
@@ -5833,72 +5729,25 @@
       openGiftModal();
     }
 
-    // VIP Dog Modal & Payment Handlers
+    // VIP Dog Modal & Payment Handlers (Retired: Dog Farm is a 100% normal farm)
     function openDogVipModal() {
-      const el = document.getElementById('dogVipModal');
-      if (el) {
-        el.classList.remove('hidden');
-        el.style.display = 'flex';
-      }
+      // Dog Farm is a standard farm; VIP purchase retired
     }
 
     function triggerVipFeature() {
-      openDogVipModal();
+      // Feature retired
     }
-
-    const OWNER_TON_WALLET = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ';
 
     function copyTonOwnerWallet() {
       playSound('click');
-      navigator.clipboard.writeText(OWNER_TON_WALLET);
-      showWalletToast('TON Address copied: ' + OWNER_TON_WALLET.substring(0, 8) + '...' + OWNER_TON_WALLET.substring(OWNER_TON_WALLET.length - 6));
+      showWalletToast('Standard community membership active.');
     }
 
     function confirmTonPayment() {
-      try { playSound('fanfare'); } catch(e){}
-      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
-      const nanoAmount = 3000000000;
-      const memo = 'CrazyFarm_VIP_' + tId;
-      const transferUrl = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
-
-      try {
-        if (window.Telegram?.WebApp?.openLink) {
-          window.Telegram.WebApp.openLink(transferUrl);
-        } else {
-          window.open(transferUrl, '_blank');
-        }
-      } catch(e) {
-        window.open(transferUrl, '_blank');
-      }
-      isDogVipActive = true;
-      try { localStorage.setItem('crazyfarm_is_vip', 'true'); } catch(e){}
-      updateDisplays();
-      updatePvpButtonsUI();
-      if (typeof syncWalletView === 'function') syncWalletView();
-      queueCloudSave();
-      closeModal('dogVipModal');
-      const dogBtn = document.getElementById('dogFarmVipBtn') || document.querySelector("button[onclick='openDogVipModal()']");
-      if (dogBtn) {
-        dogBtn.innerHTML = '<span>&#9989;</span> 0% Fee';
-        dogBtn.className = 'w-full py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow border border-emerald-300';
-      }
-      alert('Congratulations! 3 TON payment confirmed!\n\n👑 VIP Dog Activated:\n💸 Enjoy 100% Free Airdrop Claims (0 CFC Gas Fee deduction on all withdrawals)!');
+      // Retired
     }
     function old_confirmTonPayment() {
-      try { playSound('fanfare'); } catch(e){}
-      isDogVipActive = true;
-      try { localStorage.setItem('crazyfarm_is_vip', 'true'); } catch(e){}
-      updateDisplays();
-      updatePvpButtonsUI();
-      if (typeof syncWalletView === 'function') syncWalletView();
-      queueCloudSave();
-      closeModal('dogVipModal');
-      const dogBtn = document.getElementById('dogFarmVipBtn') || document.querySelector("button[onclick='openDogVipModal()']");
-      if (dogBtn) {
-        dogBtn.innerHTML = '<span>&#9989;</span> 0% Fee';
-        dogBtn.className = 'w-full py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center gap-1 shadow border border-emerald-300';
-      }
-      alert('Congratulations! 3 TON payment confirmed.\n\n👑 VIP Dog activated! Free Withdrawals enabled (0 CFC Gas Fee)!');
+      // Retired
     }
 
     // Modal Handlers
@@ -6707,7 +6556,7 @@
       const farmBadge = document.getElementById("walletFarmsActiveBadge");
       if (farmBadge) farmBadge.innerText = activeFarmsList.length + " Active";
       const statusBadge = document.getElementById("walletStatusBadge");
-      if (statusBadge) statusBadge.innerText = isDogVipActive ? "VIP Dog (0% Fee)" : "Standard";
+      if (statusBadge) statusBadge.innerText = "Standard Member (0% Fee)";
 
       // Convert preview
       const from = document.getElementById('convertFromDisplay');
@@ -6725,7 +6574,7 @@
       if (usdEl) usdEl.innerText = isWalletConnected ? "Wallet Verified (Queued for TGE)" : "Accumulating for TGE";
       const feeNoticeEl = document.getElementById("withdrawFeeNotice");
       if (feeNoticeEl) {
-        feeNoticeEl.innerHTML = isDogVipActive ? "<b class=\"text-yellow-300\">Gas Fee: 0 CFT (VIP FREE)</b>" : "Gas Fee: <b>50 CFT</b> (0 with VIP Dog)";
+        feeNoticeEl.innerHTML = "Gas Fee: <b class=\"text-yellow-300\">0 CFT (Free)</b>";
       }
 
       // Sync Holding Rewards Banners (Crazy Farm Point Holding & CFT Holding)
@@ -6772,15 +6621,13 @@
         : hfcBalance;
 
       try { playSound('fanfare'); } catch(e){}
-      const gasFee = (typeof isDogVipActive !== 'undefined' && isDogVipActive) ? 0 : 50;
-      const netAmount = Math.max(withdrawAmount - gasFee, 0);
-      const feeNotice = (typeof isDogVipActive !== 'undefined' && isDogVipActive)
-        ? "VIP Dog Active: 0 CFC Gas Fee (100% Free VIP Withdrawal with zero fees)!"
-        : "Standard Gas Fee: 50 CFC deducted (Net: " + netAmount.toLocaleString() + " CFC). Tip: Buy VIP Dog for Free Withdrawals (0% Fee)!";
+      const gasFee = 0;
+      const netAmount = withdrawAmount;
+      const feeNotice = "Free Withdrawal: 0 CFC Gas Fee for all community members!";
 
       alert('🎉 Web3 Airdrop Distribution Claim Registered!\n\n' +
             '• Requested Tokens: ' + withdrawAmount.toLocaleString() + ' CFC\n' +
-            '• Network Fee: ' + (gasFee === 0 ? '0 CFC (VIP Free 🎉)' : '50 CFC') + '\n' +
+            '• Network Fee: 0 CFC (Free 🎉)\n' +
             '• Net Allocation: ' + netAmount.toLocaleString() + ' CFC\n' +
             '• Destination TON Wallet: ' + connectedWalletAddress + '\n\n' +
             feeNotice + '\n\n' +
@@ -7884,7 +7731,7 @@
           points = Math.max(points, Number(data.points) || 0);
           hfcBalance = Math.max(hfcBalance, Number(data.hfc_balance) || 0);
           userLevel = Math.max(userLevel, Number(data.user_level) || 1);
-          if (data.is_vip) isDogVipActive = true;
+          isDogVipActive = false;
           if (data.wallet_address) {
             connectedWalletAddress = data.wallet_address;
             isWalletConnected = true;
@@ -8104,10 +7951,6 @@
       if (isDevEnv) {
         if (urlParams.get('farmAds')) {
           totalFarmAdsWatched = parseInt(urlParams.get('farmAds')) || 0;
-        }
-        if (urlParams.get('vipDog') === '1') {
-          isDogVipActive = true;
-          updateDisplays();
         }
         if (urlParams.get('testCrazyBox')) {
           setTimeout(() => { openCrazyBox(); }, 300);
