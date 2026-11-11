@@ -8532,28 +8532,22 @@
         const speedMult = runShieldTimer > 0 ? 1.45 : 1.0;
         const currentSpeed = run3D.baseSpeed * speedMult;
 
-        // Player Movement & Fluid Cartoon Running Animation
+        // Player Movement: Solid grounded running stance (no hopping or bouncing in place)
         run3D.playerX += (run3D.targetX - run3D.playerX) * 0.24;
         if (run3D.player) {
           run3D.player.position.x = run3D.playerX;
-          const runPhase = elapsed * 17 * speedMult;
-          const stepBounce = Math.abs(Math.sin(runPhase));
+          run3D.player.position.y = 0.72; // Firmly grounded on the track
+          
           const turnDelta = run3D.targetX - run3D.playerX;
-
-          // Athletic forward running lean & springy hop
-          run3D.player.position.y = 0.72 + stepBounce * 0.16;
-          run3D.player.rotation.x = 0.16 + stepBounce * 0.05;
-          run3D.player.rotation.y = Math.PI + Math.cos(runPhase) * 0.07;
-          run3D.player.rotation.z = (-turnDelta * 0.36) + (Math.sin(runPhase) * 0.08);
-
-          // Cartoon squash and stretch on each stride impact
-          const squishY = 1.45 * (1.0 + (stepBounce - 0.5) * 0.10);
-          const stretchXZ = 1.45 * (1.0 - (stepBounce - 0.5) * 0.07);
-          run3D.player.scale.set(stretchXZ, squishY, stretchXZ);
+          run3D.player.rotation.x = 0.08; // Slight forward focus
+          run3D.player.rotation.y = Math.PI; // Looking straight forward down the road
+          run3D.player.rotation.z = -turnDelta * 0.35; // Smooth leaning into lane changes
+          run3D.player.scale.set(1.45, 1.45, 1.45); // Steady natural scale
 
           if (run3D.playerShadow) {
             run3D.playerShadow.position.x = run3D.playerX;
-            run3D.playerShadow.scale.setScalar(Math.max(0.4, 1.0 - (run3D.player.position.y - 0.72) * 1.8));
+            run3D.playerShadow.position.y = 0.02;
+            run3D.playerShadow.scale.setScalar(1.0);
           }
         }
 
