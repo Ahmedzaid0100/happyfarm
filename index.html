@@ -671,17 +671,6 @@
           </div>
         </div>
 
-        <!-- XP Progress Bar (320 XP / 500 XP) -->
-        <div class="bg-[#1c3a16]/85 backdrop-blur-sm border-2 border-[#3b752f] rounded-2xl p-2.5 shadow-md">
-          <div class="flex justify-between items-center text-xs font-extrabold text-lime-200 mb-1 px-1">
-            <span id="profCurrentXp">320 XP</span>
-            <span id="profNextLevelXp">Next level: 500 XP</span>
-          </div>
-          <div class="w-full bg-[#0c1f09] rounded-full h-4 p-0.5 overflow-hidden border border-[#2b5921]">
-            <div id="profXpBar" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-green-500 h-full rounded-full transition-all duration-500 shadow-inner" style="width: 64%;"></div>
-          </div>
-        </div>
-
         <!-- CARD 1: Farm Statistics (Exact match to Screenshot 1 & 2) -->
         <div class="bg-[#fdf8eb] border-2 border-[#e2cb9d] rounded-3xl p-3.5 shadow-lg text-amber-950">
           <div class="flex items-center gap-2 mb-3 pb-2 border-b border-amber-200/80">
@@ -4752,18 +4741,9 @@
       const profilePts = document.getElementById('profileTotalPoints');
       if (profilePts) profilePts.innerText = `${points.toLocaleString()} 🌾`;
 
-      // Profile Screen Dynamic Updates (Always rich and populated matching design)
+      // Profile Screen Dynamic Updates - Player Level strictly mirrors Main Farm Level
       const profPageLevel = document.getElementById('profPageLevel');
-      if (profPageLevel && userLevel > 5) profPageLevel.innerText = userLevel;
-
-      const profCurrentXp = document.getElementById('profCurrentXp');
-      const profXpBar = document.getElementById('profXpBar');
-      if (profCurrentXp && profXpBar) {
-        const currentXp = (320 + points) % 500;
-        const pct = Math.min((currentXp / 500) * 100, 100);
-        profCurrentXp.innerText = `${currentXp.toLocaleString()} XP`;
-        profXpBar.style.width = `${pct}%`;
-      }
+      if (profPageLevel) profPageLevel.innerText = userLevel;
 
       const statTotalPoints = document.getElementById('statTotalPoints');
       if (statTotalPoints) statTotalPoints.innerText = points.toLocaleString();
