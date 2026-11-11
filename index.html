@@ -2079,11 +2079,11 @@
           </div>
         </div>
 
-        <!-- ==================== CENTER: 3D ANIMAL BATTLE VIDEO (FULL SPACE FROM GREEN TO GREEN) ==================== -->
-        <div class="relative w-full flex-1 flex items-center justify-center z-10 overflow-hidden bg-[#3d2310]" style="background: radial-gradient(circle at 50% 50%, #5d3618 0%, #2b170a 100%);">
+        <!-- ==================== CENTER: 3D ANIMAL BATTLE ARENA (REAL WEBGL THREE.JS) ==================== -->
+        <div id="arena3DWrapper" class="relative w-full flex-1 flex items-center justify-center z-10 overflow-hidden bg-[#3d2310]" style="background: radial-gradient(circle at 50% 50%, #5d3618 0%, #2b170a 100%); min-height: 280px;">
           
-          <!-- 3D Battle Video Element (Fills 100% from top green line to bottom green line) -->
-          <video id="arenaBattleVideo" src="assets/videos/battle_3vs3.mp4" playsinline webkit-playsinline x5-playsinline muted loop preload="auto" class="w-full h-full object-cover pointer-events-none" style="will-change: transform; transform: translateZ(0);"></video>
+          <!-- Real 3D Three.js Battle Canvas -->
+          <canvas id="arenaBattle3DCanvas" class="w-full h-full block select-none pointer-events-auto"></canvas>
 
           <!-- Cinema Lighting & Edge Vignette -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none"></div>
@@ -2659,14 +2659,18 @@
         cow: 'Cows Farm',
         duck: 'Duck Farm',
         bunny: 'Bunny Farm',
+        rabbit: 'Bunny Farm',
         sheep: 'Sheep Farm',
         horse: 'Horse Farm',
         pig: 'Pig Farm',
         bee: 'Bee Farm'
       };
-      const alt = map[key] || 'Bee Farm';
-      const imgEl = document.querySelector('img[alt="' + alt + '"]');
-      return imgEl ? imgEl.src : ('assets/farms/' + key + '.png');
+      const alt = map[key];
+      if (alt) {
+        const imgEl = document.querySelector('img[alt="' + alt + '"]');
+        if (imgEl && imgEl.src) return imgEl.src;
+      }
+      return '';
     }
 
     function getActiveOrWatchedFarmsCount() {
@@ -2884,41 +2888,237 @@
     }
 
     function getAnimalIcon(key) {
-      const icons = { cows: '\u{1F42E}', chicken: '\u{1F414}', duck: '\u{1F986}', bunny: '\u{1F430}', sheep: '\u{1F411}', horse: '\u{1F434}', pig: '\u{1F437}', dog: '\u{1F436}', bee: '\u{1F41D}' };
-      return icons[key] || '\u{1F33E}';
+      const icons = {
+        girl: '👩‍🌾',
+        cow: '🐮',
+        cows: '🐮',
+        horse: '🐴',
+        dog: '🐶',
+        chicken: '🐔',
+        duck: '🦆',
+        rabbit: '🐰',
+        bunny: '🐰',
+        sheep: '🐑',
+        pig: '🐷',
+        bee: '🐝'
+      };
+      return icons[key] || '🌾';
     }
 
-    function buildSquadForBattle(mode) {
-      const m = (mode === 'run') ? 7 : (parseInt(mode, 10) || 3);
-      let selectedKeys = [];
-      if (m === 7) {
-        selectedKeys = ['dog', 'cows', 'chicken', 'duck', 'bunny', 'sheep', 'horse'];
-      } else if (m === 5) {
-        selectedKeys = ['cows', 'chicken', 'duck', 'bunny', 'sheep'];
-      } else {
-        selectedKeys = ['cows', 'chicken', 'duck'];
+    // =========================================================================
+    // ==================== SHARED 3D GLB ASSETS & RUNNER GLOBALS =================
+    // =========================================================================
+    var run3D = {
+      scene: null,
+      camera: null,
+      renderer: null,
+      clock: null,
+      player: null,
+      playerShadow: null,
+      shieldBubble: null,
+      finishLine: null,
+      roadTex: null,
+      models: {},
+      modelsLoaded: false,
+      modelsLoading: false,
+      lanes: [-1.35, 0.0, 1.35],
+      currentLane: 1,
+      playerX: 0.0,
+      targetX: 0.0,
+      baseSpeed: 14.5,
+      obstacles: [],
+      collectibles: [],
+      lastWaveTime: 0,
+      honeySpawned1: false,
+      honeySpawned2: false,
+      finishSpawned: false
+    };
+
+    // Soft Shadow Blob Generator for grounding characters & animals
+    function createShadowBlob(radius) {
+      const r = radius || 0.5;
+      const cv = document.createElement('canvas');
+      cv.width = 64; cv.height = 64;
+      const ctx = cv.getContext('2d');
+      const grad = ctx.createRadialGradient(32, 32, 4, 32, 32, 30);
+      grad.addColorStop(0, 'rgba(0,0,0,0.48)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      const tex = (typeof THREE !== 'undefined') ? new THREE.CanvasTexture(cv) : null;
+      const mesh = (typeof THREE !== 'undefined') ? new THREE.Mesh(
+        new THREE.PlaneGeometry(r * 2, r * 2),
+        new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+      ) : {};
+      if (mesh.rotation) {
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.y = 0.02;
+      }
+      return mesh;
+    }
+
+    // Preload all 7 GLB Models once for Battles & Run mode
+    var modelLoadCallbacks = [];
+    function preloadRun3DModels(onComplete) {
+      if (run3D.modelsLoaded) {
+        if (onComplete) onComplete();
+        return;
+      }
+      if (onComplete) modelLoadCallbacks.push(onComplete);
+      if (run3D.modelsLoading) return;
+      run3D.modelsLoading = true;
+
+      const modelPaths = {
+        girl: 'assets/models/character_girl.glb',
+        dog: 'assets/models/dog.glb',
+        rabbit: 'assets/models/rabbit.glb',
+        chicken: 'assets/models/chicken.glb',
+        duck: 'assets/models/duck.glb',
+        cow: 'assets/models/cow.glb',
+        horse: 'assets/models/horse.glb'
+      };
+
+      const keys = Object.keys(modelPaths);
+      let loaded = 0;
+      const loader = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? new THREE.GLTFLoader() : null;
+
+      if (!loader) {
+        console.warn('Three.js GLTFLoader not ready yet.');
+        run3D.modelsLoading = false;
+        return;
       }
 
-      const pSquad = selectedKeys.map((k, idx) => ({
+      const loadOverlay = document.getElementById('run3dLoadingOverlay');
+      const loadSub = document.getElementById('run3dLoadingSub');
+
+      function notifyLoaded() {
+        run3D.modelsLoaded = true;
+        run3D.modelsLoading = false;
+        if (loadOverlay) {
+          loadOverlay.style.opacity = '0';
+          setTimeout(() => { loadOverlay.style.display = 'none'; }, 300);
+        }
+        while (modelLoadCallbacks.length > 0) {
+          const cb = modelLoadCallbacks.shift();
+          try { if (typeof cb === 'function') cb(); } catch(e){ console.error(e); }
+        }
+      }
+
+      keys.forEach(key => {
+        loader.load(modelPaths[key], gltf => {
+          gltf.scene.traverse(c => {
+            if (c.isMesh && c.material) {
+              c.material.metalness = 0.05;
+              c.material.roughness = 0.55;
+              if (c.material.emissive) c.material.emissive.setHex(0x000000);
+            }
+          });
+          run3D.models[key] = gltf.scene;
+          loaded++;
+          if (loadSub) loadSub.innerText = `Loading 3D Models (${loaded}/${keys.length})...`;
+          if (loaded === keys.length) {
+            notifyLoaded();
+          }
+        }, undefined, err => {
+          console.warn('Failed loading 3D model:', key, err);
+          loaded++;
+          if (loaded === keys.length) {
+            notifyLoaded();
+          }
+        });
+      });
+    }
+
+    // Auto-preload 3D models early so battle & run start instantly
+    setTimeout(() => {
+      if (typeof THREE !== 'undefined' && THREE.GLTFLoader) {
+        preloadRun3DModels();
+      }
+    }, 150);
+
+    // =========================================================================
+    // ==================== 3D LIVE BATTLE ARENA WEBGL ENGINE ====================
+    // =========================================================================
+    var battle3D = {
+      canvas: null,
+      renderer: null,
+      scene: null,
+      camera: null,
+      clock: null,
+      animId: null,
+      active: false,
+      units: [],
+      currentMode: 3,
+      isAttacking: false
+    };
+
+    var BATTLE_MODEL_CFG = {
+      girl:    { scale: 1.05, yOffset: 0.0, baseRot: Math.PI },
+      cow:     { scale: 0.62, yOffset: 0.0, baseRot: 0 },
+      horse:   { scale: 0.58, yOffset: 0.0, baseRot: Math.PI },
+      dog:     { scale: 0.65, yOffset: 0.0, baseRot: 0 },
+      chicken: { scale: 0.60, yOffset: 0.0, baseRot: -Math.PI / 2 },
+      duck:    { scale: 0.60, yOffset: 0.0, baseRot: 0 },
+      rabbit:  { scale: 0.62, yOffset: 0.0, baseRot: 0 }
+    };
+
+    function buildSquadForBattle(mode) {
+      const m = parseInt(mode, 10) || 3;
+      let unitsDef = [];
+
+      if (m === 7) {
+        // Mode 7: Girl + 6 Animals (Cow, Horse, Dog, Chicken, Duck, Rabbit = all 7 models!)
+        unitsDef = [
+          { key: 'girl',    name: 'GIRL (LEADER)', isLeader: true, hp: 160, atk: 35 },
+          { key: 'cow',     name: 'COW',           hp: 135, atk: 24 },
+          { key: 'horse',   name: 'HORSE',         hp: 130, atk: 28 },
+          { key: 'dog',     name: 'DOG',           hp: 115, atk: 26 },
+          { key: 'chicken', name: 'CHICKEN',       hp: 95,  atk: 22 },
+          { key: 'duck',    name: 'DUCK',          hp: 95,  atk: 22 },
+          { key: 'rabbit',  name: 'RABBIT',        hp: 90,  atk: 20 }
+        ];
+      } else if (m === 5) {
+        // Mode 5: Girl + 5 Animals (Cow, Horse, Dog, Chicken, Duck = 6 units!)
+        unitsDef = [
+          { key: 'girl',    name: 'GIRL (LEADER)', isLeader: true, hp: 150, atk: 32 },
+          { key: 'cow',     name: 'COW',           hp: 130, atk: 24 },
+          { key: 'horse',   name: 'HORSE',         hp: 125, atk: 28 },
+          { key: 'dog',     name: 'DOG',           hp: 110, atk: 26 },
+          { key: 'chicken', name: 'CHICKEN',       hp: 95,  atk: 22 },
+          { key: 'duck',    name: 'DUCK',          hp: 95,  atk: 22 }
+        ];
+      } else {
+        // Mode 3: Girl + 3 Animals (Cow, Horse, Dog = 4 units!)
+        unitsDef = [
+          { key: 'girl',    name: 'GIRL (LEADER)', isLeader: true, hp: 140, atk: 30 },
+          { key: 'cow',     name: 'COW',           hp: 120, atk: 24 },
+          { key: 'horse',   name: 'HORSE',         hp: 115, atk: 26 },
+          { key: 'dog',     name: 'DOG',           hp: 105, atk: 24 }
+        ];
+      }
+
+      const pSquad = unitsDef.map((u, idx) => ({
         id: 'p_' + idx + '_' + Math.random().toString(36).substr(2, 5),
-        key: k,
-        name: k.toUpperCase(),
-        lvl: 1,
-        icon: getAnimalIcon(k),
-        hp: 100,
-        maxHp: 100,
-        atk: 25 + (idx * 5)
+        key: u.key,
+        name: u.name,
+        isLeader: !!u.isLeader,
+        lvl: u.isLeader ? (typeof userLevel !== 'undefined' ? userLevel : 1) : 1,
+        icon: getAnimalIcon(u.key),
+        hp: u.hp,
+        maxHp: u.hp,
+        atk: u.atk
       }));
 
-      const eSquad = selectedKeys.map((k, idx) => ({
+      const eSquad = unitsDef.map((u, idx) => ({
         id: 'e_' + idx + '_' + Math.random().toString(36).substr(2, 5),
-        key: k,
-        name: 'WILD ' + k.toUpperCase(),
+        key: u.key,
+        name: u.isLeader ? 'WILD BOSS' : ('WILD ' + u.name),
+        isLeader: !!u.isLeader,
         lvl: 1,
-        icon: getAnimalIcon(k),
-        hp: 85,
-        maxHp: 85,
-        atk: 18 + (idx * 4)
+        icon: getAnimalIcon(u.key),
+        hp: Math.round(u.hp * 0.85),
+        maxHp: Math.round(u.hp * 0.85),
+        atk: Math.round(u.atk * 0.75)
       }));
 
       return { player: pSquad, enemy: eSquad };
@@ -2930,7 +3130,7 @@
 
       const count = squad.length;
 
-      // Responsive sizing: adapts so 3, 5, or 7 animals fit comfortably in one row
+      // Responsive sizing: adapts so 4, 6, or 7 members fit comfortably
       let sizeClass = 'w-10 h-10';
       let hpWidth = 'w-9';
       let nameClass = 'text-[9px] max-w-[55px]';
@@ -2958,16 +3158,18 @@
       let html = '<div class="flex items-center justify-center flex-nowrap ' + gapClass + ' max-w-full overflow-x-hidden px-1">';
       
       squad.forEach((unit) => {
-        const imgSrc = (typeof getFarmAnimalImg === 'function') ? getFarmAnimalImg(unit.key) : '';
+        const imgSrc = (unit.key === 'girl') ? '' : ((typeof getFarmAnimalImg === 'function') ? getFarmAnimalImg(unit.key) : '');
+        const leaderBadge = unit.isLeader ? '<span class="absolute top-0 left-0 bg-yellow-400 text-amber-950 font-black text-[6px] px-1 rounded-br-md shadow z-10">👑 LEAD</span>' : '';
         html += 
           '<div id="unitCard-' + unit.id + '" class="flex flex-col items-center shrink-0 transition-all duration-300 relative select-none">' +
             '<div class="' + hpWidth + ' bg-black/70 rounded-full h-1.5 mb-1 overflow-hidden border border-white/40 shadow">' +
               '<div id="hpBar-' + unit.id + '" class="bg-gradient-to-r from-emerald-400 to-green-500 h-full w-[100%] transition-all duration-200"></div>' +
             '</div>' +
             '<div id="unitFrame-' + unit.id + '" class="' + sizeClass + ' rounded-2xl overflow-hidden ' + borderClass + ' shadow-2xl bg-amber-50/95 relative flex items-center justify-center p-0.5 transition-transform duration-200">' +
-              (imgSrc ? ('<img src="' + imgSrc + '" alt="' + unit.name + '" class="w-full h-full object-cover pointer-events-none drop-shadow" />') : ('<span class="text-xl">' + (unit.icon || '\u{1F33E}') + '</span>')) +
+              leaderBadge +
+              (imgSrc ? ('<img src="' + imgSrc + '" alt="' + unit.name + '" class="w-full h-full object-cover pointer-events-none drop-shadow" />') : ('<span class="text-xl">' + (unit.icon || '🌾') + '</span>')) +
               '<span class="absolute bottom-0 right-0 bg-black/70 text-white ' + badgeSize + ' font-bold px-1 rounded-tl-md">Lv.' + (unit.lvl || 1) + '</span>' +
-              '<div id="skull-' + unit.id + '" class="absolute inset-0 bg-black/70 hidden flex items-center justify-center text-lg">&#128128;</div>' +
+              '<div id="skull-' + unit.id + '" class="absolute inset-0 bg-black/70 hidden flex items-center justify-center text-lg">💀</div>' +
             '</div>' +
             '<span class="' + nameClass + ' font-black text-amber-100 drop-shadow mt-0.5 truncate leading-tight text-center">' + unit.name + '</span>' +
           '</div>';
@@ -2977,81 +3179,515 @@
       container.innerHTML = html;
     }
 
-    function enterBattleArena(mode) {
-      try {
-      closeModal('battlePrepModal');
+    // 3D Battle Scene Initialization
+    function initBattle3DScene(mode) {
+      const canvas = document.getElementById('arenaBattle3DCanvas');
+      if (!canvas || typeof THREE === 'undefined') return;
 
-      if (mode === 'run') {
-        startRunSprintGame();
+      const wrapper = document.getElementById('arena3DWrapper') || canvas.parentElement;
+      const w = Math.max(300, wrapper.clientWidth);
+      const h = Math.max(280, wrapper.clientHeight);
+
+      if (!battle3D.renderer) {
+        battle3D.renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance'
+        });
+        battle3D.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      }
+      battle3D.renderer.toneMappingExposure = 1.08;
+      battle3D.renderer.setSize(w, h, false);
+
+      battle3D.scene = new THREE.Scene();
+      battle3D.scene.background = new THREE.Color(0x38bdf8); // Sky blue
+      battle3D.scene.fog = new THREE.FogExp2(0x93c5fd, 0.018);
+
+      battle3D.camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+      battle3D.camera.position.set(0, 4.4, 6.2);
+      battle3D.camera.lookAt(0, 0.3, 0.1);
+
+      battle3D.clock = new THREE.Clock();
+
+      // Lighting
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x3f6212, 1.25);
+      battle3D.scene.add(hemi);
+
+      const sun = new THREE.DirectionalLight(0xfffaed, 1.45);
+      sun.position.set(12, 22, 14);
+      battle3D.scene.add(sun);
+
+      const fill = new THREE.DirectionalLight(0xbfdbfe, 0.65);
+      fill.position.set(-12, 15, 8);
+      battle3D.scene.add(fill);
+
+      // Grass Field
+      const grass = new THREE.Mesh(
+        new THREE.PlaneGeometry(60, 60),
+        new THREE.MeshLambertMaterial({ color: 0x4d7c0f })
+      );
+      grass.rotation.x = -Math.PI / 2;
+      battle3D.scene.add(grass);
+
+      // Circular Combat Ring (Sand / Dirt)
+      const ringGeo = new THREE.CircleGeometry(5.2, 48);
+      const ringMat = new THREE.MeshLambertMaterial({ color: 0xb58548 });
+      const combatRing = new THREE.Mesh(ringGeo, ringMat);
+      combatRing.rotation.x = -Math.PI / 2;
+      combatRing.position.y = 0.01;
+      battle3D.scene.add(combatRing);
+
+      // Wooden Border Rim
+      const borderRim = new THREE.Mesh(
+        new THREE.RingGeometry(5.05, 5.35, 48),
+        new THREE.MeshLambertMaterial({ color: 0x542707 })
+      );
+      borderRim.rotation.x = -Math.PI / 2;
+      borderRim.position.y = 0.015;
+      battle3D.scene.add(borderRim);
+
+      // Center dividing line with glowing emblem
+      const divLine = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.08, 9.6),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
+      );
+      divLine.rotation.x = -Math.PI / 2;
+      divLine.position.y = 0.02;
+      battle3D.scene.add(divLine);
+
+      // Center Ring Emblem
+      const centerEmblem = new THREE.Mesh(
+        new THREE.RingGeometry(0.8, 0.95, 32),
+        new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.7 })
+      );
+      centerEmblem.rotation.x = -Math.PI / 2;
+      centerEmblem.position.y = 0.025;
+      battle3D.scene.add(centerEmblem);
+
+      // Perimeter fence posts
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+        const px = Math.cos(a) * 5.25;
+        const pz = Math.sin(a) * 5.25;
+        const post = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.09, 0.1, 0.8, 8),
+          new THREE.MeshLambertMaterial({ color: 0x78350f })
+        );
+        post.position.set(px, 0.4, pz);
+        battle3D.scene.add(post);
+      }
+
+      setupBattle3DUnits(mode);
+      startBattle3DLoop();
+    }
+
+    // Setup 3D Units based on Battle Mode
+    function setupBattle3DUnits(mode) {
+      if (!battle3D.scene) return;
+      if (battle3D.units && battle3D.units.length > 0) {
+        battle3D.units.forEach(u => {
+          if (u.mesh) battle3D.scene.remove(u.mesh);
+          if (u.shadow) battle3D.scene.remove(u.shadow);
+          if (u.ring) battle3D.scene.remove(u.ring);
+        });
+      }
+      battle3D.units = [];
+
+      if (!run3D.modelsLoaded) {
+        preloadRun3DModels(() => setupBattle3DUnits(mode));
         return;
       }
 
       const m = parseInt(mode, 10) || 3;
-      currentBattleMode = m;
-      isBattleInProgress = false;
+      battle3D.currentMode = m;
 
-      const squads = buildSquadForBattle(m);
-      playerSquad = squads.player;
-      enemySquad = squads.enemy;
-
-      const arena = document.getElementById('battleArenaModal');
-      const modeBadge = document.getElementById('arenaModeBadge');
-      const p1Name = document.getElementById('player1NameBox');
-      const p1Avatar = document.getElementById('player1AvatarBox');
-      const effectsBox = document.getElementById('battleEffectsContainer');
-      const fightOverlay = document.getElementById('battleFightOverlay');
-      const victoryOverlay = document.getElementById('battleVictoryOverlay');
-      const startTitle = document.getElementById('battleStartTitle');
-      const startDesc = document.getElementById('battleStartDesc');
-
-      if (effectsBox) effectsBox.innerHTML = '';
-      if (fightOverlay) fightOverlay.classList.remove('hidden');
-      if (victoryOverlay) victoryOverlay.classList.add('hidden');
-
-      // Mode badge removed per design
-      if (startTitle) startTitle.innerHTML = (m === 'run') ? '&#127939;&#9889; RUN Sprint Battle' : (m + ' vs ' + m + ' Animal Battle');
-      
-      let rewardHfcText = m === 3 ? '+100 Farm Points' : (m === 5 ? '+200 Farm Points' : '+300 Farm Points');
-      if (startDesc) startDesc.innerText = (m === 'run') ? ('Unleash your full farm squad in high-speed sprint battle and claim ' + rewardHfcText + '!') : ('Lead your ' + m + ' farm animals to victory and claim ' + rewardHfcText + '!');
-
-      renderSquadOnField(enemySquad, 'enemySquadContainer', true, m);
-      renderSquadOnField(playerSquad, 'playerSquadContainer', false, m);
-
-      updateTeamHpBars();
-
-      if (tgUser && p1Name) {
-        const pStats = getPlayerBattlePower();
-        const vipTag = pStats.isVip ? "&#128081; VIP" : ("Lv." + pStats.userLevel);
-        const safeName = escapeHtml(tgUser?.first_name || "Farmer"); p1Name.innerHTML = safeName + ' (You) <span class="bg-amber-400 text-amber-950 font-black px-1.5 py-0.2 rounded text-[7px] shadow-sm">' + vipTag + ' &bull; &#9889; +' + pStats.powerPercent + '% Power</span>';
-      }
-      if (tgUser && tgUser.photo_url && p1Avatar) {
-        const safePhoto = sanitizeUrl(tgUser.photo_url); if (safePhoto) p1Avatar.innerHTML = '<img src="' + safePhoto + '" class="w-full h-full rounded-full object-cover" />';
+      let blueFormation = [];
+      if (m === 3) {
+        // Mode 3: Girl + 3 Animals = 4 units
+        blueFormation = [
+          { key: 'girl',  x: -1.75, z:  0.0, isLeader: true },
+          { key: 'cow',   x: -0.85, z: -1.3 },
+          { key: 'horse', x: -0.90, z:  0.0 },
+          { key: 'dog',   x: -0.85, z:  1.3 }
+        ];
+      } else if (m === 5) {
+        // Mode 5: Girl + 5 Animals = 6 units
+        blueFormation = [
+          { key: 'cow',     x: -0.85, z: -1.4 },
+          { key: 'horse',   x: -0.90, z:  0.0 },
+          { key: 'dog',     x: -0.85, z:  1.4 },
+          { key: 'chicken', x: -1.70, z: -1.2 },
+          { key: 'girl',    x: -1.85, z:  0.0, isLeader: true },
+          { key: 'duck',    x: -1.70, z:  1.2 }
+        ];
+      } else {
+        // Mode 7: Girl + 6 Animals = 7 units
+        blueFormation = [
+          { key: 'cow',     x: -0.85, z: -1.5 },
+          { key: 'horse',   x: -0.90, z:  0.0 },
+          { key: 'dog',     x: -0.85, z:  1.5 },
+          { key: 'chicken', x: -1.65, z: -1.4 },
+          { key: 'duck',    x: -1.65, z:  1.4 },
+          { key: 'rabbit',  x: -1.80, z: -0.5 },
+          { key: 'girl',    x: -1.95, z:  0.5, isLeader: true }
+        ];
       }
 
-      // Prepare matching 3D battle video (Preloaded, seamless loop, no cut)
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        const targetSrc = (m === 'run') ? 'assets/videos/battle_7vs7.mp4' : ('assets/videos/battle_' + m + 'vs' + m + '.mp4');
-        if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
-          videoEl.src = targetSrc;
-          videoEl.preload = 'auto';
-          videoEl.load();
+      // Spawn Blue Team (Player)
+      blueFormation.forEach((cfg, idx) => {
+        const squadData = playerSquad[idx] || null;
+        spawnBattleUnit(cfg.key, cfg.x, cfg.z, 'player', cfg.isLeader, idx, squadData);
+      });
+
+      // Spawn Red Team (Enemy)
+      blueFormation.forEach((cfg, idx) => {
+        const squadData = enemySquad[idx] || null;
+        spawnBattleUnit(cfg.key, -cfg.x, cfg.z, 'enemy', cfg.isLeader, idx, squadData);
+      });
+    }
+
+    function spawnBattleUnit(key, x, z, team, isLeader, index, squadData) {
+      const base = run3D.models[key];
+      if (!base) return;
+
+      const mesh = base.clone(true);
+      const meta = BATTLE_MODEL_CFG[key] || { scale: 0.7, yOffset: 0.0, baseRot: 0 };
+      mesh.scale.setScalar(meta.scale);
+
+      // Facing angles:
+      // Player faces Right (+X): rotY = baseRot - Math.PI / 2
+      // Enemy faces Left (-X): rotY = baseRot + Math.PI / 2
+      let faceRot = (team === 'player') ? (meta.baseRot - Math.PI / 2) : (meta.baseRot + Math.PI / 2);
+      mesh.rotation.y = faceRot;
+      mesh.position.set(x, meta.yOffset, z);
+
+      // Enemy red tint
+      if (team === 'enemy') {
+        mesh.traverse(c => {
+          if (c.isMesh && c.material) {
+            c.material = c.material.clone();
+            if (c.material.color) {
+              c.material.color.lerp(new THREE.Color(0xff8888), 0.22);
+            }
+          }
+        });
+      }
+
+      battle3D.scene.add(mesh);
+
+      // Shadow Blob
+      const shadow = createShadowBlob(0.55 * meta.scale);
+      shadow.position.set(x, 0.025, z);
+      battle3D.scene.add(shadow);
+
+      // Glowing Pedestal Ring
+      const ringColor = (team === 'player') ? 0x38bdf8 : 0xef4444;
+      const ringGeo = new THREE.RingGeometry(0.5 * (isLeader ? 1.25 : 1.0), 0.65 * (isLeader ? 1.25 : 1.0), 24);
+      const ringMat = new THREE.MeshBasicMaterial({ color: ringColor, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(x, 0.03, z);
+      battle3D.scene.add(ring);
+
+      battle3D.units.push({
+        key,
+        mesh,
+        shadow,
+        ring,
+        basePos: new THREE.Vector3(x, meta.yOffset, z),
+        faceRot,
+        team,
+        isLeader,
+        index,
+        squadData,
+        isAttacking: false,
+        isDead: false,
+        isVictorious: false,
+        bobPhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    function startBattle3DLoop() {
+      if (battle3D.active) return;
+      battle3D.active = true;
+      if (battle3D.clock) battle3D.clock.start();
+      battle3DAnimate();
+    }
+
+    function stopBattle3DLoop() {
+      battle3D.active = false;
+      if (battle3D.animId) {
+        cancelAnimationFrame(battle3D.animId);
+        battle3D.animId = null;
+      }
+    }
+
+    function battle3DAnimate() {
+      if (!battle3D.active) return;
+      battle3D.animId = requestAnimationFrame(battle3DAnimate);
+
+      const time = battle3D.clock ? battle3D.clock.getElapsedTime() : 0;
+
+      battle3D.units.forEach(u => {
+        if (u.isDead) return;
+
+        if (u.isVictorious) {
+          // Joyful jumping and spinning!
+          u.mesh.position.y = u.basePos.y + Math.abs(Math.sin(time * 6 + u.bobPhase)) * 0.45;
+          u.mesh.rotation.y = u.faceRot + Math.sin(time * 4) * 0.4;
+          if (u.shadow) u.shadow.scale.setScalar(1.0 - (u.mesh.position.y - u.basePos.y) * 1.2);
+          return;
         }
-        videoEl.loop = true;
-        videoEl.muted = true;
-        videoEl.playsInline = true;
-        videoEl.pause();
-        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
+
+        if (!u.isAttacking) {
+          // Idle breathing
+          const bob = Math.abs(Math.sin(time * 3.5 + u.bobPhase)) * 0.06;
+          u.mesh.position.y = u.basePos.y + bob;
+          u.mesh.position.x += (u.basePos.x - u.mesh.position.x) * 0.15;
+          u.mesh.position.z += (u.basePos.z - u.mesh.position.z) * 0.15;
+          if (u.shadow) {
+            u.shadow.position.x = u.mesh.position.x;
+            u.shadow.position.z = u.mesh.position.z;
+            u.shadow.scale.setScalar(1.0 - bob * 1.5);
+          }
+          if (u.ring) {
+            u.ring.rotation.z = time * (u.team === 'player' ? 0.8 : -0.8);
+          }
+        }
+      });
+
+      if (battle3D.renderer && battle3D.scene && battle3D.camera) {
+        battle3D.renderer.render(battle3D.scene, battle3D.camera);
+      }
+    }
+
+    // Attack Action Animation
+    function battle3DAttack(attacker, target, damage, isCrit, onHit) {
+      if (!attacker || !target || !attacker.mesh || !target.mesh) {
+        if (onHit) onHit();
+        return;
+      }
+      attacker.isAttacking = true;
+
+      const startPos = attacker.basePos.clone();
+      const dir = (attacker.team === 'player') ? 1 : -1;
+      const strikeX = target.basePos.x - (dir * 0.65);
+      const strikeZ = target.basePos.z;
+
+      const duration = 650;
+      const startTime = performance.now();
+      let hitDispatched = false;
+
+      function stepAttack(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+
+        if (progress < 0.5) {
+          // Dash towards target with a high jump
+          const p = progress / 0.5;
+          attacker.mesh.position.x = startPos.x + (strikeX - startPos.x) * p;
+          attacker.mesh.position.z = startPos.z + (strikeZ - startPos.z) * p;
+          attacker.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 0.65;
+          attacker.mesh.rotation.z = -dir * 0.35 * Math.sin(p * Math.PI);
+        } else if (progress >= 0.5 && !hitDispatched) {
+          hitDispatched = true;
+          if (onHit) onHit();
+
+          // Target flinch & recoil
+          target.mesh.position.x = target.basePos.x + (dir * 0.3);
+          target.mesh.position.y = target.basePos.y + 0.15;
+
+          // Flash target
+          target.mesh.traverse(c => {
+            if (c.isMesh && c.material && c.material.color) {
+              const orig = c.material.color.getHex();
+              c.material.color.setHex(0xffffff);
+              setTimeout(() => {
+                if (c.material && c.material.color) {
+                  c.material.color.setHex(orig);
+                }
+              }, 130);
+            }
+          });
+        } else {
+          // Leap back to home formation
+          const p = (progress - 0.5) / 0.5;
+          attacker.mesh.position.x = strikeX + (startPos.x - strikeX) * p;
+          attacker.mesh.position.z = strikeZ + (startPos.z - strikeZ) * p;
+          attacker.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 0.4;
+          attacker.mesh.rotation.z = -dir * 0.2 * (1 - p);
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(stepAttack);
+        } else {
+          attacker.mesh.position.copy(startPos);
+          attacker.mesh.rotation.z = 0;
+          attacker.isAttacking = false;
+        }
       }
 
-      const timerEl = document.getElementById('battleTimerDisplay');
-      if (timerEl) timerEl.innerText = BATTLE_ROUND_DURATION.toFixed(1) + 's';
+      requestAnimationFrame(stepAttack);
+    }
 
-      pauseBgmForBattle();
-      if (arena) {
-        arena.classList.remove('hidden');
-        arena.style.display = 'flex';
+    // Girl Leader Special Strike
+    function battle3DSpecialStrike() {
+      const girlUnit = battle3D.units.find(u => u.team === 'player' && u.key === 'girl');
+      if (!girlUnit || !girlUnit.mesh) return;
+
+      girlUnit.isAttacking = true;
+      const startPos = girlUnit.basePos.clone();
+      const centerPos = new THREE.Vector3(0, 0.9, 0);
+
+      const startTime = performance.now();
+      const dur = 750;
+      let shockDispatched = false;
+
+      // 3D Shockwave Ring
+      const waveGeo = new THREE.RingGeometry(0.3, 0.6, 32);
+      const waveMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide
+      });
+      const shockwave = new THREE.Mesh(waveGeo, waveMat);
+      shockwave.rotation.x = -Math.PI / 2;
+      shockwave.position.set(0, 0.05, 0);
+      battle3D.scene.add(shockwave);
+
+      function stepStrike(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / dur);
+
+        if (progress < 0.45) {
+          const p = progress / 0.45;
+          girlUnit.mesh.position.lerpVectors(startPos, centerPos, p);
+          girlUnit.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 1.1;
+          girlUnit.mesh.rotation.y = girlUnit.faceRot + Math.PI * 2 * p;
+        } else if (progress >= 0.45 && !shockDispatched) {
+          shockDispatched = true;
+          shockwave.scale.set(12, 12, 1);
+          shockwave.material.opacity = 0.2;
+
+          // Enemy units all recoil!
+          battle3D.units.filter(u => u.team === 'enemy').forEach(e => {
+            if (e.squadData && e.squadData.hp > 0) {
+              e.mesh.position.x = e.basePos.x + 0.35;
+              e.mesh.position.y = e.basePos.y + 0.2;
+              setTimeout(() => {
+                if (e.mesh) e.mesh.position.copy(e.basePos);
+              }, 250);
+            }
+          });
+        } else {
+          const p = (progress - 0.45) / 0.55;
+          girlUnit.mesh.position.lerpVectors(centerPos, startPos, p);
+          girlUnit.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 0.4;
+          girlUnit.mesh.rotation.y = girlUnit.faceRot;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(stepStrike);
+        } else {
+          girlUnit.mesh.position.copy(startPos);
+          girlUnit.mesh.rotation.y = girlUnit.faceRot;
+          girlUnit.isAttacking = false;
+          if (shockwave && battle3D.scene) battle3D.scene.remove(shockwave);
+        }
       }
+
+      requestAnimationFrame(stepStrike);
+    }
+
+    function handleUnitKnockout(unitId) {
+      const u = battle3D.units.find(x => x.squadData && x.squadData.id === unitId);
+      if (u && u.mesh && !u.isDead) {
+        u.isDead = true;
+        u.mesh.rotation.z = (u.team === 'player' ? -Math.PI / 2 : Math.PI / 2);
+        u.mesh.position.y = 0.15;
+        u.mesh.traverse(c => {
+          if (c.isMesh && c.material) {
+            c.material.transparent = true;
+            c.material.opacity = 0.35;
+          }
+        });
+        if (u.ring) u.ring.visible = false;
+        if (u.shadow) u.shadow.scale.setScalar(0.5);
+      }
+    }
+
+    function enterBattleArena(mode) {
+      try {
+        closeModal('battlePrepModal');
+
+        if (mode === 'run') {
+          startRunSprintGame();
+          return;
+        }
+
+        const m = parseInt(mode, 10) || 3;
+        currentBattleMode = m;
+        isBattleInProgress = false;
+
+        const squads = buildSquadForBattle(m);
+        playerSquad = squads.player;
+        enemySquad = squads.enemy;
+
+        const arena = document.getElementById('battleArenaModal');
+        const p1Name = document.getElementById('player1NameBox');
+        const p1Avatar = document.getElementById('player1AvatarBox');
+        const effectsBox = document.getElementById('battleEffectsContainer');
+        const fightOverlay = document.getElementById('battleFightOverlay');
+        const victoryOverlay = document.getElementById('battleVictoryOverlay');
+        const startTitle = document.getElementById('battleStartTitle');
+        const startDesc = document.getElementById('battleStartDesc');
+
+        if (effectsBox) effectsBox.innerHTML = '';
+        if (fightOverlay) fightOverlay.classList.remove('hidden');
+        if (victoryOverlay) victoryOverlay.classList.add('hidden');
+
+        if (startTitle) {
+          if (m === 7) startTitle.innerHTML = '⚔️ 7 vs 7 Grand Championship';
+          else if (m === 5) startTitle.innerHTML = '⚔️ 5 vs 5 Animal Battle (+Leader)';
+          else startTitle.innerHTML = '⚔️ 3 vs 3 Animal Battle (+Leader)';
+        }
+        
+        let rewardHfcText = m === 7 ? '+300 Farm Points' : (m === 5 ? '+200 Farm Points' : '+100 Farm Points');
+        if (startDesc) {
+          startDesc.innerText = 'Lead your squad (Girl Leader + ' + (m === 7 ? 6 : m) + ' animals) to victory and claim ' + rewardHfcText + '!';
+        }
+
+        renderSquadOnField(enemySquad, 'enemySquadContainer', true, m);
+        renderSquadOnField(playerSquad, 'playerSquadContainer', false, m);
+
+        updateTeamHpBars();
+
+        if (tgUser && p1Name) {
+          const pStats = getPlayerBattlePower();
+          const vipTag = pStats.isVip ? "👑 VIP" : ("Lv." + pStats.userLevel);
+          const safeName = escapeHtml(tgUser?.first_name || "Farmer");
+          p1Name.innerHTML = safeName + ' (You) <span class="bg-amber-400 text-amber-950 font-black px-1.5 py-0.2 rounded text-[7px] shadow-sm">' + vipTag + ' &bull; ⚡ +' + pStats.powerPercent + '% Power</span>';
+        }
+        if (tgUser && tgUser.photo_url && p1Avatar) {
+          const safePhoto = sanitizeUrl(tgUser.photo_url);
+          if (safePhoto) p1Avatar.innerHTML = '<img src="' + safePhoto + '" class="w-full h-full rounded-full object-cover" />';
+        }
+
+        const timerEl = document.getElementById('battleTimerDisplay');
+        if (timerEl) timerEl.innerText = BATTLE_ROUND_DURATION.toFixed(1) + 's';
+
+        pauseBgmForBattle();
+        if (arena) {
+          arena.classList.remove('hidden');
+          arena.style.display = 'flex';
+        }
+
+        // Initialize Real 3D Arena
+        setTimeout(() => {
+          initBattle3DScene(m);
+        }, 50);
+
       } catch(err) {
         console.error("Battle enter error:", err);
         const arena = document.getElementById('battleArenaModal');
@@ -3087,27 +3723,6 @@
       isBattleInProgress = true;
       battleStartTime = Date.now();
 
-      // Start 3D battle video on START FIGHT click (seamless hardware loop, non-blocking)
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        videoEl.loop = true;
-        videoEl.muted = true;
-        videoEl.playsInline = true;
-        videoEl.onpause = null;
-        videoEl.onended = null;
-
-        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
-
-        const p = videoEl.play();
-        if (p !== undefined) {
-          p.catch(e => {
-            console.warn('Video playback warning, retrying muted:', e);
-            videoEl.muted = true;
-            videoEl.play().catch(()=>{});
-          });
-        }
-      }
-
       const fightOverlay = document.getElementById('battleFightOverlay');
       if (fightOverlay) fightOverlay.classList.add('hidden');
 
@@ -3124,7 +3739,7 @@
           clearInterval(battleClockInterval);
           clearInterval(battleRoundInterval);
           isBattleInProgress = false;
-          // Final knockout on all enemies at exactly 20.0s
+          // Final knockout on all remaining enemies
           enemySquad.forEach(u => {
             u.hp = 0;
             const tgtBar = document.getElementById('hpBar-' + u.id);
@@ -3133,6 +3748,7 @@
             if (skull) skull.classList.remove('hidden');
             const tgtFrame = document.getElementById('unitFrame-' + u.id);
             if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
+            handleUnitKnockout(u.id);
           });
           updateTeamHpBars();
           setTimeout(() => triggerBattleVictory(), 600);
@@ -3154,39 +3770,47 @@
         const target = aliveEnemies[0];
 
         const power = getPlayerBattlePower();
-        const baseDmg = Math.floor(Math.random() * 8) + 12;
+        const baseDmg = Math.floor(Math.random() * 8) + 14;
         let dmg = Math.round(baseDmg * power.multiplier);
-        const isCrit = Math.random() < 0.25;
-        if (isCrit) { dmg = Math.round(dmg * 1.4); }
-        target.hp = Math.max(target.hp - dmg, 0);
+        const isCrit = Math.random() < 0.28;
+        if (isCrit) { dmg = Math.round(dmg * 1.45); }
 
-        const attFrame = document.getElementById('unitFrame-' + attacker.id);
-        if (attFrame) {
-          attFrame.style.transform = 'translateY(-14px) scale(1.15)';
-          setTimeout(() => { if (attFrame) attFrame.style.transform = ''; }, 300);
-        }
+        const att3D = battle3D.units.find(u => u.team === 'player' && u.squadData && u.squadData.id === attacker.id);
+        const tgt3D = battle3D.units.find(u => u.team === 'enemy' && u.squadData && u.squadData.id === target.id);
 
-        const tgtCard = document.getElementById('unitCard-' + target.id);
-        const tgtBar = document.getElementById('hpBar-' + target.id);
-        const tgtFrame = document.getElementById('unitFrame-' + target.id);
+        battle3DAttack(att3D, tgt3D, dmg, isCrit, () => {
+          target.hp = Math.max(target.hp - dmg, 0);
 
-        if (tgtCard) {
-          const rect = tgtCard.getBoundingClientRect();
-          spawnHitEffect((isCrit ? '⚡ CRIT! -' : '-') + dmg, rect.left + rect.width / 2, rect.top, isCrit ? '#facc15' : '#ef4444');
-        }
-        if (tgtBar) {
-          const pct = Math.round((target.hp / target.maxHp) * 100);
-          tgtBar.style.width = pct + '%';
-        }
-        if (target.hp <= 0) {
-          const skull = document.getElementById('skull-' + target.id);
-          if (skull) skull.classList.remove('hidden');
-          if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
-        }
+          const attFrame = document.getElementById('unitFrame-' + attacker.id);
+          if (attFrame) {
+            attFrame.style.transform = 'translateY(-14px) scale(1.15)';
+            setTimeout(() => { if (attFrame) attFrame.style.transform = ''; }, 300);
+          }
 
-        updateTeamHpBars();
+          const tgtCard = document.getElementById('unitCard-' + target.id);
+          const tgtBar = document.getElementById('hpBar-' + target.id);
+          const tgtFrame = document.getElementById('unitFrame-' + target.id);
 
-        // Enemy Counter-Attack (Player squad takes light theatrical damage)
+          if (tgtCard) {
+            const rect = tgtCard.getBoundingClientRect();
+            spawnHitEffect((isCrit ? '⚡ CRIT! -' : '-') + dmg, rect.left + rect.width / 2, rect.top, isCrit ? '#facc15' : '#ef4444');
+          }
+          if (tgtBar) {
+            const pct = Math.round((target.hp / target.maxHp) * 100);
+            tgtBar.style.width = pct + '%';
+          }
+          if (target.hp <= 0) {
+            const skull = document.getElementById('skull-' + target.id);
+            if (skull) skull.classList.remove('hidden');
+            if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
+            handleUnitKnockout(target.id);
+          }
+
+          updateTeamHpBars();
+          try { playSound('click'); } catch(e){}
+        });
+
+        // Enemy Counter-Attack
         setTimeout(() => {
           if (!isBattleInProgress) return;
           const livingE = enemySquad.filter(u => u.hp > 0);
@@ -3195,28 +3819,33 @@
 
           const eAttacker = livingE[Math.floor(Math.random() * livingE.length)];
           const pTarget = livingP[Math.floor(Math.random() * livingP.length)];
-
           const eDmg = Math.floor(Math.random() * 5) + 3;
-          pTarget.hp = Math.max(pTarget.hp - eDmg, 20); // Keep player squad alive and fighting
 
-          const eAttFrame = document.getElementById('unitFrame-' + eAttacker.id);
-          if (eAttFrame) {
-            eAttFrame.style.transform = 'translateY(14px) scale(1.15)';
-            setTimeout(() => { if (eAttFrame) eAttFrame.style.transform = ''; }, 300);
-          }
+          const eAtt3D = battle3D.units.find(u => u.team === 'enemy' && u.squadData && u.squadData.id === eAttacker.id);
+          const pTgt3D = battle3D.units.find(u => u.team === 'player' && u.squadData && u.squadData.id === pTarget.id);
 
-          const pTgtCard = document.getElementById('unitCard-' + pTarget.id);
-          const pTgtBar = document.getElementById('hpBar-' + pTarget.id);
+          battle3DAttack(eAtt3D, pTgt3D, eDmg, false, () => {
+            pTarget.hp = Math.max(pTarget.hp - eDmg, 25);
 
-          if (pTgtCard) {
-            const r = pTgtCard.getBoundingClientRect();
-            spawnHitEffect('-' + eDmg, r.left + r.width / 2, r.top + 20, '#eab308');
-          }
-          if (pTgtBar) {
-            const pPct = Math.round((pTarget.hp / pTarget.maxHp) * 100);
-            pTgtBar.style.width = pPct + '%';
-          }
-          updateTeamHpBars();
+            const eAttFrame = document.getElementById('unitFrame-' + eAttacker.id);
+            if (eAttFrame) {
+              eAttFrame.style.transform = 'translateY(14px) scale(1.15)';
+              setTimeout(() => { if (eAttFrame) eAttFrame.style.transform = ''; }, 300);
+            }
+
+            const pTgtCard = document.getElementById('unitCard-' + pTarget.id);
+            const pTgtBar = document.getElementById('hpBar-' + pTarget.id);
+
+            if (pTgtCard) {
+              const r = pTgtCard.getBoundingClientRect();
+              spawnHitEffect('-' + eDmg, r.left + r.width / 2, r.top + 20, '#eab308');
+            }
+            if (pTgtBar) {
+              const pPct = Math.round((pTarget.hp / pTarget.maxHp) * 100);
+              pTgtBar.style.width = pPct + '%';
+            }
+            updateTeamHpBars();
+          });
         }, 550);
 
       }, 1200);
@@ -3227,17 +3856,14 @@
       const aliveEnemies = enemySquad.filter(u => u.hp > 0);
       if (aliveEnemies.length === 0) return;
 
-      // Ensure video remains smoothly playing and muted (audio is handled via playSound WebAudio)
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl && videoEl.paused && isBattleInProgress) {
-        videoEl.play().catch(()=>{});
-      }
+      // 3D Girl Leader Special Strike Animation
+      battle3DSpecialStrike();
 
       // Screen shake and slash VFX
       const innerFrame = document.getElementById('arenaInnerFrame');
       if (innerFrame) {
         innerFrame.classList.remove('shake-screen');
-        void innerFrame.offsetWidth; // re-trigger animation
+        void innerFrame.offsetWidth;
         innerFrame.classList.add('shake-screen');
         setTimeout(() => { if (innerFrame) innerFrame.classList.remove('shake-screen'); }, 400);
       }
@@ -3248,7 +3874,7 @@
       }
 
       const target = aliveEnemies[0];
-      const bonusDmg = 25;
+      const bonusDmg = 35;
       target.hp = Math.max(target.hp - bonusDmg, 0);
 
       const tgtCard = document.getElementById('unitCard-' + target.id);
@@ -3257,7 +3883,7 @@
 
       if (tgtCard) {
         const rect = tgtCard.getBoundingClientRect();
-        spawnHitEffect('💥 PAW CRIT! -' + bonusDmg, rect.left + rect.width / 2, rect.top - 15, '#22c55e');
+        spawnHitEffect('💥 LEADER STRIKE! -' + bonusDmg, rect.left + rect.width / 2, rect.top - 15, '#22c55e');
       }
       if (tgtBar) {
         const pct = Math.round((target.hp / target.maxHp) * 100);
@@ -3268,9 +3894,11 @@
         const skull = document.getElementById('skull-' + target.id);
         if (skull) skull.classList.remove('hidden');
         if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
+        handleUnitKnockout(target.id);
       }
 
       updateTeamHpBars();
+      try { playSound('fanfare'); } catch(e){}
 
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
@@ -3297,12 +3925,10 @@
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       if (battleClockInterval) clearInterval(battleClockInterval);
 
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        videoEl.onpause = null;
-        videoEl.onended = null;
-        videoEl.pause();
-      }
+      // Trigger 3D Victory celebration (joyful bouncing and spins)
+      battle3D.units.filter(u => u.team === 'player' && !u.isDead).forEach(u => {
+        u.isVictorious = true;
+      });
 
       try { playSound('fanfare'); } catch(e){}
 
@@ -3312,8 +3938,8 @@
       const normalClaimPts = document.getElementById('battleNormalClaimPts');
 
       const mode = currentBattleMode;
-      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
-      const basePoints = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
+      const m = parseInt(mode, 10) || 3;
+      const basePoints = (m === 7) ? 300 : (m === 5 ? 200 : 100);
       const doublePoints = basePoints * 2;
 
       if (rewardText) rewardText.innerHTML = `+${basePoints} Farm Points 🌾`;
@@ -3335,8 +3961,8 @@
       try { playSound('fanfare'); } catch(e){}
 
       const mode = currentBattleMode;
-      const m = (mode === 'run') ? 'run' : (parseInt(mode, 10) || 3);
-      const basePoints = (m === 7 || m === 'run') ? 300 : (m === 5 ? 200 : 100);
+      const m = parseInt(mode, 10) || 3;
+      const basePoints = (m === 7) ? 300 : (m === 5 ? 200 : 100);
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
       points += finalPoints;
@@ -3353,7 +3979,7 @@
       updatePvpButtonsUI();
 
       closeBattleArena();
-      showWalletToast('\u{1F389} Claimed +' + finalPoints + ' Farm Points from ' + (mode === 'run' ? 'RUN' : (mode + 'v' + mode)) + ' Battle!');
+      showWalletToast('🎉 Claimed +' + finalPoints + ' Farm Points from ' + (mode === 'run' ? 'RUN' : (mode + 'v' + mode)) + ' Battle!');
     }
 
     function claimBattleDoubleRewardWithAd() {
@@ -3368,14 +3994,7 @@
       if (battleRoundInterval) { clearInterval(battleRoundInterval); battleRoundInterval = null; }
       if (battleClockInterval) { clearInterval(battleClockInterval); battleClockInterval = null; }
 
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        videoEl.onpause = null;
-        videoEl.onended = null;
-        try { videoEl.pause(); } catch(e){}
-        try { if (videoEl.readyState >= 1) videoEl.currentTime = 0; } catch(e){}
-        videoEl.muted = true;
-      }
+      stopBattle3DLoop();
 
       const arena = document.getElementById('battleArenaModal');
       if (arena) {
@@ -3392,8 +4011,7 @@
       resumeBgmAfterBattle();
     }
 
-
-    // ==================== TELEGRAM WEB APP SDK ====================
+        // ==================== TELEGRAM WEB APP SDK ====================
     let tgUser = null;
 
     function initTelegram() {
@@ -7297,126 +7915,6 @@
     var runShieldTimer = 0;
     var runInvulnerableTimer = 0;
     var runGameAnimFrame = null;
-
-    // Three.js 3D Runner Globals
-    var run3D = {
-      scene: null,
-      camera: null,
-      renderer: null,
-      clock: null,
-      player: null,
-      playerShadow: null,
-      shieldBubble: null,
-      finishLine: null,
-      roadTex: null,
-      models: {},
-      modelsLoaded: false,
-      modelsLoading: false,
-      lanes: [-1.35, 0.0, 1.35],
-      currentLane: 1, // 0 = Left, 1 = Center, 2 = Right
-      playerX: 0.0,
-      targetX: 0.0,
-      baseSpeed: 14.5,
-      obstacles: [],
-      collectibles: [],
-      lastWaveTime: 0,
-      honeySpawned1: false,
-      honeySpawned2: false,
-      finishSpawned: false
-    };
-
-    // Soft Shadow Blob Generator for grounding character & animals
-    function createShadowBlob(radius) {
-      const cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
-      const ctx = cv.getContext('2d');
-      const grad = ctx.createRadialGradient(32, 32, 4, 32, 32, 30);
-      grad.addColorStop(0, 'rgba(0,0,0,0.48)');
-      grad.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 64, 64);
-      const tex = new THREE.CanvasTexture(cv);
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(radius * 2, radius * 2),
-        new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
-      );
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.y = 0.02;
-      return mesh;
-    }
-
-    // Dedicated Dog / Girl Run Sprint Opener (Completely independent from battles)
-    function openRunGameDirect() {
-      playSound('click');
-      startRunSprintGame();
-    }
-
-    function runSteerDirection(dir) {
-      if (!runGameActive) return;
-      run3D.currentLane = Math.max(0, Math.min(run3D.lanes.length - 1, run3D.currentLane + dir));
-      run3D.targetX = run3D.lanes[run3D.currentLane];
-      playSound('click');
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
-      }
-    }
-
-    // Preload all 3D GLB Models once
-    function preloadRun3DModels(onComplete) {
-      if (run3D.modelsLoaded) {
-        if (onComplete) onComplete();
-        return;
-      }
-      if (run3D.modelsLoading) return;
-      run3D.modelsLoading = true;
-
-      const modelPaths = {
-        girl: 'assets/models/character_girl.glb',
-        dog: 'assets/models/dog.glb',
-        rabbit: 'assets/models/rabbit.glb',
-        chicken: 'assets/models/chicken.glb',
-        duck: 'assets/models/duck.glb',
-        cow: 'assets/models/cow.glb',
-        horse: 'assets/models/horse.glb'
-      };
-
-      const keys = Object.keys(modelPaths);
-      let loaded = 0;
-      const loader = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? new THREE.GLTFLoader() : null;
-
-      if (!loader) {
-        console.warn('Three.js GLTFLoader not ready yet.');
-        run3D.modelsLoading = false;
-        return;
-      }
-
-      const loadOverlay = document.getElementById('run3dLoadingOverlay');
-      const loadSub = document.getElementById('run3dLoadingSub');
-
-      keys.forEach(key => {
-        loader.load(modelPaths[key], gltf => {
-          run3D.models[key] = gltf.scene;
-          loaded++;
-          if (loadSub) loadSub.innerText = `Loading 3D Models (${loaded}/${keys.length})...`;
-          if (loaded === keys.length) {
-            run3D.modelsLoaded = true;
-            run3D.modelsLoading = false;
-            if (loadOverlay) {
-              loadOverlay.style.opacity = '0';
-              setTimeout(() => { loadOverlay.style.display = 'none'; }, 300);
-            }
-            if (onComplete) onComplete();
-          }
-        }, undefined, err => {
-          console.warn('Failed loading 3D model:', key, err);
-          loaded++;
-          if (loaded === keys.length) {
-            run3D.modelsLoaded = true;
-            run3D.modelsLoading = false;
-            if (onComplete) onComplete();
-          }
-        });
-      });
-    }
 
     // Initialize or Reset the 3D WebGL World
     function initRun3DScene() {
