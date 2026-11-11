@@ -2162,6 +2162,24 @@
             </div>
           </div>
         </div>
+
+        <!-- Defeat Overlay -->
+        <div id="battleDefeatOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
+          <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-red-500 shadow-2xl relative">
+            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+            <div class="text-5xl mb-1 animate-bounce">&#128148;&#128128;</div>
+            <h2 class="text-2xl font-black text-red-400 drop-shadow-md" style="font-family: 'Fredoka', cursive;">DEFEAT!</h2>
+            <p class="text-xs text-amber-200 font-bold mb-3">Your squad was knocked out!</p>
+            <div class="flex flex-col gap-2">
+              <button onclick="retryCurrentBattle()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 border border-yellow-200 cursor-pointer">
+                <span>⚔️</span> Try Again
+              </button>
+              <button onclick="closeBattleArena()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
+                <span>🚪</span> Exit
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3055,7 +3073,7 @@
     var BATTLE_MODEL_CFG = {
       girl:    { scale: 1.05, yOffset: 0.38, baseRot: Math.PI },
       cow:     { scale: 0.65, yOffset: 0.42, baseRot: Math.PI },
-      horse:   { scale: 0.62, yOffset: 0.45, baseRot: 0 },
+      horse:   { scale: 0.62, yOffset: 0.45, baseRot: Math.PI },
       dog:     { scale: 0.65, yOffset: 0.38, baseRot: Math.PI },
       chicken: { scale: 0.62, yOffset: 0.38, baseRot: Math.PI / 2 },
       duck:    { scale: 0.62, yOffset: 0.36, baseRot: Math.PI },
@@ -3231,13 +3249,22 @@
       grass.rotation.x = -Math.PI / 2;
       battle3D.scene.add(grass);
 
-      // Clean Sand Combat Ring (NO CIRCLES!)
-      const ringGeo = new THREE.CircleGeometry(4.8, 48);
-      const ringMat = new THREE.MeshLambertMaterial({ color: 0xc49a65 });
-      const combatRing = new THREE.Mesh(ringGeo, ringMat);
-      combatRing.rotation.x = -Math.PI / 2;
-      combatRing.position.y = 0.01;
-      battle3D.scene.add(combatRing);
+      // Distinct Semicircle Floors: Player Side (Sand) vs Enemy Side (Terracotta Red)
+      // Enemy Zone (Top Half, z <= 0): Terracotta Red Clay Ground
+      const enemyRingGeo = new THREE.CircleGeometry(4.8, 48, 0, Math.PI);
+      const enemyRingMat = new THREE.MeshLambertMaterial({ color: 0x9e4338 });
+      const enemyRingMesh = new THREE.Mesh(enemyRingGeo, enemyRingMat);
+      enemyRingMesh.rotation.x = -Math.PI / 2;
+      enemyRingMesh.position.y = 0.01;
+      battle3D.scene.add(enemyRingMesh);
+
+      // Player Zone (Bottom Half, z >= 0): Warm Golden Sand Ground
+      const playerRingGeo = new THREE.CircleGeometry(4.8, 48, Math.PI, Math.PI);
+      const playerRingMat = new THREE.MeshLambertMaterial({ color: 0xd4aa72 });
+      const playerRingMesh = new THREE.Mesh(playerRingGeo, playerRingMat);
+      playerRingMesh.rotation.x = -Math.PI / 2;
+      playerRingMesh.position.y = 0.01;
+      battle3D.scene.add(playerRingMesh);
 
       // Wooden Border Rim
       const borderRim = new THREE.Mesh(
@@ -3248,13 +3275,13 @@
       borderRim.position.y = 0.015;
       battle3D.scene.add(borderRim);
 
-      // Clean Center Dividing Line across the pitch
+      // Clean Center Dividing Line between Player & Enemy sides
       const divLine = new THREE.Mesh(
-        new THREE.PlaneGeometry(9.2, 0.08),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.30 })
+        new THREE.PlaneGeometry(9.6, 0.12),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.65 })
       );
       divLine.rotation.x = -Math.PI / 2;
-      divLine.position.y = 0.02;
+      divLine.position.y = 0.018;
       battle3D.scene.add(divLine);
 
       // Perimeter fence posts
@@ -3682,7 +3709,11 @@
         }
 
         const timerEl = document.getElementById('battleTimerDisplay');
-        if (timerEl) timerEl.innerText = BATTLE_ROUND_DURATION.toFixed(1) + 's';
+        if (timerEl) timerEl.innerText = '0.0s';
+
+        const defeatOverlay = document.getElementById('battleDefeatOverlay');
+        if (defeatOverlay) defeatOverlay.classList.add('hidden');
+        if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
         pauseBgmForBattle();
         if (arena) {
@@ -3733,41 +3764,24 @@
       const fightOverlay = document.getElementById('battleFightOverlay');
       if (fightOverlay) fightOverlay.classList.add('hidden');
 
-      // 20-Second Live Battle Clock Interval
+      // Live Battle Stopwatch (Shows elapsed time, battle ends when animals die!)
       if (battleClockInterval) clearInterval(battleClockInterval);
       battleClockInterval = setInterval(() => {
         if (!isBattleInProgress) return;
         const elapsed = (Date.now() - battleStartTime) / 1000;
-        const remaining = Math.max(0, BATTLE_ROUND_DURATION - elapsed);
         const timerEl = document.getElementById('battleTimerDisplay');
-        if (timerEl) timerEl.innerText = remaining.toFixed(1) + 's';
-
-        if (remaining <= 0) {
-          clearInterval(battleClockInterval);
-          clearInterval(battleRoundInterval);
-          isBattleInProgress = false;
-          // Final knockout on all remaining enemies
-          enemySquad.forEach(u => {
-            u.hp = 0;
-            const tgtBar = document.getElementById('hpBar-' + u.id);
-            if (tgtBar) tgtBar.style.width = '0%';
-            const skull = document.getElementById('skull-' + u.id);
-            if (skull) skull.classList.remove('hidden');
-            const tgtFrame = document.getElementById('unitFrame-' + u.id);
-            if (tgtFrame) tgtFrame.classList.add('opacity-40', 'grayscale');
-            handleUnitKnockout(u.id);
-          });
-          updateTeamHpBars();
-          setTimeout(() => triggerBattleVictory(), 600);
+        if (timerEl) {
+          const mins = Math.floor(elapsed / 60);
+          const secs = Math.floor(elapsed % 60);
+          const tenths = Math.floor((elapsed % 1) * 10);
+          timerEl.innerText = (mins > 0 ? (mins + ':' + (secs < 10 ? '0' : '') + secs) : (secs + '.' + tenths + 's'));
         }
       }, 100);
 
-      // Paced Combat Interval: Attacks distributed over the 20 seconds
+      // Continuous Combat: Attacks until one entire squad is knocked out!
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       battleRoundInterval = setInterval(() => {
         if (!isBattleInProgress) return;
-        const elapsed = (Date.now() - battleStartTime) / 1000;
-        if (elapsed >= BATTLE_ROUND_DURATION - 0.5) return;
 
         const alivePlayers = playerSquad.filter(u => u.hp > 0);
         const aliveEnemies = enemySquad.filter(u => u.hp > 0);
@@ -3777,7 +3791,7 @@
         const target = aliveEnemies[0];
 
         const power = getPlayerBattlePower();
-        const baseDmg = Math.floor(Math.random() * 8) + 14;
+        const baseDmg = Math.floor(Math.random() * 10) + 16;
         let dmg = Math.round(baseDmg * power.multiplier);
         const isCrit = Math.random() < 0.28;
         if (isCrit) { dmg = Math.round(dmg * 1.45); }
@@ -3815,6 +3829,16 @@
 
           updateTeamHpBars();
           try { playSound('click'); } catch(e){}
+
+          // Battle ends when all enemy animals die!
+          const remainingEnemies = enemySquad.filter(u => u.hp > 0);
+          if (remainingEnemies.length === 0) {
+            isBattleInProgress = false;
+            if (battleClockInterval) clearInterval(battleClockInterval);
+            if (battleRoundInterval) clearInterval(battleRoundInterval);
+            setTimeout(() => triggerBattleVictory(), 600);
+            return;
+          }
         });
 
         // Enemy Counter-Attack
@@ -3826,13 +3850,13 @@
 
           const eAttacker = livingE[Math.floor(Math.random() * livingE.length)];
           const pTarget = livingP[Math.floor(Math.random() * livingP.length)];
-          const eDmg = Math.floor(Math.random() * 5) + 3;
+          const eDmg = Math.floor(Math.random() * 8) + 8;
 
           const eAtt3D = battle3D.units.find(u => u.team === 'enemy' && u.squadData && u.squadData.id === eAttacker.id);
           const pTgt3D = battle3D.units.find(u => u.team === 'player' && u.squadData && u.squadData.id === pTarget.id);
 
           battle3DAttack(eAtt3D, pTgt3D, eDmg, false, () => {
-            pTarget.hp = Math.max(pTarget.hp - eDmg, 25);
+            pTarget.hp = Math.max(pTarget.hp - eDmg, 0);
 
             const eAttFrame = document.getElementById('unitFrame-' + eAttacker.id);
             if (eAttFrame) {
@@ -3842,6 +3866,7 @@
 
             const pTgtCard = document.getElementById('unitCard-' + pTarget.id);
             const pTgtBar = document.getElementById('hpBar-' + pTarget.id);
+            const pTgtFrame = document.getElementById('unitFrame-' + pTarget.id);
 
             if (pTgtCard) {
               const r = pTgtCard.getBoundingClientRect();
@@ -3851,7 +3876,22 @@
               const pPct = Math.round((pTarget.hp / pTarget.maxHp) * 100);
               pTgtBar.style.width = pPct + '%';
             }
+            if (pTarget.hp <= 0) {
+              const skull = document.getElementById('skull-' + pTarget.id);
+              if (skull) skull.classList.remove('hidden');
+              if (pTgtFrame) pTgtFrame.classList.add('opacity-40', 'grayscale');
+              handleUnitKnockout(pTarget.id);
+            }
             updateTeamHpBars();
+
+            // Battle ends if all player animals die!
+            const remainingPlayers = playerSquad.filter(u => u.hp > 0);
+            if (remainingPlayers.length === 0) {
+              isBattleInProgress = false;
+              if (battleClockInterval) clearInterval(battleClockInterval);
+              if (battleRoundInterval) clearInterval(battleRoundInterval);
+              setTimeout(() => triggerBattleDefeat(), 600);
+            }
           });
         }, 550);
 
@@ -3906,6 +3946,15 @@
 
       updateTeamHpBars();
       try { playSound('fanfare'); } catch(e){}
+
+      // Check if all enemy animals have died -> Immediate VICTORY!
+      const remainingEnemies = enemySquad.filter(u => u.hp > 0);
+      if (remainingEnemies.length === 0) {
+        isBattleInProgress = false;
+        if (battleClockInterval) clearInterval(battleClockInterval);
+        if (battleRoundInterval) clearInterval(battleRoundInterval);
+        setTimeout(() => triggerBattleVictory(), 600);
+      }
 
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
@@ -4015,7 +4064,31 @@
       const victoryOverlay = document.getElementById('battleVictoryOverlay');
       if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
+      const defeatOverlay = document.getElementById('battleDefeatOverlay');
+      if (defeatOverlay) defeatOverlay.classList.add('hidden');
+
       resumeBgmAfterBattle();
+    }
+
+    function triggerBattleDefeat() {
+      isBattleInProgress = false;
+      if (battleRoundInterval) clearInterval(battleRoundInterval);
+      if (battleClockInterval) clearInterval(battleClockInterval);
+
+      try { playSound('error'); } catch(e){}
+
+      const defeatOverlay = document.getElementById('battleDefeatOverlay');
+      if (defeatOverlay) defeatOverlay.classList.remove('hidden');
+
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
+      }
+    }
+
+    function retryCurrentBattle() {
+      const defeatOverlay = document.getElementById('battleDefeatOverlay');
+      if (defeatOverlay) defeatOverlay.classList.add('hidden');
+      enterBattleArena(currentBattleMode);
     }
 
         // ==================== TELEGRAM WEB APP SDK ====================
