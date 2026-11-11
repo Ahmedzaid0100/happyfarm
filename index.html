@@ -4510,23 +4510,22 @@
     let cftTapBonus = parseFloat(localStorage.getItem('crazyfarm_cft_tap_bonus')) || 0;
 
     // Upgrade Cost in Farm Points for Levels 1 to 100
-    // Lv. 1->2 is 2,000 pts (doubled). Progressive RPG scaling curve up to Lv. 100
+    // Levels 1-7: Double from 10k (10k, 20k, 40k, 80k, 160k, 320k, 640k)
+    // Levels 8-100: +1M per level (1M, 2M, 3M, ..., 92M at Lv.99->100)
     function getMainFarmUpgradeCost(lvl = userLevel) {
       if (lvl >= 100) return null; // MAX LEVEL (100)
-      if (lvl === 1) return 2000;
-      const raw = Math.round(2000 * Math.pow(lvl, 1.3));
-      if (raw < 10000) return Math.round(raw / 100) * 100;
-      return Math.round(raw / 500) * 500;
+      if (lvl < 8) return 10000 * Math.pow(2, lvl - 1);
+      return (lvl - 7) * 1000000;
     }
 
-    // Daily Production: level * 12 CFT per day (Halved from 24)
+    // Daily Production: level * 5 CFT per day (Lv.1 = 5 CFT, Lv.2 = 10 CFT, ..., Lv.100 = 500 CFT)
     function getMainFarmDailyRate(lvl = userLevel) {
-      return lvl * 12;
+      return lvl * 5;
     }
 
-    // CFT Rate per Second: (level * 12) / 86400 = level / 7200
+    // CFT Rate per Second: (level * 5) / 86400
     function getMainFarmRatePerSec(lvl = userLevel) {
-      return (lvl * 12) / 86400;
+      return (lvl * 5) / 86400;
     }
 
     // Currently uncollected / pending mined CFT
@@ -4677,7 +4676,7 @@
     }
     function updateDisplays() {
       renderAllAdFarms();
-      const dailyBeeRate = userLevel * 12;
+      const dailyBeeRate = getMainFarmDailyRate(userLevel);
       const hourlyBeeRate = userLevel;
 
             document.getElementById('farmPointsDisplay').innerText = points.toLocaleString();
@@ -4704,7 +4703,15 @@
       const upgradeCost = getMainFarmUpgradeCost(userLevel);
       const upCostEl = document.getElementById('cyberHomeUpgradeCostLabel');
       if (upCostEl) {
-        upCostEl.innerText = userLevel >= 100 ? 'MAX LVL' : upgradeCost.toLocaleString() + ' Pts';
+        if (userLevel >= 100 || upgradeCost === null) {
+          upCostEl.innerText = 'MAX LVL';
+        } else if (upgradeCost >= 1000000) {
+          upCostEl.innerText = (upgradeCost / 1000000) + 'M Pts';
+        } else if (upgradeCost >= 1000) {
+          upCostEl.innerText = (upgradeCost / 1000) + 'k Pts';
+        } else {
+          upCostEl.innerText = upgradeCost.toLocaleString() + ' Pts';
+        }
       }
       const lvlBar = document.getElementById('cyberHomeLvlBar');
       const lvlText = document.getElementById('cyberHomeLvlText');
@@ -4713,7 +4720,8 @@
         lvlBar.style.width = pct + '%';
       }
       if (lvlText) {
-        lvlText.innerText = userLevel >= 100 ? 'Level 100 (MAX)' : 'Lv. ' + userLevel + ' (Cost: ' + upgradeCost.toLocaleString() + ' Pts)';
+        const costStr = upgradeCost === null ? '' : (upgradeCost >= 1000000 ? (upgradeCost / 1000000) + 'M' : (upgradeCost >= 1000 ? (upgradeCost / 1000) + 'k' : upgradeCost));
+        lvlText.innerText = userLevel >= 100 ? 'Level 100 (MAX)' : 'Lv. ' + userLevel + ' (Cost: ' + costStr + ' Pts)';
       }
       document.getElementById('farmingSpeedDisplay').innerText = `+${dailyBeeRate}/d (Lv. ${userLevel})`;
       document.getElementById('walletFarmBalance').innerText = `${points.toLocaleString()} FARM Points`;
@@ -4750,7 +4758,7 @@
       const statHFC = document.getElementById('statHoneyCoins');
       if (statHFC) statHFC.innerText = (typeof cftBalance === 'number' ? cftBalance.toFixed(2) : hfcBalance.toLocaleString()) + " CFT";
       const statFarmingSpeed = document.getElementById('statFarmingPower');
-      if (statFarmingSpeed) statFarmingSpeed.innerText = `+${userLevel * 12}/day`;
+      if (statFarmingSpeed) statFarmingSpeed.innerText = `+${getMainFarmDailyRate(userLevel)}/day`;
       const statPvPPower = document.getElementById('statTotalEarnings');
       if (statPvPPower && typeof getPlayerBattlePower === 'function') {
         statPvPPower.innerText = `+${getPlayerBattlePower().powerPercent}% Power`;
@@ -4786,10 +4794,9 @@
       }
     }
 
-    // Dynamic Level Upgrade Cost: Lv.1->1,000, Lv.2->5,000, Lv.3->10,000, Lv.4->15,000, etc.
+    // Upgrade Cost mirrors Main Farm economy (100 levels)
     function getBeeFarmUpgradeCost(level = userLevel) {
-      if (level <= 1) return 1000;
-      return (level - 1) * 5000;
+      return getMainFarmUpgradeCost(level);
     }
 
     // Upgrade Bee Farm (Progressive Cost: +5,000 per level)
@@ -5608,7 +5615,7 @@
     }
 
     function upgradeMainFarmFromModal() {
-      upgradeBeeFarm();
+      onCyberHomeUpgrade();
       updateMainFarmModalUI();
     }
 
@@ -5621,21 +5628,23 @@
       const lvlEl = document.getElementById('mainFarmModalLevel');
       if (lvlEl) lvlEl.innerText = 'Lv. ' + userLevel;
 
+      const dailyRate = getMainFarmDailyRate(userLevel);
+      const hourlyRate = (dailyRate / 24).toFixed(2);
+
       const dailyEl = document.getElementById('mainFarmModalDailyRate');
-      if (dailyEl) dailyEl.innerHTML = '+' + (userLevel * 24) + ' &#127806; / day';
+      if (dailyEl) dailyEl.innerHTML = '+' + dailyRate + ' &#9889; / day';
 
       const hourlyEl = document.getElementById('mainFarmModalHourlyRate');
-      if (hourlyEl) hourlyEl.innerHTML = userLevel + ' &#127806; / hr';
+      if (hourlyEl) hourlyEl.innerHTML = hourlyRate + ' &#9889; / hr';
 
-      const upgradeCost = getBeeFarmUpgradeCost(userLevel);
-      const costStr = upgradeCost >= 1000 ? (upgradeCost / 1000) + 'k' : upgradeCost;
+      const upgradeCost = getMainFarmUpgradeCost(userLevel);
+      const costStr = upgradeCost === null ? 'MAX' : (upgradeCost >= 1000000 ? (upgradeCost / 1000000) + 'M' : (upgradeCost >= 1000 ? (upgradeCost / 1000) + 'k' : upgradeCost));
       const upCostEl = document.getElementById('mainModalUpgradeCost');
-      if (upCostEl) upCostEl.innerHTML = 'Lv. ' + (userLevel + 1) + ' (' + costStr + ' &#127806;)';
+      if (upCostEl) upCostEl.innerHTML = userLevel >= 100 ? 'MAX LEVEL' : ('Lv. ' + (userLevel + 1) + ' (' + costStr + ' &#127806;)');
 
       const now = Date.now();
       const storedTime = Number(localStorage.getItem('crazyfarm_bee_last_collect')) || lastBeeCollectTimestamp || now;
       const elapsedSeconds = Math.floor(Math.max(0, (now - storedTime) / 1000));
-      const dailyRate = userLevel * 24;
       const currentMined = Math.min(dailyRate, Math.floor(elapsedSeconds * (dailyRate / 86400)));
       const is24hComplete = elapsedSeconds >= 86400;
 
@@ -5646,7 +5655,7 @@
 
       const mapMainStatus = document.getElementById('mapMainStatusText');
       if (mapMainStatus) {
-        mapMainStatus.innerText = is24hComplete ? `Collect (+${dailyRate})` : `Farming (+${currentMined})`;
+        mapMainStatus.innerText = is24hComplete ? `Collect (+${dailyRate})` : `Mining (+${currentMined})`;
       }
     }
 
@@ -6693,7 +6702,7 @@
 
       // Speed badge
       const spd = document.getElementById('walletSpeedBadge');
-      if (spd) spd.innerText = `+${userLevel * 12}/day`;
+      if (spd) spd.innerText = `+${getMainFarmDailyRate(userLevel)}/day`;
       const activeFarmsList = typeof getActiveOrWatchedFarmsCount === "function" ? getActiveOrWatchedFarmsCount() : [];
       const farmBadge = document.getElementById("walletFarmsActiveBadge");
       if (farmBadge) farmBadge.innerText = activeFarmsList.length + " Active";
