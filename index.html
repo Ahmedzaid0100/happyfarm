@@ -628,7 +628,7 @@
               <!-- 7. Bees (Bottom Right Hives) -->
               <div id="hotspot-cf2-bees" onclick="onCf2AnimalClick('bees')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 70%; top: 68%; width: 28%; height: 18%;" title="Bees Apiary"></div>
               <div id="mapBadge-bees" onclick="onCf2AnimalClick('bees')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 85%; top: 88%; transform: translateX(-50%);">
-                <span id="mapLock-bees">&#128274;</span> <span id="mapStatus-bees">160k 🌾</span>
+                <span id="mapLock-bees">&#128274;</span> <span id="mapStatus-bees">500k 🌾</span>
               </div>
             </div>
 
@@ -4270,7 +4270,7 @@
       bears:   { name: 'Bears Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       donkeys: { name: 'Donkeys Farm', bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       cats:    { name: 'Cats Farm',    bonus: 250, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      bees:    { name: 'Bees Farm',    bonus: 260, state: 'idle', startTime: 0, remainingSeconds: 0 }
+      bees:    { name: 'Bees Farm',    bonus: 1000, state: 'idle', startTime: 0, remainingSeconds: 0 }
     };
 
     // Progression Points Unlock Requirements (Replacing Level Lock with Farm Points)
@@ -4291,7 +4291,7 @@
       bears: 150000,
       donkeys: 100000,
       cats: 120000,
-      bees: 160000
+      bees: 500000
     };
 
     let unlockedFarms = {
@@ -4412,8 +4412,8 @@
         rewards: { 1: 250, 2: 450, 3: 750, 4: 1150, 5: 1700, 6: 2400, 7: 3300, 8: 4500, 9: 6000, 10: 8000 }
       },
       bees: {
-        costs:   { 2: 4500, 3: 10000, 4: 24000, 5: 50000 },
-        rewards: { 1: 260, 2: 520, 3: 840, 4: 1250, 5: 1950 }
+        costs:   { 2: 2000, 3: 5000, 4: 10000, 5: 20000, 6: 40000, 7: 80000, 8: 160000, 9: 320000, 10: 640000, 11: 1000000, 12: 1500000, 13: 2200000, 14: 3000000, 15: 4000000, 16: 5500000, 17: 7500000, 18: 10000000, 19: 13000000, 20: 17000000 },
+        rewards: { 1: 1000, 2: 1800, 3: 2800, 4: 4200, 5: 6000, 6: 8500, 7: 12000, 8: 16500, 9: 22000, 10: 29000, 11: 38000, 12: 49000, 13: 62000, 14: 78000, 15: 98000, 16: 122000, 17: 150000, 18: 185000, 19: 230000, 20: 300000 }
       }
     };
 
@@ -5249,7 +5249,7 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears' || key === 'bulls' || key === 'goats' || key === 'geese' || key === 'cats') {
+      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears' || key === 'bulls' || key === 'goats' || key === 'geese' || key === 'cats' || key === 'bees') {
         // Direct instant collect without ads
         collectFarmReward(key, false);
         return;
@@ -5489,7 +5489,7 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears' || currentModalAnimalKey === 'bulls' || currentModalAnimalKey === 'goats' || currentModalAnimalKey === 'geese' || currentModalAnimalKey === 'cats') {
+      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears' || currentModalAnimalKey === 'bulls' || currentModalAnimalKey === 'goats' || currentModalAnimalKey === 'geese' || currentModalAnimalKey === 'cats' || currentModalAnimalKey === 'bees') {
         collectFarmReward(currentModalAnimalKey, false);
         updateAnimalModalUI(currentModalAnimalKey);
         return;
