@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crazy Farm - Web3 Telegram Mini App</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial and Rewarded Popup (User-Action Only) -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
@@ -329,7 +332,7 @@
               <span class="text-[9px] font-bold text-yellow-200/90 uppercase tracking-wider">Mined:</span>
               <span id="cyberMiningLiveMined" class="text-[13px] font-black text-lime-400 tracking-wide drop-shadow font-mono">+0.0000 CFT</span>
             </div>
-            <span id="cyberMiningSpeed" class="text-[9px] font-bold text-amber-200 leading-tight mt-0.5">&#9889; 12/d (Lv.1)</span>
+            <span id="cyberMiningSpeed" class="text-[9px] font-bold text-amber-200 leading-tight mt-0.5">&#9889; 5/d (Lv.1)</span>
           </div>
 
           <!-- ==================== SIDE HOTSPOTS ==================== -->
@@ -357,7 +360,7 @@
             <div class="w-full h-3 bg-black/60 rounded-full border border-amber-500/80 p-0.5 overflow-hidden shadow-inner relative">
               <div id="cyberHomeLvlBar" class="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-lime-400 rounded-full transition-all duration-300" style="width: 15%;"></div>
             </div>
-            <span id="cyberHomeLvlText" class="text-[8.5px] font-black text-yellow-200 mt-0.5 drop-shadow leading-none">Lv. 1 (Upgrade: 2,000 Pts)</span>
+            <span id="cyberHomeLvlText" class="text-[8.5px] font-black text-yellow-200 mt-0.5 drop-shadow leading-none">Lv. 1 (Cost: 10k Pts)</span>
           </div>
 
           <!-- 10. 3D UPGRADE Button (Bottom Left) -->
@@ -366,7 +369,7 @@
               <span class="text-sm">&#11014;&#65039;</span>
               <span class="text-xs sm:text-sm font-black text-amber-950 uppercase tracking-wide">UPGRADE</span>
             </div>
-            <span id="cyberHomeUpgradeCostLabel" class="text-[9.5px] font-black text-amber-900 leading-tight mt-0.5">2,000 Pts</span>
+            <span id="cyberHomeUpgradeCostLabel" class="text-[9.5px] font-black text-amber-900 leading-tight mt-0.5">10k Pts</span>
           </button>
 
           <!-- 11. 3D CLAIM Button (Bottom Right) -->
@@ -1897,11 +1900,11 @@
         <div class="bg-black/60 rounded-2xl p-2.5 border border-amber-700/60 flex items-center justify-between px-4 text-center shrink-0">
           <div>
             <span class="text-[9.5px] font-black text-amber-300/90 uppercase tracking-tight">Daily Yield</span>
-            <div id="mainFarmModalDailyRate" class="text-xs font-black text-lime-300">+24 &#127806; / day</div>
+            <div id="mainFarmModalDailyRate" class="text-xs font-black text-lime-300">+5 &#9889; / day</div>
           </div>
           <div class="border-l border-amber-800/80 pl-4">
             <span class="text-[9.5px] font-black text-amber-300/90 uppercase tracking-tight">Hourly Speed</span>
-            <div id="mainFarmModalHourlyRate" class="text-xs font-black text-yellow-300">1 &#127806; / hr</div>
+            <div id="mainFarmModalHourlyRate" class="text-xs font-black text-yellow-300">0.21 &#9889; / hr</div>
           </div>
         </div>
 
@@ -1913,7 +1916,7 @@
               <span>&#9889;</span> UPGRADE
             </span>
             <span id="mainModalUpgradeCost" class="text-[9.5px] font-extrabold text-amber-950 mt-0.5">
-              Lv. 2 (1,000 &#127806;)
+              Lv. 2 (10k &#127806;)
             </span>
           </button>
 
@@ -4662,6 +4665,7 @@
       cftTapBonus = 0;
 
       localStorage.setItem('crazyfarm_level', userLevel);
+      localStorage.setItem('crazyfarm_points', points);
       localStorage.setItem('crazyfarm_farm_points', points);
       localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
       localStorage.setItem('crazyfarm_cft_tap_bonus', 0);
@@ -4799,28 +4803,9 @@
       return getMainFarmUpgradeCost(level);
     }
 
-    // Upgrade Bee Farm (Progressive Cost: +5,000 per level)
+    // Upgrade Bee Farm / Main Farm (mirrors onCyberHomeUpgrade)
     function upgradeBeeFarm() {
-      const upgradeCost = getBeeFarmUpgradeCost(userLevel);
-      if (points < upgradeCost) {
-        playSound('click');
-        if (typeof showWalletToast === 'function') {
-          showWalletToast(`⚠️ Need ${upgradeCost.toLocaleString()} points for Lv.${userLevel + 1}! (${points.toLocaleString()} / ${upgradeCost.toLocaleString()})`);
-        } else {
-          alert(`⚠️ You need ${upgradeCost.toLocaleString()} points to upgrade Bee Farm and your level to Lv. ${userLevel + 1}!\nCurrent Balance: ${points.toLocaleString()} points.\nRemaining needed: ${(upgradeCost - points).toLocaleString()} points.`);
-        }
-        return;
-      }
-      try { playSound('fanfare'); } catch(e){}
-      points -= upgradeCost;
-      userLevel += 1;
-      queueCloudSave();
-      updateDisplays();
-      if (typeof showWalletToast === 'function') {
-      showWalletToast(`\u{1F389} Upgraded to Lv. ${userLevel}! Mining Speed: ${newSpeed} CFT/day! \u26A1`);
-      } else {
-      showWalletToast(`\u{1F389} Upgraded to Lv. ${userLevel}! Mining Speed: ${newSpeed} CFT/day! \u26A1`);
-      }
+      onCyberHomeUpgrade();
     }
 
     // Dynamic UI Update for Bee Farm Card (24-Hour Farming Cycle)
@@ -9174,6 +9159,7 @@ window.addEventListener('load', () => {
         localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
       }
 
+      localStorage.setItem('crazyfarm_points', points);
       localStorage.setItem('crazyfarm_farm_points', points);
       try { playSound('fanfare'); } catch(e){}
       if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
