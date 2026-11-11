@@ -4248,11 +4248,15 @@
     let lastBeeCollectTimestamp = sanitizeNumber(localStorage.getItem('crazyfarm_bee_last_collect'), Date.now(), 0, Date.now() + 86400000);
     let audioEnabled = true;
 
-    // Animal Farms System (8-Hour Mining with Normal Collect & 2x Ad Collect)
-    const ANIMAL_FARM_DURATION_SEC = 8 * 3600; // 8 Hours (28,800 sec)
+    // Animal Farms System (Per-farm duration: Chicken is 24-Hour, others 8-Hour)
+    const ANIMAL_FARM_DURATION_SEC = 8 * 3600;
+    function getFarmDurationSec(key) {
+      if (key === 'chicken') return 24 * 3600; // 24 Hours (86,400 sec)
+      return ANIMAL_FARM_DURATION_SEC;
+    }
 
         const adFarms = {
-      chicken: { name: 'Chicken Farm', bonus: 10, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      chicken: { name: 'Chicken Farm', bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
       duck:    { name: 'Duck Farm',    bonus: 20, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bunny:   { name: 'Bunny Farm',   bonus: 30, state: 'idle', startTime: 0, remainingSeconds: 0 },
       sheep:   { name: 'Sheep Farm',   bonus: 40, state: 'idle', startTime: 0, remainingSeconds: 0 },
@@ -4353,8 +4357,8 @@
     // Level-by-Level Upgrade Costs & Points Reward Table
     const FARM_UPGRADE_CONFIG = {
       chicken: {
-        costs:   { 2: 200, 3: 500, 4: 1000, 5: 2000 },
-        rewards: { 1: 10, 2: 20, 3: 35, 4: 50, 5: 75 }
+        costs:   { 2: 200, 3: 500, 4: 1000, 5: 2000, 6: 4000, 7: 8000, 8: 16000, 9: 32000, 10: 64000 },
+        rewards: { 1: 50, 2: 100, 3: 160, 4: 240, 5: 350, 6: 500, 7: 700, 8: 950, 9: 1250, 10: 1600 }
       },
       duck: {
         costs:   { 2: 400, 3: 1000, 4: 2000, 5: 4000 },
@@ -4469,8 +4473,10 @@
       }
 
       const currentLvl = farmLevels[key] || 1;
-      if (currentLvl >= 5) {
-        showWalletToast('\u2B50 Max level (Lv. 5) reached for this farm!');
+      const cfg = FARM_UPGRADE_CONFIG[key];
+      const maxLvl = cfg ? Math.max(...Object.keys(cfg.rewards).map(Number)) : 5;
+      if (currentLvl >= maxLvl) {
+        showWalletToast('\u2B50 Max level (Lv. ' + maxLvl + ') reached for this farm!');
         return;
       }
 
@@ -5100,14 +5106,15 @@
         Object.keys(adFarms).forEach(k => {
           const farm = adFarms[k];
           if (farm.state === 'mining') {
+            const farmDuration = (typeof getFarmDurationSec === "function") ? getFarmDurationSec(k) : ANIMAL_FARM_DURATION_SEC;
             const elapsed = Math.floor(Math.max(0, (now - (farm.startTime || now)) / 1000));
-            if (elapsed >= ANIMAL_FARM_DURATION_SEC) {
+            if (elapsed >= farmDuration) {
               farm.state = 'ready_to_collect';
               farm.remainingSeconds = 0;
               changed = true;
               renderAdFarmAction(k);
             } else {
-              farm.remainingSeconds = ANIMAL_FARM_DURATION_SEC - elapsed;
+              farm.remainingSeconds = farmDuration - elapsed;
               const timerEl = document.getElementById('timer-' + k);
               if (timerEl) {
                 timerEl.innerText = '(' + formatTime(farm.remainingSeconds) + ')';
@@ -5156,12 +5163,13 @@
               adFarms[k].state = data[k].state || 'idle';
               adFarms[k].startTime = data[k].startTime || 0;
               if (adFarms[k].state === 'mining') {
+                const farmDuration = (typeof getFarmDurationSec === "function") ? getFarmDurationSec(k) : ANIMAL_FARM_DURATION_SEC;
                 const elapsed = Math.floor(Math.max(0, (now - adFarms[k].startTime) / 1000));
-                if (elapsed >= ANIMAL_FARM_DURATION_SEC) {
+                if (elapsed >= farmDuration) {
                   adFarms[k].state = 'ready_to_collect';
                   adFarms[k].remainingSeconds = 0;
                 } else {
-                  adFarms[k].remainingSeconds = ANIMAL_FARM_DURATION_SEC - elapsed;
+                  adFarms[k].remainingSeconds = farmDuration - elapsed;
                 }
               }
             }
@@ -5495,18 +5503,21 @@
       if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
 
       // Upgrade Button Text & State
+      const farmCfg = FARM_UPGRADE_CONFIG[key];
+      const maxLvl = farmCfg ? Math.max(...Object.keys(farmCfg.rewards).map(Number)) : 5;
       const nextCost = getFarmUpgradeCost(key);
       const upCostEl = document.getElementById('animalModalUpgradeCost');
       const upBtn = document.getElementById('animalModalUpgradeBtn');
       if (upCostEl) {
-        if (lvl >= 5) {
-          upCostEl.innerText = 'MAX (Lv. 5)';
+        if (lvl >= maxLvl) {
+          upCostEl.innerText = 'MAX (Lv. ' + maxLvl + ')';
         } else if (nextCost !== null) {
-          upCostEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + nextCost.toLocaleString() + ' \u{1F33E})';
+          const costLabel = nextCost >= 1000 ? (nextCost / 1000) + 'k' : nextCost.toLocaleString();
+          upCostEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + costLabel + ' \u{1F33E})';
         }
       }
       if (upBtn) {
-        if (lvl >= 5 || lvl >= userLevel || (nextCost !== null && points < nextCost)) {
+        if (lvl >= maxLvl || lvl >= userLevel || (nextCost !== null && points < nextCost)) {
           upBtn.classList.add('opacity-75');
         } else {
           upBtn.classList.remove('opacity-75');
@@ -5521,7 +5532,7 @@
       const reward = getFarmCurrentReward(key);
 
       if (farm.state === 'mining' || farm.state === 'farming') {
-        const totalSec = 8 * 3600;
+        const totalSec = (typeof getFarmDurationSec === 'function') ? getFarmDurationSec(key) : (8 * 3600);
         const elapsed = Math.max(0, totalSec - farm.remainingSeconds);
         const pct = Math.min(100, Math.max(5, Math.round((elapsed / totalSec) * 100)));
         const timeFormatted = formatTime(farm.remainingSeconds);
@@ -5688,7 +5699,7 @@
       const pBar = document.getElementById(`farmProgressBar-${key}`);
       if (pBar) {
         if (farm.state === 'mining' || farm.state === 'farming') {
-          const totalSec = 8 * 3600;
+          const totalSec = (typeof getFarmDurationSec === 'function') ? getFarmDurationSec(key) : (8 * 3600);
           const elapsed = Math.max(0, totalSec - farm.remainingSeconds);
           const pct = Math.min(100, Math.max(5, Math.round((elapsed / totalSec) * 100)));
           pBar.style.width = pct + '%';
