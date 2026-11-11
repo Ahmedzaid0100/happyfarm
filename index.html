@@ -508,7 +508,7 @@
           <!-- 9. Dogs - Guard Pen Hotspot + Under Sign Badge -->
           <div id="hotspot-dog" onclick="onAnimalCardClick('dog')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 68%; top: 68%; width: 30%; height: 23%;" title="Dogs Farm"></div>
           <div id="mapBadge-dog" onclick="onAnimalCardClick('dog')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 83.2%; top: 88.2%; transform: translateX(-50%);">
-            <span id="mapLock-dog">&#128274;</span> <span id="mapStatus-dog">50k 🌾</span>
+            <span id="mapLock-dog">&#128274;</span> <span id="mapStatus-dog">10k 🌾</span>
           </div>
 
           <!-- Hidden legacy containers for total backwards compatibility -->
@@ -4251,7 +4251,7 @@
     // Animal Farms System (Per-farm duration: Chicken is 24-Hour, others 8-Hour)
     const ANIMAL_FARM_DURATION_SEC = 8 * 3600;
     function getFarmDurationSec(key) {
-      if (key === 'chicken' || key === 'duck' || key === 'bunny') return 24 * 3600; // 24 Hours (86,400 sec)
+      if (key === 'chicken' || key === 'duck' || key === 'bunny' || key === 'dog') return 24 * 3600; // 24 Hours (86,400 sec)
       return ANIMAL_FARM_DURATION_SEC;
     }
 
@@ -4263,7 +4263,7 @@
       cows:    { name: 'Cows Farm',    bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
       pig:     { name: 'Pig Farm',     bonus: 60, state: 'idle', startTime: 0, remainingSeconds: 0 },
       horse:   { name: 'Horse Farm',   bonus: 70, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      dog:     { name: 'Dog Farm',     bonus: 80, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      dog:     { name: 'Dog Farm',     bonus: 250, state: 'idle', startTime: 0, remainingSeconds: 0 },
       // Crazy Farm 2: 7 New Animal Farms
       goats:   { name: 'Goats Farm',   bonus: 90,  state: 'idle', startTime: 0, remainingSeconds: 0 },
       bulls:   { name: 'Bulls Farm',   bonus: 110, state: 'idle', startTime: 0, remainingSeconds: 0 },
@@ -4284,7 +4284,7 @@
       cows: 8000,
       pig: 15000,
       horse: 25000,
-      dog: 50000,
+      dog: 10000,
       // Crazy Farm 2
       goats: 0,
       bulls: 30000,
@@ -4385,8 +4385,8 @@
         rewards: { 1: 70, 2: 150, 3: 240, 4: 350, 5: 550 }
       },
       dog: {
-        costs:   { 2: 1800, 3: 4000, 4: 8000, 5: 18000 },
-        rewards: { 1: 80, 2: 170, 3: 280, 4: 400, 5: 650 }
+        costs:   { 2: 1000, 3: 2500, 4: 5000, 5: 10000, 6: 20000, 7: 40000, 8: 80000, 9: 160000, 10: 320000 },
+        rewards: { 1: 250, 2: 450, 3: 750, 4: 1150, 5: 1700, 6: 2400, 7: 3300, 8: 4500, 9: 6000, 10: 8000 }
       },
       // Crazy Farm 2 Configurations
       goats: {
@@ -5184,12 +5184,8 @@
     // Start 8-Hour Farm Mining (Green Farm Button -> Golden FARMING Button)
     function startFarmMining(key) {
       if (!isFarmUnlocked(key)) {
-        if (key === 'dog') {
-          showWalletToast('👑 VIP Dog is locked! Unlock with 3 TON first.');
-          openDogVipModal();
-          return;
-        }
-        showWalletToast('\u{1F512} Farm is locked!');
+        const cost = FARM_UNLOCK_POINTS_COST[key] || 0;
+        showWalletToast('🔒 Unlock this farm for ' + formatPointsCostLabel(cost) + ' first!');
         return;
       }
       const farm = adFarms[key];
@@ -5255,6 +5251,11 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
+      if (key === 'dog') {
+        // Dog Farm is 100% ad-free: Direct instant collect
+        collectFarmReward('dog', false);
+        return;
+      }
       const farm = adFarms[key];
       if (!farm || (farm.state !== 'ready_to_collect' && farm.state !== 'claimable')) return;
       farmCollectCurrentKey = key;
@@ -5490,6 +5491,11 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
+      if (currentModalAnimalKey === 'dog') {
+        collectFarmReward('dog', false);
+        updateAnimalModalUI('dog');
+        return;
+      }
       showFarmCollectModal(currentModalAnimalKey);
     }
 
