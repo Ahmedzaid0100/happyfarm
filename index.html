@@ -490,7 +490,7 @@
           <!-- 6. Pigs - Mud Pen Hotspot + Under Sign Badge -->
           <div id="hotspot-pig" onclick="onAnimalCardClick('pig')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 46%; width: 44%; height: 18%;" title="Pigs Pen"></div>
           <div id="mapBadge-pig" onclick="onAnimalCardClick('pig')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 28.5%; top: 61.2%; transform: translateX(-50%);">
-            <span id="mapLock-pig">&#128274;</span> <span id="mapStatus-pig">15k 🌾</span>
+            <span id="mapLock-pig">&#128274;</span> <span id="mapStatus-pig">40k 🌾</span>
           </div>
 
           <!-- 7. Sheep - Meadow Hotspot + Under Sign Badge -->
@@ -4251,7 +4251,7 @@
     // Animal Farms System (Per-farm duration: Chicken is 24-Hour, others 8-Hour)
     const ANIMAL_FARM_DURATION_SEC = 8 * 3600;
     function getFarmDurationSec(key) {
-      if (key === 'chicken' || key === 'duck' || key === 'bunny' || key === 'dog' || key === 'sheep') return 24 * 3600; // 24 Hours (86,400 sec)
+      if (key === 'chicken' || key === 'duck' || key === 'bunny' || key === 'dog' || key === 'sheep' || key === 'pig') return 24 * 3600; // 24 Hours (86,400 sec)
       return ANIMAL_FARM_DURATION_SEC;
     }
 
@@ -4261,7 +4261,7 @@
       bunny:   { name: 'Bunny Farm',   bonus: 120, state: 'idle', startTime: 0, remainingSeconds: 0 },
       sheep:   { name: 'Sheep Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       cows:    { name: 'Cows Farm',    bonus: 50, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      pig:     { name: 'Pig Farm',     bonus: 60, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      pig:     { name: 'Pig Farm',     bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       horse:   { name: 'Horse Farm',   bonus: 70, state: 'idle', startTime: 0, remainingSeconds: 0 },
       dog:     { name: 'Dog Farm',     bonus: 250, state: 'idle', startTime: 0, remainingSeconds: 0 },
       // Crazy Farm 2: 7 New Animal Farms
@@ -4282,7 +4282,7 @@
       bunny: 5000,
       sheep: 25000,
       cows: 8000,
-      pig: 15000,
+      pig: 40000,
       horse: 25000,
       dog: 10000,
       // Crazy Farm 2
@@ -4377,8 +4377,8 @@
         rewards: { 1: 50, 2: 100, 3: 160, 4: 250, 5: 380 }
       },
       pig: {
-        costs:   { 2: 1200, 3: 3000, 4: 6000, 5: 12000 },
-        rewards: { 1: 60, 2: 120, 3: 200, 4: 300, 5: 450 }
+        costs:   { 2: 1500, 3: 3500, 4: 7500, 5: 15000, 6: 30000, 7: 60000, 8: 120000, 9: 240000, 10: 480000, 11: 800000, 12: 1200000, 13: 1800000, 14: 2500000, 15: 3500000 },
+        rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       horse: {
         costs:   { 2: 1500, 3: 3500, 4: 7000, 5: 15000 },
@@ -5251,8 +5251,8 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog' || key === 'sheep') {
-        // Dog & Sheep Farms are 100% ad-free: Direct instant collect
+      if (key === 'dog' || key === 'sheep' || key === 'pig') {
+        // Dog, Sheep & Pig Farms are 100% ad-free: Direct instant collect
         collectFarmReward(key, false);
         return;
       }
@@ -5491,7 +5491,7 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep') {
+      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig') {
         collectFarmReward(currentModalAnimalKey, false);
         updateAnimalModalUI(currentModalAnimalKey);
         return;
