@@ -3053,13 +3053,13 @@
     };
 
     var BATTLE_MODEL_CFG = {
-      girl:    { scale: 1.05, yOffset: 0.0, baseRot: Math.PI },
-      cow:     { scale: 0.62, yOffset: 0.0, baseRot: 0 },
-      horse:   { scale: 0.58, yOffset: 0.0, baseRot: Math.PI },
-      dog:     { scale: 0.65, yOffset: 0.0, baseRot: 0 },
-      chicken: { scale: 0.60, yOffset: 0.0, baseRot: -Math.PI / 2 },
-      duck:    { scale: 0.60, yOffset: 0.0, baseRot: 0 },
-      rabbit:  { scale: 0.62, yOffset: 0.0, baseRot: 0 }
+      girl:    { scale: 1.05, yOffset: 0.38, baseRot: Math.PI },
+      cow:     { scale: 0.65, yOffset: 0.42, baseRot: Math.PI },
+      horse:   { scale: 0.62, yOffset: 0.45, baseRot: 0 },
+      dog:     { scale: 0.65, yOffset: 0.38, baseRot: Math.PI },
+      chicken: { scale: 0.62, yOffset: 0.38, baseRot: Math.PI / 2 },
+      duck:    { scale: 0.62, yOffset: 0.36, baseRot: Math.PI },
+      rabbit:  { scale: 0.62, yOffset: 0.38, baseRot: Math.PI }
     };
 
     function buildSquadForBattle(mode) {
@@ -3179,7 +3179,7 @@
       container.innerHTML = html;
     }
 
-    // 3D Battle Scene Initialization
+    // 3D Battle Scene Initialization (Clean Vertical Layout - NO Circles on Floor!)
     function initBattle3DScene(mode) {
       const canvas = document.getElementById('arenaBattle3DCanvas');
       if (!canvas || typeof THREE === 'undefined') return;
@@ -3202,11 +3202,12 @@
 
       battle3D.scene = new THREE.Scene();
       battle3D.scene.background = new THREE.Color(0x38bdf8); // Sky blue
-      battle3D.scene.fog = new THREE.FogExp2(0x93c5fd, 0.018);
+      battle3D.scene.fog = new THREE.FogExp2(0x93c5fd, 0.016);
 
-      battle3D.camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-      battle3D.camera.position.set(0, 4.4, 6.2);
-      battle3D.camera.lookAt(0, 0.3, 0.1);
+      // Vertical Arena Camera: Overlooking from bottom foreground towards top background
+      battle3D.camera = new THREE.PerspectiveCamera(46, w / h, 0.1, 100);
+      battle3D.camera.position.set(0, 5.0, 5.8);
+      battle3D.camera.lookAt(0, 0.4, 0.2);
 
       battle3D.clock = new THREE.Clock();
 
@@ -3215,24 +3216,24 @@
       battle3D.scene.add(hemi);
 
       const sun = new THREE.DirectionalLight(0xfffaed, 1.45);
-      sun.position.set(12, 22, 14);
+      sun.position.set(10, 22, 12);
       battle3D.scene.add(sun);
 
       const fill = new THREE.DirectionalLight(0xbfdbfe, 0.65);
-      fill.position.set(-12, 15, 8);
+      fill.position.set(-10, 15, -8);
       battle3D.scene.add(fill);
 
       // Grass Field
       const grass = new THREE.Mesh(
-        new THREE.PlaneGeometry(60, 60),
+        new THREE.PlaneGeometry(50, 50),
         new THREE.MeshLambertMaterial({ color: 0x4d7c0f })
       );
       grass.rotation.x = -Math.PI / 2;
       battle3D.scene.add(grass);
 
-      // Circular Combat Ring (Sand / Dirt)
-      const ringGeo = new THREE.CircleGeometry(5.2, 48);
-      const ringMat = new THREE.MeshLambertMaterial({ color: 0xb58548 });
+      // Clean Sand Combat Ring (NO CIRCLES!)
+      const ringGeo = new THREE.CircleGeometry(4.8, 48);
+      const ringMat = new THREE.MeshLambertMaterial({ color: 0xc49a65 });
       const combatRing = new THREE.Mesh(ringGeo, ringMat);
       combatRing.rotation.x = -Math.PI / 2;
       combatRing.position.y = 0.01;
@@ -3240,35 +3241,26 @@
 
       // Wooden Border Rim
       const borderRim = new THREE.Mesh(
-        new THREE.RingGeometry(5.05, 5.35, 48),
+        new THREE.RingGeometry(4.65, 4.95, 48),
         new THREE.MeshLambertMaterial({ color: 0x542707 })
       );
       borderRim.rotation.x = -Math.PI / 2;
       borderRim.position.y = 0.015;
       battle3D.scene.add(borderRim);
 
-      // Center dividing line with glowing emblem
+      // Clean Center Dividing Line across the pitch
       const divLine = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.08, 9.6),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
+        new THREE.PlaneGeometry(9.2, 0.08),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.30 })
       );
       divLine.rotation.x = -Math.PI / 2;
       divLine.position.y = 0.02;
       battle3D.scene.add(divLine);
 
-      // Center Ring Emblem
-      const centerEmblem = new THREE.Mesh(
-        new THREE.RingGeometry(0.8, 0.95, 32),
-        new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.7 })
-      );
-      centerEmblem.rotation.x = -Math.PI / 2;
-      centerEmblem.position.y = 0.025;
-      battle3D.scene.add(centerEmblem);
-
       // Perimeter fence posts
       for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
-        const px = Math.cos(a) * 5.25;
-        const pz = Math.sin(a) * 5.25;
+        const px = Math.cos(a) * 4.85;
+        const pz = Math.sin(a) * 4.85;
         const post = new THREE.Mesh(
           new THREE.CylinderGeometry(0.09, 0.1, 0.8, 8),
           new THREE.MeshLambertMaterial({ color: 0x78350f })
@@ -3281,68 +3273,94 @@
       startBattle3DLoop();
     }
 
-    // Setup 3D Units based on Battle Mode
+    // Setup 3D Units based on Battle Mode (Vertical Layout: Player Bottom vs Enemy Top)
     function setupBattle3DUnits(mode) {
       if (!battle3D.scene) return;
       if (battle3D.units && battle3D.units.length > 0) {
         battle3D.units.forEach(u => {
           if (u.mesh) battle3D.scene.remove(u.mesh);
           if (u.shadow) battle3D.scene.remove(u.shadow);
-          if (u.ring) battle3D.scene.remove(u.ring);
         });
       }
       battle3D.units = [];
 
       if (!run3D.modelsLoaded) {
-        preloadRun3DModels(() => setupBattle3DUnits(mode));
+        if (typeof preloadRun3DModels === 'function') {
+          preloadRun3DModels(() => setupBattle3DUnits(mode));
+        }
         return;
       }
 
       const m = parseInt(mode, 10) || 3;
       battle3D.currentMode = m;
 
-      let blueFormation = [];
+      let playerFormation = [];
+      let enemyFormation = [];
+
       if (m === 3) {
-        // Mode 3: Girl + 3 Animals = 4 units
-        blueFormation = [
-          { key: 'girl',  x: -1.75, z:  0.0, isLeader: true },
-          { key: 'cow',   x: -0.85, z: -1.3 },
-          { key: 'horse', x: -0.90, z:  0.0 },
-          { key: 'dog',   x: -0.85, z:  1.3 }
+        // Mode 3: Girl + 3 Animals (Cow, Horse, Dog) = 4 units
+        playerFormation = [
+          { key: 'cow',   x: -1.0, z:  0.9 },
+          { key: 'horse', x:  0.0, z:  0.9 },
+          { key: 'dog',   x:  1.0, z:  0.9 },
+          { key: 'girl',  x:  0.0, z:  2.1, isLeader: true }
+        ];
+        enemyFormation = [
+          { key: 'cow',   x: -1.0, z: -0.9 },
+          { key: 'horse', x:  0.0, z: -0.9 },
+          { key: 'dog',   x:  1.0, z: -0.9 },
+          { key: 'girl',  x:  0.0, z: -2.1, isLeader: true }
         ];
       } else if (m === 5) {
-        // Mode 5: Girl + 5 Animals = 6 units
-        blueFormation = [
-          { key: 'cow',     x: -0.85, z: -1.4 },
-          { key: 'horse',   x: -0.90, z:  0.0 },
-          { key: 'dog',     x: -0.85, z:  1.4 },
-          { key: 'chicken', x: -1.70, z: -1.2 },
-          { key: 'girl',    x: -1.85, z:  0.0, isLeader: true },
-          { key: 'duck',    x: -1.70, z:  1.2 }
+        // Mode 5: Girl + 5 Animals (Cow, Horse, Dog, Chicken, Duck) = 6 units
+        playerFormation = [
+          { key: 'cow',     x: -1.2, z:  0.85 },
+          { key: 'horse',   x:  0.0, z:  0.85 },
+          { key: 'dog',     x:  1.2, z:  0.85 },
+          { key: 'chicken', x: -0.9, z:  1.85 },
+          { key: 'duck',    x:  0.9, z:  1.85 },
+          { key: 'girl',    x:  0.0, z:  2.65, isLeader: true }
+        ];
+        enemyFormation = [
+          { key: 'cow',     x: -1.2, z: -0.85 },
+          { key: 'horse',   x:  0.0, z: -0.85 },
+          { key: 'dog',     x:  1.2, z: -0.85 },
+          { key: 'chicken', x: -0.9, z: -1.85 },
+          { key: 'duck',    x:  0.9, z: -1.85 },
+          { key: 'girl',    x:  0.0, z: -2.65, isLeader: true }
         ];
       } else {
-        // Mode 7: Girl + 6 Animals = 7 units
-        blueFormation = [
-          { key: 'cow',     x: -0.85, z: -1.5 },
-          { key: 'horse',   x: -0.90, z:  0.0 },
-          { key: 'dog',     x: -0.85, z:  1.5 },
-          { key: 'chicken', x: -1.65, z: -1.4 },
-          { key: 'duck',    x: -1.65, z:  1.4 },
-          { key: 'rabbit',  x: -1.80, z: -0.5 },
-          { key: 'girl',    x: -1.95, z:  0.5, isLeader: true }
+        // Mode 7: Girl + 6 Animals (Cow, Horse, Dog, Chicken, Duck, Rabbit = all 7 models!)
+        playerFormation = [
+          { key: 'cow',     x: -1.3, z:  0.85 },
+          { key: 'horse',   x:  0.0, z:  0.85 },
+          { key: 'dog',     x:  1.3, z:  0.85 },
+          { key: 'chicken', x: -1.2, z:  1.75 },
+          { key: 'rabbit',  x:  0.0, z:  1.75 },
+          { key: 'duck',    x:  1.2, z:  1.75 },
+          { key: 'girl',    x:  0.0, z:  2.65, isLeader: true }
+        ];
+        enemyFormation = [
+          { key: 'cow',     x: -1.3, z: -0.85 },
+          { key: 'horse',   x:  0.0, z: -0.85 },
+          { key: 'dog',     x:  1.3, z: -0.85 },
+          { key: 'chicken', x: -1.2, z: -1.75 },
+          { key: 'rabbit',  x:  0.0, z: -1.75 },
+          { key: 'duck',    x:  1.2, z: -1.75 },
+          { key: 'girl',    x:  0.0, z: -2.65, isLeader: true }
         ];
       }
 
-      // Spawn Blue Team (Player)
-      blueFormation.forEach((cfg, idx) => {
+      // Spawn Player Team (Bottom, facing North -Z)
+      playerFormation.forEach((cfg, idx) => {
         const squadData = playerSquad[idx] || null;
         spawnBattleUnit(cfg.key, cfg.x, cfg.z, 'player', cfg.isLeader, idx, squadData);
       });
 
-      // Spawn Red Team (Enemy)
-      blueFormation.forEach((cfg, idx) => {
+      // Spawn Enemy Team (Top, facing South +Z)
+      enemyFormation.forEach((cfg, idx) => {
         const squadData = enemySquad[idx] || null;
-        spawnBattleUnit(cfg.key, -cfg.x, cfg.z, 'enemy', cfg.isLeader, idx, squadData);
+        spawnBattleUnit(cfg.key, cfg.x, cfg.z, 'enemy', cfg.isLeader, idx, squadData);
       });
     }
 
@@ -3351,23 +3369,25 @@
       if (!base) return;
 
       const mesh = base.clone(true);
-      const meta = BATTLE_MODEL_CFG[key] || { scale: 0.7, yOffset: 0.0, baseRot: 0 };
+      const meta = BATTLE_MODEL_CFG[key] || { scale: 0.7, yOffset: 0.40, baseRot: 0 };
       mesh.scale.setScalar(meta.scale);
 
       // Facing angles:
-      // Player faces Right (+X): rotY = baseRot - Math.PI / 2
-      // Enemy faces Left (-X): rotY = baseRot + Math.PI / 2
-      let faceRot = (team === 'player') ? (meta.baseRot - Math.PI / 2) : (meta.baseRot + Math.PI / 2);
+      // Player faces North (-Z) towards enemy: rotY = meta.baseRot
+      // Enemy faces South (+Z) towards player: rotY = meta.baseRot + Math.PI
+      let faceRot = (team === 'player') ? meta.baseRot : (meta.baseRot + Math.PI);
       mesh.rotation.y = faceRot;
+
+      // Position unit firmly on ground! (yOffset gives feet touching ground!)
       mesh.position.set(x, meta.yOffset, z);
 
-      // Enemy red tint
+      // Enemy subtle reddish tint
       if (team === 'enemy') {
         mesh.traverse(c => {
           if (c.isMesh && c.material) {
             c.material = c.material.clone();
             if (c.material.color) {
-              c.material.color.lerp(new THREE.Color(0xff8888), 0.22);
+              c.material.color.lerp(new THREE.Color(0xff8888), 0.25);
             }
           }
         });
@@ -3375,25 +3395,15 @@
 
       battle3D.scene.add(mesh);
 
-      // Shadow Blob
+      // Soft Ground Shadow Blob (grounded at y = 0.02) - Clean, NO Floor Circles!
       const shadow = createShadowBlob(0.55 * meta.scale);
       shadow.position.set(x, 0.025, z);
       battle3D.scene.add(shadow);
-
-      // Glowing Pedestal Ring
-      const ringColor = (team === 'player') ? 0x38bdf8 : 0xef4444;
-      const ringGeo = new THREE.RingGeometry(0.5 * (isLeader ? 1.25 : 1.0), 0.65 * (isLeader ? 1.25 : 1.0), 24);
-      const ringMat = new THREE.MeshBasicMaterial({ color: ringColor, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = -Math.PI / 2;
-      ring.position.set(x, 0.03, z);
-      battle3D.scene.add(ring);
 
       battle3D.units.push({
         key,
         mesh,
         shadow,
-        ring,
         basePos: new THREE.Vector3(x, meta.yOffset, z),
         faceRot,
         team,
@@ -3441,7 +3451,7 @@
 
         if (!u.isAttacking) {
           // Idle breathing
-          const bob = Math.abs(Math.sin(time * 3.5 + u.bobPhase)) * 0.06;
+          const bob = Math.abs(Math.sin(time * 3.5 + u.bobPhase)) * 0.05;
           u.mesh.position.y = u.basePos.y + bob;
           u.mesh.position.x += (u.basePos.x - u.mesh.position.x) * 0.15;
           u.mesh.position.z += (u.basePos.z - u.mesh.position.z) * 0.15;
@@ -3449,9 +3459,6 @@
             u.shadow.position.x = u.mesh.position.x;
             u.shadow.position.z = u.mesh.position.z;
             u.shadow.scale.setScalar(1.0 - bob * 1.5);
-          }
-          if (u.ring) {
-            u.ring.rotation.z = time * (u.team === 'player' ? 0.8 : -0.8);
           }
         }
       });
@@ -3461,7 +3468,7 @@
       }
     }
 
-    // Attack Action Animation
+    // Vertical Attack Action Animation (Along Z-axis)
     function battle3DAttack(attacker, target, damage, isCrit, onHit) {
       if (!attacker || !target || !attacker.mesh || !target.mesh) {
         if (onHit) onHit();
@@ -3470,9 +3477,9 @@
       attacker.isAttacking = true;
 
       const startPos = attacker.basePos.clone();
-      const dir = (attacker.team === 'player') ? 1 : -1;
-      const strikeX = target.basePos.x - (dir * 0.65);
-      const strikeZ = target.basePos.z;
+      const isPlayer = (attacker.team === 'player');
+      const strikeX = target.basePos.x;
+      const strikeZ = target.basePos.z + (isPlayer ? 0.65 : -0.65);
 
       const duration = 650;
       const startTime = performance.now();
@@ -3483,21 +3490,21 @@
         const progress = Math.min(1, elapsed / duration);
 
         if (progress < 0.5) {
-          // Dash towards target with a high jump
+          // Dash towards target along Z with a high jump
           const p = progress / 0.5;
           attacker.mesh.position.x = startPos.x + (strikeX - startPos.x) * p;
           attacker.mesh.position.z = startPos.z + (strikeZ - startPos.z) * p;
           attacker.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 0.65;
-          attacker.mesh.rotation.z = -dir * 0.35 * Math.sin(p * Math.PI);
+          attacker.mesh.rotation.x = (isPlayer ? -0.35 : 0.35) * Math.sin(p * Math.PI);
         } else if (progress >= 0.5 && !hitDispatched) {
           hitDispatched = true;
           if (onHit) onHit();
 
-          // Target flinch & recoil
-          target.mesh.position.x = target.basePos.x + (dir * 0.3);
+          // Target flinch & recoil backwards
+          target.mesh.position.z = target.basePos.z + (isPlayer ? -0.35 : 0.35);
           target.mesh.position.y = target.basePos.y + 0.15;
 
-          // Flash target
+          // Flash target white
           target.mesh.traverse(c => {
             if (c.isMesh && c.material && c.material.color) {
               const orig = c.material.color.getHex();
@@ -3515,14 +3522,14 @@
           attacker.mesh.position.x = strikeX + (startPos.x - strikeX) * p;
           attacker.mesh.position.z = strikeZ + (startPos.z - strikeZ) * p;
           attacker.mesh.position.y = startPos.y + Math.sin(p * Math.PI) * 0.4;
-          attacker.mesh.rotation.z = -dir * 0.2 * (1 - p);
+          attacker.mesh.rotation.x = (isPlayer ? -0.2 : 0.2) * (1 - p);
         }
 
         if (progress < 1) {
           requestAnimationFrame(stepAttack);
         } else {
           attacker.mesh.position.copy(startPos);
-          attacker.mesh.rotation.z = 0;
+          attacker.mesh.rotation.x = 0;
           attacker.isAttacking = false;
         }
       }
@@ -3530,14 +3537,14 @@
       requestAnimationFrame(stepAttack);
     }
 
-    // Girl Leader Special Strike
+    // Girl Leader Special Strike (Leaps forward, sweeps enemy team)
     function battle3DSpecialStrike() {
       const girlUnit = battle3D.units.find(u => u.team === 'player' && u.key === 'girl');
       if (!girlUnit || !girlUnit.mesh) return;
 
       girlUnit.isAttacking = true;
       const startPos = girlUnit.basePos.clone();
-      const centerPos = new THREE.Vector3(0, 0.9, 0);
+      const centerPos = new THREE.Vector3(0, 0.9, 0.0);
 
       const startTime = performance.now();
       const dur = 750;
@@ -3567,14 +3574,14 @@
           girlUnit.mesh.rotation.y = girlUnit.faceRot + Math.PI * 2 * p;
         } else if (progress >= 0.45 && !shockDispatched) {
           shockDispatched = true;
-          shockwave.scale.set(12, 12, 1);
+          shockwave.scale.set(14, 14, 1);
           shockwave.material.opacity = 0.2;
 
-          // Enemy units all recoil!
+          // Enemy units in top half all recoil backwards!
           battle3D.units.filter(u => u.team === 'enemy').forEach(e => {
             if (e.squadData && e.squadData.hp > 0) {
-              e.mesh.position.x = e.basePos.x + 0.35;
-              e.mesh.position.y = e.basePos.y + 0.2;
+              e.mesh.position.z = e.basePos.z - 0.40;
+              e.mesh.position.y = e.basePos.y + 0.20;
               setTimeout(() => {
                 if (e.mesh) e.mesh.position.copy(e.basePos);
               }, 250);
@@ -3600,7 +3607,7 @@
       requestAnimationFrame(stepStrike);
     }
 
-    function handleUnitKnockout(unitId) {
+        function handleUnitKnockout(unitId) {
       const u = battle3D.units.find(x => x.squadData && x.squadData.id === unitId);
       if (u && u.mesh && !u.isDead) {
         u.isDead = true;
