@@ -610,13 +610,13 @@
               <!-- 4. Bears (Mid-Left Pen) -->
               <div id="hotspot-cf2-bears" onclick="onCf2AnimalClick('bears')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 3%; top: 46%; width: 44%; height: 18%;" title="Bears Pen"></div>
               <div id="mapBadge-bears" onclick="onCf2AnimalClick('bears')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 28%; top: 61%; transform: translateX(-50%);">
-                <span id="mapLock-bears">&#128274;</span> <span id="mapStatus-bears">65k 🌾</span>
+                <span id="mapLock-bears">&#128274;</span> <span id="mapStatus-bears">150k 🌾</span>
               </div>
 
               <!-- 5. Donkeys (Mid-Right Pasture) -->
               <div id="hotspot-cf2-donkeys" onclick="onCf2AnimalClick('donkeys')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 64%; top: 46%; width: 34%; height: 17%;" title="Donkeys Pasture"></div>
               <div id="mapBadge-donkeys" onclick="onCf2AnimalClick('donkeys')" class="absolute bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_6px_rgba(0,0,0,0.5)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 80%; top: 60%; transform: translateX(-50%);">
-                <span id="mapLock-donkeys">&#128274;</span> <span id="mapStatus-donkeys">90k 🌾</span>
+                <span id="mapLock-donkeys">&#128274;</span> <span id="mapStatus-donkeys">100k 🌾</span>
               </div>
 
               <!-- 6. Cats (Bottom Left Corner) -->
@@ -4267,8 +4267,8 @@
       goats:   { name: 'Goats Farm',   bonus: 90,  state: 'idle', startTime: 0, remainingSeconds: 0 },
       bulls:   { name: 'Bulls Farm',   bonus: 110, state: 'idle', startTime: 0, remainingSeconds: 0 },
       geese:   { name: 'Geese Farm',   bonus: 130, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      bears:   { name: 'Bears Farm',   bonus: 160, state: 'idle', startTime: 0, remainingSeconds: 0 },
-      donkeys: { name: 'Donkeys Farm', bonus: 190, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      bears:   { name: 'Bears Farm',   bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
+      donkeys: { name: 'Donkeys Farm', bonus: 500, state: 'idle', startTime: 0, remainingSeconds: 0 },
       cats:    { name: 'Cats Farm',    bonus: 220, state: 'idle', startTime: 0, remainingSeconds: 0 },
       bees:    { name: 'Bees Farm',    bonus: 260, state: 'idle', startTime: 0, remainingSeconds: 0 }
     };
@@ -4288,8 +4288,8 @@
       goats: 0,
       bulls: 30000,
       geese: 45000,
-      bears: 65000,
-      donkeys: 90000,
+      bears: 150000,
+      donkeys: 100000,
       cats: 120000,
       bees: 160000
     };
@@ -4401,12 +4401,12 @@
         rewards: { 1: 130, 2: 270, 3: 450, 4: 660, 5: 1050 }
       },
       bears: {
-        costs:   { 2: 3200, 3: 7000, 4: 15000, 5: 32000 },
-        rewards: { 1: 160, 2: 330, 3: 540, 4: 790, 5: 1250 }
+        costs:   { 2: 1500, 3: 3500, 4: 7500, 5: 15000, 6: 30000, 7: 60000, 8: 120000, 9: 240000, 10: 480000, 11: 800000, 12: 1200000, 13: 1800000, 14: 2500000, 15: 3500000 },
+        rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       donkeys: {
-        costs:   { 2: 3600, 3: 8000, 4: 18000, 5: 38000 },
-        rewards: { 1: 190, 2: 390, 3: 630, 4: 920, 5: 1450 }
+        costs:   { 2: 1500, 3: 3500, 4: 7500, 5: 15000, 6: 30000, 7: 60000, 8: 120000, 9: 240000, 10: 480000, 11: 800000, 12: 1200000, 13: 1800000, 14: 2500000, 15: 3500000 },
+        rewards: { 1: 500, 2: 900, 3: 1450, 4: 2200, 5: 3200, 6: 4500, 7: 6200, 8: 8300, 9: 11000, 10: 14500, 11: 19000, 12: 24500, 13: 31000, 14: 39000, 15: 50000 }
       },
       cats: {
         costs:   { 2: 4000, 3: 9000, 4: 20000, 5: 42000 },
@@ -5250,8 +5250,8 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse') {
-        // Dog, Sheep, Pig, Cows & Horse Farms are 100% ad-free: Direct instant collect
+      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears') {
+        // Direct instant collect without ads
         collectFarmReward(key, false);
         return;
       }
@@ -5490,7 +5490,7 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse') {
+      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears') {
         collectFarmReward(currentModalAnimalKey, false);
         updateAnimalModalUI(currentModalAnimalKey);
         return;
