@@ -8642,34 +8642,72 @@
       }
     }
 
+    function runSteerDirection(dir) {
+      if (!runGameActive) return;
+      const targetLane = Math.max(0, Math.min(2, run3D.currentLane + dir));
+      runSteerToLane(targetLane);
+    }
+
+    function runSteerToLane(lane) {
+      if (!runGameActive) return;
+      const targetLane = Math.max(0, Math.min(2, lane));
+      if (run3D.currentLane !== targetLane) {
+        run3D.currentLane = targetLane;
+        run3D.targetX = run3D.lanes[targetLane];
+        try { playSound('click'); } catch(e){}
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+        }
+      }
+    }
+
     // Controls Binding: Continuous Touch & Drag Steering (Holding finger down & moving)
     function bindRun3DControls() {
       const canvas = document.getElementById('runSprintCanvas');
-      if (canvas && !canvas._controlsBound) {
-        canvas._controlsBound = true;
+      const wrapper = document.getElementById('runCanvasWrapper');
+      const targetEl = wrapper || canvas;
+
+      if (targetEl && !targetEl._controlsBound) {
+        targetEl._controlsBound = true;
         let touchAnchorX = 0;
         let isTouching = false;
-        const dragThreshold = 26; // Responsive continuous shift threshold (px)
+        const dragThreshold = 22; // Responsive continuous shift threshold (px)
+
+        function getLaneFromX(clientX) {
+          const rect = (wrapper || canvas).getBoundingClientRect();
+          const relX = (clientX - rect.left) / Math.max(1, rect.width);
+          if (relX < 0.36) return 0; // Left lane
+          if (relX > 0.64) return 2; // Right lane
+          return 1; // Center lane
+        }
 
         function onTouchStart(e) {
           if (!runGameActive) return;
           const touch = e.touches ? e.touches[0] : e;
           touchAnchorX = touch.clientX;
           isTouching = true;
+          // Immediate responsive steering on initial touch
+          const targetLane = getLaneFromX(touch.clientX);
+          runSteerToLane(targetLane);
         }
 
         function onTouchMove(e) {
           if (!runGameActive || !isTouching) return;
           if (e.cancelable) e.preventDefault();
           const touch = e.touches ? e.touches[0] : e;
-          const dx = touch.clientX - touchAnchorX;
 
+          // 1. Continuous absolute zone steering while dragging across screen
+          const targetLane = getLaneFromX(touch.clientX);
+          runSteerToLane(targetLane);
+
+          // 2. Relative dragging swipe steering (finger movements anywhere steer)
+          const dx = touch.clientX - touchAnchorX;
           if (dx > dragThreshold) {
             runSteerDirection(1); // Steer Right
-            touchAnchorX = touch.clientX; // Shift anchor so continuous dragging keeps moving smoothly
+            touchAnchorX = touch.clientX; // Reset anchor so continuous dragging keeps moving smoothly
           } else if (dx < -dragThreshold) {
             runSteerDirection(-1); // Steer Left
-            touchAnchorX = touch.clientX; // Shift anchor
+            touchAnchorX = touch.clientX; // Reset anchor
           }
         }
 
@@ -8677,13 +8715,13 @@
           isTouching = false;
         }
 
-        canvas.addEventListener('touchstart', onTouchStart, { passive: false });
-        canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-        canvas.addEventListener('touchend', onTouchEnd, { passive: true });
-        canvas.addEventListener('touchcancel', onTouchEnd, { passive: true });
+        targetEl.addEventListener('touchstart', onTouchStart, { passive: false });
+        targetEl.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
+        window.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
         // Mouse Dragging Support for Desktop Testing
-        canvas.addEventListener('mousedown', onTouchStart);
+        targetEl.addEventListener('mousedown', onTouchStart);
         window.addEventListener('mousemove', onTouchMove);
         window.addEventListener('mouseup', onTouchEnd);
 
@@ -8695,10 +8733,10 @@
 
         window.addEventListener('resize', () => {
           if (run3D.renderer && run3D.camera) {
-            const wrapper = document.getElementById('runCanvasWrapper');
-            if (wrapper) {
-              const w = wrapper.clientWidth;
-              const h = wrapper.clientHeight;
+            const wEl = document.getElementById('runCanvasWrapper');
+            if (wEl) {
+              const w = wEl.clientWidth;
+              const h = wEl.clientHeight;
               run3D.camera.aspect = w / h;
               run3D.camera.updateProjectionMatrix();
               run3D.renderer.setSize(w, h, false);
