@@ -2470,6 +2470,22 @@
       </div>
     </div>
 
+    <!-- ==================== UNIVERSAL IN-GAME NOTICE / ALERT MODAL ==================== -->
+    <div id="gameNoticeModal" style="display: none;" onclick="if(event.target === this) closeGameNoticeModal()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4 select-none">
+      <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-amber-500 shadow-2xl relative animate-scale-up text-white pointer-events-auto">
+        <!-- Close Button -->
+        <button type="button" onclick="event.stopPropagation(); closeGameNoticeModal();" ontouchend="event.stopPropagation(); closeGameNoticeModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+        
+        <div id="gameNoticeIcon" class="text-4xl mb-1.5 animate-bounce">📢</div>
+        <h3 id="gameNoticeTitle" class="text-lg font-black text-yellow-300 drop-shadow mb-2" style="font-family: 'Fredoka', cursive;">Notice</h3>
+        <div id="gameNoticeBody" class="text-xs text-amber-100 font-semibold mb-3.5 whitespace-pre-line leading-relaxed bg-black/50 p-3 rounded-2xl border border-amber-600/50 text-left"></div>
+        
+        <button type="button" onclick="event.stopPropagation(); closeGameNoticeModal();" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-sm shadow-xl active:scale-95 transition-transform cursor-pointer">
+          OK
+        </button>
+      </div>
+    </div>
+
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
     <div id="battleArenaModal" onclick="if(event.target === this) closeBattleArena()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
@@ -7797,6 +7813,55 @@
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2500);
     }
+
+    // ==================== UNIVERSAL IN-GAME ALERT MODAL (REPLACES BROWSER ALERTS) ====================
+    function showGameNoticeModal(title, message, icon = '📢') {
+      const modal = document.getElementById('gameNoticeModal');
+      const titleEl = document.getElementById('gameNoticeTitle');
+      const bodyEl = document.getElementById('gameNoticeBody');
+      const iconEl = document.getElementById('gameNoticeIcon');
+      if (titleEl) titleEl.innerText = title;
+      if (bodyEl) bodyEl.innerText = message;
+      if (iconEl) iconEl.innerText = icon;
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
+      }
+    }
+
+    function closeGameNoticeModal() {
+      const modal = document.getElementById('gameNoticeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('pop'); } catch(e){}
+    }
+
+    // Override browser window.alert so github.io domain header NEVER appears anywhere in the app!
+    window.alert = function(msg) {
+      if (typeof msg !== 'string') msg = String(msg || '');
+      let icon = '📢';
+      let title = 'Crazy Farm Notice';
+      if (msg.includes('🔒') || msg.includes('Locked') || msg.includes('Requirements')) {
+        icon = '🔒';
+        title = 'Farm Requirements';
+      } else if (msg.includes('✅') || msg.includes('CONGRATULATIONS') || msg.includes('🎉') || msg.includes('UNLOCKED')) {
+        icon = '🎉';
+        title = 'Congratulations!';
+      } else if (msg.includes('⚠️')) {
+        icon = '⚠️';
+        title = 'Attention!';
+      } else if (msg.includes('⏳')) {
+        icon = '⏳';
+        title = 'Cooldown Active';
+      }
+      showGameNoticeModal(title, msg, icon);
+    };
     // ==================== END WALLET ====================
 
     // ==================== OTHERS & FAQ VIEW LOGIC ====================
