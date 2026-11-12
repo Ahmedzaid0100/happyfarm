@@ -547,7 +547,7 @@
           <div class="flex items-center justify-between px-1 mb-2">
             <div class="flex items-center gap-1.5">
               <span class="text-base">🚜</span>
-              <span class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
+              <span id="txt-cf2-title" class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
                 Crazy Farm 2 (New Land)
               </span>
             </div>
@@ -594,7 +594,7 @@
 
               <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
               <button onclick="window.testInstantUnlockCrazyFarm2()" class="relative z-10 mt-2 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[10px] border border-white/40 cursor-pointer active:scale-95 transition-all">
-                ⚡ فتح فوري للتجربة (Test Mode)
+                ⚡ Instant Unlock (Test Mode)
               </button>
             </div>
 
@@ -653,7 +653,7 @@
           <div class="flex items-center justify-between px-1 mb-2">
             <div class="flex items-center gap-1.5">
               <span class="text-base">🦖</span>
-              <span class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
+              <span id="txt-cf3-title" class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
                 Jurassic Farm (CFT Mining Sanctuary)
               </span>
             </div>
@@ -942,7 +942,7 @@
             <div onclick="openModal('profileModal')" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
               <div class="flex items-center gap-2.5">
                 <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">✏️</span>
-                <span class="font-black text-amber-950 text-xs">Edit Profile</span>
+                <span id="txt-setting-editprof" class="font-black text-amber-950 text-xs">Edit Profile</span>
               </div>
               <span class="text-amber-800 font-extrabold text-sm">›</span>
             </div>
@@ -951,7 +951,7 @@
             <div class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl">
               <div class="flex items-center gap-2.5">
                 <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🔔</span>
-                <span class="font-black text-amber-950 text-xs">Notifications</span>
+                <span id="txt-setting-notif" class="font-black text-amber-950 text-xs">Notifications</span>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="notifToggle" class="sr-only peer" checked onchange="toggleNotifications(this)">
@@ -963,7 +963,7 @@
             <div onclick="toggleLanguage()" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
               <div class="flex items-center gap-2.5">
                 <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🌐</span>
-                <span class="font-black text-amber-950 text-xs">Language</span>
+                <span id="txt-setting-lang" class="font-black text-amber-950 text-xs">Language</span>
               </div>
               <span class="text-amber-800 font-bold flex items-center gap-1 text-xs">
                 <span id="currentLangDisplay">English</span> <span class="font-black text-sm">›</span>
@@ -974,7 +974,7 @@
             <div onclick="openSupport()" class="flex items-center justify-between p-2.5 hover:bg-amber-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all">
               <div class="flex items-center gap-2.5">
                 <span class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs shadow-sm">🎧</span>
-                <span class="font-black text-amber-950 text-xs">Support</span>
+                <span id="txt-setting-support" class="font-black text-amber-950 text-xs">Support</span>
               </div>
               <span class="text-amber-800 font-extrabold text-sm">›</span>
             </div>
@@ -983,7 +983,7 @@
             <div onclick="logoutWallet()" class="flex items-center justify-between p-2.5 hover:bg-rose-100/70 rounded-2xl cursor-pointer active:scale-98 transition-all text-rose-700">
               <div class="flex items-center gap-2.5">
                 <span class="w-7 h-7 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs shadow-sm">🚪</span>
-                <span class="font-black text-xs">Logout</span>
+                <span id="txt-setting-logout" class="font-black text-xs">Logout</span>
               </div>
               <span class="font-extrabold text-sm">›</span>
             </div>
@@ -1761,7 +1761,7 @@
       <!-- 1. Home -->
       <button id="navNewHomeBtn" onclick="switchTab('home')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
         <span class="text-xl filter drop-shadow">&#127968;</span>
-        <span class="text-[9px] font-bold text-amber-200">Home</span>
+        <span id="navHomeLabel" class="text-[9px] font-bold text-amber-200">Home</span>
       </button>
 
       <!-- 2. Tasks -->
@@ -1769,7 +1769,7 @@
         <span class="absolute top-0 right-3 w-4 h-4 bg-red-600 border border-white text-white rounded-full text-[9px] font-extrabold flex items-center justify-center animate-ping"></span>
         <span class="absolute top-0 right-3 w-4 h-4 bg-red-600 border border-white text-white rounded-full text-[9px] font-extrabold flex items-center justify-center">!</span>
         <span class="text-xl filter drop-shadow">&#128203;</span>
-        <span class="text-[10px] font-bold text-amber-200">Tasks</span>
+        <span id="navTasksLabel" class="text-[10px] font-bold text-amber-200">Tasks</span>
       </button>
 
       <!-- 3. Farms (Center Raised Button) -->
@@ -1783,7 +1783,7 @@
       <!-- 4. Wallet -->
       <button id="navWalletBtn" onclick="switchTab('wallet')" class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all">
         <span class="text-xl filter drop-shadow">&#128091;</span>
-        <span class="text-[10px] font-bold text-amber-200">Wallet</span>
+        <span id="navWalletLabel" class="text-[10px] font-bold text-amber-200">Wallet</span>
       </button>
 
       <!-- 5. Profile -->
@@ -6822,7 +6822,7 @@
         }
         if (badge) {
           badge.className = 'bg-emerald-800 px-2 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-200';
-          badge.innerHTML = '🌾 Unlocked';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🌾 مفتوحة' : '🌾 Unlocked';
         }
       } else {
         if (fogOverlay) {
@@ -6831,7 +6831,7 @@
         }
         if (badge) {
           badge.className = 'bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500 text-[9.5px] font-black text-yellow-300';
-          badge.innerHTML = '🔒 Locked';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🔒 مغلقة (1M 🌾)' : '🔒 Locked';
         }
       }
     }
@@ -6842,14 +6842,14 @@
       try { localStorage.setItem('crazyfarm_unlocked_farm_2', 'true'); } catch(e){}
       initCrazyFarm2State();
       try { playSound('fanfare'); } catch(e){}
-      showWalletToast('⚡ تم فتح المزرعة الثانية فوراً للتجربة بنجاح!');
+      showWalletToast('⚡ Crazy Farm 2 instantly unlocked for testing!');
     };
 
     window.testLockCrazyFarm2 = function() {
       isCrazyFarm2Unlocked = false;
       try { localStorage.removeItem('crazyfarm_unlocked_farm_2'); } catch(e){}
       initCrazyFarm2State();
-      showWalletToast('🔒 تم إعادة قفل المزرعة الثانية.');
+      showWalletToast('🔒 Crazy Farm 2 re-locked.');
     };
 
     function unlockCrazyFarm2() {
@@ -6892,7 +6892,7 @@
       const badge = document.getElementById('cf2StatusBadge');
       if (badge) {
         badge.className = 'bg-emerald-800 px-2 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-200';
-        badge.innerHTML = '🌾 Unlocked';
+        badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🌾 مفتوحة' : '🌾 Unlocked';
       }
 
       updateDisplays();
@@ -6922,7 +6922,7 @@
         }
         if (badge) {
           badge.className = 'bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-100 shadow-md flex items-center gap-1';
-          badge.innerHTML = '<span>⚡</span> <span>CFT Mining Active</span>';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '<span>⚡</span> <span>تعدين CFT نشط</span>' : '<span>⚡</span> <span>CFT Mining Active</span>';
         }
       } else {
         if (fogOverlay) {
@@ -6931,7 +6931,7 @@
         }
         if (badge) {
           badge.className = 'bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse';
-          badge.innerHTML = '<span>🔒</span> <span>Locked (Lv.10 + 15M 🌾)</span>';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '<span>🔒</span> <span>مغلق (مستوى 10 + 15M 🌾)</span>' : '<span>🔒</span> <span>Locked (Lv.10 + 15M 🌾)</span>';
         }
 
         // Live check indicators in fog overlay
@@ -8901,19 +8901,74 @@
       }
     }
 
-    let currentAppLang = 'en';
+    let currentAppLang = localStorage.getItem('crazyfarm_lang') || 'en';
+
     function toggleLanguage() {
       playSound('click');
-      const langEl = document.getElementById('currentLangDisplay');
-      if (currentAppLang === 'en') {
-        currentAppLang = 'ar';
-        if (langEl) langEl.innerText = 'Arabic';
-        alert('🌐 Language set to: Arabic');
+      currentAppLang = (currentAppLang === 'en' ? 'ar' : 'en');
+      try { localStorage.setItem('crazyfarm_lang', currentAppLang); } catch(e){}
+      applyAppLanguage(currentAppLang);
+      if (currentAppLang === 'ar') {
+        showWalletToast('🌐 تم تفعيل اللغة العربية بالكامل!');
       } else {
-        currentAppLang = 'en';
-        if (langEl) langEl.innerText = 'English';
-        alert('🌐 Language set to: English');
+        showWalletToast('🌐 Language switched to English!');
       }
+    }
+
+    function applyAppLanguage(lang) {
+      const isAr = (lang === 'ar');
+      const langEl = document.getElementById('currentLangDisplay');
+      if (langEl) langEl.innerText = isAr ? 'العربية' : 'English';
+
+      // 1. Bottom Navigation Bar
+      const navHome = document.getElementById('navHomeLabel');
+      const navTasks = document.getElementById('navTasksLabel');
+      const navFarms = document.getElementById('navHomeText');
+      const navWallet = document.getElementById('navWalletLabel');
+      const navProfile = document.getElementById('navProfileText');
+      if (navHome) navHome.innerText = isAr ? 'الرئيسية' : 'Home';
+      if (navTasks) navTasks.innerText = isAr ? 'المهام' : 'Tasks';
+      if (navFarms) navFarms.innerText = isAr ? 'المزارع' : 'Farms';
+      if (navWallet) navWallet.innerText = isAr ? 'المحفظة' : 'Wallet';
+      if (navProfile) navProfile.innerText = isAr ? 'حسابي' : 'Profile';
+
+      // 2. Profile View Settings
+      const setEdit = document.getElementById('txt-setting-editprof');
+      const setNotif = document.getElementById('txt-setting-notif');
+      const setLang = document.getElementById('txt-setting-lang');
+      const setSupp = document.getElementById('txt-setting-support');
+      const setLogout = document.getElementById('txt-setting-logout');
+      if (setEdit) setEdit.innerText = isAr ? 'تعديل الحساب' : 'Edit Profile';
+      if (setNotif) setNotif.innerText = isAr ? 'الإشعارات' : 'Notifications';
+      if (setLang) setLang.innerText = isAr ? 'اللغة' : 'Language';
+      if (setSupp) setSupp.innerText = isAr ? 'الدعم الفني' : 'Support';
+      if (setLogout) setLogout.innerText = isAr ? 'تسجيل الخروج' : 'Logout';
+
+      // 3. Farms View Titles
+      const mainFarmTxt = document.getElementById('mapMainStatusText');
+      const cf2Title = document.getElementById('txt-cf2-title');
+      const cf3Title = document.getElementById('txt-cf3-title');
+      if (mainFarmTxt) mainFarmTxt.innerText = isAr ? 'المزرعة الرئيسية' : 'Main Farm';
+      if (cf2Title) cf2Title.innerText = isAr ? 'المزرعة 2 (أرض جديدة)' : 'Crazy Farm 2 (New Land)';
+      if (cf3Title) cf3Title.innerText = isAr ? 'مزرعة الجوراسيك (تعدين CFT)' : 'Jurassic Farm (CFT Mining Sanctuary)';
+
+      // 4. Jurassic Farm Fog & Lock UI
+      const cf3FogH3 = document.querySelector('#crazyFarm3FogOverlay h3');
+      const cf3FogP = document.querySelector('#crazyFarm3FogOverlay p');
+      const cf3ReqTitle = document.querySelector('#crazyFarm3FogOverlay .text-amber-300');
+      const cf3UnlockBtn = document.querySelector('#crazyFarm3FogOverlay button.btn-3d-yellow');
+      
+      if (cf3FogH3) cf3FogH3.innerHTML = isAr ? '<span>🌋</span> مزرعة الجوراسيك <span>💎</span>' : '<span>🌋</span> Jurassic Farm <span>💎</span>';
+      if (cf3FogP) cf3FogP.innerHTML = isAr 
+        ? 'افتح أرض الجوراسيك الأسطورية لتعدين عملات <b>CFT</b> يومياً مع <b>5 كائنات خارقة</b> (ديناصور، عنقاء، أناكندا، تنين، دولفين)!'
+        : 'Unlock the mythical Jurassic land to mine <b>CFT Tokens</b> daily with <b>5 legendary creatures</b> (Dinosaur, Phoenix, Anaconda, Dragon, Dolphin)!';
+      if (cf3ReqTitle) cf3ReqTitle.innerText = isAr ? 'شروط فتح المزرعة:' : 'Requirements To Unlock:';
+      if (cf3UnlockBtn) cf3UnlockBtn.innerHTML = isAr ? '<span>🔓</span> فتح مزرعة الجوراسيك (مستوى 10 + 15M 🌾)' : '<span>🔓</span> Unlock Jurassic Farm (Lv.10 + 15M 🌾)';
+
+      // 5. Update Status Badges & Jurassic Map Badges
+      try { initCrazyFarm2State(); } catch(e){}
+      try { initCrazyFarm3State(); } catch(e){}
+      try { updateJurassicBadges(); } catch(e){}
     }
 
     function openSupport() {
@@ -10543,10 +10598,26 @@ window.addEventListener('load', () => {
       const upgradeBtn = document.getElementById('jmModalUpgradeBtn');
       const imgEl = document.getElementById('jmModalImg');
 
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const AR_NAMES = {
+        dinosaur: 'إمبراطور الديناصورات (T-Rex)',
+        dragon: 'التنين المجنح الأسطوري (Dragon)',
+        phoenix: 'طائر العنقاء الناري (Phoenix)',
+        anaconda: 'الأناكندا العملاقة (Anaconda)',
+        dolphin: 'الدولفين السحري (Dolphin)'
+      };
+      const AR_TIERS = {
+        'Apex Legendary': 'رتبة قمة الأساطير 👑',
+        'Ancient Mythic': 'رتبة الميثيك العتيق 🔥',
+        'Eternal Mythic': 'رتبة الخلود الأبدي 🦅',
+        'Prime Beast': 'رتبة الوحش الأولي 🐍',
+        'Aquatic Guardian': 'حارس الأعماق المائية 🐬'
+      };
+
       if (iconEl) iconEl.innerText = miner.emoji;
-      if (nameEl) nameEl.innerText = miner.name;
-      if (tierEl) tierEl.innerText = miner.tier;
-      if (lvlEl) lvlEl.innerText = lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl;
+      if (nameEl) nameEl.innerText = isAr ? (AR_NAMES[key] || miner.name) : miner.name;
+      if (tierEl) tierEl.innerText = isAr ? (AR_TIERS[miner.tier] || miner.tier) : miner.tier;
+      if (lvlEl) lvlEl.innerText = isAr ? (lvl >= 10 ? 'مستوى 10 👑' : 'مستوى ' + lvl) : (lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl);
 
       if (key === 'dolphin') {
         const curPts = getJurassicMinerPointsRate('dolphin', lvl);
@@ -10554,14 +10625,18 @@ window.addEventListener('load', () => {
         const ptsDiff = nextPts - curPts;
         const curPtsStr = curPts >= 1000 ? (curPts / 1000) + 'k' : curPts;
         const diffPtsStr = ptsDiff >= 1000 ? (ptsDiff / 1000) + 'k' : ptsDiff;
-        if (rateEl) rateEl.innerHTML = `<span>${rate} CFT</span> <span class="text-lime-300 font-extrabold">+ ${curPtsStr} 🌾</span> <span class="text-[10px] text-amber-200">/ 24h</span>`;
+        if (rateEl) rateEl.innerHTML = `<span>${rate} CFT</span> <span class="text-lime-300 font-extrabold">+ ${curPtsStr} 🌾</span> <span class="text-[10px] text-amber-200">/ ${isAr ? '24 ساعة' : '24h'}</span>`;
         if (nextBoostEl) {
-          nextBoostEl.innerHTML = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : `+${nextBoost} CFT & <span class="text-lime-300 font-black">+${diffPtsStr} 🌾</span>`;
+          nextBoostEl.innerHTML = lvl >= 10 
+            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
+            : `+${nextBoost} CFT & <span class="text-lime-300 font-black">+${diffPtsStr} 🌾</span>`;
         }
       } else {
-        if (rateEl) rateEl.innerText = rate + ' CFT / 24h';
+        if (rateEl) rateEl.innerText = rate + (isAr ? ' CFT / 24 ساعة' : ' CFT / 24h');
         if (nextBoostEl) {
-          nextBoostEl.innerText = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : '+' + nextBoost + ' CFT / day';
+          nextBoostEl.innerText = lvl >= 10 
+            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
+            : ('+' + nextBoost + (isAr ? ' CFT / يومياً' : ' CFT / day'));
         }
       }
 
@@ -10570,10 +10645,10 @@ window.addEventListener('load', () => {
 
       if (upgradeBtn && costEl) {
         if (lvl >= 10) {
-          costEl.innerText = 'MAX LEVEL (Lv. 10 👑)';
+          costEl.innerText = isAr ? 'أقصى مستوى (مستوى 10 👑)' : 'MAX LEVEL (Lv. 10 👑)';
           upgradeBtn.classList.add('opacity-60', 'pointer-events-none');
         } else {
-          costEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
+          costEl.innerText = (isAr ? 'مستوى ' : 'Lv. ') + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
           upgradeBtn.classList.remove('opacity-60', 'pointer-events-none');
         }
       }
@@ -10597,24 +10672,25 @@ window.addEventListener('load', () => {
       const lvl = getJurassicMinerLevel(key);
       const rate = getJurassicMinerRate(key, lvl);
       const miningState = getJurassicMiningState(key);
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
 
       if (miningState.state === 'idle') {
         mineBtn.className = 'btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300';
-        actionLabel.innerHTML = '<span>⛏️</span> START 24H MINING';
-        statusLabel.innerText = 'Ready to Mine';
+        actionLabel.innerHTML = isAr ? '<span>⛏️</span> بدء التعدين 24 ساعة' : '<span>⛏️</span> START 24H MINING';
+        statusLabel.innerText = isAr ? 'جاهز للتعدين' : 'Ready to Mine';
       } else if (miningState.state === 'mining') {
         mineBtn.className = 'py-2.5 px-2 rounded-2xl text-amber-200 font-black text-xs flex flex-col items-center justify-center cursor-pointer bg-slate-900 border border-amber-500/70 shadow-lg';
-        actionLabel.innerHTML = '<span>⏳</span> MINING ACTIVE';
+        actionLabel.innerHTML = isAr ? '<span>⏳</span> التعدين قيد التشغيل' : '<span>⏳</span> MINING ACTIVE';
         statusLabel.innerText = formatTimeRemaining(miningState.remaining);
       } else if (miningState.state === 'claimable') {
         mineBtn.className = 'btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xl border border-yellow-200 animate-bounce';
-        actionLabel.innerHTML = '<span>💎</span> CLAIM REWARD';
+        actionLabel.innerHTML = isAr ? '<span>💎</span> استلام المكافأة' : '<span>💎</span> CLAIM REWARD';
         if (key === 'dolphin') {
           const ptsBonus = getJurassicMinerPointsRate('dolphin', lvl);
           const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k' : ptsBonus;
-          statusLabel.innerText = '+' + rate + ' CFT & +' + ptsStr + ' 🌾 Ready!';
+          statusLabel.innerText = isAr ? ('+' + rate + ' CFT و +' + ptsStr + ' 🌾 جاهز!') : ('+' + rate + ' CFT & +' + ptsStr + ' 🌾 Ready!');
         } else {
-          statusLabel.innerText = '+' + rate + ' CFT Ready!';
+          statusLabel.innerText = isAr ? ('+' + rate + ' CFT جاهز للاستلام!') : ('+' + rate + ' CFT Ready!');
         }
       }
     }
@@ -10753,9 +10829,11 @@ window.addEventListener('load', () => {
       }
     }, 1000);
 
-    // Initial render for Jurassic Badges & Cloud State
+    // Initial render for Jurassic Badges, Language & Cloud State
     try {
       setTimeout(() => {
+        try { applyAppLanguage(currentAppLang); } catch(e){}
+        try { initCrazyFarm2State(); } catch(e){}
         try { initCrazyFarm3State(); } catch(e){}
         updateJurassicBadges();
       }, 300);
