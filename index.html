@@ -348,6 +348,17 @@
           <!-- 7. Run Hotspot (Right Bottom Sneaker Ring - Completely Dedicated to Dog Runner) -->
           <div onclick="openRunGameDirect()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Dog Run Sprint"></div>
 
+          <!-- 7b. Animal Fortune Wheel Hotspot in Home -->
+          <div id="homeFortuneWheelBtn" onclick="openFortuneWheelModal()" class="absolute z-20 cursor-pointer flex flex-col items-center justify-center active:scale-90 transition-transform" style="left: 78.5%; top: 47.0%; width: 18.5%; height: 12.0%;" title="Animal Fortune Wheel">
+            <div class="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 p-0.5 shadow-2xl border-2 border-yellow-200 flex items-center justify-center animate-pulse">
+              <div class="w-full h-full rounded-full bg-[#351a06]/95 flex flex-col items-center justify-center">
+                <span class="text-xl sm:text-2xl filter drop-shadow">🎡</span>
+                <span class="text-[7.5px] font-black text-yellow-300 uppercase tracking-tighter leading-none mt-0.5">WHEEL</span>
+              </div>
+              <span id="fortuneWheelFreeBadge" class="absolute -top-1 -right-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[7.5px] px-1.5 py-0.5 rounded-full border border-white shadow-md animate-bounce">FREE</span>
+            </div>
+          </div>
+
           <!-- ==================== CENTER GIANT CFT COIN ==================== -->
           <!-- 8. Interactive Tap-to-Mine with Haptic Feedback & Floating Tokens -->
           <div id="cyberCoinTapArea" onclick="onCyberCoinTap(event)" class="absolute z-20 cursor-pointer rounded-full active:scale-95 transition-transform flex items-center justify-center" style="left: 27.5%; top: 33.5%; width: 45.0%; height: 25.5%;" title="Tap to Mine CFT!">
@@ -1730,6 +1741,65 @@
       </div>
     </div>
 
+    <!-- ==================== ANIMAL FORTUNE WHEEL MODAL ==================== -->
+    <div id="fortuneWheelModal" onclick="if(event.target === this && !isFortuneWheelSpinning) closeFortuneWheelModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none pointer-events-none">
+      <div class="relative w-full max-w-[340px] sm:max-w-sm wood-board border-2 border-yellow-400 rounded-3xl p-3.5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
+        <!-- Close Top-Right -->
+        <button type="button" onclick="closeFortuneWheelModal()" class="absolute top-2.5 right-2.5 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-1.5 justify-center mb-0.5 mt-0.5">
+          <span class="text-xl">🎡</span>
+          <h3 class="text-base sm:text-lg font-black text-amber-200 uppercase tracking-wide drop-shadow leading-tight" style="font-family: 'Fredoka', cursive;">
+            Animal Fortune Wheel
+          </h3>
+        </div>
+        <p class="text-[10px] text-amber-300/90 font-bold mb-1.5">Spin & Win Daily Guaranteed Rewards!</p>
+
+        <!-- The Fortune Wheel Artwork Container -->
+        <div id="fortuneWheelStage" class="relative w-full max-w-[270px] overflow-hidden select-none my-1" style="aspect-ratio: 571 / 1024;">
+          <!-- 1. Rotating Disc (Underneath) -->
+          <img id="fortuneWheelDisc" src="assets/fortune_wheel_disc.png" alt="Wheel Disc" class="absolute pointer-events-none select-none" style="left: 50%; top: 50.3%; width: 75.3%; aspect-ratio: 1 / 1; border-radius: 50%; transform: translate(-50%, -50%) rotate(0deg); will-change: transform;" />
+          
+          <!-- 2. Frame on Top with Cutout (Arrow, Bezel, Base) -->
+          <img src="assets/fortune_wheel_frame.png" alt="Wheel Frame" class="absolute inset-0 w-full h-full object-fill pointer-events-none select-none z-10" />
+
+          <!-- 3. Center SPIN Button (Clickable Hotspot on the SPIN hub) -->
+          <button id="wheelCenterSpinBtn" type="button" onclick="triggerFortuneWheelAction()" class="absolute z-20 rounded-full cursor-pointer active:scale-90 transition-transform flex items-center justify-center" style="left: 50%; top: 50.3%; width: 22%; aspect-ratio: 1 / 1; transform: translate(-50%, -50%); background: transparent; border: none; outline: none;" title="Tap to Spin!"></button>
+        </div>
+
+        <!-- Wheel Controls / Spin Action Button -->
+        <div class="w-full mt-1.5 px-2 flex flex-col items-center gap-1.5">
+          <button id="fortuneWheelActionBtn" type="button" onclick="triggerFortuneWheelAction()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
+            <span id="fortuneWheelBtnIcon">🎁</span>
+            <span id="fortuneWheelBtnText">FREE SPIN NOW</span>
+          </button>
+          
+          <!-- Spins status badge -->
+          <div class="flex items-center justify-between w-full px-2 text-[10px] text-amber-200/90 font-bold">
+            <span id="fortuneWheelSpinsLeft">Daily Free: 1 Available</span>
+            <span id="fortuneWheelBonusAdBadge" class="text-lime-300">+1 Ad Spin Ready</span>
+          </div>
+        </div>
+
+        <!-- Win Dialog Overlay inside Fortune Wheel Modal -->
+        <div id="fortuneWheelWinDialog" class="absolute inset-0 bg-black/92 backdrop-blur-md rounded-3xl p-4 flex flex-col items-center justify-center text-center hidden z-40 animate-in zoom-in duration-300">
+          <div id="wheelWinEmoji" class="text-6xl mb-2 animate-bounce">🐎</div>
+          <span class="text-xs font-bold text-amber-300 uppercase tracking-wider">Congratulations!</span>
+          <h4 id="wheelWinAnimalName" class="text-xl font-black text-white mt-1 drop-shadow" style="font-family: 'Fredoka', cursive;">Noble Horse</h4>
+          <div class="my-3 py-2 px-4 rounded-2xl bg-amber-500/20 border border-yellow-400/60 flex items-center gap-2">
+            <span class="text-2xl">🎁</span>
+            <span id="wheelWinRewardText" class="text-base sm:text-lg font-black text-yellow-300 drop-shadow">+1,500 Farm Points</span>
+          </div>
+          <p class="text-[11px] text-amber-200/80 mb-4">Your prize has been added to your balance!</p>
+          <button type="button" onclick="closeWheelWinDialog()" class="btn-3d-green px-8 py-2.5 rounded-2xl text-white font-black text-xs sm:text-sm uppercase tracking-wide shadow-xl active:scale-95 transition-transform cursor-pointer">
+            COLLECT! 🎉
+          </button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ==================== 1. ADS POINTS BOOSTER MODAL (3-AD CHAIN) ==================== -->
     <div id="adsPointsBoosterModal" onclick="if(event.target === this) closeModal('adsPointsBoosterModal')" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
       <div class="relative w-full max-w-xs wood-board border-2 border-yellow-400 rounded-3xl p-5 shadow-2xl text-white text-center pointer-events-auto animate-in fade-in zoom-in duration-200">
@@ -2836,6 +2906,14 @@
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
           osc.start(now);
           osc.stop(now + 0.05);
+        } else if (type === 'wheel_tick') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(900, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.035);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          osc.start(now);
+          osc.stop(now + 0.035);
         }
 
         // Telegram Haptic Feedback (Physical vibration on Telegram Mobile)
@@ -4842,6 +4920,7 @@
       updateBeeFarmUI();
       updatePvpButtonsUI();
       if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
+      if (typeof updateFortuneWheelUI === 'function') updateFortuneWheelUI();
 
       // Ensure Animal Farms are initialized and rendered
       if (typeof adFarms !== 'undefined' && !window._animalFarmsLoaded) {
@@ -5193,6 +5272,7 @@
       updateBeeFarmUI();
       updatePvpButtonsUI();
       if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
+      if (typeof updateFortuneWheelUI === 'function') updateFortuneWheelUI();
 
       // Real-time 8-Hour Animal Farms Countdown & Status
       if (typeof adFarms !== 'undefined') {
@@ -7613,6 +7693,265 @@
     // ==================== END OTHERS ====================
 
     // ========================================================
+    // 🎡 ANIMAL FORTUNE WHEEL (SPIN & WIN SYSTEM)
+    // ========================================================
+    const FORTUNE_WHEEL_SECTORS = [
+      { id: 'cow',     name: 'Gentle Cow',    emoji: '🐄', centerAngle: 18,  rewardPts: 1000, rewardCft: 0,   desc: '+1,000 Farm Points' },
+      { id: 'goat',    name: 'Frisky Goat',   emoji: '🐐', centerAngle: 54,  rewardPts: 800,  rewardCft: 0,   desc: '+800 Farm Points' },
+      { id: 'horse',   name: 'Noble Horse',   emoji: '🐎', centerAngle: 90,  rewardPts: 1500, rewardCft: 0,   desc: '+1,500 Farm Points' },
+      { id: 'sheep',   name: 'Fluffy Sheep',  emoji: '🐑', centerAngle: 126, rewardPts: 700,  rewardCft: 0,   desc: '+700 Farm Points' },
+      { id: 'pig',     name: 'Curious Pig',   emoji: '🐷', centerAngle: 162, rewardPts: 500,  rewardCft: 0,   desc: '+500 Farm Points' },
+      { id: 'donkey',  name: 'Joyful Donkey', emoji: '🫏', centerAngle: 198, rewardPts: 400,  rewardCft: 0,   desc: '+400 Farm Points' },
+      { id: 'duck',    name: 'Happy Duck',    emoji: '🦆', centerAngle: 234, rewardPts: 300,  rewardCft: 0,   desc: '+300 Farm Points' },
+      { id: 'hen',     name: 'Busy Hen',      emoji: '🐔', centerAngle: 270, rewardPts: 200,  rewardCft: 0,   desc: '+200 Farm Points' },
+      { id: 'bunny',   name: 'Dreamy Bunny',  emoji: '🐰', centerAngle: 306, rewardPts: 2500, rewardCft: 0.5, desc: 'JACKPOT: +2,500 Pts & +0.5 CFT! 💎' },
+      { id: 'rooster', name: 'Proud Rooster', emoji: '🐓', centerAngle: 342, rewardPts: 600,  rewardCft: 0,   desc: '+600 Farm Points' }
+    ];
+
+    let fortuneWheelTotalRotation = Number(localStorage.getItem('crazyfarm_wheel_rotation')) || 0;
+    let isFortuneWheelSpinning = false;
+
+    function getWheelTodayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function checkAndResetFortuneWheelDaily() {
+      const today = getWheelTodayStr();
+      const lastDate = localStorage.getItem('crazyfarm_wheel_date');
+      if (lastDate !== today) {
+        localStorage.setItem('crazyfarm_wheel_date', today);
+        localStorage.setItem('crazyfarm_wheel_free_used', 'false');
+        localStorage.setItem('crazyfarm_wheel_ad_used', 'false');
+      }
+    }
+
+    function getFortuneWheelStatus() {
+      checkAndResetFortuneWheelDaily();
+      const freeUsed = localStorage.getItem('crazyfarm_wheel_free_used') === 'true';
+      const adUsed = localStorage.getItem('crazyfarm_wheel_ad_used') === 'true';
+      return { freeUsed, adUsed };
+    }
+
+    function updateFortuneWheelUI() {
+      const { freeUsed, adUsed } = getFortuneWheelStatus();
+      const actionBtn = document.getElementById('fortuneWheelActionBtn');
+      const btnIcon = document.getElementById('fortuneWheelBtnIcon');
+      const btnText = document.getElementById('fortuneWheelBtnText');
+      const spinsLeftEl = document.getElementById('fortuneWheelSpinsLeft');
+      const adBadgeEl = document.getElementById('fortuneWheelBonusAdBadge');
+      const homeFreeBadge = document.getElementById('fortuneWheelFreeBadge');
+
+      if (!freeUsed) {
+        // Free Spin Available
+        if (actionBtn) {
+          actionBtn.className = 'btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer animate-pulse';
+          actionBtn.disabled = false;
+        }
+        if (btnIcon) btnIcon.innerText = '🎁';
+        if (btnText) btnText.innerText = 'FREE SPIN NOW';
+        if (spinsLeftEl) spinsLeftEl.innerHTML = '🎁 <span class="text-lime-300 font-extrabold">1 Free Spin Available</span>';
+        if (adBadgeEl) adBadgeEl.innerText = '+1 Extra Ad Spin';
+        if (homeFreeBadge) { homeFreeBadge.style.display = 'block'; homeFreeBadge.innerText = 'FREE'; }
+      } else if (!adUsed) {
+        // Ad Spin Available
+        if (actionBtn) {
+          actionBtn.className = 'btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer';
+          actionBtn.disabled = false;
+        }
+        if (btnIcon) btnIcon.innerText = '🎬';
+        if (btnText) btnText.innerText = 'WATCH AD FOR EXTRA SPIN';
+        if (spinsLeftEl) spinsLeftEl.innerHTML = '🎬 <span class="text-yellow-300 font-extrabold">Bonus Ad Spin Ready</span>';
+        if (adBadgeEl) adBadgeEl.innerText = '1 Ad Spin Remaining';
+        if (homeFreeBadge) { homeFreeBadge.style.display = 'block'; homeFreeBadge.innerText = 'AD'; }
+      } else {
+        // Both used today
+        if (actionBtn) {
+          actionBtn.className = 'w-full py-2.5 rounded-2xl bg-stone-800 text-stone-400 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-inner border border-stone-700 cursor-not-allowed opacity-80';
+          actionBtn.disabled = true;
+        }
+        if (btnIcon) btnIcon.innerText = '⏳';
+        if (btnText) btnText.innerText = 'DAILY SPINS COMPLETED (2/2)';
+        if (spinsLeftEl) spinsLeftEl.innerHTML = '✅ <span class="text-stone-300">Spins Complete Today (2/2)</span>';
+        if (adBadgeEl) adBadgeEl.innerText = 'Resets at 00:00 UTC';
+        if (homeFreeBadge) { homeFreeBadge.style.display = 'none'; }
+      }
+    }
+
+    function openFortuneWheelModal() {
+      playSound('pop');
+      checkAndResetFortuneWheelDaily();
+      updateFortuneWheelUI();
+      // Ensure initial rotation is set
+      const discEl = document.getElementById('fortuneWheelDisc');
+      if (discEl && fortuneWheelTotalRotation > 0) {
+        discEl.style.transition = 'none';
+        discEl.style.transform = `translate(-50%, -50%) rotate(${fortuneWheelTotalRotation}deg)`;
+      }
+      const modal = document.getElementById('fortuneWheelModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeFortuneWheelModal() {
+      if (isFortuneWheelSpinning) return;
+      playSound('click');
+      const modal = document.getElementById('fortuneWheelModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      closeWheelWinDialog();
+    }
+
+    function triggerFortuneWheelAction() {
+      if (isFortuneWheelSpinning) return;
+      const { freeUsed, adUsed } = getFortuneWheelStatus();
+
+      if (!freeUsed) {
+        localStorage.setItem('crazyfarm_wheel_free_used', 'true');
+        executeFortuneWheelSpin('free');
+      } else if (!adUsed) {
+        showUniversalAd(() => {
+          localStorage.setItem('crazyfarm_wheel_ad_used', 'true');
+          executeFortuneWheelSpin('ad');
+        }, 'Fortune Wheel Bonus Spin');
+      } else {
+        playSound('click');
+        showWalletToast('⏳ You have completed all spins today! Next spins available tomorrow!');
+      }
+    }
+
+    function executeFortuneWheelSpin(spinType) {
+      if (isFortuneWheelSpinning) return;
+      isFortuneWheelSpinning = true;
+      playSound('click');
+      updateFortuneWheelUI();
+
+      const centerBtn = document.getElementById('wheelCenterSpinBtn');
+      if (centerBtn) centerBtn.style.pointerEvents = 'none';
+
+      // Pick winning sector with balanced distribution
+      // Indices: 0:Cow(10), 1:Goat(10), 2:Horse(8), 3:Sheep(12), 4:Pig(13), 5:Donkey(10), 6:Duck(10), 7:Hen(10), 8:Bunny(5), 9:Rooster(12)
+      const weights = [10, 10, 8, 12, 13, 10, 10, 10, 5, 12];
+      const totalWeight = weights.reduce((a, b) => a + b, 0);
+      let rand = Math.random() * totalWeight;
+      let winningIndex = 0;
+      for (let i = 0; i < weights.length; i++) {
+        if (rand < weights[i]) {
+          winningIndex = i;
+          break;
+        }
+        rand -= weights[i];
+      }
+      const winningSector = FORTUNE_WHEEL_SECTORS[winningIndex];
+
+      // Exact mathematical angle to land winningSector under top arrow (0 deg)
+      const targetRemainder = (360 - winningSector.centerAngle) % 360;
+      const currentRemainder = fortuneWheelTotalRotation % 360;
+      let diff = targetRemainder - currentRemainder;
+      if (diff < 0) diff += 360;
+
+      // Small realistic jitter inside sector (-6 to +6 deg)
+      const jitter = (Math.random() * 12) - 6;
+      // 5 full rotations (1800 deg)
+      const fullTurns = 5 * 360;
+      const targetRotation = fortuneWheelTotalRotation + fullTurns + diff + jitter;
+
+      fortuneWheelTotalRotation = targetRotation;
+      localStorage.setItem('crazyfarm_wheel_rotation', String(targetRotation));
+
+      // Apply CSS transition to the disc
+      const discEl = document.getElementById('fortuneWheelDisc');
+      if (discEl) {
+        discEl.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.9, 0.22, 1.0)';
+        discEl.style.transform = `translate(-50%, -50%) rotate(${targetRotation}deg)`;
+      }
+
+      // Realistic ticking sound deceleration
+      let tickCount = 0;
+      const totalTicks = 28;
+      let tickDelay = 70;
+      function scheduleNextTick() {
+        if (!isFortuneWheelSpinning) return;
+        playSound('wheel_tick');
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+        }
+        tickCount++;
+        if (tickCount < totalTicks) {
+          if (tickCount < 8) tickDelay = 80;
+          else if (tickCount < 16) tickDelay = 110;
+          else if (tickCount < 22) tickDelay = 160;
+          else tickDelay += 45;
+          setTimeout(scheduleNextTick, tickDelay);
+        }
+      }
+      scheduleNextTick();
+
+      // Spin finished at 4.6 seconds
+      setTimeout(() => {
+        isFortuneWheelSpinning = false;
+        if (centerBtn) centerBtn.style.pointerEvents = 'auto';
+
+        // Award prize
+        if (winningSector.rewardPts > 0) {
+          points += winningSector.rewardPts;
+        }
+        if (winningSector.rewardCft > 0) {
+          cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + winningSector.rewardCft;
+          hfcBalance = Math.floor(cftBalance);
+          localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+        }
+
+        playSound('fanfare');
+        playSound('coin');
+        updateDisplays();
+        syncWalletView();
+        queueCloudSave();
+        updateFortuneWheelUI();
+
+        // Show Win Dialog
+        showWheelWinDialog(winningSector);
+      }, 4600);
+    }
+
+    function showWheelWinDialog(sector) {
+      const dialog = document.getElementById('fortuneWheelWinDialog');
+      const emojiEl = document.getElementById('wheelWinEmoji');
+      const nameEl = document.getElementById('wheelWinAnimalName');
+      const rewardEl = document.getElementById('wheelWinRewardText');
+
+      if (emojiEl) emojiEl.innerText = sector.emoji || '🎁';
+      if (nameEl) nameEl.innerText = sector.name;
+      if (rewardEl) {
+        if (sector.rewardCft > 0) {
+          rewardEl.innerText = `+${sector.rewardPts.toLocaleString()} Pts & +${sector.rewardCft} CFT! 💎`;
+        } else {
+          rewardEl.innerText = `+${sector.rewardPts.toLocaleString()} Farm Points 🌾`;
+        }
+      }
+
+      if (dialog) {
+        dialog.classList.remove('hidden');
+        dialog.style.display = 'flex';
+      }
+    }
+
+    function closeWheelWinDialog() {
+      const dialog = document.getElementById('fortuneWheelWinDialog');
+      if (dialog) {
+        dialog.classList.add('hidden');
+        dialog.style.display = 'none';
+      }
+      playSound('click');
+    }
+    // ========================================================
+    // END ANIMAL FORTUNE WHEEL
+    // ========================================================
+
+    // ========================================================
     // MEGA AD BOOSTERS (3-AD CHAIN: 1x DAILY RESET)
     // ========================================================
     function getBoosterTodayStr() {
@@ -8521,6 +8860,9 @@
         if (urlParams.get('testWatchModal')) {
           otherAdsWatched = parseInt(urlParams.get('testWatchModal'), 10) || 0;
           setTimeout(() => { showWatchMoreCollectModal(); }, 350);
+        }
+        if (urlParams.get('testWheel')) {
+          setTimeout(() => { openFortuneWheelModal(); }, 350);
         }
         if (urlParams.get('testCooldown')) {
           pvpCooldowns = {
