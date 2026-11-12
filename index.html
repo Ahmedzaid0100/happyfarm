@@ -591,11 +591,6 @@
               <button onclick="unlockCrazyFarm2()" class="relative z-10 btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
                 <span>🔓</span> Unlock Crazy Farm 2 (1M 🌾)
               </button>
-
-              <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
-              <button onclick="window.testInstantUnlockCrazyFarm2()" class="relative z-10 mt-2 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[10px] border border-white/40 cursor-pointer active:scale-95 transition-all">
-                ⚡ Instant Unlock (Test Mode)
-              </button>
             </div>
 
             <!-- Unlocked Animals Hotspots (Crazy Farm 2: 7 Animals with Real Hotspots & Badges) -->
@@ -737,11 +732,6 @@
               <!-- Unlock Button -->
               <button onclick="unlockCrazyFarm3()" class="relative z-10 btn-3d-yellow px-5 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
                 <span>🔓</span> Unlock Jurassic Farm (Lv.10 + 15M 🌾)
-              </button>
-
-              <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
-              <button onclick="window.testInstantUnlockCrazyFarm3()" class="relative z-10 mt-2 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[10px] border border-white/40 cursor-pointer active:scale-95 transition-all">
-                ⚡ Instant Unlock (Test Mode)
               </button>
             </div>
 
@@ -1133,7 +1123,6 @@
             <div>
               <div class="text-[10px] text-sky-300/80 font-bold flex items-center gap-1">
                 <span>Wallet Held CFT:</span>
-                <button onclick="promptEditHeldCft()" class="text-[9px] text-sky-400 hover:text-sky-200 underline font-normal" title="Simulate / set held CFT">(Edit)</button>
               </div>
               <div id="cftHoldingCurrentDisplay" class="text-base font-black text-sky-200 drop-shadow">0 CFT</div>
             </div>
@@ -2438,14 +2427,11 @@
           </button>
         </div>
 
-        <!-- Setup Note Footer & Fast Test Option -->
+        <!-- Setup Note Footer -->
         <div class="text-center pt-0.5 shrink-0">
           <div class="text-[9px] text-emerald-300 font-bold">
             ⚡ High-Yield Web3 Mining Sanctuary • 24h Yield
           </div>
-          <button type="button" onclick="window.testInstantJurassicMineReady()" class="mt-1 text-[8.5px] text-yellow-300/60 hover:text-yellow-200 underline cursor-pointer active:scale-95 transition-all">
-            ⚡ Instant 24h Completion (Test Mode)
-          </button>
         </div>
 
       </div>
@@ -6518,24 +6504,6 @@
       }
     }
 
-    // Developer / User Test Helpers for Check-in Streak
-    window.simNextCheckInDay = function() {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      localStorage.setItem('crazyfarm_last_checkin_date', yesterday.toDateString());
-      refreshDailyCheckInState();
-      syncTasksView();
-      showWalletToast('\u{1F9EA} Simulated next calendar day! Day ' + checkInStreak + ' is now ready to claim.');
-    };
-
-    window.simResetCheckIn = function() {
-      localStorage.removeItem('crazyfarm_last_checkin_date');
-      localStorage.setItem('crazyfarm_checkin_streak', 1);
-      refreshDailyCheckInState();
-      syncTasksView();
-      showWalletToast('\u{1F9EA} Reset check-in back to Day 1.');
-    };
-
     // Initialize state on boot
     refreshDailyCheckInState();
 
@@ -6890,22 +6858,6 @@
       }
     }
 
-    // Helper for Admin / Developer Instant Testing
-    window.testInstantUnlockCrazyFarm2 = function() {
-      isCrazyFarm2Unlocked = true;
-      try { localStorage.setItem('crazyfarm_unlocked_farm_2', 'true'); } catch(e){}
-      initCrazyFarm2State();
-      try { playSound('fanfare'); } catch(e){}
-      showWalletToast('⚡ Crazy Farm 2 instantly unlocked for testing!');
-    };
-
-    window.testLockCrazyFarm2 = function() {
-      isCrazyFarm2Unlocked = false;
-      try { localStorage.removeItem('crazyfarm_unlocked_farm_2'); } catch(e){}
-      initCrazyFarm2State();
-      showWalletToast('🔒 Crazy Farm 2 re-locked.');
-    };
-
     function unlockCrazyFarm2() {
       playSound('click');
       const UNLOCK_COST = 1000000;
@@ -7012,22 +6964,6 @@
         }
       }
     }
-
-    // Helper for Admin / Developer Instant Testing
-    window.testInstantUnlockCrazyFarm3 = function() {
-      isCrazyFarm3Unlocked = true;
-      try { localStorage.setItem('crazyfarm_unlocked_farm_3', 'true'); } catch(e){}
-      initCrazyFarm3State();
-      try { playSound('fanfare'); } catch(e){}
-      showWalletToast('⚡ Jurassic Farm instantly unlocked for testing!');
-    };
-
-    window.testLockCrazyFarm3 = function() {
-      isCrazyFarm3Unlocked = false;
-      try { localStorage.removeItem('crazyfarm_unlocked_farm_3'); } catch(e){}
-      initCrazyFarm3State();
-      showWalletToast('🔒 Jurassic Farm re-locked.');
-    };
 
     function unlockCrazyFarm3() {
       try { playSound('click'); } catch(e){}
@@ -7721,20 +7657,6 @@
       queueCloudSave();
 
       showWalletToast(`💎 Claimed +${cRewardPoints.toLocaleString()} Farm Points CFT Holding Reward!`);
-    }
-
-    function promptEditHeldCft() {
-      const current = getConnectedWalletCftHolding();
-      const val = prompt('Enter CFT tokens held in your connected TON wallet (for simulation / testnet):', current);
-      if (val !== null) {
-        const parsed = parseFloat(val);
-        if (!isNaN(parsed) && parsed >= 0) {
-          localStorage.setItem('crazyfarm_wallet_held_cft', parsed.toString());
-          playSound('coin');
-          syncWalletView();
-          showWalletToast('✅ Updated held CFT to: ' + parsed.toLocaleString() + ' CFT');
-        }
-      }
     }
 
     // Dynamic 1s timer loop for smooth live countdown display
@@ -10957,18 +10879,6 @@ window.addEventListener('load', () => {
         updateJurassicBadges();
       }
     }
-
-    // Helper for Developer / Owner Quick Testing
-    window.testInstantJurassicMineReady = function() {
-      if (!currentJurassicModalKey) return;
-      const key = currentJurassicModalKey;
-      localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now() - JURASSIC_CYCLE_MS - 5000));
-      openJurassicMinerModal(key);
-      updateJurassicBadges();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
-      try { playSound('fanfare'); } catch(e){}
-      showWalletToast('⚡ 24h Cycle fast-forwarded! Claim button is now READY.');
-    };
 
     function updateJurassicBadges() {
       const keys = ['dinosaur', 'dragon', 'phoenix', 'anaconda', 'dolphin'];
