@@ -4353,8 +4353,8 @@
     let lastBeeCollectTimestamp = sanitizeNumber(localStorage.getItem('crazyfarm_bee_last_collect'), Date.now(), 0, Date.now() + 86400000);
     let audioEnabled = true;
 
-    // Animal Farms System (Per-farm duration: Chicken is 24-Hour, others 8-Hour)
-    const ANIMAL_FARM_DURATION_SEC = 8 * 3600;
+    // Animal Farms System (All 15 animal farms are 24-Hour cycles)
+    const ANIMAL_FARM_DURATION_SEC = 24 * 3600;
     function getFarmDurationSec(key) {
       return 24 * 3600; // 24 Hours (86,400 sec)
     }
@@ -5275,7 +5275,7 @@
     } catch(e) {}
     }
 
-    // Start 8-Hour Farm Mining (Green Farm Button -> Golden FARMING Button)
+    // Start 24-Hour Farm Mining (Green Farm Button -> Golden FARMING Button)
     function startFarmMining(key) {
       if (!isFarmUnlocked(key)) {
         const cost = FARM_UNLOCK_POINTS_COST[key] || 0;
@@ -5288,18 +5288,19 @@
       playSound('click');
       farm.state = 'mining';
       farm.startTime = Date.now();
-      farm.remainingSeconds = ANIMAL_FARM_DURATION_SEC;
+      farm.remainingSeconds = getFarmDurationSec(key);
       saveAnimalFarmsState();
       renderAdFarmAction(key);
-      showWalletToast('&#127809; ' + farm.name + ' started 8-hour farming!');
+      showWalletToast('🌾 ' + farm.name + ' started 24-hour farming!');
     }
 
-    // Collect Farm Reward (Collect = normal points, Collect 2x = Ad for Double points)
+    // Collect Farm Reward (Collect = normal points, Collect 2x = Ad for Double points - Chicken & Duck only)
     function collectFarmReward(key, isDouble = false) { if (!ActionLock.run("farm_" + key, 1000, () => _doCollectFarmReward(key, isDouble))) return; } function _doCollectFarmReward(key, isDouble = false) {
       const farm = adFarms[key];
       if (!farm || farm.state !== 'ready_to_collect') return;
 
-      if (isDouble) {
+      const canDouble = (key === 'chicken' || key === 'duck');
+      if (isDouble && canDouble) {
         playSound('click');
         showUniversalAd(() => {
           finishFarmCollect(key, true);
@@ -5345,8 +5346,8 @@
     let farmCollectCurrentKey = null;
 
     function showFarmCollectModal(key) {
-      if (key === 'dog' || key === 'sheep' || key === 'pig' || key === 'cows' || key === 'horse' || key === 'donkeys' || key === 'bears' || key === 'bulls' || key === 'goats' || key === 'geese' || key === 'cats' || key === 'bees') {
-        // Direct instant collect without ads
+      if (key !== 'chicken' && key !== 'duck') {
+        // Direct instant collect without ads for all animals except chicken and duck!
         collectFarmReward(key, false);
         return;
       }
@@ -5585,7 +5586,7 @@
 
     function collectCurrentAnimalFarm() {
       if (!currentModalAnimalKey) return;
-      if (currentModalAnimalKey === 'dog' || currentModalAnimalKey === 'sheep' || currentModalAnimalKey === 'pig' || currentModalAnimalKey === 'cows' || currentModalAnimalKey === 'horse' || currentModalAnimalKey === 'donkeys' || currentModalAnimalKey === 'bears' || currentModalAnimalKey === 'bulls' || currentModalAnimalKey === 'goats' || currentModalAnimalKey === 'geese' || currentModalAnimalKey === 'cats' || currentModalAnimalKey === 'bees') {
+      if (currentModalAnimalKey !== 'chicken' && currentModalAnimalKey !== 'duck') {
         collectFarmReward(currentModalAnimalKey, false);
         updateAnimalModalUI(currentModalAnimalKey);
         return;
@@ -5834,7 +5835,7 @@
         showWalletToast('&#9203; ' + farm.name + ' is farming! (' + formatTime(farm.remainingSeconds) + ' left)');
       } else {
         playSound('click');
-        showWalletToast('&#127809; Click Farm to start 8-hour farming for ' + farm.name + '!');
+        showWalletToast('🌾 Click Farm to start 24-hour farming for ' + farm.name + '!');
       }
     }
 
