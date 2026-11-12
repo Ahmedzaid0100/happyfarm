@@ -22,7 +22,7 @@ except ImportError:
     import urllib.parse
 
 # ==================== CONFIGURATION ====================
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAGIjjF7V9dTKGRgTCHgM3127BF55--nz0k")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAHxDdcHn7RUHD4isiLdqcRpe5ZcLjYHXZQ")
 WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
 CHANNEL_URL = "https://t.me/crazyfarmgamey"
 
