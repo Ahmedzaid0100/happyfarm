@@ -6297,6 +6297,18 @@
     }
 
     // Tasks Claim
+    function openOfficialChannel(btn, reward) {
+      try { playSound('click'); } catch(e){}
+      if (window.Telegram?.WebApp?.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink('https://t.me/crazyfarmgamey');
+      } else {
+        window.open('https://t.me/crazyfarmgamey', '_blank');
+      }
+      setTimeout(() => {
+        claimTask(btn, reward);
+      }, 1500);
+    }
+
     function claimTask(btn, reward) {
       try { playSound('fanfare'); } catch(e){}
       points += reward;
@@ -9059,7 +9071,32 @@
               try { localStorage.setItem('crazyfarm_pvp_cooldowns', JSON.stringify(pvpCooldowns)); } catch(e){}
             }
 
-    calculateOfflineBeeMining();
+            // Sync Farm 2, Farm 3, and Jurassic Levels from Cloud
+            if (data.farms_data.unlocked_farm_2) {
+              isCrazyFarm2Unlocked = true;
+              try { localStorage.setItem('crazyfarm_unlocked_farm_2', 'true'); } catch(e){}
+            }
+            if (data.farms_data.unlocked_farm_3) {
+              isCrazyFarm3Unlocked = true;
+              try { localStorage.setItem('crazyfarm_unlocked_farm_3', 'true'); } catch(e){}
+            }
+            if (data.farms_data.jurassic_levels && typeof data.farms_data.jurassic_levels === 'object') {
+              try {
+                const currentLocal = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
+                const merged = Object.assign({}, currentLocal);
+                Object.keys(data.farms_data.jurassic_levels).forEach(k => {
+                  merged[k] = Math.max(Number(merged[k]) || 1, Number(data.farms_data.jurassic_levels[k]) || 1);
+                });
+                localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(merged));
+              } catch(e){}
+            }
+            if (data.farms_data.app_lang) {
+              currentAppLang = data.farms_data.app_lang;
+              try { localStorage.setItem('crazyfarm_lang', currentAppLang); } catch(e){}
+              try { applyAppLanguage(currentAppLang); } catch(e){}
+            }
+
+            calculateOfflineBeeMining();
           }
           // Sync loaded cloud state to local storage
           try {
@@ -9186,7 +9223,11 @@
           checkin_last_date: localStorage.getItem('crazyfarm_last_checkin_date') || '',
           cft_balance: cftBalance,
           cft_last_collect: cftLastCollectTime,
-          cft_tap_bonus: cftTapBonus
+          cft_tap_bonus: cftTapBonus,
+          unlocked_farm_2: isCrazyFarm2Unlocked,
+          unlocked_farm_3: isCrazyFarm3Unlocked,
+          jurassic_levels: JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}'),
+          app_lang: currentAppLang
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
