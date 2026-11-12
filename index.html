@@ -2517,7 +2517,7 @@
           </div>
 
           <!-- Close Button (Right) - Elevated Z-Index so it is ALWAYS clickable -->
-          <button type="button" onclick="closeBattleArena()" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-[70]" title="Exit Battle">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-9 h-9 flex items-center justify-center border-2 border-white/70 text-base shadow-lg active:scale-90 transition-transform cursor-pointer pointer-events-auto z-[70]" title="Exit Battle">&#10005;</button>
         </div>
 
         <!-- ==================== ENEMY SQUAD ROW (ON GREEN TOP) ==================== -->
@@ -2576,14 +2576,14 @@
         <!-- Center "START FIGHT!" Launch Overlay -->
         <div id="battleFightOverlay" onclick="if(event.target === this) closeBattleArena()" class="absolute inset-0 z-40 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
           <div class="text-center bg-black/75 p-5 rounded-3xl border border-amber-500/40 shadow-2xl max-w-xs mx-auto relative pointer-events-auto">
-            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600/80 hover:bg-red-600 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center text-xs shadow cursor-pointer" title="Cancel & Exit">&#10005;</button>
+            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-xl border border-white/70 active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl animate-bounce mb-1">⚔️</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-lg" style="font-family: 'Fredoka', cursive;" id="battleStartTitle">3 vs 3 Battle</h2>
             <p class="text-xs text-amber-100 font-bold mt-1" id="battleStartDesc">Win to earn big Farm Points! (Optional 2x Boost with Ad)</p>
             <button onclick="startLiveBattleRound()" class="btn-3d-green w-full py-2.5 mt-3 rounded-2xl text-white font-black text-sm shadow-2xl animate-pulse active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer">
               <span>⚡</span> START FIGHT!
             </button>
-            <button type="button" onclick="closeBattleArena()" class="w-full py-1.5 mt-2 rounded-xl bg-black/60 hover:bg-black/80 text-amber-200 text-[11px] font-bold border border-amber-600/40 active:scale-95 transition-transform flex items-center justify-center gap-1 cursor-pointer">
+            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="w-full py-1.5 mt-2 rounded-xl bg-black/60 hover:bg-black/80 text-amber-200 text-[11px] font-bold border border-amber-600/40 active:scale-95 transition-transform flex items-center justify-center gap-1 cursor-pointer pointer-events-auto">
               <span>&#10005;</span> Cancel &amp; Exit
             </button>
           </div>
@@ -2591,8 +2591,8 @@
 
         <!-- Victory Overlay with 2x Optional Ad Boost -->
         <div id="battleVictoryOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
-          <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
-            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+          <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative pointer-events-auto">
+            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl mb-1 animate-bounce">&#127942;&#127881;</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">VICTORY!</h2>
             <p class="text-xs text-amber-200 font-bold mb-3">Enemy squad knocked out!</p>
@@ -2613,8 +2613,8 @@
 
         <!-- Defeat Overlay -->
         <div id="battleDefeatOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
-          <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-red-500 shadow-2xl relative">
-            <button type="button" onclick="closeBattleArena()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+          <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-red-500 shadow-2xl relative pointer-events-auto">
+            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl mb-1 animate-bounce">&#128148;&#128128;</div>
             <h2 class="text-2xl font-black text-red-400 drop-shadow-md" style="font-family: 'Fredoka', cursive;">DEFEAT!</h2>
             <p class="text-xs text-amber-200 font-bold mb-3">Your squad was knocked out!</p>
@@ -2622,7 +2622,7 @@
               <button onclick="retryCurrentBattle()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-1.5 border border-yellow-200 cursor-pointer">
                 <span>⚔️</span> Try Again
               </button>
-              <button onclick="closeBattleArena()" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
+              <button onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="btn-3d-yellow w-full py-2 rounded-2xl text-amber-950 font-black text-xs shadow-md active:scale-95 transition-transform flex items-center justify-center gap-1.5 opacity-90 cursor-pointer">
                 <span>🚪</span> Exit
               </button>
             </div>
@@ -2833,7 +2833,7 @@
     <!-- Farm Harvest Collect Modal -->
     <div id="farmCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
-        <button onclick="hideFarmCollectModal()" class="absolute top-3 right-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs cursor-pointer">✕</button>
+        <button type="button" onclick="event.stopPropagation(); hideFarmCollectModal();" ontouchend="event.stopPropagation(); hideFarmCollectModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127806;</div>
         <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">HARVEST!</h2>
         <p class="text-xs text-amber-200 font-bold mb-3" id="farmCollectFarmName">Farm Ready!</p>
@@ -2855,7 +2855,7 @@
     <!-- Watch More / Daily Bonus Collect Modal -->
     <div id="watchMoreCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
-        <button onclick="hideWatchMoreCollectModal()" class="absolute top-3 right-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs cursor-pointer">✕</button>
+        <button type="button" onclick="event.stopPropagation(); hideWatchMoreCollectModal();" ontouchend="event.stopPropagation(); hideWatchMoreCollectModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-5xl mb-1 animate-bounce" id="watchMoreCollectEmoji">&#127873;</div>
         <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">DAILY BONUS!</h2>
         <p class="text-xs text-amber-200 font-bold mb-3" id="watchMoreCollectStepName">Bonus Step 1/5 Ready!</p>
@@ -2877,7 +2877,7 @@
     <!-- 2. Wallet Modal (TON Connect) -->
     <div id="walletModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
-        <button onclick="closeModal('walletModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        <button type="button" onclick="event.stopPropagation(); closeModal('walletModal');" ontouchend="event.stopPropagation(); closeModal('walletModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-center mb-4">
           <div class="text-3xl mb-1">👛</div>
           <h3 class="text-lg font-black text-amber-300">TON Wallet & Airdrop Allocation</h3>
@@ -2913,7 +2913,7 @@
     <!-- 3. Tasks Modal -->
     <div id="tasksModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 max-h-[85vh] overflow-y-auto">
-        <button onclick="closeModal('tasksModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        <button type="button" onclick="event.stopPropagation(); closeModal('tasksModal');" ontouchend="event.stopPropagation(); closeModal('tasksModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-center mb-3">
           <div class="text-3xl mb-1">📋</div>
           <h3 class="text-lg font-black text-amber-300">Farm Tasks & Rewards</h3>
@@ -2952,7 +2952,7 @@
     <!-- 4. Profile Modal -->
     <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 text-center">
-        <button onclick="closeModal('profileModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        <button type="button" onclick="event.stopPropagation(); closeModal('profileModal');" ontouchend="event.stopPropagation(); closeModal('profileModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div id="profileModalAvatar" class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border-4 border-amber-300 mx-auto flex items-center justify-center text-4xl shadow-lg mb-2">
           👦
         </div>
@@ -2989,7 +2989,7 @@
     <!-- 5. Others Modal -->
     <div id="othersModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 text-center">
-        <button onclick="closeModal('othersModal')" class="absolute top-3 left-3 bg-amber-900/80 hover:bg-amber-800 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold">✕</button>
+        <button type="button" onclick="event.stopPropagation(); closeModal('othersModal');" ontouchend="event.stopPropagation(); closeModal('othersModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-3xl mb-1">⭐</div>
         <h3 class="text-lg font-black text-amber-300 mb-3">Settings & Game Info</h3>
         
