@@ -658,7 +658,7 @@
               </span>
             </div>
             <div id="cf3StatusBadge" class="bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse">
-              <span>🔒</span> <span>Locked (Lv.10 + 50M 🌾)</span>
+              <span>🔒</span> <span>Locked (Lv.10 + 15M 🌾)</span>
             </div>
           </div>
 
@@ -700,11 +700,11 @@
               <!-- 5. Dolphin (Bottom-Right Lagoon) -->
               <div id="hotspot-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 52%; top: 56%; width: 46%; height: 26%;" title="Mystic Dolphin Lagoon"></div>
               <div id="mapBadge-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute bg-gradient-to-r from-cyan-500 via-sky-300 to-blue-500 text-blue-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-sky-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 74%; top: 83.5%; transform: translateX(-50%);">
-                <span>🐬</span> <span id="mapBadgeText-cf3-dolphin">0.30 CFT ⚡</span>
+                <span>🐬</span> <span id="mapBadgeText-cf3-dolphin">0.30 CFT + 50k 🌾</span>
               </div>
             </div>
 
-            <!-- Mysterious Cloud / Volcanic Fog Overlay for Jurassic Farm (50M Unlock) -->
+            <!-- Mysterious Cloud / Volcanic Fog Overlay for Jurassic Farm (15M Unlock) -->
             <div id="crazyFarm3FogOverlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 text-center transition-all duration-700 bg-slate-950/80 backdrop-blur-md">
               <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/40 via-transparent to-black/85 pointer-events-none"></div>
               
@@ -729,14 +729,14 @@
                   </div>
                   <div class="flex items-center justify-between px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50">
                     <span class="text-emerald-200">2. Farm Points:</span>
-                    <span id="cf3ReqPointsVal" class="font-black text-yellow-300">50,000,000 🌾</span>
+                    <span id="cf3ReqPointsVal" class="font-black text-yellow-300">15,000,000 🌾</span>
                   </div>
                 </div>
               </div>
 
               <!-- Unlock Button -->
               <button onclick="unlockCrazyFarm3()" class="relative z-10 btn-3d-yellow px-5 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
-                <span>🔓</span> Unlock Jurassic Farm (Lv.10 + 50M 🌾)
+                <span>🔓</span> Unlock Jurassic Farm (Lv.10 + 15M 🌾)
               </button>
 
               <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
@@ -6931,7 +6931,7 @@
         }
         if (badge) {
           badge.className = 'bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse';
-          badge.innerHTML = '<span>🔒</span> <span>Locked (Lv.10 + 50M 🌾)</span>';
+          badge.innerHTML = '<span>🔒</span> <span>Locked (Lv.10 + 15M 🌾)</span>';
         }
 
         // Live check indicators in fog overlay
@@ -6949,11 +6949,11 @@
         }
 
         if (reqPtsEl) {
-          if (curPts >= 50000000) {
-            reqPtsEl.innerHTML = `<span class="text-emerald-400 font-black">✓ 50,000,000 🌾</span>`;
+          if (curPts >= 15000000) {
+            reqPtsEl.innerHTML = `<span class="text-emerald-400 font-black">✓ 15,000,000 🌾</span>`;
           } else {
             const ptsDisplay = curPts >= 1000000 ? (curPts / 1000000).toFixed(1) + 'M' : curPts.toLocaleString();
-            reqPtsEl.innerHTML = `<span class="text-amber-300 font-black">✗ 50M 🌾 (${ptsDisplay})</span>`;
+            reqPtsEl.innerHTML = `<span class="text-amber-300 font-black">✗ 15M 🌾 (${ptsDisplay})</span>`;
           }
         }
       }
@@ -6978,7 +6978,7 @@
     function unlockCrazyFarm3() {
       try { playSound('click'); } catch(e){}
       const REQUIRED_LEVEL = 10;
-      const UNLOCK_COST = 50000000; // 50 Million Points
+      const UNLOCK_COST = 15000000; // 15 Million Points
 
       if (isCrazyFarm3Unlocked) {
         showWalletToast('🦖 Jurassic Farm is already unlocked!');
@@ -7008,19 +7008,19 @@
         msg += '\nBoth requirements must be fulfilled to unlock!';
 
         if (!isLevelMet && !isPointsMet) {
-          showWalletToast('⚠️ Need Main Farm Lv. 10 & 50M Points to unlock!');
+          showWalletToast('⚠️ Need Main Farm Lv. 10 & 15M Points to unlock!');
         } else if (!isLevelMet) {
           showWalletToast(`⚠️ Main Farm must be Level 10+! (Current: Lv. ${curLvl})`);
         } else {
           const remaining = UNLOCK_COST - curPts;
-          showWalletToast(`⚠️ Need 50,000,000 Farm Points! (${remaining.toLocaleString()} more)`);
+          showWalletToast(`⚠️ Need 15,000,000 Farm Points! (${remaining.toLocaleString()} more)`);
         }
 
         alert(msg);
         return;
       }
 
-      if (!confirm(`Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 50,000,000 Farm Points (50M 🌾)\n\nProceed to unlock?`)) return;
+      if (!confirm(`Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 15,000,000 Farm Points (15M 🌾)\n\nProceed to unlock?`)) return;
 
       points -= UNLOCK_COST;
       isCrazyFarm3Unlocked = true;
@@ -10327,15 +10327,15 @@ window.addEventListener('load', () => {
         baseRate: 3.00, // CFT per 24h (3x of 1.00)
         rateBoostPerLvl: 1.50, // (3x of 0.50) -> Lv 10: 16.50 CFT
         upgradeCosts: [
-          10000000,  // Lv 2 (10M)
-          20000000,  // Lv 3 (20M)
-          35000000,  // Lv 4 (35M)
-          55000000,  // Lv 5 (55M)
-          80000000,  // Lv 6 (80M)
-          115000000, // Lv 7 (115M)
-          155000000, // Lv 8 (155M)
-          200000000, // Lv 9 (200M)
-          250000000  // Lv 10 (250M)
+          2000000,  // Lv 2 (2M)
+          4500000,  // Lv 3 (4.5M)
+          8000000,  // Lv 4 (8M)
+          14000000, // Lv 5 (14M)
+          22000000, // Lv 6 (22M)
+          32000000, // Lv 7 (32M)
+          45000000, // Lv 8 (45M)
+          60000000, // Lv 9 (60M)
+          80000000  // Lv 10 (80M)
         ],
         desc: 'Apex predator of the sanctuary, yielding 3.00 CFT daily at Level 1 up to 16.50 CFT at Max Level 10!'
       },
@@ -10352,15 +10352,15 @@ window.addEventListener('load', () => {
         baseRate: 2.25, // CFT per 24h (3x of 0.75)
         rateBoostPerLvl: 0.90, // (3x of 0.30) -> Lv 10: 10.35 CFT
         upgradeCosts: [
-          5000000,   // Lv 2 (5M)
-          10000000,  // Lv 3 (10M)
-          18000000,  // Lv 4 (18M)
-          28000000,  // Lv 5 (28M)
-          42000000,  // Lv 6 (42M)
-          60000000,  // Lv 7 (60M)
-          85000000,  // Lv 8 (85M)
-          115000000, // Lv 9 (115M)
-          150000000  // Lv 10 (150M)
+          1000000,  // Lv 2 (1M)
+          2500000,  // Lv 3 (2.5M)
+          5000000,  // Lv 4 (5M)
+          8000000,  // Lv 5 (8M)
+          13000000, // Lv 6 (13M)
+          20000000, // Lv 7 (20M)
+          28000000, // Lv 8 (28M)
+          38000000, // Lv 9 (38M)
+          50000000  // Lv 10 (50M)
         ],
         desc: 'Volcanic ancient beast channeling blazing dragonfire, yielding 2.25 CFT daily up to 10.35 CFT at Level 10!'
       },
@@ -10377,15 +10377,15 @@ window.addEventListener('load', () => {
         baseRate: 1.50, // CFT per 24h (3x of 0.50)
         rateBoostPerLvl: 0.60, // (3x of 0.20) -> Lv 10: 6.90 CFT
         upgradeCosts: [
-          3000000,   // Lv 2 (3M)
-          6000000,   // Lv 3 (6M)
-          10000000,  // Lv 4 (10M)
-          16000000,  // Lv 5 (16M)
-          24000000,  // Lv 6 (24M)
-          35000000,  // Lv 7 (35M)
-          50000000,  // Lv 8 (50M)
-          70000000,  // Lv 9 (70M)
-          90000000   // Lv 10 (90M)
+          600000,   // Lv 2 (600k)
+          1500000,  // Lv 3 (1.5M)
+          3000000,  // Lv 4 (3M)
+          5000000,  // Lv 5 (5M)
+          8000000,  // Lv 6 (8M)
+          12000000, // Lv 7 (12M)
+          18000000, // Lv 8 (18M)
+          25000000, // Lv 9 (25M)
+          35000000  // Lv 10 (35M)
         ],
         desc: 'Legendary firebird reborn from ashes, producing 1.50 CFT daily up to 6.90 CFT at Level 10!'
       },
@@ -10402,15 +10402,15 @@ window.addEventListener('load', () => {
         baseRate: 0.75, // CFT per 24h (3x of 0.25)
         rateBoostPerLvl: 0.30, // (3x of 0.10) -> Lv 10: 3.45 CFT
         upgradeCosts: [
-          1500000,  // Lv 2 (1.5M)
-          3000000,  // Lv 3 (3M)
-          5000000,  // Lv 4 (5M)
-          8000000,  // Lv 5 (8M)
-          12000000, // Lv 6 (12M)
-          18000000, // Lv 7 (18M)
-          25000000, // Lv 8 (25M)
-          35000000, // Lv 9 (35M)
-          45000000  // Lv 10 (45M)
+          300000,   // Lv 2 (300k)
+          700000,   // Lv 3 (700k)
+          1500000,  // Lv 4 (1.5M)
+          2500000,  // Lv 5 (2.5M)
+          4500000,  // Lv 6 (4.5M)
+          7000000,  // Lv 7 (7M)
+          11000000, // Lv 8 (11M)
+          16000000, // Lv 9 (16M)
+          22000000  // Lv 10 (22M)
         ],
         desc: 'Prime titan serpent guarding mineral swamps, yielding 0.75 CFT daily up to 3.45 CFT at Level 10.'
       },
@@ -10426,18 +10426,30 @@ window.addEventListener('load', () => {
         mineAsset: 'CFT',
         baseRate: 0.30, // CFT per 24h (3x of 0.10)
         rateBoostPerLvl: 0.15, // (3x of 0.05) -> Lv 10: 1.65 CFT
-        upgradeCosts: [
-          500000,   // Lv 2 (500k)
-          1000000,  // Lv 3 (1M)
-          2000000,  // Lv 4 (2M)
-          3500000,  // Lv 5 (3.5M)
-          5000000,  // Lv 6 (5M)
-          8000000,  // Lv 7 (8M)
-          12000000, // Lv 8 (12M)
-          16000000, // Lv 9 (16M)
-          20000000  // Lv 10 (20M)
+        pointsYieldTable: [
+          50000,   // Lv 1: 50k
+          75000,   // Lv 2: 75k
+          110000,  // Lv 3: 110k
+          150000,  // Lv 4: 150k
+          200000,  // Lv 5: 200k
+          260000,  // Lv 6: 260k
+          330000,  // Lv 7: 330k
+          400000,  // Lv 8: 400k
+          450000,  // Lv 9: 450k
+          500000   // Lv 10: 500k Max
         ],
-        desc: 'Aquatic guardian of the crystal lagoon, yielding 0.30 CFT daily up to 1.65 CFT at Level 10.'
+        upgradeCosts: [
+          100000,  // Lv 2 (100k)
+          200000,  // Lv 3 (200k)
+          400000,  // Lv 4 (400k)
+          800000,  // Lv 5 (800k)
+          1500000, // Lv 6 (1.5M)
+          2500000, // Lv 7 (2.5M)
+          4000000, // Lv 8 (4M)
+          6000000, // Lv 9 (6M)
+          9000000  // Lv 10 (9M)
+        ],
+        desc: 'Aquatic guardian of the lagoon, yielding up to 1.65 CFT plus an abundant 500,000 Farm Points daily to supercharge your farm!'
       }
     };
 
@@ -10467,6 +10479,14 @@ window.addEventListener('load', () => {
       const actualLvl = lvl || getJurassicMinerLevel(key);
       const val = m.baseRate + (actualLvl - 1) * m.rateBoostPerLvl;
       return val.toFixed(2);
+    }
+
+    function getJurassicMinerPointsRate(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m || !m.pointsYieldTable) return 0;
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      const idx = Math.min(Math.max(actualLvl - 1, 0), m.pointsYieldTable.length - 1);
+      return m.pointsYieldTable[idx] || 0;
     }
 
     function getJurassicMinerUpgradeCost(key, lvl) {
@@ -10500,7 +10520,7 @@ window.addEventListener('load', () => {
     function openJurassicMinerModal(key) {
       if (!isCrazyFarm3Unlocked) {
         try { playSound('click'); } catch(e){}
-        showWalletToast('🔒 Unlock Jurassic Farm with 50,000,000 points (50M 🌾) first!');
+        showWalletToast('🔒 Unlock Jurassic Farm with 15,000,000 points (15M 🌾) first!');
         return;
       }
       const miner = JURASSIC_MINERS[key];
@@ -10527,10 +10547,24 @@ window.addEventListener('load', () => {
       if (nameEl) nameEl.innerText = miner.name;
       if (tierEl) tierEl.innerText = miner.tier;
       if (lvlEl) lvlEl.innerText = lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl;
-      if (rateEl) rateEl.innerText = rate + ' CFT / 24h';
-      if (nextBoostEl) {
-        nextBoostEl.innerText = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : '+' + nextBoost + ' CFT / day';
+
+      if (key === 'dolphin') {
+        const curPts = getJurassicMinerPointsRate('dolphin', lvl);
+        const nextPts = lvl < 10 ? getJurassicMinerPointsRate('dolphin', lvl + 1) : curPts;
+        const ptsDiff = nextPts - curPts;
+        const curPtsStr = curPts >= 1000 ? (curPts / 1000) + 'k' : curPts;
+        const diffPtsStr = ptsDiff >= 1000 ? (ptsDiff / 1000) + 'k' : ptsDiff;
+        if (rateEl) rateEl.innerHTML = `<span>${rate} CFT</span> <span class="text-lime-300 font-extrabold">+ ${curPtsStr} 🌾</span> <span class="text-[10px] text-amber-200">/ 24h</span>`;
+        if (nextBoostEl) {
+          nextBoostEl.innerHTML = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : `+${nextBoost} CFT & <span class="text-lime-300 font-black">+${diffPtsStr} 🌾</span>`;
+        }
+      } else {
+        if (rateEl) rateEl.innerText = rate + ' CFT / 24h';
+        if (nextBoostEl) {
+          nextBoostEl.innerText = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : '+' + nextBoost + ' CFT / day';
+        }
       }
+
       if (descEl) descEl.innerText = miner.desc;
       if (imgEl && miner.image) imgEl.src = miner.image;
 
@@ -10575,7 +10609,13 @@ window.addEventListener('load', () => {
       } else if (miningState.state === 'claimable') {
         mineBtn.className = 'btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xl border border-yellow-200 animate-bounce';
         actionLabel.innerHTML = '<span>💎</span> CLAIM REWARD';
-        statusLabel.innerText = '+' + rate + ' CFT Ready!';
+        if (key === 'dolphin') {
+          const ptsBonus = getJurassicMinerPointsRate('dolphin', lvl);
+          const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k' : ptsBonus;
+          statusLabel.innerText = '+' + rate + ' CFT & +' + ptsStr + ' 🌾 Ready!';
+        } else {
+          statusLabel.innerText = '+' + rate + ' CFT Ready!';
+        }
       }
     }
 
@@ -10640,6 +10680,16 @@ window.addEventListener('load', () => {
         localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
         localStorage.removeItem('crazyfarm_jurassic_mine_start_' + key);
 
+        let claimedBonusPoints = 0;
+        if (key === 'dolphin') {
+          claimedBonusPoints = getJurassicMinerPointsRate('dolphin');
+          points += claimedBonusPoints;
+          try {
+            localStorage.setItem('crazyfarm_points', String(points));
+            localStorage.setItem('crazyfarm_farm_points', String(points));
+          } catch(e){}
+        }
+
         try { playSound('fanfare'); } catch(e){}
         try { playSound('coin'); } catch(e){}
         if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
@@ -10648,7 +10698,11 @@ window.addEventListener('load', () => {
         if (typeof syncWalletView === 'function') syncWalletView();
         if (typeof queueCloudSave === 'function') queueCloudSave();
 
-        showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
+        if (claimedBonusPoints > 0) {
+          showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!`);
+        } else {
+          showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
+        }
         openJurassicMinerModal(key);
         updateJurassicBadges();
       }
@@ -10670,19 +10724,21 @@ window.addEventListener('load', () => {
       keys.forEach(k => {
         const lvl = getJurassicMinerLevel(k);
         const rate = getJurassicMinerRate(k, lvl);
+        const ptsBonus = (k === 'dolphin') ? getJurassicMinerPointsRate(k, lvl) : 0;
+        const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k 🌾' : ptsBonus + ' 🌾';
         const miningState = getJurassicMiningState(k);
         const badgeTxt = document.getElementById('mapBadgeText-cf3-' + k);
         const badgeEl = document.getElementById('mapBadge-cf3-' + k);
 
         if (badgeTxt) {
           if (miningState.state === 'claimable') {
-            badgeTxt.innerText = 'CLAIM ' + rate + ' CFT! 💎';
+            badgeTxt.innerText = (k === 'dolphin') ? `CLAIM ${rate} CFT + ${ptsStr}! 💎` : `CLAIM ${rate} CFT! 💎`;
             if (badgeEl) badgeEl.classList.add('animate-bounce');
           } else if (miningState.state === 'mining') {
-            badgeTxt.innerText = rate + ' CFT ⛏️';
+            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⛏️` : `${rate} CFT ⛏️`;
             if (badgeEl) badgeEl.classList.remove('animate-bounce');
           } else {
-            badgeTxt.innerText = rate + ' CFT ⚡';
+            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⚡` : `${rate} CFT ⚡`;
             if (badgeEl) badgeEl.classList.remove('animate-bounce');
           }
         }
