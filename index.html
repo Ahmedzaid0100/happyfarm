@@ -2576,7 +2576,7 @@
         <!-- Center "START FIGHT!" Launch Overlay -->
         <div id="battleFightOverlay" onclick="if(event.target === this) closeBattleArena()" class="absolute inset-0 z-40 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
           <div class="text-center bg-black/75 p-5 rounded-3xl border border-amber-500/40 shadow-2xl max-w-xs mx-auto relative pointer-events-auto">
-            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-xl border border-white/70 active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+            <button id="battleFightCloseBtn" type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" style="touch-action: manipulation;" class="absolute top-2.5 right-2.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-2xl border-2 border-white/80 active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl animate-bounce mb-1">⚔️</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-lg" style="font-family: 'Fredoka', cursive;" id="battleStartTitle">3 vs 3 Battle</h2>
             <p class="text-xs text-amber-100 font-bold mt-1" id="battleStartDesc">Win to earn big Farm Points! (Optional 2x Boost with Ad)</p>
@@ -2592,7 +2592,7 @@
         <!-- Victory Overlay with 2x Optional Ad Boost -->
         <div id="battleVictoryOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
           <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative pointer-events-auto">
-            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+            <button id="battleVictoryCloseBtn" type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" style="touch-action: manipulation;" class="absolute top-2.5 right-2.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-2xl border-2 border-white/80 active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl mb-1 animate-bounce">&#127942;&#127881;</div>
             <h2 class="text-2xl font-black text-yellow-300 drop-shadow-md" style="font-family: 'Fredoka', cursive;">VICTORY!</h2>
             <p class="text-xs text-amber-200 font-bold mb-3">Enemy squad knocked out!</p>
@@ -2614,7 +2614,7 @@
         <!-- Defeat Overlay -->
         <div id="battleDefeatOverlay" class="absolute inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex flex-col items-center justify-center p-4">
           <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-red-500 shadow-2xl relative pointer-events-auto">
-            <button type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+            <button id="battleDefeatCloseBtn" type="button" onclick="event.stopPropagation(); closeBattleArena();" ontouchend="event.stopPropagation(); closeBattleArena();" style="touch-action: manipulation;" class="absolute top-2.5 right-2.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-black rounded-full w-9 h-9 flex items-center justify-center text-base shadow-2xl border-2 border-white/80 active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
             <div class="text-5xl mb-1 animate-bounce">&#128148;&#128128;</div>
             <h2 class="text-2xl font-black text-red-400 drop-shadow-md" style="font-family: 'Fredoka', cursive;">DEFEAT!</h2>
             <p class="text-xs text-amber-200 font-bold mb-3">Your squad was knocked out!</p>
@@ -4572,6 +4572,10 @@
     }
 
     function closeBattleArena() {
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       isBattleInProgress = false;
       if (battleRoundInterval) { clearInterval(battleRoundInterval); battleRoundInterval = null; }
       if (battleClockInterval) { clearInterval(battleClockInterval); battleClockInterval = null; }
