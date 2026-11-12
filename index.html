@@ -646,6 +646,46 @@
           </div>
         </div>
 
+        <!-- ==================== CRAZY FARM 3: JURASSIC FARM (CFT MINING WORLD) ==================== -->
+        <div id="crazyFarm3Wrapper" class="mt-4 pt-2">
+          
+          <!-- Section Divider / Header -->
+          <div class="flex items-center justify-between px-1 mb-2">
+            <div class="flex items-center gap-1.5">
+              <span class="text-base">🦖</span>
+              <span class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
+                Jurassic Farm (CFT Mining Sanctuary)
+              </span>
+            </div>
+            <div id="cf3StatusBadge" class="bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse">
+              <span>⚡</span> <span>قريباً: تعدين CFT</span>
+            </div>
+          </div>
+
+          <!-- Video Map Container -->
+          <div id="crazyFarm3Container" class="relative w-full overflow-hidden select-none shadow-2xl rounded-3xl border-2 border-emerald-700" style="aspect-ratio: 1080 / 1920;">
+            
+            <!-- Living Video Loop for Jurassic Farm -->
+            <video id="crazyFarm3Video" autoplay loop muted playsinline poster="assets/farms/crazy_farm_3_poster.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
+              <source src="assets/farms/crazy_farm_3.mp4" type="video/mp4">
+              <img src="assets/farms/crazy_farm_3_poster.jpg" alt="Jurassic Farm Map" class="w-full h-full object-cover" />
+            </video>
+
+            <!-- Subtle Decorative Preview Banner Overlay -->
+            <div class="absolute bottom-3 inset-x-3 z-20 pointer-events-none">
+              <div class="bg-slate-950/80 backdrop-blur-md rounded-2xl p-2.5 border border-emerald-500/70 shadow-2xl text-center">
+                <div class="text-xs font-black text-yellow-300 uppercase tracking-wide flex items-center justify-center gap-1.5">
+                  <span>🌋</span> <span>عالم التعدين الأسطوري - قريباً</span> <span>💎</span>
+                </div>
+                <div class="text-[10px] text-emerald-200 font-semibold mt-0.5">
+                  ديناصور • عنقاء • أناكوندا • تنين • دولفين
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div> <!-- /farmsView -->
 
       <!-- ==================== 2. PROFILE VIEW (Seamless In-App View Matching 3 Screenshots) ==================== -->
@@ -6184,12 +6224,15 @@
       // Video battery saver: pause background map video when leaving home tab, resume on return
       const mapVideo = document.getElementById('crazyFarmMapVideo');
       const cf2Video = document.getElementById('crazyFarm2Video');
+      const cf3Video = document.getElementById('crazyFarm3Video');
       if (tab === 'farms') {
         if (mapVideo && mapVideo.paused) { try { mapVideo.play().catch(()=>{}); } catch(e){} }
         if (cf2Video && cf2Video.paused) { try { cf2Video.play().catch(()=>{}); } catch(e){} }
+        if (cf3Video && cf3Video.paused) { try { cf3Video.play().catch(()=>{}); } catch(e){} }
       } else {
         if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
         if (cf2Video && !cf2Video.paused) { try { cf2Video.pause(); } catch(e){} }
+        if (cf3Video && !cf3Video.paused) { try { cf3Video.pause(); } catch(e){} }
       }
     }
 
