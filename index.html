@@ -348,14 +348,14 @@
           <!-- 7. Run Hotspot (Right Bottom Sneaker Ring - Completely Dedicated to Dog Runner) -->
           <div onclick="openRunGameDirect()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Dog Run Sprint"></div>
 
-          <!-- 7b. Animal Fortune Wheel Hotspot in Home -->
-          <div id="homeFortuneWheelBtn" onclick="openFortuneWheelModal()" class="absolute z-20 cursor-pointer flex flex-col items-center justify-center active:scale-90 transition-transform" style="left: 78.5%; top: 47.0%; width: 18.5%; height: 12.0%;" title="Animal Fortune Wheel">
-            <div class="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 p-0.5 shadow-2xl border-2 border-yellow-200 flex items-center justify-center animate-pulse">
-              <div class="w-full h-full rounded-full bg-[#351a06]/95 flex flex-col items-center justify-center">
-                <span class="text-xl sm:text-2xl filter drop-shadow">🎡</span>
-                <span class="text-[7.5px] font-black text-yellow-300 uppercase tracking-tighter leading-none mt-0.5">WHEEL</span>
+          <!-- 7b. Animal Fortune Wheel Hotspot in Home (Enlarged & Positioned Directly Under RUN) -->
+          <div id="homeFortuneWheelBtn" onclick="openFortuneWheelModal()" class="absolute z-20 cursor-pointer flex flex-col items-center justify-center active:scale-90 transition-transform" style="left: 77.0%; top: 43.8%; width: 21.0%; height: 13.5%;" title="Animal Fortune Wheel">
+            <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 p-0.5 shadow-[0_4px_16px_rgba(0,0,0,0.6)] border-2 border-yellow-200 flex items-center justify-center animate-pulse">
+              <div class="w-full h-full rounded-full bg-[#351a06]/95 flex flex-col items-center justify-center shadow-inner">
+                <span class="text-2xl sm:text-3xl filter drop-shadow">🎡</span>
+                <span class="text-[8.5px] font-black text-yellow-300 uppercase tracking-tight leading-none mt-0.5 drop-shadow">SPIN</span>
               </div>
-              <span id="fortuneWheelFreeBadge" class="absolute -top-1 -right-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[7.5px] px-1.5 py-0.5 rounded-full border border-white shadow-md animate-bounce">FREE</span>
+              <span id="fortuneWheelFreeBadge" class="absolute -top-1 -right-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-[8px] sm:text-[9px] px-2 py-0.5 rounded-full border border-white shadow-md animate-bounce">FREE</span>
             </div>
           </div>
 
@@ -1742,22 +1742,22 @@
     </div>
 
     <!-- ==================== ANIMAL FORTUNE WHEEL MODAL ==================== -->
-    <div id="fortuneWheelModal" onclick="if(event.target === this && !isFortuneWheelSpinning) closeFortuneWheelModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none pointer-events-none">
-      <div class="relative w-full max-w-[340px] sm:max-w-sm wood-board border-2 border-yellow-400 rounded-3xl p-3.5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
+    <div id="fortuneWheelModal" onclick="if(event.target === this && !isFortuneWheelSpinning) closeFortuneWheelModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4 select-none pointer-events-none">
+      <div class="relative w-full max-w-[390px] sm:max-w-md wood-board border-2 border-yellow-400 rounded-3xl p-3 sm:p-4 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[98vh] overflow-y-auto">
         <!-- Close Top-Right -->
         <button type="button" onclick="closeFortuneWheelModal()" class="absolute top-2.5 right-2.5 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
 
         <!-- Header -->
         <div class="flex items-center gap-1.5 justify-center mb-0.5 mt-0.5">
-          <span class="text-xl">🎡</span>
-          <h3 class="text-base sm:text-lg font-black text-amber-200 uppercase tracking-wide drop-shadow leading-tight" style="font-family: 'Fredoka', cursive;">
+          <span class="text-2xl animate-spin" style="animation-duration: 8s;">🎡</span>
+          <h3 class="text-base sm:text-xl font-black text-amber-200 uppercase tracking-wide drop-shadow leading-tight" style="font-family: 'Fredoka', cursive;">
             Animal Fortune Wheel
           </h3>
         </div>
-        <p class="text-[10px] text-amber-300/90 font-bold mb-1.5">Spin & Win Daily Guaranteed Rewards!</p>
+        <p class="text-[10.5px] text-amber-300/90 font-bold mb-1">Spin & Win Daily Guaranteed Rewards!</p>
 
-        <!-- The Fortune Wheel Artwork Container -->
-        <div id="fortuneWheelStage" class="relative w-full max-w-[270px] overflow-hidden select-none my-1" style="aspect-ratio: 571 / 1024;">
+        <!-- The Fortune Wheel Artwork Container (Enlarged for Clear Animal Visibility) -->
+        <div id="fortuneWheelStage" class="relative w-full max-w-[335px] sm:max-w-[360px] overflow-hidden select-none my-1" style="aspect-ratio: 571 / 1024;">
           <!-- 1. Rotating Disc (Underneath) -->
           <img id="fortuneWheelDisc" src="assets/fortune_wheel_disc.png" alt="Wheel Disc" class="absolute pointer-events-none select-none" style="left: 50%; top: 50.3%; width: 75.3%; aspect-ratio: 1 / 1; border-radius: 50%; transform: translate(-50%, -50%) rotate(0deg); will-change: transform;" />
           
@@ -1765,18 +1765,18 @@
           <img src="assets/fortune_wheel_frame.png" alt="Wheel Frame" class="absolute inset-0 w-full h-full object-fill pointer-events-none select-none z-10" />
 
           <!-- 3. Center SPIN Button (Clickable Hotspot on the SPIN hub) -->
-          <button id="wheelCenterSpinBtn" type="button" onclick="triggerFortuneWheelAction()" class="absolute z-20 rounded-full cursor-pointer active:scale-90 transition-transform flex items-center justify-center" style="left: 50%; top: 50.3%; width: 22%; aspect-ratio: 1 / 1; transform: translate(-50%, -50%); background: transparent; border: none; outline: none;" title="Tap to Spin!"></button>
+          <button id="wheelCenterSpinBtn" type="button" onclick="triggerFortuneWheelAction()" class="absolute z-20 rounded-full cursor-pointer active:scale-90 transition-transform flex items-center justify-center" style="left: 50%; top: 50.3%; width: 23%; aspect-ratio: 1 / 1; transform: translate(-50%, -50%); background: transparent; border: none; outline: none;" title="Tap to Spin!"></button>
         </div>
 
         <!-- Wheel Controls / Spin Action Button -->
-        <div class="w-full mt-1.5 px-2 flex flex-col items-center gap-1.5">
-          <button id="fortuneWheelActionBtn" type="button" onclick="triggerFortuneWheelAction()" class="btn-3d-green w-full py-2.5 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
+        <div class="w-full mt-1 px-1 sm:px-2 flex flex-col items-center gap-1.5">
+          <button id="fortuneWheelActionBtn" type="button" onclick="triggerFortuneWheelAction()" class="btn-3d-green w-full py-2.5 sm:py-3 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
             <span id="fortuneWheelBtnIcon">🎁</span>
             <span id="fortuneWheelBtnText">FREE SPIN NOW</span>
           </button>
           
           <!-- Spins status badge -->
-          <div class="flex items-center justify-between w-full px-2 text-[10px] text-amber-200/90 font-bold">
+          <div class="flex items-center justify-between w-full px-2 text-[10px] sm:text-[11px] text-amber-200/90 font-bold">
             <span id="fortuneWheelSpinsLeft">Daily Free: 1 Available</span>
             <span id="fortuneWheelBonusAdBadge" class="text-lime-300">+1 Ad Spin Ready</span>
           </div>
