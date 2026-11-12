@@ -1280,39 +1280,39 @@
           <div class="grid grid-cols-5 gap-1.5 mb-3" id="watchAdStepsGrid">
             <div id="adStep-1" class="bg-black/50 border-2 border-amber-600 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all">
               <span class="text-[10px] font-black text-amber-200">1</span>
-              <span id="adStepIcon-1" class="text-[10px] font-black text-yellow-300">+20</span>
+              <span id="adStepIcon-1" class="text-[10px] font-black text-yellow-300">+50</span>
             </div>
             <div id="adStep-2" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
               <span class="text-[10px] font-black text-amber-200">2</span>
-              <span id="adStepIcon-2" class="text-[10px] font-black text-yellow-300">+30</span>
+              <span id="adStepIcon-2" class="text-[10px] font-black text-yellow-300">+100</span>
             </div>
             <div id="adStep-3" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
               <span class="text-[10px] font-black text-amber-200">3</span>
-              <span id="adStepIcon-3" class="text-[10px] font-black text-yellow-300">+40</span>
+              <span id="adStepIcon-3" class="text-[10px] font-black text-yellow-300">+150</span>
             </div>
             <div id="adStep-4" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
               <span class="text-[10px] font-black text-amber-200">4</span>
-              <span id="adStepIcon-4" class="text-[10px] font-black text-yellow-300">+50</span>
+              <span id="adStepIcon-4" class="text-[10px] font-black text-yellow-300">+300</span>
             </div>
             <div id="adStep-5" class="bg-black/50 border-2 border-amber-800/80 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 transition-all opacity-70">
               <span class="text-[10px] font-black text-amber-200">5</span>
-              <span id="adStepIcon-5" class="text-[10px] font-black text-yellow-300">+100</span>
+              <span id="adStepIcon-5" class="text-[9px] font-black text-yellow-300">+500 &bull; 1 CFT</span>
             </div>
           </div>
 
           <!-- Reward Text & Action Button -->
           <div class="bg-black/40 rounded-2xl p-2.5 mb-2.5 text-center border border-amber-700/60">
             <span class="text-xs font-black text-yellow-300">
-              🌾 Earn Points: +20, +30, +40, +50, +100
+              🌾 Earn Points: +50, +100, +150, +300, +500 &amp; 1 CFT 💎
             </span>
             <div class="text-[10px] text-amber-300 font-bold mt-0.5" id="otherAdStatusText">
-              Next: +20 Points (Step 1/5)
+              Next: +50 Points (Step 1/5)
             </div>
           </div>
 
           <div id="otherAdActionContainer">
             <button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer">
-              <span>&#127806;</span> Collect! (+20 Points) [1/5]
+              <span>&#127806;</span> Collect! (+50 Points) [1/5]
             </button>
           </div>
 
@@ -7872,7 +7872,9 @@
     // ==================== END WALLET ====================
 
     // ==================== OTHERS & FAQ VIEW LOGIC ====================
-    const adPointRewards = [20, 30, 40, 50, 100];
+    // 5-Step Daily Bonus: 50, 100, 150, 300, 500 & 1 CFT on Step 5
+    const adPointRewards = [50, 100, 150, 300, 500];
+    const adDoubleRewards = [100, 200, 300, 600, 1000]; // Step 5 also awards +1 CFT
     let otherAdsWatched = Number(localStorage.getItem('crazyfarm_other_ads_count') || 0);
     const lastOtherAdDay = localStorage.getItem('crazyfarm_other_ads_day');
     const todayAdStr = new Date().toISOString().slice(0, 10);
@@ -7893,28 +7895,30 @@
         const iconEl = document.getElementById(`adStepIcon-${i}`);
         if (!stepEl || !iconEl) continue;
         const pts = adPointRewards[i - 1];
+        const extraLabel = (i === 5) ? ' • 1 CFT' : '';
 
         if (i <= otherAdsWatched) {
           stepEl.className = 'bg-emerald-950/80 border-2 border-emerald-400 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 shadow-md';
-          iconEl.innerHTML = `<span class="text-[10px] font-black text-emerald-300">✓ +${pts}</span>`;
+          iconEl.innerHTML = `<span class="text-[9.5px] font-black text-emerald-300">✓ +${pts}${extraLabel}</span>`;
         } else if (i === otherAdsWatched + 1) {
           stepEl.className = 'bg-amber-900/90 border-2 border-yellow-300 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 shadow-md ring-2 ring-yellow-400/80 animate-pulse';
-          iconEl.innerHTML = `<span class="text-[10px] font-black text-yellow-300">+${pts}</span>`;
+          iconEl.innerHTML = `<span class="text-[9.5px] font-black text-yellow-300">+${pts}${extraLabel}</span>`;
         } else {
           stepEl.className = 'bg-black/50 border-2 border-amber-900/60 rounded-2xl py-2 flex flex-col items-center justify-center gap-0.5 opacity-60';
-          iconEl.innerHTML = `<span class="text-[10px] font-black text-amber-400/70">+${pts}</span>`;
+          iconEl.innerHTML = `<span class="text-[9.5px] font-black text-amber-400/70">+${pts}${extraLabel}</span>`;
         }
       }
 
       const statusText = document.getElementById('otherAdStatusText');
       const actionContainer = document.getElementById('otherAdActionContainer');
       const nextPts = otherAdsWatched < 5 ? adPointRewards[otherAdsWatched] : 0;
+      const nextExtra = (otherAdsWatched === 4) ? ' & 1 CFT 💎' : '';
 
       if (statusText) {
         if (otherAdsWatched >= 5) {
           statusText.innerText = 'Completed: 5 / 5 Daily Bonuses Claimed!';
         } else {
-          statusText.innerText = `Next: +${nextPts} Points (Step ${otherAdsWatched + 1}/5)`;
+          statusText.innerText = `Next: +${nextPts} Points${nextExtra} (Step ${otherAdsWatched + 1}/5)`;
         }
       }
 
@@ -7922,7 +7926,7 @@
         if (otherAdsWatched >= 5) {
           actionContainer.innerHTML = '<button class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed"><span>✓</span> All 5 Daily Bonuses Claimed</button>';
         } else {
-          actionContainer.innerHTML = `<button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer"><span>&#127806;</span> Collect! (+${nextPts} Points) [${otherAdsWatched + 1}/5]</button>`;
+          actionContainer.innerHTML = `<button onclick="showWatchMoreCollectModal()" class="btn-3d-yellow w-full py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all animate-bounce cursor-pointer"><span>&#127806;</span> Collect! (+${nextPts} Points${nextExtra}) [${otherAdsWatched + 1}/5]</button>`;
         }
       }
     }
@@ -8035,20 +8039,28 @@
     function showWatchMoreCollectModal() {
       if (otherAdsWatched >= 5) return;
       playSound('click');
-      const baseReward = adPointRewards[otherAdsWatched] || 20;
+      const baseReward = adPointRewards[otherAdsWatched] || 50;
+      const doubleReward = adDoubleRewards[otherAdsWatched] || (baseReward * 2);
+      const isStep5 = (otherAdsWatched === 4);
       const stepNum = otherAdsWatched + 1;
 
       const elStep = document.getElementById('watchMoreCollectStepName');
       if (elStep) elStep.innerText = `Bonus Step ${stepNum}/5 Ready to Claim!`;
 
       const elRew = document.getElementById('watchMoreCollectRewardText');
-      if (elRew) elRew.innerText = `+${baseReward} Farm Points \u{1F33E}`;
+      if (elRew) {
+        elRew.innerText = isStep5 ? `+${baseReward} Farm Points & 1 CFT 💎` : `+${baseReward} Farm Points 🌾`;
+      }
 
       const elDbl = document.getElementById('watchMoreCollectDoubleBtnText');
-      if (elDbl) elDbl.innerText = `2x Boost: +${baseReward * 2} Pts (Watch Ad)`;
+      if (elDbl) {
+        elDbl.innerText = isStep5 ? `2x Boost: +${doubleReward} Pts & +1 CFT (Watch Ad)` : `2x Boost: +${doubleReward} Pts (Watch Ad)`;
+      }
 
       const elNorm = document.getElementById('watchMoreCollectNormalPts');
-      if (elNorm) elNorm.innerText = `+${baseReward}`;
+      if (elNorm) {
+        elNorm.innerText = isStep5 ? `+${baseReward} Pts & 1 CFT` : `+${baseReward}`;
+      }
 
       const modal = document.getElementById('watchMoreCollectModal');
       if (modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
@@ -8066,10 +8078,20 @@
       hideWatchMoreCollectModal();
       if (otherAdsWatched >= 5) return;
       const baseReward = adPointRewards[otherAdsWatched];
-      const doubleReward = baseReward * 2;
+      const doubleReward = adDoubleRewards[otherAdsWatched];
+      const isStep5 = (otherAdsWatched === 4);
 
       showUniversalAd(() => {
         points += doubleReward;
+        if (isStep5) {
+          cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + 1.0;
+          hfcBalance = Math.floor(cftBalance);
+          try {
+            localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+            localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+          } catch(e){}
+        }
+
         otherAdsWatched++;
         localStorage.setItem('crazyfarm_other_ads_count', String(otherAdsWatched));
         localStorage.setItem('crazyfarm_other_ads_day', new Date().toISOString().slice(0, 10));
@@ -8080,7 +8102,11 @@
 
         try { playSound('fanfare'); } catch(e){}
         playSound('coin');
-        showWalletToast(`\u{1F389} +${doubleReward} Points Added (2x Double Reward!) (${otherAdsWatched}/5)`);
+        if (isStep5) {
+          showWalletToast(`🎉 +${doubleReward} Points & +1.0 CFT Added! (Step 5 Completed!) 💎`);
+        } else {
+          showWalletToast(`🎉 +${doubleReward} Points Added (2x Double Reward!) (${otherAdsWatched}/5)`);
+        }
       }, `Daily Bonus 2x Boost (Step ${otherAdsWatched + 1}/5)`);
     }
 
@@ -8092,8 +8118,18 @@
       if (otherAdsWatched >= 5) return;
       playSound('click');
       const baseReward = adPointRewards[otherAdsWatched];
+      const isStep5 = (otherAdsWatched === 4);
 
       points += baseReward;
+      if (isStep5) {
+        cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + 1.0;
+        hfcBalance = Math.floor(cftBalance);
+        try {
+          localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+          localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+        } catch(e){}
+      }
+
       otherAdsWatched++;
       localStorage.setItem('crazyfarm_other_ads_count', String(otherAdsWatched));
       localStorage.setItem('crazyfarm_other_ads_day', new Date().toISOString().slice(0, 10));
@@ -8103,7 +8139,11 @@
       queueCloudSave();
 
       playSound('coin');
-      showWalletToast(`\u{1F33E} +${baseReward} Points Added! (${otherAdsWatched}/5)`);
+      if (isStep5) {
+        showWalletToast(`🌾 +${baseReward} Points & +1.0 CFT Added! (${otherAdsWatched}/5) 💎`);
+      } else {
+        showWalletToast(`🌾 +${baseReward} Points Added! (${otherAdsWatched}/5)`);
+      }
     }
 
     // Alias for backwards compatibility
