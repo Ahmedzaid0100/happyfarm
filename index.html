@@ -2070,7 +2070,7 @@
         <!-- Dynamic State Content (Ready to Open, Prize Revealed, or Cooldown) -->
         <div id="giftModalStateBox" class="bg-black/50 rounded-2xl p-3 mb-3.5 border border-amber-700/60 text-center">
           <div class="text-xs font-black text-yellow-300 mb-0.5">&#127881; Today's Free Gift is Ready!</div>
-          <div class="text-[10px] text-amber-200">Win up to 5,000 Farm Points instantly!</div>
+          <div class="text-[10px] text-amber-200">Win up to 2,500 Farm Points instantly!</div>
         </div>
 
         <!-- Action Buttons Container -->
@@ -5941,24 +5941,23 @@
       alert(`🔒 ${name} is locked!\n\nYou need to reach Lv. ${reqLevel} to unlock this farm. Earn more points to level up!`);
     }
 
-    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT: 1 FREE + 1 WITH POINTS) ====================
+    // ==================== CRAZY BOX (DAILY 24H MYSTERY GIFT: 1 FREE + 1 WITH AD - MAX 2,500 PTS) ====================
     const CRAZY_BOX_COOLDOWN_MS = 24 * 60 * 60 * 1000;
     let lastCrazyBoxFreeTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_free')) || Number(localStorage.getItem('crazyfarm_last_crazy_box')) || 0;
-    let lastCrazyBoxPointsTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_points')) || 0;
+    let lastCrazyBoxAdTimestamp = Number(localStorage.getItem('crazyfarm_last_crazy_box_ad')) || Number(localStorage.getItem('crazyfarm_last_crazy_box_points')) || 0;
     let currentCrazyBoxWin = 0;
-    let currentCrazyBoxIsOpenWithPoints = false;
 
     function getCrazyBoxStatus() {
       const now = Date.now();
       const freeElapsed = now - lastCrazyBoxFreeTimestamp;
       const isFreeAvailable = (lastCrazyBoxFreeTimestamp === 0 || freeElapsed >= CRAZY_BOX_COOLDOWN_MS);
-      // Points open is available ONCE per daily 24h cycle, accessible after the free open is claimed
-      const isPointsOpenAvailable = !isFreeAvailable && (lastCrazyBoxPointsTimestamp < lastCrazyBoxFreeTimestamp);
+      // Ad open is available ONCE per daily 24h cycle, accessible after the free open is claimed
+      const isAdOpenAvailable = !isFreeAvailable && (lastCrazyBoxAdTimestamp < lastCrazyBoxFreeTimestamp);
       const remainingSec = isFreeAvailable ? 0 : Math.max(0, Math.floor((CRAZY_BOX_COOLDOWN_MS - freeElapsed) / 1000));
 
       return {
         isFreeAvailable,
-        isPointsOpenAvailable,
+        isAdOpenAvailable,
         remainingSec
       };
     }
@@ -5974,17 +5973,17 @@
         if (dailyBadge) dailyBadge.innerHTML = 'DAILY (2/2) &#10024;';
         // Step 1: Free Daily Open
         container.innerHTML = `
-          <button onclick="openCrazyBox(false)" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
-            <span>&#10024;</span> OPEN FREE
+          <button onclick="openCrazyBox()" id="crazyBoxBtn" class="btn-3d-yellow w-full py-2 px-2 rounded-xl text-amber-950 font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform animate-pulse whitespace-nowrap cursor-pointer">
+            <span>&#127873;</span> OPEN FREE
           </button>
         `;
-      } else if (status.isPointsOpenAvailable) {
-        if (dailyBadge) dailyBadge.innerHTML = 'DAILY (1/2) &#9889;';
-        // Step 2: 1x Daily Open with 500 Points (Reduced from 1,000)
+      } else if (status.isAdOpenAvailable) {
+        if (dailyBadge) dailyBadge.innerHTML = 'DAILY (1/2) &#127916;';
+        // Step 2: 1x Daily Open with Ad (No points cost)
         container.innerHTML = `
           <div class="flex flex-col gap-0.5 w-full">
-            <button onclick="openCrazyBox(true)" class="btn-3d-green w-full py-1.5 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-bounce border border-yellow-300/60 whitespace-nowrap">
-              <span>&#9889;</span> Open (500 &#127806;)
+            <button onclick="openCrazyBox()" class="btn-3d-green w-full py-1.5 px-2 rounded-xl text-white font-black text-[10px] flex items-center justify-center gap-1 shadow active:scale-95 transition-transform cursor-pointer animate-pulse border border-yellow-300/60 whitespace-nowrap">
+              <span>&#127916;</span> Bonus (Watch Ad)
             </button>
             <div class="text-[7.5px] text-amber-200/90 font-bold text-center leading-none">
               &#9203; Free in ${formatTime(status.remainingSec)}
@@ -5993,7 +5992,7 @@
         `;
       } else {
         if (dailyBadge) dailyBadge.innerHTML = 'DAILY (0/2) &#128274;';
-        // Step 3: Daily Limit Reached (Both 1 Free + 1 with Points used today)
+        // Step 3: Daily Limit Reached (Both 1 Free + 1 with Ad used today)
         container.innerHTML = `
           <div class="flex flex-col gap-0.5 w-full">
             <button disabled class="w-full py-1.5 px-2 rounded-xl bg-amber-950/70 text-amber-400/80 font-bold text-[9.5px] flex items-center justify-center gap-1 shadow-inner border border-amber-800/60 cursor-not-allowed whitespace-nowrap">
@@ -9866,85 +9865,75 @@ window.addEventListener('load', () => {
       const status = getCrazyBoxStatus();
 
       if (status.isFreeAvailable) {
-        stateBox.innerHTML = '<div class="text-sm font-black text-yellow-300 mb-0.5">&#127881; Daily Free Gift is Ready!</div><div class="text-[11px] text-amber-100 font-semibold">Open now for a lucky points drop (up to 5,000 Pts)!</div>';
-        actionBox.innerHTML = '<button onclick="executeOpenGift(false)" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer"><span>&#10024;</span> OPEN FREE GIFT</button>';
-      } else if (status.isPointsOpenAvailable) {
-        stateBox.innerHTML = '<div class="text-xs font-black text-amber-300 mb-0.5">&#9889; Free Gift Claimed Today!</div><div class="text-[11px] text-yellow-200 font-bold">Unlock 1 Extra Mystery Gift for 500 Farm Points!</div><div class="text-[10px] text-sky-200 mt-1">&#9203; Next Free in: ' + formatTime(status.remainingSec) + '</div>';
-        actionBox.innerHTML = '<button onclick="executeOpenGift(true)" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/60"><span>&#9889;</span> OPEN EXTRA GIFT (500 Pts)</button>';
+        stateBox.innerHTML = '<div class="text-sm font-black text-yellow-300 mb-0.5">&#127881; Daily Free Gift is Ready!</div><div class="text-[11px] text-amber-100 font-semibold">Open now for lucky farm points (up to 2,500 Pts)!</div>';
+        actionBox.innerHTML = '<button onclick="triggerOpenGift(\'free\')" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer"><span>&#127873;</span> OPEN FREE GIFT</button>';
+      } else if (status.isAdOpenAvailable) {
+        stateBox.innerHTML = '<div class="text-xs font-black text-amber-300 mb-0.5">&#127916; Free Gift Claimed Today!</div><div class="text-[11px] text-yellow-200 font-bold">Watch 1 short Ad to unlock your Bonus Gift (up to 2,500 Pts)!</div><div class="text-[10px] text-sky-200 mt-1">&#9203; Next Free in: ' + formatTime(status.remainingSec) + '</div>';
+        actionBox.innerHTML = '<button onclick="triggerOpenGift(\'ad\')" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/60 animate-pulse"><span>&#127916;</span> OPEN BONUS GIFT (WATCH AD)</button>';
       } else {
         stateBox.innerHTML = '<div class="text-xs font-black text-amber-400 mb-1">&#128274; All Daily Gifts Claimed (2/2)!</div><div class="text-[11px] text-yellow-300 font-bold">&#9203; Next Free Gift in:</div><div class="text-xl font-mono font-black text-lime-400 mt-1">' + formatTime(status.remainingSec) + '</div>';
         actionBox.innerHTML = '<button onclick="closeGiftModal()" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"><span>&#10005;</span> Close</button>';
       }
     }
 
-    function executeOpenGift(withPoints) {
-      if (withPoints) {
-        const COST = 500;
-        if (points < COST) {
-          try { playSound('click'); } catch(e){}
-          showWalletToast('\u26A0\uFE0F Need 500 Farm Points to open! (You have ' + points.toLocaleString() + ' pts)');
-          return;
-        }
-        points -= COST;
-        currentCrazyBoxIsOpenWithPoints = true;
-        updateDisplays();
+    function triggerOpenGift(openType) {
+      if (openType === 'ad') {
+        showUniversalAd(() => {
+          executeOpenGift('ad');
+        }, 'Mystery Gift Bonus Open');
       } else {
-        currentCrazyBoxIsOpenWithPoints = false;
+        executeOpenGift('free');
+      }
+    }
+
+    function executeOpenGift(openType) {
+      // Balanced rewards strictly capped at 2,500 maximum
+      // Probabilities: 500 (15%), 800 (25%), 1200 (30%), 1800 (20%), 2500 (10%)
+      const prizePool = [
+        500, 500, 500,
+        800, 800, 800, 800, 800,
+        1200, 1200, 1200, 1200, 1200, 1200,
+        1800, 1800, 1800, 1800,
+        2500, 2500
+      ];
+      currentCrazyBoxWin = prizePool[Math.floor(Math.random() * prizePool.length)];
+
+      const now = Date.now();
+      if (openType === 'ad') {
+        lastCrazyBoxAdTimestamp = now;
+        localStorage.setItem('crazyfarm_last_crazy_box_ad', String(lastCrazyBoxAdTimestamp));
+      } else {
+        lastCrazyBoxFreeTimestamp = now;
+        localStorage.setItem('crazyfarm_last_crazy_box_free', String(lastCrazyBoxFreeTimestamp));
+        localStorage.setItem('crazyfarm_last_crazy_box', String(lastCrazyBoxFreeTimestamp));
       }
 
       try { playSound('fanfare'); } catch(e){}
-      const rewards = [1000, 2000, 3000, 4000, 5000];
-      currentCrazyBoxWin = rewards[Math.floor(Math.random() * rewards.length)];
 
       const stateBox = document.getElementById('giftModalStateBox');
       const actionBox = document.getElementById('giftModalActionContainer');
 
       if (stateBox) {
-        stateBox.innerHTML = '<div class="text-xs font-black text-yellow-300 mb-1">&#127881; Congratulations! You Won:</div><div class="text-3xl font-black text-lime-300 drop-shadow my-1">+' + currentCrazyBoxWin.toLocaleString() + ' Pts &#127806;</div><div class="text-[10.5px] text-amber-200 font-bold">&#127806; Lucky Farm Points Drop!</div>';
+        stateBox.innerHTML = '<div class="text-xs font-black text-yellow-300 mb-1">&#127881; Congratulations! You Won:</div><div class="text-3xl font-black text-lime-300 drop-shadow my-1">+' + currentCrazyBoxWin.toLocaleString() + ' Pts &#127806;</div><div class="text-[10.5px] text-amber-200 font-bold">&#127806; Lucky Farm Points Drop! (Max 2,500)</div>';
       }
 
       if (actionBox) {
-        actionBox.innerHTML = '<button onclick="claimGiftReward(true)" class="btn-3d-yellow w-full py-3.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all animate-pulse cursor-pointer"><span>&#127916;</span> Collect 2x (+' + (currentCrazyBoxWin * 2).toLocaleString() + ' Pts) with Ad</button><button onclick="claimGiftReward(false)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"><span>&#127806;</span> Claim Free (+' + currentCrazyBoxWin.toLocaleString() + ' Pts)</button>';
+        actionBox.innerHTML = '<button onclick="finalizeGiftClaim()" class="btn-3d-green w-full py-3.5 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse"><span>&#127873;</span> COLLECT +' + currentCrazyBoxWin.toLocaleString() + ' POINTS!</button>';
       }
     }
 
-    function claimGiftReward(isDouble) {
-      if (!ActionLock.run('gift_claim', 1200, () => _doClaimGiftReward(isDouble))) return;
-    }
-
-    function _doClaimGiftReward(isDouble) {
-      try { playSound('click'); } catch(e){}
-      if (isDouble) {
-        showUniversalAd(() => {
-          finalizeGiftClaim(true);
-        }, '2x Mystery Gift Double Points');
-      } else {
-        finalizeGiftClaim(false);
-      }
-    }
-
-    function finalizeGiftClaim(isDouble) {
-      const amount = isDouble ? (currentCrazyBoxWin * 2) : currentCrazyBoxWin;
+    function finalizeGiftClaim() {
+      const amount = currentCrazyBoxWin;
       points += amount;
-      const now = Date.now();
 
-      if (currentCrazyBoxIsOpenWithPoints) {
-        lastCrazyBoxPointsTimestamp = now;
-        localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
-      } else {
-        lastCrazyBoxFreeTimestamp = now;
-        localStorage.setItem('crazyfarm_last_crazy_box_free', lastCrazyBoxFreeTimestamp);
-        localStorage.setItem('crazyfarm_last_crazy_box', lastCrazyBoxFreeTimestamp);
-      }
-
-      localStorage.setItem('crazyfarm_points', points);
-      localStorage.setItem('crazyfarm_farm_points', points);
-      try { playSound('fanfare'); } catch(e){}
+      localStorage.setItem('crazyfarm_points', String(points));
+      localStorage.setItem('crazyfarm_farm_points', String(points));
+      try { playSound('coin'); } catch(e){}
       if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
       updateDisplays();
       if (typeof queueCloudSave === 'function') queueCloudSave();
 
-      showWalletToast('\u{1F389} Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
+      showWalletToast('&#127881; Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
       closeGiftModal();
     }
 
