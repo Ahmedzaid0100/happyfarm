@@ -671,16 +671,71 @@
               <img src="assets/farms/crazy_farm_3_poster.jpg" alt="Jurassic Farm Map" class="w-full h-full object-cover" />
             </video>
 
+            <!-- 5 Jurassic Animal Hotspots & Live Badges on the Map -->
+            <div id="cf3AnimalsContainer" class="absolute inset-0 z-20 pointer-events-auto">
+              <!-- 1. Dinosaur (Top-Left Pen) -->
+              <div id="hotspot-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 12%; width: 44%; height: 22%;" title="T-Rex Emperor Enclosure"></div>
+              <div id="mapBadge-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 23%; top: 34.5%; transform: translateX(-50%);">
+                <span>🦖</span> <span id="mapBadgeText-cf3-dinosaur">1.00 CFT ⚡</span>
+              </div>
+
+              <!-- 2. Phoenix (Top-Right Pen) -->
+              <div id="hotspot-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 54%; top: 12%; width: 44%; height: 22%;" title="Fire Phoenix Nest"></div>
+              <div id="mapBadge-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute bg-gradient-to-r from-orange-500 via-amber-400 to-red-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 77%; top: 34.5%; transform: translateX(-50%);">
+                <span>🦅</span> <span id="mapBadgeText-cf3-phoenix">0.50 CFT ⚡</span>
+              </div>
+
+              <!-- 3. Anaconda (Center Pen) -->
+              <div id="hotspot-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 12%; top: 34%; width: 76%; height: 20%;" title="Titan Anaconda Swamp"></div>
+              <div id="mapBadge-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute bg-gradient-to-r from-yellow-500 via-lime-400 to-yellow-500 text-emerald-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 50%; top: 54.0%; transform: translateX(-50%);">
+                <span>🐍</span> <span id="mapBadgeText-cf3-anaconda">0.25 CFT ⚡</span>
+              </div>
+
+              <!-- 4. Dragon (Bottom-Left Pen) -->
+              <div id="hotspot-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 54%; width: 46%; height: 26%;" title="Ancient Dragon Lair"></div>
+              <div id="mapBadge-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute bg-gradient-to-r from-red-600 via-rose-400 to-amber-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 26%; top: 79.5%; transform: translateX(-50%);">
+                <span>🐉</span> <span id="mapBadgeText-cf3-dragon">0.75 CFT ⚡</span>
+              </div>
+
+              <!-- 5. Dolphin (Bottom-Right Lagoon) -->
+              <div id="hotspot-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 52%; top: 54%; width: 46%; height: 26%;" title="Mystic Dolphin Lagoon"></div>
+              <div id="mapBadge-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute bg-gradient-to-r from-cyan-500 via-sky-300 to-blue-500 text-blue-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-sky-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 78%; top: 79.5%; transform: translateX(-50%);">
+                <span>🐬</span> <span id="mapBadgeText-cf3-dolphin">0.10 CFT ⚡</span>
+              </div>
+            </div>
+
             <!-- Subtle Decorative Preview Banner Overlay -->
             <div class="absolute bottom-3 inset-x-3 z-20 pointer-events-none">
               <div class="bg-slate-950/80 backdrop-blur-md rounded-2xl p-2.5 border border-emerald-500/70 shadow-2xl text-center">
                 <div class="text-xs font-black text-yellow-300 uppercase tracking-wide flex items-center justify-center gap-1.5">
-                  <span>🌋</span> <span>عالم التعدين الأسطوري - قريباً</span> <span>💎</span>
+                  <span>🌋</span> <span>عالم التعدين الأسطوري</span> <span>💎</span>
                 </div>
                 <div class="text-[10px] text-emerald-200 font-semibold mt-0.5">
-                  ديناصور • عنقاء • أناكوندا • تنين • دولفين
+                  اضغط على أي حظيرة لاستعراض الفيديو، عائد التعدين، ومستويات الترقية!
                 </div>
               </div>
+            </div>
+
+          </div>
+
+          <!-- ==================== 5 JURASSIC ANIMAL BANNERS / MINER CARDS ==================== -->
+          <div class="mt-4 space-y-3 select-none">
+            
+            <div class="flex items-center justify-between px-1">
+              <div class="flex items-center gap-1.5">
+                <span class="text-base">⚡</span>
+                <span class="text-xs font-black text-amber-950 uppercase tracking-wider drop-shadow-sm" style="font-family: 'Fredoka', cursive;">
+                  حظائر التعدين الـ 5 (Jurassic Miners)
+                </span>
+              </div>
+              <span class="text-[9.5px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-400 px-2 py-0.5 rounded-full shadow-sm">
+                💎 CFT Ecosystem
+              </span>
+            </div>
+
+            <!-- Dynamic Container for 5 Animal Miner Banners -->
+            <div id="jurassicMinersCardsContainer" class="space-y-3">
+              <!-- Rendered via JS -->
             </div>
 
           </div>
@@ -2266,6 +2321,110 @@
               </span>
             </button>
           </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== JURASSIC ANIMAL MINER MODAL (CFT MINING & UPGRADES) ==================== -->
+    <div id="jurassicMinerModal" onclick="if(event.target === this) closeJurassicMinerModal()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none">
+      <div class="rounded-[2.2rem] p-4 max-w-sm w-full max-h-[92vh] shadow-[0_20px_50px_rgba(0,0,0,0.95),inset_0_2px_4px_rgba(255,255,255,0.2)] relative border-[3.5px] border-emerald-500 bg-gradient-to-b from-[#0f2317] via-[#09150d] to-[#040805] text-white flex flex-col justify-between space-y-3">
+        
+        <!-- MODAL HEADER -->
+        <div class="flex items-center justify-between pb-2 border-b-2 border-emerald-800/60 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div id="jmModalIconBg" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-500 border-2 border-white shadow-lg flex items-center justify-center shrink-0">
+              <span id="jmModalIcon" class="text-2xl filter drop-shadow">🦖</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h3 id="jmModalName" class="text-base font-black text-yellow-300 font-fredoka tracking-wide drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]">T-Rex Emperor</h3>
+                <span id="jmModalLevel" class="bg-gradient-to-r from-emerald-500 to-lime-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md border border-emerald-300/80">Lv. 1</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span id="jmModalArabicName" class="text-[11px] text-emerald-200 font-bold">ملك الديناصورات</span>
+                <span id="jmModalTier" class="text-[9px] font-black uppercase px-2 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/40">Apex Legendary</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tactile 3D Red Close Button -->
+          <button type="button" onclick="closeJurassicMinerModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+        </div>
+
+        <!-- HERO ANIMAL VIDEO & ANIMATION STAGE -->
+        <div class="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden border-2 border-emerald-600/80 shadow-[inset_0_4px_14px_rgba(0,0,0,0.9)] bg-gradient-to-b from-[#0e3b23] via-[#082214] to-[#041009] flex items-center justify-center">
+          
+          <!-- Spot Glow -->
+          <div class="absolute inset-0 bg-radial from-emerald-400/20 via-transparent to-black/60 pointer-events-none"></div>
+
+          <!-- Looping Video Player -->
+          <video id="jmModalVideo" autoplay loop muted playsinline poster="assets/farms/crazy_farm_3_poster.jpg" class="w-full h-full object-cover object-center pointer-events-none select-none z-10">
+            <source id="jmModalVideoSource" src="assets/farms/crazy_farm_3.mp4" type="video/mp4">
+          </video>
+
+          <!-- Top-Left Floating Asset Pill -->
+          <div class="absolute top-2.5 left-2.5 z-20 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-xl border border-yellow-400/80 text-[10.5px] font-black text-yellow-300 flex items-center gap-1 shadow-lg">
+            <span>💎</span> <span>تعدين: عملة CFT</span>
+          </div>
+
+          <!-- Top-Right 24h Cycle Pill -->
+          <div class="absolute top-2.5 right-2.5 z-20 bg-emerald-950/80 backdrop-blur-md px-2.5 py-1 rounded-xl border border-emerald-400/80 text-[10px] font-black text-emerald-200 flex items-center gap-1 shadow-lg">
+            <span>⏳</span> <span>دورة: 24 ساعة</span>
+          </div>
+        </div>
+
+        <!-- STATS & MINING REWARD BOARD -->
+        <div class="bg-black/60 rounded-2xl p-2.5 border border-emerald-600/50 shadow-inner space-y-2 shrink-0">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-emerald-200 font-bold flex items-center gap-1">
+              <span>⚡</span> عائد التعدين اليومي:
+            </span>
+            <span id="jmModalMiningRate" class="text-sm font-black text-yellow-300 drop-shadow">
+              1.00 CFT / 24h
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-emerald-900/60">
+            <span class="text-gray-300 font-medium flex items-center gap-1">
+              <span>📈</span> ترقية المستوى التالي:
+            </span>
+            <span id="jmModalNextBoost" class="text-lime-300 font-black">
+              +0.20 CFT يومياً
+            </span>
+          </div>
+
+          <p id="jmModalDesc" class="text-[10px] text-gray-300 leading-snug pt-0.5 border-t border-emerald-950">
+            أقوى كائن أسطوري في المزرعة، يعدّن أعلى عائد من عملة CFT يومياً!
+          </p>
+        </div>
+
+        <!-- BIG 3D ACTION BUTTONS (UPGRADE & MINE) -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1 shrink-0">
+          <!-- Upgrade Farm Button -->
+          <button id="jmModalUpgradeBtn" onclick="upgradeJurassicMinerFromModal()" class="btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-yellow-200">
+            <span class="flex items-center gap-1 uppercase tracking-wide">
+              <span>⚡</span> ترقية الحظيرة
+            </span>
+            <span id="jmModalUpgradeCost" class="text-[9px] font-extrabold text-amber-950 mt-0.5">
+              Lv. 2 (5,000,000 🌾)
+            </span>
+          </button>
+
+          <!-- Mine Button -->
+          <button id="jmModalMineBtn" onclick="triggerJurassicMiningFromModal()" class="btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300">
+            <span class="flex items-center gap-1 uppercase tracking-wide">
+              <span>⛏️</span> بدء التعدين
+            </span>
+            <span id="jmModalMineStatus" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
+              24h Mining Active
+            </span>
+          </button>
+        </div>
+
+        <!-- Setup Note Footer -->
+        <div class="text-center text-[9px] text-emerald-400/80 font-bold shrink-0">
+          🛠️ وضع التجهيز والتجربة — الأرقام قابلة للتعديل والضبط حسب رغبتك
         </div>
 
       </div>
@@ -6229,6 +6388,7 @@
         if (mapVideo && mapVideo.paused) { try { mapVideo.play().catch(()=>{}); } catch(e){} }
         if (cf2Video && cf2Video.paused) { try { cf2Video.play().catch(()=>{}); } catch(e){} }
         if (cf3Video && cf3Video.paused) { try { cf3Video.play().catch(()=>{}); } catch(e){} }
+        try { renderJurassicMinersUI(); } catch(e){}
       } else {
         if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
         if (cf2Video && !cf2Video.paused) { try { cf2Video.pause(); } catch(e){} }
@@ -9979,6 +10139,310 @@ window.addEventListener('load', () => {
       showWalletToast('&#127881; Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
       closeGiftModal();
     }
+
+    // ==================== JURASSIC MINERS ECOSYSTEM (5 PREHISTORIC CFT MINERS) ====================
+    const JURASSIC_MINERS = {
+      dinosaur: {
+        id: 'dinosaur',
+        name: 'T-Rex Emperor',
+        arabicName: 'ملك الديناصورات',
+        emoji: '🦖',
+        tier: 'Apex Legendary',
+        tierColor: 'from-amber-500 to-red-600',
+        badgeBorder: 'border-amber-400',
+        textColor: 'text-yellow-300',
+        mineAsset: 'CFT',
+        baseRate: 1.00, // CFT per 24h
+        rateBoostPerLvl: 0.20,
+        baseUpgradeCost: 5000000, // 5M points
+        costMultiplier: 1.5,
+        video: 'assets/farms/crazy_farm_3.mp4',
+        poster: 'assets/farms/crazy_farm_3_poster.jpg',
+        desc: 'أقوى كائن أسطوري في المزرعة، يعدّن أعلى عائد من عملة CFT يومياً بمعدل 1.00 CFT!'
+      },
+      dragon: {
+        id: 'dragon',
+        name: 'Ancient Dragon',
+        arabicName: 'التنين المجنح الأسطوري',
+        emoji: '🐉',
+        tier: 'Ancient Mythic',
+        tierColor: 'from-red-600 to-amber-600',
+        badgeBorder: 'border-red-400',
+        textColor: 'text-rose-300',
+        mineAsset: 'CFT',
+        baseRate: 0.75,
+        rateBoostPerLvl: 0.15,
+        baseUpgradeCost: 4000000, // 4M points
+        costMultiplier: 1.5,
+        video: 'assets/farms/crazy_farm_3.mp4',
+        poster: 'assets/farms/crazy_farm_3_poster.jpg',
+        desc: 'تنين بركاني مجنح يطلق لهيب الـ CFT بمعدل 0.75 CFT كل 24 ساعة!'
+      },
+      phoenix: {
+        id: 'phoenix',
+        name: 'Fire Phoenix',
+        arabicName: 'طائر العنقاء الناري',
+        emoji: '🦅',
+        tier: 'Eternal Mythic',
+        tierColor: 'from-orange-500 to-yellow-500',
+        badgeBorder: 'border-orange-400',
+        textColor: 'text-amber-200',
+        mineAsset: 'CFT',
+        baseRate: 0.50,
+        rateBoostPerLvl: 0.10,
+        baseUpgradeCost: 3000000, // 3M points
+        costMultiplier: 1.5,
+        video: 'assets/farms/crazy_farm_3.mp4',
+        poster: 'assets/farms/crazy_farm_3_poster.jpg',
+        desc: 'طائر العنقاء الأسطوري المتجدد، يعدّن 0.50 CFT كل 24 ساعة.'
+      },
+      anaconda: {
+        id: 'anaconda',
+        name: 'Titan Anaconda',
+        arabicName: 'الأناكوندا العملاقة',
+        emoji: '🐍',
+        tier: 'Prime Beast',
+        tierColor: 'from-yellow-600 to-lime-600',
+        badgeBorder: 'border-lime-400',
+        textColor: 'text-lime-300',
+        mineAsset: 'CFT',
+        baseRate: 0.25,
+        rateBoostPerLvl: 0.05,
+        baseUpgradeCost: 1500000, // 1.5M points
+        costMultiplier: 1.5,
+        video: 'assets/farms/crazy_farm_3.mp4',
+        poster: 'assets/farms/crazy_farm_3_poster.jpg',
+        desc: 'ثعبان عملاق يحرس مستنقعات التعدين ويولّد 0.25 CFT يومياً.'
+      },
+      dolphin: {
+        id: 'dolphin',
+        name: 'Mystic Dolphin',
+        arabicName: 'الدولفين السحري',
+        emoji: '🐬',
+        tier: 'Aquatic Guardian',
+        tierColor: 'from-cyan-500 to-blue-600',
+        badgeBorder: 'border-cyan-400',
+        textColor: 'text-cyan-200',
+        mineAsset: 'CFT',
+        baseRate: 0.10,
+        rateBoostPerLvl: 0.02,
+        baseUpgradeCost: 800000, // 800k points
+        costMultiplier: 1.5,
+        video: 'assets/farms/crazy_farm_3.mp4',
+        poster: 'assets/farms/crazy_farm_3_poster.jpg',
+        desc: 'حارس البحيرة الأسطورية، نقطة الانطلاق لتعدين الـ CFT بمعدل 0.10 CFT.'
+      }
+    };
+
+    let currentJurassicModalKey = 'dinosaur';
+
+    function getJurassicMinerLevel(key) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
+        return parseInt(stored[key], 10) || 1;
+      } catch(e) {
+        return 1;
+      }
+    }
+
+    function setJurassicMinerLevel(key, lvl) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
+        stored[key] = lvl;
+        localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(stored));
+      } catch(e) {}
+    }
+
+    function getJurassicMinerRate(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m) return '0.00';
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      const val = m.baseRate + (actualLvl - 1) * m.rateBoostPerLvl;
+      return val.toFixed(2);
+    }
+
+    function getJurassicMinerUpgradeCost(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m) return 1000000;
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      return Math.floor(m.baseUpgradeCost * Math.pow(m.costMultiplier, actualLvl - 1));
+    }
+
+    function openJurassicMinerModal(key) {
+      const miner = JURASSIC_MINERS[key];
+      if (!miner) return;
+      currentJurassicModalKey = key;
+      const lvl = getJurassicMinerLevel(key);
+      const rate = getJurassicMinerRate(key, lvl);
+      const nextBoost = miner.rateBoostPerLvl.toFixed(2);
+      const upgradeCost = getJurassicMinerUpgradeCost(key, lvl);
+
+      const modal = document.getElementById('jurassicMinerModal');
+      const iconEl = document.getElementById('jmModalIcon');
+      const nameEl = document.getElementById('jmModalName');
+      const arabicNameEl = document.getElementById('jmModalArabicName');
+      const tierEl = document.getElementById('jmModalTier');
+      const lvlEl = document.getElementById('jmModalLevel');
+      const rateEl = document.getElementById('jmModalMiningRate');
+      const nextBoostEl = document.getElementById('jmModalNextBoost');
+      const descEl = document.getElementById('jmModalDesc');
+      const costEl = document.getElementById('jmModalUpgradeCost');
+      const vidEl = document.getElementById('jmModalVideo');
+
+      if (iconEl) iconEl.innerText = miner.emoji;
+      if (nameEl) nameEl.innerText = miner.name;
+      if (arabicNameEl) arabicNameEl.innerText = miner.arabicName;
+      if (tierEl) tierEl.innerText = miner.tier;
+      if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
+      if (rateEl) rateEl.innerText = rate + ' CFT / 24h';
+      if (nextBoostEl) nextBoostEl.innerText = '+' + nextBoost + ' CFT يومياً';
+      if (descEl) descEl.innerText = miner.desc;
+      if (costEl) costEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
+
+      if (vidEl) {
+        try {
+          vidEl.currentTime = 0;
+          vidEl.play().catch(()=>{});
+        } catch(e){}
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('click'); } catch(e){}
+    }
+
+    function closeJurassicMinerModal() {
+      const modal = document.getElementById('jurassicMinerModal');
+      const vidEl = document.getElementById('jmModalVideo');
+      if (vidEl) {
+        try { vidEl.pause(); } catch(e){}
+      }
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    function upgradeJurassicMinerFromModal() {
+      if (!currentJurassicModalKey) return;
+      const key = currentJurassicModalKey;
+      const lvl = getJurassicMinerLevel(key);
+      if (lvl >= 10) {
+        try { playSound('error'); } catch(e){}
+        showWalletToast('🏆 وصلت لأقصى مستوى للحظيرة (Max Level 10)!');
+        return;
+      }
+      const cost = getJurassicMinerUpgradeCost(key, lvl);
+      if (points < cost) {
+        try { playSound('error'); } catch(e){}
+        showWalletToast('🌾 نقاط المزرعة غير كافية للترقية! تحتاج ' + cost.toLocaleString() + ' نقطة.');
+        return;
+      }
+      points -= cost;
+      localStorage.setItem('crazyfarm_points', String(points));
+      localStorage.setItem('crazyfarm_farm_points', String(points));
+      
+      const newLvl = lvl + 1;
+      setJurassicMinerLevel(key, newLvl);
+      updateDisplays();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+
+      try { playSound('level_up'); } catch(e){}
+      showWalletToast('🚀 مبروك! تم ترقية ' + JURASSIC_MINERS[key].name + ' إلى المستوى ' + newLvl + '!');
+      openJurassicMinerModal(key);
+      renderJurassicMinersUI();
+    }
+
+    function triggerJurassicMiningFromModal() {
+      try { playSound('chime'); } catch(e){}
+      showWalletToast('⛏️ التعدين نشط! سيتم إضافة عملات CFT لمحفظتك فور اكتمال دورة الـ 24 ساعة.');
+    }
+
+    function renderJurassicMinersUI() {
+      const container = document.getElementById('jurassicMinersCardsContainer');
+      if (!container) return;
+
+      const keys = ['dinosaur', 'dragon', 'phoenix', 'anaconda', 'dolphin'];
+      let html = '';
+
+      keys.forEach(k => {
+        const m = JURASSIC_MINERS[k];
+        const lvl = getJurassicMinerLevel(k);
+        const rate = getJurassicMinerRate(k, lvl);
+        const cost = getJurassicMinerUpgradeCost(k, lvl);
+        const nextBoost = m.rateBoostPerLvl.toFixed(2);
+
+        // Update map badge text too if element exists
+        const badgeTxt = document.getElementById('mapBadgeText-cf3-' + k);
+        if (badgeTxt) {
+          badgeTxt.innerText = rate + ' CFT ⚡';
+        }
+
+        html += `
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#0e2116] via-[#09150e] to-[#040805] border-2 border-emerald-600/80 p-3 shadow-xl hover:border-emerald-400 transition-all select-none">
+            <div class="flex items-center gap-3">
+              
+              <!-- Video / Media Stage -->
+              <div onclick="openJurassicMinerModal('${k}')" class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 border-emerald-500/80 shadow-md shrink-0 cursor-pointer active:scale-95 transition-transform bg-black">
+                <video autoplay loop muted playsinline poster="${m.poster}" class="w-full h-full object-cover object-center pointer-events-none">
+                  <source src="${m.video}" type="video/mp4">
+                </video>
+                <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                  <span class="text-3xl filter drop-shadow-lg">${m.emoji}</span>
+                </div>
+                <div class="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.2 rounded text-[8.5px] font-black text-yellow-300 border border-yellow-400/60 shadow">
+                  Lv.${lvl}
+                </div>
+              </div>
+
+              <!-- Content Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1 mb-0.5">
+                  <div class="flex items-center gap-1.5 truncate">
+                    <h4 class="text-xs font-black text-yellow-300 font-fredoka truncate">${m.name}</h4>
+                    <span class="text-[9.5px] text-emerald-200 font-bold truncate">(${m.arabicName})</span>
+                  </div>
+                  <span class="text-[8px] font-black px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30 shrink-0">
+                    ${m.tier}
+                  </span>
+                </div>
+
+                <!-- Mining rate & asset -->
+                <div class="flex items-center gap-2 text-[10.5px] my-1">
+                  <span class="text-white font-extrabold flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-lg border border-emerald-700/60 shadow-inner">
+                    <span class="text-yellow-400">⚡</span>
+                    <span class="text-yellow-300 font-black">${rate} CFT</span> / 24h
+                  </span>
+                  <span class="text-[9px] text-lime-300 font-bold">
+                    +${nextBoost} بالترقية
+                  </span>
+                </div>
+
+                <!-- Action Row -->
+                <div class="flex items-center justify-between gap-2 mt-1 pt-1.5 border-t border-emerald-950">
+                  <span class="text-[9px] text-gray-300 truncate">
+                    ترقية لـ Lv.${lvl + 1}: <b class="text-amber-300 font-bold">${cost.toLocaleString()} 🌾</b>
+                  </span>
+                  <button onclick="openJurassicMinerModal('${k}')" class="btn-3d-yellow px-2.5 py-1 rounded-xl text-amber-950 font-black text-[9.5px] active:scale-95 transition-transform cursor-pointer shrink-0 shadow-md">
+                    <span>⛏️</span> تعدين وترقية
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Initial render for Jurassic Miners UI
+    try {
+      setTimeout(() => { renderJurassicMinersUI(); }, 300);
+    } catch(e){}
 
 </script>
 </body>
