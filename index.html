@@ -461,7 +461,7 @@
         <div id="crazyFarmMapContainer" class="relative w-full overflow-hidden select-none shadow-2xl" style="aspect-ratio: 1080 / 1920;">
           
           <!-- Animated Farm World Video Loop (Borderless Full-Frame) -->
-          <video id="crazyFarmMapVideo" autoplay loop muted playsinline poster="assets/crazy_farm_map.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
+          <video id="crazyFarmMapVideo" autoplay loop muted playsinline preload="metadata" poster="assets/crazy_farm_map.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
             <source src="assets/crazy_farm_map.mp4" type="video/mp4">
             <img src="assets/crazy_farm_map.jpg" alt="Crazy Farm Map" class="w-full h-full object-cover" />
           </video>
@@ -560,7 +560,7 @@
           <div id="crazyFarm2Container" class="relative w-full overflow-hidden select-none shadow-2xl rounded-3xl border-2 border-[#b45309]" style="aspect-ratio: 1080 / 1920;">
             
             <!-- Living Video Loop for Crazy Farm 2 -->
-            <video id="crazyFarm2Video" autoplay loop muted playsinline poster="assets/farms/crazy_farm_2_poster.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
+            <video id="crazyFarm2Video" autoplay loop muted playsinline preload="none" poster="assets/farms/crazy_farm_2_poster.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
               <source src="assets/farms/crazy_farm_2.mp4" type="video/mp4">
               <img src="assets/farms/crazy_farm_2_poster.jpg" alt="Crazy Farm 2 Map" class="w-full h-full object-cover" />
             </video>
@@ -666,7 +666,7 @@
           <div id="crazyFarm3Container" class="relative w-full overflow-hidden select-none shadow-2xl rounded-3xl border-2 border-emerald-700" style="aspect-ratio: 1080 / 1920;">
             
             <!-- Living Video Loop for Jurassic Farm -->
-            <video id="crazyFarm3Video" autoplay loop muted playsinline poster="assets/farms/crazy_farm_3_poster.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
+            <video id="crazyFarm3Video" autoplay loop muted playsinline preload="none" poster="assets/farms/crazy_farm_3_poster.jpg" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none">
               <source src="assets/farms/crazy_farm_3.mp4" type="video/mp4">
               <img src="assets/farms/crazy_farm_3_poster.jpg" alt="Jurassic Farm Map" class="w-full h-full object-cover" />
             </video>
@@ -2220,7 +2220,7 @@
           <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none z-20"></div>
 
           <!-- Main Farm Looping Video Player -->
-          <video id="mainFarmModalVideo" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none select-none z-10">
+          <video id="mainFarmModalVideo" autoplay loop muted playsinline preload="none" class="w-full h-full object-cover object-center pointer-events-none select-none z-10">
             <source src="assets/farms/main_farm.mp4" type="video/mp4">
           </video>
         </div>
@@ -2290,7 +2290,7 @@
           <div class="absolute inset-0 bg-radial from-white/30 via-transparent to-black/35 pointer-events-none"></div>
 
           <!-- Animal Looping Video Player (Ready for animal video clip) -->
-          <video id="animalModalVideo" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none select-none z-10" style="display: none;">
+          <video id="animalModalVideo" autoplay loop muted playsinline preload="none" class="w-full h-full object-cover object-center pointer-events-none select-none z-10" style="display: none;">
             <source id="animalModalVideoSource" src="" type="video/mp4">
           </video>
 
@@ -3134,17 +3134,61 @@
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
           osc.start(now);
           osc.stop(now + 0.035);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.setValueAtTime(110, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } else if (type === 'level_up') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.09); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.18); // G5
+          osc.frequency.setValueAtTime(1046.50, now + 0.27); // C6
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (type === 'chime') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now); // A5
+          osc.frequency.setValueAtTime(1174.66, now + 0.1); // D6
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'battle_start') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(440, now + 0.15);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
         }
 
         // Telegram Haptic Feedback (Physical vibration on Telegram Mobile)
         if (window.Telegram?.WebApp?.HapticFeedback) {
           try {
-            if (type === 'click') {
+            if (type === 'click' || type === 'pop' || type === 'wheel_tick') {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            } else if (type === 'coin') {
+            } else if (type === 'coin' || type === 'chime') {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            } else if (type === 'fanfare') {
+            } else if (type === 'fanfare' || type === 'level_up' || type === 'battle_start') {
               window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+            } else if (type === 'error') {
+              window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
             }
           } catch (hErr) {}
         }
@@ -5694,6 +5738,62 @@
     // ==================== DEDICATED ANIMAL FARM MODAL & 4x2 GRID LOGIC ====================
     let currentModalAnimalKey = null;
 
+    const AVAILABLE_ANIMAL_VIDEOS = {
+      duck: 'assets/farms/duck.mp4',
+      chicken: 'assets/farms/chicken.mp4',
+      pig: 'assets/farms/pig.mp4',
+      sheep: 'assets/farms/sheep.mp4',
+      bunny: 'assets/farms/bunny.mp4',
+      rabbit: 'assets/farms/bunny.mp4',
+      cows: 'assets/farms/cows.mp4',
+      cow: 'assets/farms/cows.mp4',
+      horse: 'assets/farms/horse.mp4',
+      horses: 'assets/farms/horse.mp4',
+      dog: 'assets/farms/dog.mp4',
+      cats: 'assets/farms/cats.mp4',
+      cat: 'assets/farms/cats.mp4',
+      bees: 'assets/farms/bees.mp4',
+      bee: 'assets/farms/bees.mp4',
+      bears: 'assets/farms/bears.mp4',
+      bear: 'assets/farms/bears.mp4',
+      goats: 'assets/farms/goats.mp4',
+      goat: 'assets/farms/goats.mp4',
+      bulls: 'assets/farms/bulls.mp4',
+      bull: 'assets/farms/bulls.mp4',
+      donkeys: 'assets/farms/donkeys.mp4',
+      donkey: 'assets/farms/donkeys.mp4',
+      geese: 'assets/farms/geese.mp4',
+      goose: 'assets/farms/geese.mp4'
+    };
+
+    const AVAILABLE_ANIMAL_POSTERS = {
+      duck: 'assets/farms/duck_poster.jpg',
+      chicken: 'assets/farms/chicken_poster.jpg',
+      pig: 'assets/farms/pig_poster.jpg',
+      sheep: 'assets/farms/sheep_poster.jpg',
+      bunny: 'assets/farms/bunny_poster.jpg',
+      rabbit: 'assets/farms/bunny_poster.jpg',
+      cows: 'assets/farms/cows_poster.jpg',
+      cow: 'assets/farms/cows_poster.jpg',
+      horse: 'assets/farms/horse_poster.jpg',
+      horses: 'assets/farms/horse_poster.jpg',
+      dog: 'assets/farms/dog_poster.jpg',
+      cats: 'assets/farms/cats_poster.jpg',
+      cat: 'assets/farms/cats_poster.jpg',
+      bees: 'assets/farms/bees_poster.jpg',
+      bee: 'assets/farms/bees_poster.jpg',
+      bears: 'assets/farms/bears_poster.jpg',
+      bear: 'assets/farms/bears_poster.jpg',
+      goats: 'assets/farms/goats_poster.jpg',
+      goat: 'assets/farms/goats_poster.jpg',
+      bulls: 'assets/farms/bulls_poster.jpg',
+      bull: 'assets/farms/bulls_poster.jpg',
+      donkeys: 'assets/farms/donkeys_poster.jpg',
+      donkey: 'assets/farms/donkeys_poster.jpg',
+      geese: 'assets/farms/geese_poster.jpg',
+      goose: 'assets/farms/geese_poster.jpg'
+    };
+
     const ANIMAL_DISPLAY_NAMES = {
       chicken: 'Chicken',
       duck: 'Duck',
@@ -5772,62 +5872,6 @@
       if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
       if (imgEl) imgEl.src = 'assets/farms/' + key + '.png';
 
-      const AVAILABLE_ANIMAL_VIDEOS = {
-        duck: 'assets/farms/duck.mp4',
-        chicken: 'assets/farms/chicken.mp4',
-        pig: 'assets/farms/pig.mp4',
-        sheep: 'assets/farms/sheep.mp4',
-        bunny: 'assets/farms/bunny.mp4',
-        rabbit: 'assets/farms/bunny.mp4',
-        cows: 'assets/farms/cows.mp4',
-        cow: 'assets/farms/cows.mp4',
-        horse: 'assets/farms/horse.mp4',
-        horses: 'assets/farms/horse.mp4',
-        dog: 'assets/farms/dog.mp4',
-        cats: 'assets/farms/cats.mp4',
-        cat: 'assets/farms/cats.mp4',
-        bees: 'assets/farms/bees.mp4',
-        bee: 'assets/farms/bees.mp4',
-        bears: 'assets/farms/bears.mp4',
-        bear: 'assets/farms/bears.mp4',
-        goats: 'assets/farms/goats.mp4',
-        goat: 'assets/farms/goats.mp4',
-        bulls: 'assets/farms/bulls.mp4',
-        bull: 'assets/farms/bulls.mp4',
-        donkeys: 'assets/farms/donkeys.mp4',
-        donkey: 'assets/farms/donkeys.mp4',
-        geese: 'assets/farms/geese.mp4',
-        goose: 'assets/farms/geese.mp4'
-      };
-
-      const AVAILABLE_ANIMAL_POSTERS = {
-        duck: 'assets/farms/duck_poster.jpg',
-        chicken: 'assets/farms/chicken_poster.jpg',
-        pig: 'assets/farms/pig_poster.jpg',
-        sheep: 'assets/farms/sheep_poster.jpg',
-        bunny: 'assets/farms/bunny_poster.jpg',
-        rabbit: 'assets/farms/bunny_poster.jpg',
-        cows: 'assets/farms/cows_poster.jpg',
-        cow: 'assets/farms/cows_poster.jpg',
-        horse: 'assets/farms/horse_poster.jpg',
-        horses: 'assets/farms/horse_poster.jpg',
-        dog: 'assets/farms/dog_poster.jpg',
-        cats: 'assets/farms/cats_poster.jpg',
-        cat: 'assets/farms/cats_poster.jpg',
-        bees: 'assets/farms/bees_poster.jpg',
-        bee: 'assets/farms/bees_poster.jpg',
-        bears: 'assets/farms/bears_poster.jpg',
-        bear: 'assets/farms/bears_poster.jpg',
-        goats: 'assets/farms/goats_poster.jpg',
-        goat: 'assets/farms/goats_poster.jpg',
-        bulls: 'assets/farms/bulls_poster.jpg',
-        bull: 'assets/farms/bulls_poster.jpg',
-        donkeys: 'assets/farms/donkeys_poster.jpg',
-        donkey: 'assets/farms/donkeys_poster.jpg',
-        geese: 'assets/farms/geese_poster.jpg',
-        goose: 'assets/farms/geese_poster.jpg'
-      };
-
       if (vidEl && vidSrc) {
         const videoSrcUrl = AVAILABLE_ANIMAL_VIDEOS[key];
         const posterUrl = AVAILABLE_ANIMAL_POSTERS[key] || '';
@@ -5862,8 +5906,14 @@
     function closeAnimalFarmModal() {
       currentModalAnimalKey = null;
       const vidEl = document.getElementById('animalModalVideo');
+      const vidSrc = document.getElementById('animalModalVideoSource');
       if (vidEl) {
         try { vidEl.pause(); } catch(e){}
+        if (vidSrc) {
+          vidSrc.src = '';
+          vidSrc.removeAttribute('data-animal');
+        }
+        try { vidEl.load(); } catch(e){}
       }
       const modal = document.getElementById('animalFarmModal');
       if (modal) {
