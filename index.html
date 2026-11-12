@@ -658,7 +658,7 @@
               </span>
             </div>
             <div id="cf3StatusBadge" class="bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse">
-              <span>🔒</span> <span>Locked (50M 🌾)</span>
+              <span>🔒</span> <span>Locked (Lv.10 + 50M 🌾)</span>
             </div>
           </div>
 
@@ -714,21 +714,29 @@
               </div>
 
               <!-- Locked Info -->
-              <div class="relative z-10 max-w-[270px] bg-black/70 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/60 shadow-xl mb-3">
+              <div class="relative z-10 max-w-[280px] bg-black/75 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/60 shadow-xl mb-3 text-center">
                 <h3 class="text-sm font-black text-yellow-300 uppercase tracking-wide flex items-center justify-center gap-1.5" style="font-family: 'Fredoka', cursive;">
                   <span>🌋</span> Jurassic Farm <span>💎</span>
                 </h3>
                 <p class="text-[10.5px] text-emerald-100 font-semibold mt-1 leading-snug">
                   Unlock the mythical Jurassic land to mine <b>CFT Tokens</b> daily with <b>5 legendary creatures</b> (Dinosaur, Phoenix, Anaconda, Dragon, Dolphin)!
                 </p>
-                <div class="mt-2 text-xs font-black text-yellow-300 drop-shadow">
-                  Cost: 50,000,000 Farm Points 🌾 (50M)
+                <div class="mt-2.5 pt-2 border-t border-emerald-500/40 text-[11px] font-bold text-left space-y-1">
+                  <div class="text-[10px] uppercase tracking-wider text-amber-300 font-black text-center mb-1">Requirements To Unlock:</div>
+                  <div class="flex items-center justify-between px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50">
+                    <span class="text-emerald-200">1. Main Farm Level:</span>
+                    <span id="cf3ReqLevelVal" class="font-black text-yellow-300">Lv. 10+</span>
+                  </div>
+                  <div class="flex items-center justify-between px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50">
+                    <span class="text-emerald-200">2. Farm Points:</span>
+                    <span id="cf3ReqPointsVal" class="font-black text-yellow-300">50,000,000 🌾</span>
+                  </div>
                 </div>
               </div>
 
               <!-- Unlock Button -->
-              <button onclick="unlockCrazyFarm3()" class="relative z-10 btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
-                <span>🔓</span> Unlock Jurassic Farm (50M 🌾)
+              <button onclick="unlockCrazyFarm3()" class="relative z-10 btn-3d-yellow px-5 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
+                <span>🔓</span> Unlock Jurassic Farm (Lv.10 + 50M 🌾)
               </button>
 
               <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
@@ -6923,7 +6931,30 @@
         }
         if (badge) {
           badge.className = 'bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse';
-          badge.innerHTML = '<span>🔒</span> <span>Locked (50M 🌾)</span>';
+          badge.innerHTML = '<span>🔒</span> <span>Locked (Lv.10 + 50M 🌾)</span>';
+        }
+
+        // Live check indicators in fog overlay
+        const reqLvlEl = document.getElementById('cf3ReqLevelVal');
+        const reqPtsEl = document.getElementById('cf3ReqPointsVal');
+        const curLvl = typeof userLevel === 'number' ? userLevel : 1;
+        const curPts = typeof points === 'number' ? points : 0;
+
+        if (reqLvlEl) {
+          if (curLvl >= 10) {
+            reqLvlEl.innerHTML = `<span class="text-emerald-400 font-black">✓ Lv. 10 (You: ${curLvl})</span>`;
+          } else {
+            reqLvlEl.innerHTML = `<span class="text-rose-400 font-black">✗ Lv. 10 (You: ${curLvl})</span>`;
+          }
+        }
+
+        if (reqPtsEl) {
+          if (curPts >= 50000000) {
+            reqPtsEl.innerHTML = `<span class="text-emerald-400 font-black">✓ 50,000,000 🌾</span>`;
+          } else {
+            const ptsDisplay = curPts >= 1000000 ? (curPts / 1000000).toFixed(1) + 'M' : curPts.toLocaleString();
+            reqPtsEl.innerHTML = `<span class="text-amber-300 font-black">✗ 50M 🌾 (${ptsDisplay})</span>`;
+          }
         }
       }
     }
@@ -6946,6 +6977,7 @@
 
     function unlockCrazyFarm3() {
       try { playSound('click'); } catch(e){}
+      const REQUIRED_LEVEL = 10;
       const UNLOCK_COST = 50000000; // 50 Million Points
 
       if (isCrazyFarm3Unlocked) {
@@ -6953,14 +6985,42 @@
         return;
       }
 
-      if (points < UNLOCK_COST) {
-        const remaining = UNLOCK_COST - points;
-        showWalletToast(`⚠️ Need ${UNLOCK_COST.toLocaleString()} points! (${remaining.toLocaleString()} more needed)`);
-        alert(`🔒 Jurassic Farm requires 50,000,000 Farm Points (50M) to unlock!\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${remaining.toLocaleString()} Points`);
+      const curLvl = typeof userLevel === 'number' ? userLevel : 1;
+      const curPts = typeof points === 'number' ? points : 0;
+      const isLevelMet = curLvl >= REQUIRED_LEVEL;
+      const isPointsMet = curPts >= UNLOCK_COST;
+
+      if (!isLevelMet || !isPointsMet) {
+        let msg = '🔒 Jurassic Farm Requirements:\n\n';
+        if (!isLevelMet) {
+          msg += `❌ Main Farm Level: Required Lv. ${REQUIRED_LEVEL} (Your Level: Lv. ${curLvl})\n`;
+        } else {
+          msg += `✅ Main Farm Level: Lv. ${curLvl} (Met)\n`;
+        }
+
+        if (!isPointsMet) {
+          const remaining = UNLOCK_COST - curPts;
+          msg += `❌ Farm Points: Required ${UNLOCK_COST.toLocaleString()} 🌾 (Your Balance: ${curPts.toLocaleString()} - Need ${remaining.toLocaleString()} more)\n`;
+        } else {
+          msg += `✅ Farm Points: ${curPts.toLocaleString()} 🌾 (Met)\n`;
+        }
+
+        msg += '\nBoth requirements must be fulfilled to unlock!';
+
+        if (!isLevelMet && !isPointsMet) {
+          showWalletToast('⚠️ Need Main Farm Lv. 10 & 50M Points to unlock!');
+        } else if (!isLevelMet) {
+          showWalletToast(`⚠️ Main Farm must be Level 10+! (Current: Lv. ${curLvl})`);
+        } else {
+          const remaining = UNLOCK_COST - curPts;
+          showWalletToast(`⚠️ Need 50,000,000 Farm Points! (${remaining.toLocaleString()} more)`);
+        }
+
+        alert(msg);
         return;
       }
 
-      if (!confirm('Unlock the mythical Jurassic Farm for 50,000,000 Farm Points (50M 🌾)?')) return;
+      if (!confirm(`Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 50,000,000 Farm Points (50M 🌾)\n\nProceed to unlock?`)) return;
 
       points -= UNLOCK_COST;
       isCrazyFarm3Unlocked = true;
