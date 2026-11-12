@@ -6258,7 +6258,12 @@
         navigator.clipboard.writeText(refUrl).catch(() => {});
       }
       if (window.Telegram?.WebApp?.openTelegramLink) {
-        const text = encodeURIComponent('Join Crazy Farm on Telegram and grow your Web3 farm together!');
+        const uLang = ((window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || navigator.language || '').toLowerCase());
+        const isAr = uLang.startsWith('ar');
+        const shareMsg = isAr
+          ? 'انضم معي في مزرعة Crazy Farm على تيليجرام! اجمع النقاط واكسب عملات الإيردروب القادم على شبكة TON! 🌾🚀'
+          : 'Join me in Crazy Farm on Telegram! Farm points & earn tokens for the upcoming TON airdrop! 🌾🚀';
+        const text = encodeURIComponent(shareMsg);
         window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`);
       } else {
         alert(`🎉 Referral Link Copied:\n\n${refUrl}\n\nShare with friends to reach the next milestone!`);

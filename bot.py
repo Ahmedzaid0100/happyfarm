@@ -81,45 +81,92 @@ def api_request(method, data=None):
                 time.sleep(2)
                 return None
 
-def send_welcome_message(chat_id, first_name, username):
-    welcome_text = (
-        f"👋 <b>Welcome {first_name} to Crazy Farm!</b> 🌾\n\n"
-        "🎮 <b>The premier Web3 farming & tactical battle game on TON!</b>\n\n"
-        "🌟 <b>Game Features:</b>\n"
-        "• 🐝 <b>Bee Farm:</b> Free automatic mining of Farm Points & hive upgrades.\n"
-        "• 🐶 <b>3D RUN Sprint:</b> Dodge obstacles, collect bones & earn CFC tokens!\n"
-        "• ⚔️ <b>PVP Animal Arena:</b> Tactical squad battles (3v3, 5v5, 7v7) with big rewards.\n"
-        "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFC tokens at TGE.\n\n"
-        f"📢 <b>Official Channel:</b> Join for announcements & airdrop updates:\n👉 {CHANNEL_URL}\n\n"
-        "👇 <b>Tap the button below to start playing:</b>"
-    )
+def is_arabic_user(lang_code):
+    if not lang_code:
+        return False
+    return str(lang_code).lower().startswith("ar")
 
-    keyboard = {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "🎮 Play Crazy Farm",
-                    "web_app": {"url": WEBAPP_URL}
-                }
-            ],
-            [
-                {
-                    "text": "📢 Official Channel 🌾",
-                    "url": CHANNEL_URL
-                }
-            ],
-            [
-                {
-                    "text": "👥 Invite Friends",
-                    "switch_inline_query": "Join me in Crazy Farm! Farm points & earn CFC tokens for the upcoming TON airdrop! 🌾"
-                },
-                {
-                    "text": "❓ How to Play & Rewards",
-                    "callback_data": "how_to_play"
-                }
+def send_welcome_message(chat_id, first_name, username, lang_code=None):
+    is_ar = is_arabic_user(lang_code)
+
+    if is_ar:
+        welcome_text = (
+            f"👋 <b>أهلاً بك يا {first_name} في عالم مزرعة Crazy Farm!</b> 🌾\n\n"
+            "🎮 <b>أقوى لعبة Web3 زراعية وقتالية على شبكة TON!</b>\n\n"
+            "🌟 <b>مميزات اللعبة:</b>\n"
+            "• 🐝 <b>مزرعة النحل:</b> تعدين مجاني فوري لنقاط FARM وتطوير مستواك.\n"
+            "• 🐶 <b>سباق الجري RUN 3D:</b> تفادي العوائق واكسب مكافآت ونقاط فورية!\n"
+            "• ⚔️ <b>حلبة قتال الحيوانات PVP:</b> معارك تكتيكية (3v3 و 5v5 و 7v7) وجوائز كبرى.\n"
+            "• 🚀 <b>معززات الإعلانات اليومية:</b> أكمل 3 إعلانات واكسب +3,000 نقطة وعملات CFT يومياً!\n"
+            "• 💎 <b>إيردروب TON:</b> اربط محفظتك لتأكيد حصتك من عملات CFC في حدث التوزيع (TGE).\n\n"
+            f"📢 <b>قناتنا الرسمية:</b> انضم لمتابعة التحديثات والجوائز:\n👉 {CHANNEL_URL}\n\n"
+            "👇 <b>اضغط على الزر أدناه لبدء اللعب الآن مباشرة:</b>"
+        )
+        keyboard = {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🎮 العب الآن | Play Crazy Farm",
+                        "web_app": {"url": WEBAPP_URL}
+                    }
+                ],
+                [
+                    {
+                        "text": "📢 انضم للقناة الرسمية 🌾",
+                        "url": CHANNEL_URL
+                    }
+                ],
+                [
+                    {
+                        "text": "👥 دعوة الأصدقاء",
+                        "switch_inline_query": "انضم معي في مزرعة Crazy Farm! اجمع النقاط واكسب عملات CFC للإيردروب القادم على شبكة TON! 🌾"
+                    },
+                    {
+                        "text": "❓ كيفية اللعب والربح",
+                        "callback_data": "how_to_play"
+                    }
+                ]
             ]
-        ]
-    }
+        }
+    else:
+        welcome_text = (
+            f"👋 <b>Welcome {first_name} to Crazy Farm!</b> 🌾\n\n"
+            "🎮 <b>The premier Web3 farming & tactical battle game on TON!</b>\n\n"
+            "🌟 <b>Game Features:</b>\n"
+            "• 🐝 <b>Bee Farm:</b> Free automatic mining of Farm Points & hive upgrades.\n"
+            "• 🐶 <b>3D RUN Sprint:</b> Dodge obstacles, collect rewards & sprint to victory!\n"
+            "• ⚔️ <b>PVP Animal Arena:</b> Tactical squad battles (3v3, 5v5, 7v7) with big prizes.\n"
+            "• 🚀 <b>Daily Mega Boosters:</b> Complete 3-ad chains to claim +3,000 Pts & CFT coins daily!\n"
+            "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFC tokens at TGE.\n\n"
+            f"📢 <b>Official Channel:</b> Join for announcements & airdrop updates:\n👉 {CHANNEL_URL}\n\n"
+            "👇 <b>Tap the button below to start playing:</b>"
+        )
+        keyboard = {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🎮 Play Crazy Farm",
+                        "web_app": {"url": WEBAPP_URL}
+                    }
+                ],
+                [
+                    {
+                        "text": "📢 Official Channel 🌾",
+                        "url": CHANNEL_URL
+                    }
+                ],
+                [
+                    {
+                        "text": "👥 Invite Friends",
+                        "switch_inline_query": "Join me in Crazy Farm! Farm points & earn CFC tokens for the upcoming TON airdrop! 🌾"
+                    },
+                    {
+                        "text": "❓ How to Play & Rewards",
+                        "callback_data": "how_to_play"
+                    }
+                ]
+            ]
+        }
 
     payload = {
         "chat_id": chat_id,
@@ -195,24 +242,38 @@ def run_bot_polling():
                         user = msg.get("from", {})
                         first_name = user.get("first_name", "Farmer")
                         username = user.get("username", "")
+                        lang_code = user.get("language_code", "")
 
                         if text.startswith("/start"):
-                            print(f"📥 /start from: {first_name} (@{username}, ID: {user.get('id')})")
-                            send_welcome_message(chat_id, first_name, username)
+                            print(f"📥 /start from: {first_name} (@{username}, Lang: {lang_code}, ID: {user.get('id')})")
+                            send_welcome_message(chat_id, first_name, username, lang_code)
 
                     # Handle Callback Queries
                     elif "callback_query" in update:
                         cb = update["callback_query"]
                         cb_id = cb.get("id")
+                        cb_user = cb.get("from", {})
+                        cb_lang = cb_user.get("language_code", "")
                         data = cb.get("data")
                         if data == "how_to_play":
-                            how_text = (
-                                "🌾 How to Play & Reward System:\n\n"
-                                "1. Collect free points from your Bee Farm and upgrade your animals.\n"
-                                "2. Play the 3D Dog RUN Sprint, dodge obstacles and collect bones.\n"
-                                "3. Compete in PVP battles to win massive bonus farm points.\n"
-                                "4. Connect your TON wallet to register your on-chain share for TGE distribution!"
-                            )
+                            if is_arabic_user(cb_lang):
+                                how_text = (
+                                    "🌾 كيفية اللعب ونظام المكافآت:\n\n"
+                                    "1. اجمع نقاطاً مجانية من مزرعة النحل وطور مستواك وحيواناتك.\n"
+                                    "2. العب سباق الجري 3D Runner وتفادى الحواجز واكسب مكافآت فورية.\n"
+                                    "3. نافس في معارك الحيوانات (3v3 و 5v5 و 7v7) لحصد مئات النقاط.\n"
+                                    "4. استخدم معززات الإعلانات اليومية لكسب +3,000 نقطة وعملات CFT مجاناً.\n"
+                                    "5. اربط محفظتك TON لتسجيل حصتك في توزيع الإيردروب الرسمي (TGE)!"
+                                )
+                            else:
+                                how_text = (
+                                    "🌾 How to Play & Reward System:\n\n"
+                                    "1. Collect free points from your Bee Farm and upgrade your animals.\n"
+                                    "2. Play the 3D Dog RUN Sprint, dodge obstacles and sprint to win.\n"
+                                    "3. Compete in tactical PVP arena battles (3v3, 5v5, 7v7) to win massive points.\n"
+                                    "4. Complete Daily Mega Boosters to claim +3,000 Points & CFT coins daily.\n"
+                                    "5. Connect your TON wallet to register your on-chain share for TGE distribution!"
+                                )
                             answer_callback(cb_id, how_text)
             else:
                 error_count += 1
