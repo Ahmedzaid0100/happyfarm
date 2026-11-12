@@ -8,6 +8,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Adsgram Official Telegram Mini App Advertising SDK (Block/Unit ID: 59451) -->
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial and Rewarded Popup (User-Action Only) -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
   <script src="https://libtl.com/sdk.js" data-zone="12182126" data-sdk="show_12182126"></script>
@@ -8819,7 +8821,48 @@
       }
     }
 
-    let adEngineTurn = 0; // Alternates between Monetag (USD) and TADS (Crypto/TON)
+    // ==================== ADSGRAM OFFICIAL REWARDED ADS SDK (UNIT ID: 59451) ====================
+    const ADSGRAM_BLOCK_ID = "59451";
+    let adsgramController = null;
+
+    function getAdsgramController() {
+      if (!adsgramController && window.Adsgram && typeof window.Adsgram.init === 'function') {
+        try {
+          adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+          console.log('✅ Adsgram initialized with Unit ID:', ADSGRAM_BLOCK_ID);
+        } catch(e) {
+          console.warn('⚠️ Adsgram init error:', e);
+        }
+      }
+      return adsgramController;
+    }
+
+    function showAdsgramAd(onSuccess, onFail) {
+      const controller = getAdsgramController();
+      if (!controller) {
+        console.warn('⚠️ Adsgram SDK not loaded yet, falling back...');
+        if (typeof onFail === 'function') onFail(new Error('Adsgram not ready'));
+        return;
+      }
+
+      isAdLoadingOrShowing = true;
+      showWalletToast('🎬 Loading Adsgram sponsored ad...');
+
+      controller.show()
+        .then((result) => {
+          isAdLoadingOrShowing = false;
+          console.log('🎉 Adsgram Rewarded completed successfully!', result);
+          try { playSound('fanfare'); } catch(e){}
+          if (typeof onSuccess === 'function') onSuccess();
+        })
+        .catch((result) => {
+          isAdLoadingOrShowing = false;
+          console.warn('⚠️ Adsgram ad skipped, error or no inventory:', result);
+          if (typeof onFail === 'function') onFail(result);
+        });
+    }
+
+    let adEngineTurn = 0; // Alternates fallback between Monetag and TADS
 
     function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
       // 1. Anti-spam / Mutex check: prevent parallel requests or double-clicks
@@ -8828,27 +8871,25 @@
         return;
       }
 
-      adEngineTurn = (adEngineTurn + 1) % 2;
-
-      if (adEngineTurn === 1) {
-        // Turn A: Try TADS (Crypto / TON) -> Fallback to Monetag ($) -> Fallback to simulated ad
-        console.log('💎 Ad Engine: Trying TADS (Crypto) first...');
-        showTadsAd(onSuccess, () => {
-          console.log('🔄 TADS fallback -> Switching to Monetag ($)...');
-          showMonetagAd(onSuccess, () => {
-            showFallbackAdModal(onSuccess, adTitle);
-          });
-        });
-      } else {
-        // Turn B: Try Monetag ($) -> Fallback to TADS (Crypto / TON) -> Fallback to simulated ad
-        console.log('💵 Ad Engine: Trying Monetag ($) first...');
-        showMonetagAd(onSuccess, () => {
-          console.log('🔄 Monetag fallback -> Switching to TADS (Crypto)...');
+      // PRIMARY #1: Adsgram (Unit ID: 59451)
+      console.log('🚀 Ad Engine: Showing Adsgram (Unit ID: 59451) as Primary...');
+      showAdsgramAd(onSuccess, () => {
+        console.log('🔄 Adsgram fallback -> switching to secondary networks...');
+        adEngineTurn = (adEngineTurn + 1) % 2;
+        if (adEngineTurn === 1) {
           showTadsAd(onSuccess, () => {
-            showFallbackAdModal(onSuccess, adTitle);
+            showMonetagAd(onSuccess, () => {
+              showFallbackAdModal(onSuccess, adTitle);
+            });
           });
-        });
-      }
+        } else {
+          showMonetagAd(onSuccess, () => {
+            showTadsAd(onSuccess, () => {
+              showFallbackAdModal(onSuccess, adTitle);
+            });
+          });
+        }
+      });
     }
 
     function showFallbackAdModal(onSuccess, adTitle = 'Reward Ad') {
