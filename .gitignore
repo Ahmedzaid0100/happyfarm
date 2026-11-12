@@ -1,3 +1,9 @@
 ﻿snap_*
 *.tmp
 *.log
+.env
+*.env
+.env.*
+*.token
+__pycache__/
+*.pyc

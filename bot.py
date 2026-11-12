@@ -23,9 +23,28 @@ except ImportError:
     import urllib.parse
 
 # ==================== CONFIGURATION ====================
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8627832293:AAHxDdcHn7RUHD4isiLdqcRpe5ZcLjYHXZQ")
-WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
-CHANNEL_URL = "https://t.me/crazyfarmgamey"
+# Automatically load environment variables from private local .env file if present
+def _load_local_env():
+    env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+        except Exception as e:
+            print(f"[WARN] Error reading local .env file: {e}")
+
+_load_local_env()
+
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+if not BOT_TOKEN:
+    print("[CRITICAL ERROR] TELEGRAM_BOT_TOKEN is not set in environment or .env file!")
+
+WEBAPP_URL = os.getenv("WEBAPP_URL", "https://ahmedzaid0100.github.io/happyfarm/")
+CHANNEL_URL = os.getenv("CHANNEL_URL", "https://t.me/crazyfarmgamey")
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
