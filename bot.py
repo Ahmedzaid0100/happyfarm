@@ -221,6 +221,13 @@ def run_bot_polling():
         print("✅ Network: Using 'requests' with automated cloud proxy support.")
     else:
         print("ℹ️ Network: Using standard urllib with proxy handler.")
+    
+    # Clear any old webhook locks
+    try:
+        api_request("deleteWebhook")
+    except Exception:
+        pass
+
     set_bot_menu_button()
     
     offset = 0
