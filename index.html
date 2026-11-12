@@ -1328,7 +1328,7 @@
             </div>
             <div id="adBoostActionContainer">
               <button id="adBoostBtn" onclick="triggerAdBoost()" class="btn-3d-purple w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
-                <span>⚡</span> <span id="adBoostBtnText">Ad Boost (+10 Pts) [1/10]</span>
+                <span>⚡</span> <span id="adBoostBtnText">Ad Boost (+80 Pts) [1/10]</span>
               </button>
             </div>
           </div>
@@ -7962,7 +7962,8 @@
 
       const remSec = getAdBoostRemainingCooldownSec();
       const currentStep = Math.min(AD_BOOST_MAX, adBoostCount + 1);
-      const nextPts = currentStep * 10; // Option B: 10, 20, 30, ..., 100
+      const nextPts = currentStep * 80; // 8x scale: 80, 160, 240, 320, 400, 480, 560, 640, 720, 800
+      const isFinalStep = (currentStep === AD_BOOST_MAX);
 
       if (badge) {
         badge.innerText = `${adBoostCount}/${AD_BOOST_MAX}`;
@@ -7976,19 +7977,23 @@
       if (adBoostCount >= AD_BOOST_MAX) {
         container.innerHTML = `
           <button disabled class="w-full py-2.5 rounded-2xl bg-emerald-900/80 border border-emerald-500/80 text-emerald-200 font-black text-xs shadow flex items-center justify-center gap-1.5 cursor-not-allowed">
-            <span>✅</span> All 10 Ad Boosts Completed Today
+            <span>✅</span> All 10 Ad Boosts Completed Today (+4,400 Pts &amp; 2 CFT 💎)
           </button>
         `;
       } else if (remSec > 0) {
+        const stepLabel = isFinalStep ? `[10/10 &bull; +800 Pts &amp; 2 CFT 💎]` : `[${currentStep}/${AD_BOOST_MAX}]`;
         container.innerHTML = `
           <button disabled class="w-full py-2.5 rounded-2xl bg-purple-950/80 border border-purple-700/60 text-purple-300 font-bold text-xs shadow flex items-center justify-center gap-2 cursor-not-allowed opacity-85">
-            <span class="animate-spin">⏳</span> Ad Boost Ready in ${remSec}s [${currentStep}/${AD_BOOST_MAX}]
+            <span class="animate-spin">⏳</span> Ad Boost Ready in ${remSec}s ${stepLabel}
           </button>
         `;
       } else {
+        const btnText = isFinalStep
+          ? `Ad Boost (+800 Pts &amp; 2 CFT 💎) [10/10]`
+          : `Ad Boost (+${nextPts} Pts) [${currentStep}/${AD_BOOST_MAX}]`;
         container.innerHTML = `
           <button onclick="triggerAdBoost()" class="btn-3d-purple w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse">
-            <span>⚡</span> Ad Boost (+${nextPts} Pts) [${currentStep}/${AD_BOOST_MAX}]
+            <span>⚡</span> ${btnText}
           </button>
         `;
       }
@@ -8019,10 +8024,23 @@
 
     function _doTriggerAdBoost() {
       const awardStep = adBoostCount + 1;
-      const awardPts = awardStep * 10;
+      const awardPts = awardStep * 80;
+      const isFinalStep = (awardStep === AD_BOOST_MAX);
+      const adTitle = isFinalStep
+        ? `Ad Boost (+800 Pts & 2 CFT) [10/10]`
+        : `Ad Boost (+${awardPts} Pts) [${awardStep}/${AD_BOOST_MAX}]`;
 
       showUniversalAd(() => {
         points += awardPts;
+        if (isFinalStep) {
+          cftBalance = (typeof cftBalance === 'number' ? cftBalance : (parseFloat(cftBalance) || 0)) + 2.0;
+          hfcBalance = Math.floor(cftBalance);
+          try {
+            localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+            localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+          } catch(e){}
+        }
+
         adBoostCount++;
         adBoostLastTime = Date.now();
         localStorage.setItem('crazyfarm_ad_boost_count', String(adBoostCount));
@@ -8035,8 +8053,13 @@
 
         try { playSound('fanfare'); } catch(e){}
         playSound('coin');
-        showWalletToast(`⚡ Ad Boost: +${awardPts} Points Added! (${adBoostCount}/${AD_BOOST_MAX})`);
-      }, `Ad Boost (+${awardPts} Pts) [${awardStep}/${AD_BOOST_MAX}]`);
+        if (isFinalStep) {
+          showWalletToast(`⚡ Ad Boost: +800 Points & +2.0 CFT Added! 💎 (10/10 Completed!)`);
+          try { confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } }); } catch(e){}
+        } else {
+          showWalletToast(`⚡ Ad Boost: +${awardPts} Points Added! (${adBoostCount}/${AD_BOOST_MAX})`);
+        }
+      }, adTitle);
     }
 
     // ==================== WATCH MORE COLLECT MODAL ====================
