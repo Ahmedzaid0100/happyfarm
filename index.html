@@ -704,8 +704,41 @@
               </div>
             </div>
 
+            <!-- Mysterious Cloud / Volcanic Fog Overlay for Jurassic Farm (50M Unlock) -->
+            <div id="crazyFarm3FogOverlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 text-center transition-all duration-700 bg-slate-950/80 backdrop-blur-md">
+              <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/40 via-transparent to-black/85 pointer-events-none"></div>
+              
+              <!-- Lock Icon & Visual -->
+              <div class="relative z-10 w-20 h-20 rounded-3xl bg-emerald-950/90 border-2 border-emerald-400 flex items-center justify-center text-4xl shadow-2xl mb-3 animate-pulse">
+                🦖
+              </div>
+
+              <!-- Locked Info -->
+              <div class="relative z-10 max-w-[270px] bg-black/70 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/60 shadow-xl mb-3">
+                <h3 class="text-sm font-black text-yellow-300 uppercase tracking-wide flex items-center justify-center gap-1.5" style="font-family: 'Fredoka', cursive;">
+                  <span>🌋</span> Jurassic Farm <span>💎</span>
+                </h3>
+                <p class="text-[10.5px] text-emerald-100 font-semibold mt-1 leading-snug">
+                  افتح أرض الجوراسيك الأسطورية لتعدين عملة <b>CFT</b> عبر <b>5 حظائر نادرة</b> (ديناصور، عنقاء، أناكوندا، تنين، دولفين)!
+                </p>
+                <div class="mt-2 text-xs font-black text-yellow-300 drop-shadow">
+                  تكلفة الفتح: 50,000,000 نقطة 🌾 (50M)
+                </div>
+              </div>
+
+              <!-- Unlock Button -->
+              <button onclick="unlockCrazyFarm3()" class="relative z-10 btn-3d-yellow px-6 py-2.5 rounded-2xl text-amber-950 font-black text-xs shadow-xl border border-yellow-200 active:scale-95 transition-transform cursor-pointer animate-bounce">
+                <span>🔓</span> فتح أرض الجوراسيك (50M 🌾)
+              </button>
+
+              <!-- Quick Test Mode Button (For Owner/Admin to test instantly) -->
+              <button onclick="window.testInstantUnlockCrazyFarm3()" class="relative z-10 mt-2 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[10px] border border-white/40 cursor-pointer active:scale-95 transition-all">
+                ⚡ فتح فوري للتجربة (Test Mode)
+              </button>
+            </div>
+
             <!-- Subtle Decorative Preview Banner Overlay -->
-            <div class="absolute bottom-3 inset-x-3 z-20 pointer-events-none">
+            <div id="cf3BottomBanner" class="absolute bottom-3 inset-x-3 z-20 pointer-events-none">
               <div class="bg-slate-950/80 backdrop-blur-md rounded-2xl p-2.5 border border-emerald-500/70 shadow-2xl text-center">
                 <div class="text-xs font-black text-yellow-300 uppercase tracking-wide flex items-center justify-center gap-1.5">
                   <span>🌋</span> <span>عالم التعدين الأسطوري</span> <span>💎</span>
@@ -6388,6 +6421,7 @@
         if (mapVideo && mapVideo.paused) { try { mapVideo.play().catch(()=>{}); } catch(e){} }
         if (cf2Video && cf2Video.paused) { try { cf2Video.play().catch(()=>{}); } catch(e){} }
         if (cf3Video && cf3Video.paused) { try { cf3Video.play().catch(()=>{}); } catch(e){} }
+        try { initCrazyFarm3State(); } catch(e){}
         try { renderJurassicMinersUI(); } catch(e){}
       } else {
         if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
@@ -6883,7 +6917,103 @@
     // Call on load
     window.addEventListener('load', () => {
       try { initCrazyFarm2State(); } catch(e){}
+      try { initCrazyFarm3State(); } catch(e){}
     });
+
+    // ==================== CRAZY FARM 3: JURASSIC FARM (UNLOCK SYSTEM & VOLCANIC FOG) ====================
+    let isCrazyFarm3Unlocked = localStorage.getItem('crazyfarm_unlocked_farm_3') === 'true';
+
+    function initCrazyFarm3State() {
+      const fogOverlay = document.getElementById('crazyFarm3FogOverlay');
+      const badge = document.getElementById('cf3StatusBadge');
+
+      if (isCrazyFarm3Unlocked) {
+        if (fogOverlay) {
+          fogOverlay.classList.add('opacity-0', 'pointer-events-none');
+          fogOverlay.style.display = 'none';
+        }
+        if (badge) {
+          badge.className = 'bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-100 shadow-md flex items-center gap-1';
+          badge.innerHTML = '<span>⚡</span> <span>مفتوح: تعدين CFT</span>';
+        }
+      } else {
+        if (fogOverlay) {
+          fogOverlay.classList.remove('opacity-0', 'pointer-events-none');
+          fogOverlay.style.display = 'flex';
+        }
+        if (badge) {
+          badge.className = 'bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500 text-[9.5px] font-black text-yellow-300 shadow-md flex items-center gap-1 animate-pulse';
+          badge.innerHTML = '<span>🔒</span> <span>مغلق (50M 🌾)</span>';
+        }
+      }
+    }
+
+    // Helper for Admin / Developer Instant Testing
+    window.testInstantUnlockCrazyFarm3 = function() {
+      isCrazyFarm3Unlocked = true;
+      try { localStorage.setItem('crazyfarm_unlocked_farm_3', 'true'); } catch(e){}
+      initCrazyFarm3State();
+      try { playSound('fanfare'); } catch(e){}
+      showWalletToast('⚡ تم فتح مزرعة الجوراسيك فوراً للتجربة بنجاح!');
+    };
+
+    window.testLockCrazyFarm3 = function() {
+      isCrazyFarm3Unlocked = false;
+      try { localStorage.removeItem('crazyfarm_unlocked_farm_3'); } catch(e){}
+      initCrazyFarm3State();
+      showWalletToast('🔒 تم إعادة قفل مزرعة الجوراسيك.');
+    };
+
+    function unlockCrazyFarm3() {
+      try { playSound('click'); } catch(e){}
+      const UNLOCK_COST = 50000000; // 50 Million Points
+
+      if (isCrazyFarm3Unlocked) {
+        showWalletToast('🦖 Jurassic Farm is already unlocked!');
+        return;
+      }
+
+      if (points < UNLOCK_COST) {
+        const remaining = UNLOCK_COST - points;
+        showWalletToast(`⚠️ تحتاج ${UNLOCK_COST.toLocaleString()} نقطة! (متبقي ${remaining.toLocaleString()} نقطة)`);
+        alert(`🔒 مزرعة الجوراسيك تتطلب 50,000,000 نقطة (50M) لفتحها!\n\nرصيدك الحالي: ${points.toLocaleString()} نقطة\nالنقاط المطلوبة: ${remaining.toLocaleString()} نقطة`);
+        return;
+      }
+
+      if (!confirm('هل تريد فتح مزرعة الجوراسيك الأسطورية مقابل 50,000,000 نقطة مزرعة (50M 🌾)؟')) return;
+
+      points -= UNLOCK_COST;
+      isCrazyFarm3Unlocked = true;
+      try {
+        localStorage.setItem('crazyfarm_unlocked_farm_3', 'true');
+        localStorage.setItem('crazyfarm_points', String(points));
+        localStorage.setItem('crazyfarm_farm_points', String(points));
+      } catch(e) {}
+
+      try { playSound('fanfare'); } catch(e){}
+      try { playSound('coin'); } catch(e){}
+
+      // Disperse Fog Animation
+      const fogOverlay = document.getElementById('crazyFarm3FogOverlay');
+      if (fogOverlay) {
+        fogOverlay.classList.add('transition-all', 'duration-1000', 'opacity-0');
+        setTimeout(() => {
+          fogOverlay.style.display = 'none';
+        }, 1000);
+      }
+
+      const badge = document.getElementById('cf3StatusBadge');
+      if (badge) {
+        badge.className = 'bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-100 shadow-md flex items-center gap-1';
+        badge.innerHTML = '<span>⚡</span> <span>مفتوح: تعدين CFT</span>';
+      }
+
+      updateDisplays();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+
+      showWalletToast('🎉 مبروك! تم فتح مزرعة الجوراسيك الأسطورية بنجاح!');
+      alert('🎉 مرحباً بك في Jurassic Farm!\n\nتبدد الضباب البركاني وأصبح بإمكانك الآن تعدين عملة CFT وترقية الـ 5 كائنات الأسطورية!');
+    }
 
     // ==================== TON BOOST PACKAGES (SILVER, GOLD, DIAMOND) ====================
     function buyTonPackage(packageKey, tonPrice, pointsReward, packageName) {
@@ -10269,6 +10399,11 @@ window.addEventListener('load', () => {
     }
 
     function openJurassicMinerModal(key) {
+      if (!isCrazyFarm3Unlocked) {
+        try { playSound('click'); } catch(e){}
+        showWalletToast('🔒 افتح أرض الجوراسيك بـ 50 مليون نقطة (50M 🌾) أولاً!');
+        return;
+      }
       const miner = JURASSIC_MINERS[key];
       if (!miner) return;
       currentJurassicModalKey = key;
@@ -10439,9 +10574,12 @@ window.addEventListener('load', () => {
       container.innerHTML = html;
     }
 
-    // Initial render for Jurassic Miners UI
+    // Initial render for Jurassic Miners UI & Cloud State
     try {
-      setTimeout(() => { renderJurassicMinersUI(); }, 300);
+      setTimeout(() => {
+        try { initCrazyFarm3State(); } catch(e){}
+        renderJurassicMinersUI();
+      }, 300);
     } catch(e){}
 
 </script>
