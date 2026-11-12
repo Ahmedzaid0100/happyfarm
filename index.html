@@ -676,31 +676,31 @@
               <!-- 1. Dinosaur (Top-Left Pen) -->
               <div id="hotspot-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 12%; width: 44%; height: 24%;" title="T-Rex Emperor Enclosure"></div>
               <div id="mapBadge-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 26%; top: 37.8%; transform: translateX(-50%);">
-                <span>🦖</span> <span id="mapBadgeText-cf3-dinosaur">1.00 CFT ⚡</span>
+                <span>🦖</span> <span id="mapBadgeText-cf3-dinosaur">3.00 CFT ⚡</span>
               </div>
 
               <!-- 2. Phoenix (Top-Right Pen) -->
               <div id="hotspot-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 54%; top: 12%; width: 44%; height: 24%;" title="Fire Phoenix Nest"></div>
               <div id="mapBadge-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute bg-gradient-to-r from-orange-500 via-amber-400 to-red-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 77%; top: 37.8%; transform: translateX(-50%);">
-                <span>🦅</span> <span id="mapBadgeText-cf3-phoenix">0.50 CFT ⚡</span>
+                <span>🦅</span> <span id="mapBadgeText-cf3-phoenix">1.50 CFT ⚡</span>
               </div>
 
               <!-- 3. Anaconda (Center Pen) -->
               <div id="hotspot-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 12%; top: 36%; width: 76%; height: 20%;" title="Titan Anaconda Swamp"></div>
               <div id="mapBadge-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute bg-gradient-to-r from-yellow-500 via-lime-400 to-yellow-500 text-emerald-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 50%; top: 57.5%; transform: translateX(-50%);">
-                <span>🐍</span> <span id="mapBadgeText-cf3-anaconda">0.25 CFT ⚡</span>
+                <span>🐍</span> <span id="mapBadgeText-cf3-anaconda">0.75 CFT ⚡</span>
               </div>
 
               <!-- 4. Dragon (Bottom-Left Pen) -->
               <div id="hotspot-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 56%; width: 46%; height: 26%;" title="Ancient Dragon Lair"></div>
               <div id="mapBadge-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute bg-gradient-to-r from-red-600 via-rose-400 to-amber-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 32.5%; top: 83.5%; transform: translateX(-50%);">
-                <span>🐉</span> <span id="mapBadgeText-cf3-dragon">0.75 CFT ⚡</span>
+                <span>🐉</span> <span id="mapBadgeText-cf3-dragon">2.25 CFT ⚡</span>
               </div>
 
               <!-- 5. Dolphin (Bottom-Right Lagoon) -->
               <div id="hotspot-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 52%; top: 56%; width: 46%; height: 26%;" title="Mystic Dolphin Lagoon"></div>
               <div id="mapBadge-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute bg-gradient-to-r from-cyan-500 via-sky-300 to-blue-500 text-blue-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-sky-100 shadow-[0_2px_8px_rgba(0,0,0,0.8)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 74%; top: 83.5%; transform: translateX(-50%);">
-                <span>🐬</span> <span id="mapBadgeText-cf3-dolphin">0.10 CFT ⚡</span>
+                <span>🐬</span> <span id="mapBadgeText-cf3-dolphin">0.30 CFT ⚡</span>
               </div>
             </div>
 
@@ -2415,24 +2415,29 @@
               <span>⚡</span> UPGRADE MINER
             </span>
             <span id="jmModalUpgradeCost" class="text-[9px] font-extrabold text-amber-950 mt-0.5">
-              Lv. 2 (5,000,000 🌾)
+              Lv. 2 (10,000,000 🌾)
             </span>
           </button>
 
-          <!-- Mine Button -->
+          <!-- Mine / Claim Button -->
           <button id="jmModalMineBtn" onclick="triggerJurassicMiningFromModal()" class="btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300">
-            <span class="flex items-center gap-1 uppercase tracking-wide">
+            <span id="jmModalMineActionLabel" class="flex items-center gap-1 uppercase tracking-wide">
               <span>⛏️</span> START MINING
             </span>
             <span id="jmModalMineStatus" class="text-[9px] font-extrabold text-lime-100 mt-0.5">
-              24h Mining Active
+              Ready to Mine
             </span>
           </button>
         </div>
 
-        <!-- Setup Note Footer -->
-        <div class="text-center text-[9px] text-emerald-400/80 font-bold shrink-0">
-          ⚡ High-Yield Web3 Mining Sanctuary • Real-Time Yield
+        <!-- Setup Note Footer & Fast Test Option -->
+        <div class="text-center pt-0.5 shrink-0">
+          <div class="text-[9px] text-emerald-300 font-bold">
+            ⚡ High-Yield Web3 Mining Sanctuary • 24h Yield
+          </div>
+          <button type="button" onclick="window.testInstantJurassicMineReady()" class="mt-1 text-[8.5px] text-yellow-300/60 hover:text-yellow-200 underline cursor-pointer active:scale-95 transition-all">
+            ⚡ Instant 24h Completion (Test Mode)
+          </button>
         </div>
 
       </div>
@@ -10245,7 +10250,9 @@ window.addEventListener('load', () => {
       closeGiftModal();
     }
 
-    // ==================== JURASSIC MINERS ECOSYSTEM (5 PREHISTORIC CFT MINERS) ====================
+    // ==================== JURASSIC MINERS ECOSYSTEM (5 PREHISTORIC CFT MINERS - 3X RATES) ====================
+    const JURASSIC_CYCLE_MS = 24 * 3600 * 1000; // 24 Hours in ms
+
     const JURASSIC_MINERS = {
       dinosaur: {
         id: 'dinosaur',
@@ -10257,11 +10264,20 @@ window.addEventListener('load', () => {
         badgeBorder: 'border-amber-400',
         textColor: 'text-yellow-300',
         mineAsset: 'CFT',
-        baseRate: 1.00, // CFT per 24h
-        rateBoostPerLvl: 0.20,
-        baseUpgradeCost: 5000000, // 5M points
-        costMultiplier: 1.5,
-        desc: 'Apex predator of the sanctuary, yielding the highest daily rate of 1.00 CFT!'
+        baseRate: 3.00, // CFT per 24h (3x of 1.00)
+        rateBoostPerLvl: 1.50, // (3x of 0.50) -> Lv 10: 16.50 CFT
+        upgradeCosts: [
+          10000000,  // Lv 2 (10M)
+          20000000,  // Lv 3 (20M)
+          35000000,  // Lv 4 (35M)
+          55000000,  // Lv 5 (55M)
+          80000000,  // Lv 6 (80M)
+          115000000, // Lv 7 (115M)
+          155000000, // Lv 8 (155M)
+          200000000, // Lv 9 (200M)
+          250000000  // Lv 10 (250M)
+        ],
+        desc: 'Apex predator of the sanctuary, yielding 3.00 CFT daily at Level 1 up to 16.50 CFT at Max Level 10!'
       },
       dragon: {
         id: 'dragon',
@@ -10273,11 +10289,20 @@ window.addEventListener('load', () => {
         badgeBorder: 'border-red-400',
         textColor: 'text-rose-300',
         mineAsset: 'CFT',
-        baseRate: 0.75,
-        rateBoostPerLvl: 0.15,
-        baseUpgradeCost: 4000000, // 4M points
-        costMultiplier: 1.5,
-        desc: 'Volcanic ancient beast channeling blazing dragonfire to harvest 0.75 CFT daily.'
+        baseRate: 2.25, // CFT per 24h (3x of 0.75)
+        rateBoostPerLvl: 0.90, // (3x of 0.30) -> Lv 10: 10.35 CFT
+        upgradeCosts: [
+          5000000,   // Lv 2 (5M)
+          10000000,  // Lv 3 (10M)
+          18000000,  // Lv 4 (18M)
+          28000000,  // Lv 5 (28M)
+          42000000,  // Lv 6 (42M)
+          60000000,  // Lv 7 (60M)
+          85000000,  // Lv 8 (85M)
+          115000000, // Lv 9 (115M)
+          150000000  // Lv 10 (150M)
+        ],
+        desc: 'Volcanic ancient beast channeling blazing dragonfire, yielding 2.25 CFT daily up to 10.35 CFT at Level 10!'
       },
       phoenix: {
         id: 'phoenix',
@@ -10289,11 +10314,20 @@ window.addEventListener('load', () => {
         badgeBorder: 'border-orange-400',
         textColor: 'text-amber-200',
         mineAsset: 'CFT',
-        baseRate: 0.50,
-        rateBoostPerLvl: 0.10,
-        baseUpgradeCost: 3000000, // 3M points
-        costMultiplier: 1.5,
-        desc: 'Legendary firebird reborn from ashes, producing 0.50 CFT every 24 hours.'
+        baseRate: 1.50, // CFT per 24h (3x of 0.50)
+        rateBoostPerLvl: 0.60, // (3x of 0.20) -> Lv 10: 6.90 CFT
+        upgradeCosts: [
+          3000000,   // Lv 2 (3M)
+          6000000,   // Lv 3 (6M)
+          10000000,  // Lv 4 (10M)
+          16000000,  // Lv 5 (16M)
+          24000000,  // Lv 6 (24M)
+          35000000,  // Lv 7 (35M)
+          50000000,  // Lv 8 (50M)
+          70000000,  // Lv 9 (70M)
+          90000000   // Lv 10 (90M)
+        ],
+        desc: 'Legendary firebird reborn from ashes, producing 1.50 CFT daily up to 6.90 CFT at Level 10!'
       },
       anaconda: {
         id: 'anaconda',
@@ -10305,11 +10339,20 @@ window.addEventListener('load', () => {
         badgeBorder: 'border-lime-400',
         textColor: 'text-lime-300',
         mineAsset: 'CFT',
-        baseRate: 0.25,
-        rateBoostPerLvl: 0.05,
-        baseUpgradeCost: 1500000, // 1.5M points
-        costMultiplier: 1.5,
-        desc: 'Prime titan serpent guarding mineral swamps, yielding 0.25 CFT every 24 hours.'
+        baseRate: 0.75, // CFT per 24h (3x of 0.25)
+        rateBoostPerLvl: 0.30, // (3x of 0.10) -> Lv 10: 3.45 CFT
+        upgradeCosts: [
+          1500000,  // Lv 2 (1.5M)
+          3000000,  // Lv 3 (3M)
+          5000000,  // Lv 4 (5M)
+          8000000,  // Lv 5 (8M)
+          12000000, // Lv 6 (12M)
+          18000000, // Lv 7 (18M)
+          25000000, // Lv 8 (25M)
+          35000000, // Lv 9 (35M)
+          45000000  // Lv 10 (45M)
+        ],
+        desc: 'Prime titan serpent guarding mineral swamps, yielding 0.75 CFT daily up to 3.45 CFT at Level 10.'
       },
       dolphin: {
         id: 'dolphin',
@@ -10321,11 +10364,20 @@ window.addEventListener('load', () => {
         badgeBorder: 'border-cyan-400',
         textColor: 'text-cyan-200',
         mineAsset: 'CFT',
-        baseRate: 0.10,
-        rateBoostPerLvl: 0.02,
-        baseUpgradeCost: 800000, // 800k points
-        costMultiplier: 1.5,
-        desc: 'Aquatic guardian of the lagoon, delivering a steady baseline yield of 0.10 CFT daily.'
+        baseRate: 0.30, // CFT per 24h (3x of 0.10)
+        rateBoostPerLvl: 0.15, // (3x of 0.05) -> Lv 10: 1.65 CFT
+        upgradeCosts: [
+          500000,   // Lv 2 (500k)
+          1000000,  // Lv 3 (1M)
+          2000000,  // Lv 4 (2M)
+          3500000,  // Lv 5 (3.5M)
+          5000000,  // Lv 6 (5M)
+          8000000,  // Lv 7 (8M)
+          12000000, // Lv 8 (12M)
+          16000000, // Lv 9 (16M)
+          20000000  // Lv 10 (20M)
+        ],
+        desc: 'Aquatic guardian of the crystal lagoon, yielding 0.30 CFT daily up to 1.65 CFT at Level 10.'
       }
     };
 
@@ -10334,7 +10386,8 @@ window.addEventListener('load', () => {
     function getJurassicMinerLevel(key) {
       try {
         const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
-        return parseInt(stored[key], 10) || 1;
+        const val = parseInt(stored[key], 10);
+        return (!isNaN(val) && val >= 1) ? Math.min(val, 10) : 1;
       } catch(e) {
         return 1;
       }
@@ -10343,7 +10396,7 @@ window.addEventListener('load', () => {
     function setJurassicMinerLevel(key, lvl) {
       try {
         const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
-        stored[key] = lvl;
+        stored[key] = Math.min(Math.max(lvl, 1), 10);
         localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(stored));
       } catch(e) {}
     }
@@ -10358,9 +10411,30 @@ window.addEventListener('load', () => {
 
     function getJurassicMinerUpgradeCost(key, lvl) {
       const m = JURASSIC_MINERS[key];
-      if (!m) return 1000000;
+      if (!m) return null;
       const actualLvl = lvl || getJurassicMinerLevel(key);
-      return Math.floor(m.baseUpgradeCost * Math.pow(m.costMultiplier, actualLvl - 1));
+      if (actualLvl >= 10) return null; // Max Level
+      const idx = actualLvl - 1;
+      return m.upgradeCosts[idx] || 10000000;
+    }
+
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return '00:00:00';
+      const totalSec = Math.floor(ms / 1000);
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return `${h}h ${m}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+
+    function getJurassicMiningState(key) {
+      const start = Number(localStorage.getItem('crazyfarm_jurassic_mine_start_' + key)) || 0;
+      if (start === 0) return { state: 'idle' };
+      const elapsed = Date.now() - start;
+      if (elapsed >= JURASSIC_CYCLE_MS) {
+        return { state: 'claimable', elapsed };
+      }
+      return { state: 'mining', remaining: JURASSIC_CYCLE_MS - elapsed, elapsed };
     }
 
     function openJurassicMinerModal(key) {
@@ -10386,23 +10460,63 @@ window.addEventListener('load', () => {
       const nextBoostEl = document.getElementById('jmModalNextBoost');
       const descEl = document.getElementById('jmModalDesc');
       const costEl = document.getElementById('jmModalUpgradeCost');
+      const upgradeBtn = document.getElementById('jmModalUpgradeBtn');
       const imgEl = document.getElementById('jmModalImg');
 
       if (iconEl) iconEl.innerText = miner.emoji;
       if (nameEl) nameEl.innerText = miner.name;
       if (tierEl) tierEl.innerText = miner.tier;
-      if (lvlEl) lvlEl.innerText = 'Lv. ' + lvl;
+      if (lvlEl) lvlEl.innerText = lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl;
       if (rateEl) rateEl.innerText = rate + ' CFT / 24h';
-      if (nextBoostEl) nextBoostEl.innerText = '+' + nextBoost + ' CFT / day';
+      if (nextBoostEl) {
+        nextBoostEl.innerText = lvl >= 10 ? 'MAX LEVEL REACHED 👑' : '+' + nextBoost + ' CFT / day';
+      }
       if (descEl) descEl.innerText = miner.desc;
-      if (costEl) costEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
       if (imgEl && miner.image) imgEl.src = miner.image;
+
+      if (upgradeBtn && costEl) {
+        if (lvl >= 10) {
+          costEl.innerText = 'MAX LEVEL (Lv. 10 👑)';
+          upgradeBtn.classList.add('opacity-60', 'pointer-events-none');
+        } else {
+          costEl.innerText = 'Lv. ' + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
+          upgradeBtn.classList.remove('opacity-60', 'pointer-events-none');
+        }
+      }
+
+      updateJurassicMinerModalActionUI(key);
 
       if (modal) {
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
       }
       try { playSound('click'); } catch(e){}
+    }
+
+    function updateJurassicMinerModalActionUI(key) {
+      const mineBtn = document.getElementById('jmModalMineBtn');
+      const actionLabel = document.getElementById('jmModalMineActionLabel');
+      const statusLabel = document.getElementById('jmModalMineStatus');
+      if (!mineBtn || !actionLabel || !statusLabel) return;
+
+      const miner = JURASSIC_MINERS[key];
+      const lvl = getJurassicMinerLevel(key);
+      const rate = getJurassicMinerRate(key, lvl);
+      const miningState = getJurassicMiningState(key);
+
+      if (miningState.state === 'idle') {
+        mineBtn.className = 'btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300';
+        actionLabel.innerHTML = '<span>⛏️</span> START 24H MINING';
+        statusLabel.innerText = 'Ready to Mine';
+      } else if (miningState.state === 'mining') {
+        mineBtn.className = 'py-2.5 px-2 rounded-2xl text-amber-200 font-black text-xs flex flex-col items-center justify-center cursor-pointer bg-slate-900 border border-amber-500/70 shadow-lg';
+        actionLabel.innerHTML = '<span>⏳</span> MINING ACTIVE';
+        statusLabel.innerText = formatTimeRemaining(miningState.remaining);
+      } else if (miningState.state === 'claimable') {
+        mineBtn.className = 'btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xl border border-yellow-200 animate-bounce';
+        actionLabel.innerHTML = '<span>💎</span> CLAIM REWARD';
+        statusLabel.innerText = '+' + rate + ' CFT Ready!';
+      }
     }
 
     function closeJurassicMinerModal() {
@@ -10444,21 +10558,84 @@ window.addEventListener('load', () => {
     }
 
     function triggerJurassicMiningFromModal() {
-      try { playSound('chime'); } catch(e){}
-      showWalletToast('⛏️ Mining activated! CFT tokens will be credited upon cycle completion.');
+      if (!currentJurassicModalKey) return;
+      const key = currentJurassicModalKey;
+      const miner = JURASSIC_MINERS[key];
+      const miningState = getJurassicMiningState(key);
+
+      if (miningState.state === 'idle') {
+        localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now()));
+        try { playSound('chime'); } catch(e){}
+        showWalletToast('⛏️ 24h Mining started for ' + miner.name + '! Check back in 24 hours.');
+        openJurassicMinerModal(key);
+        updateJurassicBadges();
+      } else if (miningState.state === 'mining') {
+        try { playSound('click'); } catch(e){}
+        showWalletToast('⏳ Mining is active! Remaining: ' + formatTimeRemaining(miningState.remaining));
+      } else if (miningState.state === 'claimable') {
+        const rate = parseFloat(getJurassicMinerRate(key));
+        cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + rate;
+        hfcBalance = Math.floor(cftBalance);
+        localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+        localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+        localStorage.removeItem('crazyfarm_jurassic_mine_start_' + key);
+
+        try { playSound('fanfare'); } catch(e){}
+        try { playSound('coin'); } catch(e){}
+        if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
+
+        updateDisplays();
+        if (typeof syncWalletView === 'function') syncWalletView();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
+
+        showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
+        openJurassicMinerModal(key);
+        updateJurassicBadges();
+      }
     }
+
+    // Helper for Developer / Owner Quick Testing
+    window.testInstantJurassicMineReady = function() {
+      if (!currentJurassicModalKey) return;
+      const key = currentJurassicModalKey;
+      localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now() - JURASSIC_CYCLE_MS - 5000));
+      openJurassicMinerModal(key);
+      updateJurassicBadges();
+      try { playSound('fanfare'); } catch(e){}
+      showWalletToast('⚡ 24h Cycle fast-forwarded! Claim button is now READY.');
+    };
 
     function updateJurassicBadges() {
       const keys = ['dinosaur', 'dragon', 'phoenix', 'anaconda', 'dolphin'];
       keys.forEach(k => {
         const lvl = getJurassicMinerLevel(k);
         const rate = getJurassicMinerRate(k, lvl);
+        const miningState = getJurassicMiningState(k);
         const badgeTxt = document.getElementById('mapBadgeText-cf3-' + k);
+        const badgeEl = document.getElementById('mapBadge-cf3-' + k);
+
         if (badgeTxt) {
-          badgeTxt.innerText = rate + ' CFT ⚡';
+          if (miningState.state === 'claimable') {
+            badgeTxt.innerText = 'CLAIM ' + rate + ' CFT! 💎';
+            if (badgeEl) badgeEl.classList.add('animate-bounce');
+          } else if (miningState.state === 'mining') {
+            badgeTxt.innerText = rate + ' CFT ⛏️';
+            if (badgeEl) badgeEl.classList.remove('animate-bounce');
+          } else {
+            badgeTxt.innerText = rate + ' CFT ⚡';
+            if (badgeEl) badgeEl.classList.remove('animate-bounce');
+          }
         }
       });
     }
+
+    // Live 1s interval for countdown ticking in modal
+    setInterval(() => {
+      const modal = document.getElementById('jurassicMinerModal');
+      if (modal && modal.style.display !== 'none' && currentJurassicModalKey) {
+        updateJurassicMinerModalActionUI(currentJurassicModalKey);
+      }
+    }, 1000);
 
     // Initial render for Jurassic Badges & Cloud State
     try {
