@@ -3386,18 +3386,6 @@
         return;
       }
 
-      // Preload video for this battle mode right now so it never stutters (3v3, 5v5, 7v7)
-      const videoEl = document.getElementById('arenaBattleVideo');
-      if (videoEl) {
-        const targetSrc = 'assets/videos/battle_' + m + 'vs' + m + '.mp4';
-        if (!videoEl.src.endsWith(targetSrc) && !videoEl.src.includes(targetSrc)) {
-          videoEl.src = targetSrc;
-          videoEl.muted = true;
-          videoEl.preload = 'auto';
-          videoEl.load();
-        }
-      }
-
       // Directly enter battle arena (Banner 2 with Exit button) skipping Banner 1
       closeBattlesModal();
       enterBattleArena(m);
@@ -9140,6 +9128,15 @@
                 localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(merged));
               } catch(e){}
             }
+            if (data.farms_data.jurassic_mining_starts && typeof data.farms_data.jurassic_mining_starts === 'object') {
+              Object.keys(data.farms_data.jurassic_mining_starts).forEach(k => {
+                const cloudStart = Number(data.farms_data.jurassic_mining_starts[k]) || 0;
+                const localStart = Number(localStorage.getItem('crazyfarm_jurassic_mine_start_' + k)) || 0;
+                if (cloudStart > 0 && (localStart === 0 || cloudStart < localStart)) {
+                  localStorage.setItem('crazyfarm_jurassic_mine_start_' + k, String(cloudStart));
+                }
+              });
+            }
             if (data.farms_data.app_lang) {
               currentAppLang = data.farms_data.app_lang;
               try { localStorage.setItem('crazyfarm_lang', currentAppLang); } catch(e){}
@@ -9252,6 +9249,22 @@
       const uname = tgUser?.username || tgUser?.first_name || 'Farmer';
       const fname = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ') || uname;
 
+      const jurassicMiningStarts = {};
+      const jurassicKeys = ['dinosaur', 'phoenix', 'anaconda', 'dragon', 'dolphin'];
+      jurassicKeys.forEach(k => {
+        const val = Number(localStorage.getItem('crazyfarm_jurassic_mine_start_' + k)) || 0;
+        if (val > 0) jurassicMiningStarts[k] = val;
+      });
+
+      const animalMiningStarts = {};
+      if (typeof adFarms !== 'undefined') {
+        Object.keys(adFarms).forEach(k => {
+          if (adFarms[k].state === 'mining' && adFarms[k].startTime > 0) {
+            animalMiningStarts[k] = adFarms[k].startTime;
+          }
+        });
+      }
+
       const payload = {
         telegram_id: tId,
         username: uname,
@@ -9277,6 +9290,8 @@
           unlocked_farm_2: isCrazyFarm2Unlocked,
           unlocked_farm_3: isCrazyFarm3Unlocked,
           jurassic_levels: JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}'),
+          jurassic_mining_starts: jurassicMiningStarts,
+          animal_mining_starts: animalMiningStarts,
           app_lang: currentAppLang
         },
         wallet_address: connectedWalletAddress || '',
@@ -10836,6 +10851,7 @@ window.addEventListener('load', () => {
         showWalletToast('⛏️ 24h Mining started for ' + miner.name + '! Check back in 24 hours.');
         openJurassicMinerModal(key);
         updateJurassicBadges();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
       } else if (miningState.state === 'mining') {
         try { playSound('click'); } catch(e){}
         showWalletToast('⏳ Mining is active! Remaining: ' + formatTimeRemaining(miningState.remaining));
@@ -10882,6 +10898,7 @@ window.addEventListener('load', () => {
       localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now() - JURASSIC_CYCLE_MS - 5000));
       openJurassicMinerModal(key);
       updateJurassicBadges();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
       try { playSound('fanfare'); } catch(e){}
       showWalletToast('⚡ 24h Cycle fast-forwarded! Claim button is now READY.');
     };

@@ -7,6 +7,7 @@ import os
 import sys
 import time
 import json
+import threading
 
 # Attempt to use requests (pre-installed on PythonAnywhere and handles proxies automatically)
 try:
@@ -27,6 +28,16 @@ WEBAPP_URL = "https://ahmedzaid0100.github.io/happyfarm/"
 CHANNEL_URL = "https://t.me/crazyfarmgamey"
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
+# Supabase Cloud Database Configuration
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://jcbpgjtaoavqzwiixaha.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjYnBnanRhb2F2cXp3aWl4YWhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMTE1MzUsImV4cCI6MjEwODY4NzUzNX0.q-HHRVzYeQFZNQfQmCpm9B33pdAiWZk95uwvMeVWcTk")
+
+# 24 Hours in Milliseconds (Jurassic & Animal Farm Mining Cycle)
+MINING_CYCLE_MS = 24 * 60 * 60 * 1000  # 86,400,000 ms
+
+# In-memory alert tracking cache to prevent duplicate spam: {f"{telegram_id}_{farm_key}_{start_time}": alert_timestamp}
+notified_mining_alerts = {}
 
 # PythonAnywhere Proxy support for urllib fallback
 PA_PROXY = os.getenv("http_proxy") or os.getenv("https_proxy") or "http://proxy.server:3128"
@@ -196,6 +207,163 @@ def set_bot_menu_button():
     if res and res.get("ok"):
         print("✅ Menu button set successfully to WebApp!")
 
+def send_mining_completion_notification(chat_id, first_name, completed_items, is_ar=False):
+    """Sends native Telegram Push Notification alerting user that 24h mining is finished."""
+    items_list_str = " • ".join(completed_items)
+    
+    if is_ar:
+        text = (
+            f"🚨 <b>اكتمل وقت التعدين في مزرعتك يا {first_name}!</b> 🌾\n\n"
+            f"✨ <b>كائناتك الأسطورية أنهت دورة التعدين (24 ساعة) بنجاح:</b>\n"
+            f"💎 <b>{items_list_str}</b>\n\n"
+            "💰 <b>أرباحك من عملات CFT ونقاط المزرعة جاهزة للاستلام فوراً!</b>\n"
+            "⚠️ <i>تنبيه: التعدين متوقف حالياً ولن ينتج المزيد حتى تدخل وتستلم أرباحك وتُعيد تشغيل الدورة القادمة!</i>\n\n"
+            "👇 <b>اضغط الزر أدناه للدخول واستلام أرباحك بضغطة واحدة:</b>"
+        )
+        btn_text = "💎 استلم أرباحك الآن | Claim CFT"
+    else:
+        text = (
+            f"🚨 <b>Mining Cycle Completed, Farmer {first_name}!</b> 🌾\n\n"
+            f"✨ <b>Your sanctuary creatures finished their 24h mining cycle:</b>\n"
+            f"💎 <b>{items_list_str}</b>\n\n"
+            "💰 <b>Your CFT Tokens & Farm Points are waiting to be claimed!</b>\n"
+            "⚠️ <i>Attention: Mining is paused and will not accumulate more rewards until you claim and restart the cycle!</i>\n\n"
+            "👇 <b>Tap the button below to claim your rewards now:</b>"
+        )
+        btn_text = "💎 Claim Your Rewards Now"
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {
+                    "text": btn_text,
+                    "web_app": {"url": WEBAPP_URL}
+                }
+            ],
+            [
+                {
+                    "text": "📢 Official Channel",
+                    "url": CHANNEL_URL
+                }
+            ]
+        ]
+    }
+
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "reply_markup": keyboard
+    }
+    return api_request("sendMessage", payload)
+
+def fetch_supabase_players(limit=250):
+    """Fetches active players from Supabase to check mining states."""
+    url = f"{SUPABASE_URL}/rest/v1/players?select=telegram_id,full_name,username,farms_data,last_active&order=last_active.desc&limit={limit}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}"
+    }
+    
+    if USE_REQUESTS and session:
+        try:
+            resp = session.get(url, headers=headers, timeout=15)
+            if resp.status_code == 200:
+                return resp.json()
+        except Exception as e:
+            print(f"[Supabase] Fetch error: {e}")
+            return []
+    else:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as e:
+            print(f"[Supabase] Fallback fetch error: {e}")
+            return []
+    return []
+
+JURASSIC_NAMES_MAP = {
+    'dinosaur': ('T-Rex Emperor 🦖', 'الديناصور الأسطوري 🦖'),
+    'phoenix':  ('Fire Phoenix 🦅', 'طائر الفينيق 🦅'),
+    'anaconda': ('Titan Anaconda 🐍', 'أناكوندا المستنقع 🐍'),
+    'dragon':   ('Ancient Dragon 🐉', 'التنين القديم 🐉'),
+    'dolphin':  ('Mystic Dolphin 🐬', 'الدولفين الساحر 🐬')
+}
+
+def check_and_dispatch_mining_alerts():
+    """Background worker routine: scans active mining cycles and dispatches alerts."""
+    now_ms = int(time.time() * 1000)
+    players = fetch_supabase_players()
+    if not players:
+        return
+
+    for p in players:
+        try:
+            t_id = p.get("telegram_id")
+            if not t_id:
+                continue
+
+            fname = p.get("full_name") or p.get("username") or "Farmer"
+            farms_data = p.get("farms_data") or {}
+            is_ar = farms_data.get("app_lang") == "ar"
+
+            ready_items = []
+
+            # 1. Check Jurassic Farms (24-hour cycle)
+            j_starts = farms_data.get("jurassic_mining_starts") or {}
+            for j_key, start_time in j_starts.items():
+                start_val = int(start_time or 0)
+                if start_val > 0:
+                    elapsed = now_ms - start_val
+                    if elapsed >= MINING_CYCLE_MS:
+                        alert_key = f"{t_id}_jur_{j_key}_{start_val}"
+                        if alert_key not in notified_mining_alerts:
+                            name_tuple = JURASSIC_NAMES_MAP.get(j_key, (j_key.capitalize(), j_key))
+                            item_name = name_tuple[1] if is_ar else name_tuple[0]
+                            ready_items.append(item_name)
+                            notified_mining_alerts[alert_key] = now_ms
+
+            # 2. Check Animal Farms (24-hour cycle)
+            a_starts = farms_data.get("animal_mining_starts") or {}
+            for a_key, start_time in a_starts.items():
+                start_val = int(start_time or 0)
+                if start_val > 0:
+                    elapsed = now_ms - start_val
+                    if elapsed >= MINING_CYCLE_MS:
+                        alert_key = f"{t_id}_anim_{a_key}_{start_val}"
+                        if alert_key not in notified_mining_alerts:
+                            ready_items.append(a_key.capitalize())
+                            notified_mining_alerts[alert_key] = now_ms
+
+            # If any mining has completed and not alerted yet -> Dispatch Notification!
+            if ready_items:
+                print(f"🔔 Dispatching Mining Alert to {fname} (ID: {t_id}) for: {ready_items}")
+                res = send_mining_completion_notification(t_id, fname, ready_items, is_ar=is_ar)
+                if res and res.get("ok"):
+                    print(f"✅ Notification delivered successfully to ID: {t_id}")
+                else:
+                    print(f"⚠️ Notification delivery failed for ID: {t_id}")
+
+        except Exception as p_err:
+            print(f"Error checking player {p.get('telegram_id')}: {p_err}")
+
+def start_mining_notification_worker(interval_seconds=120):
+    """Starts background notification watcher daemon thread."""
+    def worker_loop():
+        print(f"⏰ Mining Notification Worker started (Interval: {interval_seconds}s)")
+        time.sleep(10)  # Initial grace delay
+        while True:
+            try:
+                check_and_dispatch_mining_alerts()
+            except Exception as e:
+                print(f"[Notification Worker] Loop error: {e}")
+            time.sleep(interval_seconds)
+
+    t = threading.Thread(target=worker_loop, daemon=True)
+    t.start()
+    return t
+
 def kill_duplicate_instances():
     """Automatically terminates any other running bot.py processes on the server to prevent 409 Conflict."""
     my_pid = os.getpid()
@@ -229,6 +397,9 @@ def run_bot_polling():
         pass
 
     set_bot_menu_button()
+    
+    # Launch Background Mining Notification Worker Daemon
+    start_mining_notification_worker(interval_seconds=120)
     
     offset = 0
     error_count = 0
