@@ -5142,12 +5142,19 @@
       return (lvl * 5) / 86400;
     }
 
-    // Currently uncollected / pending mined CFT
+    // Currently uncollected / pending mined CFT (with 24h cap & clock-spoof protection)
     function getPendingMinedCft() {
       const now = Date.now();
+      // Future clock drift guard: if user pushed clock forward, reset to now
+      if (cftLastCollectTime > now + 300000) {
+        cftLastCollectTime = now;
+        try { localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime); } catch(e){}
+      }
       const elapsedSec = Math.max(0, (now - cftLastCollectTime) / 1000);
+      // Hard 24h offline accumulation cap (86,400s) to prevent clock advancing exploit
+      const cappedElapsedSec = Math.min(86400, elapsedSec);
       const ratePerSec = getMainFarmRatePerSec(userLevel);
-      return (elapsedSec * ratePerSec) + cftTapBonus;
+      return (cappedElapsedSec * ratePerSec) + cftTapBonus;
     }
 
     // Real-Time Live Mining Ticker Loop (Runs every 250ms for smooth live counter)
@@ -5176,16 +5183,26 @@
     if (window._cftTickerInterval) clearInterval(window._cftTickerInterval);
     window._cftTickerInterval = setInterval(updateLiveCftMiningTicker, 250);
 
-    // Tap to mine on center CFT coin
+    // Tap to mine on center CFT coin (with human rate limit & max bonus cap)
+    let lastCyberCoinTapTime = 0;
+    const MAX_TAP_BONUS_POOL = 3.0; // Max 3.0 CFT accumulable via tapping per claim cycle
+
     function onCyberCoinTap(event) {
+      const now = Date.now();
+      // Block inhuman auto-clicker scripts (>16 taps/sec)
+      if (now - lastCyberCoinTapTime < 60) return;
+      lastCyberCoinTapTime = now;
+
       playSound('pop');
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
       }
 
       const tapBonusAmount = 0.0050; // Each tap adds bonus CFT to the claimable pool
-      cftTapBonus += tapBonusAmount;
-      localStorage.setItem('crazyfarm_cft_tap_bonus', cftTapBonus);
+      if (cftTapBonus < MAX_TAP_BONUS_POOL) {
+        cftTapBonus = Math.min(MAX_TAP_BONUS_POOL, cftTapBonus + tapBonusAmount);
+        try { localStorage.setItem('crazyfarm_cft_tap_bonus', cftTapBonus); } catch(e){}
+      }
       updateLiveCftMiningTicker();
 
       // Floating text effect
@@ -5292,7 +5309,12 @@
 
       updateDisplays();
       updateLiveCftMiningTicker();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
     }
     function updateDisplays() {
       renderAllAdFarms();
@@ -7313,7 +7335,12 @@
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
 
       showWalletToast(`💎 <b>${packageName}</b> Activated! (+${pointsReward.toLocaleString()} Pts)`);
       alert(`🎉 Payment Requested via TON!\n\n${packageName} confirmed!\n+${pointsReward.toLocaleString()} Farm Points added to your balance!`);
@@ -7374,7 +7401,12 @@
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
 
       showWalletToast(`🚀 Activated <b>${boostName}</b>! (-${cost.toLocaleString()} Pts)`);
     }
@@ -10973,7 +11005,12 @@ window.addEventListener('load', () => {
       } catch(e){}
       if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
       updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
 
       if (mult === 2) {
         showWalletToast('&#128640; 2X DOUBLED! Claimed +' + amount.toLocaleString() + ' Farm Points!');
@@ -11371,7 +11408,12 @@ window.addEventListener('load', () => {
       const newLvl = lvl + 1;
       setJurassicMinerLevel(key, newLvl);
       updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
 
       try { playSound('level_up'); } catch(e){}
       showWalletToast('🚀 Upgraded ' + JURASSIC_MINERS[key].name + ' to Level ' + newLvl + '!');
@@ -11419,7 +11461,12 @@ window.addEventListener('load', () => {
 
         updateDisplays();
         if (typeof syncWalletView === 'function') syncWalletView();
-        if (typeof queueCloudSave === 'function') queueCloudSave();
+        if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+        if (typeof savePlayerDataToCloud === 'function') {
+          savePlayerDataToCloud();
+        } else if (typeof queueCloudSave === 'function') {
+          queueCloudSave();
+        }
 
         if (claimedBonusPoints > 0) {
           showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!`);
