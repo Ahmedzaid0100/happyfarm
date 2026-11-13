@@ -5167,13 +5167,16 @@
           const pointsDelta = pts - _lastVerifiedPoints;
           const cftDelta = cft - _lastVerifiedCft;
 
+          let isValid = true;
+          const reasons = [];
+
           // Check 1: Impossible points surge (e.g. injected 999999999 via console)
           if (pointsDelta > MAX_POINTS_DELTA_PER_SYNC) {
             console.warn('🛡️ [Anti-Cheat] Anomalous points surge blocked! Delta:', pointsDelta, 'Max allowed:', MAX_POINTS_DELTA_PER_SYNC);
             pts = _lastVerifiedPoints;
             window.points = pts;
-            this.signCurrentState(pts, cft, lvl, tId);
-            return { valid: false, reason: 'POINTS_INJECTION_DETECTED', sanitizedPoints: pts, sanitizedCft: cft };
+            isValid = false;
+            reasons.push('POINTS_INJECTION_DETECTED');
           }
 
           // Check 2: Impossible CFT surge (e.g. injected 5000 CFT)
@@ -5181,8 +5184,8 @@
             console.warn('🛡️ [Anti-Cheat] Anomalous CFT surge blocked! Delta:', cftDelta, 'Max allowed:', MAX_CFT_DELTA_PER_SYNC);
             cft = _lastVerifiedCft;
             window.cftBalance = cft;
-            this.signCurrentState(pts, cft, lvl, tId);
-            return { valid: false, reason: 'CFT_INJECTION_DETECTED', sanitizedPoints: pts, sanitizedCft: cft };
+            isValid = false;
+            reasons.push('CFT_INJECTION_DETECTED');
           }
 
           // Check 3: LocalStorage offline tampering signature verification
@@ -5193,13 +5196,13 @@
             cft = _lastVerifiedCft;
             window.points = pts;
             window.cftBalance = cft;
-            this.signCurrentState(pts, cft, lvl, tId);
-            return { valid: false, reason: 'LOCALSTORAGE_TAMPERING', sanitizedPoints: pts, sanitizedCft: cft };
+            isValid = false;
+            reasons.push('LOCALSTORAGE_TAMPERING');
           }
 
-          // Legitimate state update
+          // Always sign the sanitized verified numbers
           this.signCurrentState(pts, cft, lvl, tId);
-          return { valid: true, sanitizedPoints: pts, sanitizedCft: cft };
+          return { valid: isValid, reason: reasons.join('+'), sanitizedPoints: pts, sanitizedCft: cft };
         }
       };
     })();
