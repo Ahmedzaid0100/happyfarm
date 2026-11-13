@@ -2839,19 +2839,20 @@
       </div>
     </div>
 
-    <!-- 1. Simulated Watch Ad Modal -->
-    <div id="adModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 text-center max-w-xs w-full text-white shadow-2xl relative">
+    <!-- 1. Simulated / Fallback Watch Ad Modal -->
+    <div id="adModal" onclick="if(event.target === this) cancelFallbackAdModal();" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4 select-none">
+      <div class="wood-board rounded-3xl p-6 text-center max-w-xs w-full text-white shadow-2xl relative border-4 border-amber-500">
+        <button type="button" onclick="event.stopPropagation(); cancelFallbackAdModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-4xl mb-2 animate-bounce">🎬</div>
-        <h3 class="text-lg font-bold text-amber-300 mb-1">Sponsored Ad</h3>
-        <p class="text-xs text-slate-300 mb-4" id="adDescription">Loading reward & activating 12h mining cycle...</p>
+        <h3 class="text-lg font-black text-amber-300 mb-1" style="font-family: 'Fredoka', cursive;">Sponsored Ad</h3>
+        <p class="text-xs text-amber-100 font-semibold mb-4 leading-relaxed" id="adDescription">Loading sponsor reward...</p>
         
         <!-- Progress Bar -->
-        <div class="w-full bg-slate-800 rounded-full h-3 mb-4 overflow-hidden border border-slate-700">
-          <div id="adProgressBar" class="bg-gradient-to-r from-amber-400 to-yellow-300 h-full w-0 transition-all duration-100"></div>
+        <div class="w-full bg-black/50 rounded-full h-3.5 mb-3 overflow-hidden border border-amber-700/60 p-0.5">
+          <div id="adProgressBar" class="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 h-full w-0 rounded-full transition-all duration-100"></div>
         </div>
 
-        <div class="text-sm font-extrabold text-amber-400" id="adCountdown">3 seconds remaining</div>
+        <div class="text-xs font-black text-yellow-300" id="adCountdown">3 seconds remaining</div>
       </div>
     </div>
 
@@ -8859,133 +8860,32 @@
       closeModal('adsCftBoosterModal');
     }
 
-    // ==================== MONETAG OFFICIAL MONETIZATION SDK ====================
+    // ==================== REWARDED AD NETWORKS ENGINE (CASCADE WATERFALL) ====================
     let isAdLoadingOrShowing = false;
+    let adWatchdogTimeout = null;
 
-    // Monetag 3 Official Zone Configurations:
-    const MONETAG_ZONE_REWARDED_VIDEO = "12182125";      // happyfarmHFCbot_rewarded_interstitial
-    const MONETAG_ZONE_REWARDED_POPUP = "12182126";      // happyfarmHFCbot_rewarded_popup
-    const MONETAG_ZONE_INAPP_INTERSTITIAL = "12182127";  // happyfarmHFCbot_inapp_interstitial
-
-    function showMonetagAd(onSuccess, onFail) {
-      const rewardedFn = window['show_' + MONETAG_ZONE_REWARDED_VIDEO] || window.show_12182125;
-      const popupFn = window['show_' + MONETAG_ZONE_REWARDED_POPUP] || window.show_12182126 || rewardedFn;
-
-      if (typeof rewardedFn === 'function') {
-        isAdLoadingOrShowing = true;
-        showWalletToast('🎬 Loading sponsor ad...');
-        try {
-          const adPromise = rewardedFn();
-          if (adPromise && typeof adPromise.then === 'function') {
-            adPromise
-              .then(() => {
-                isAdLoadingOrShowing = false;
-                console.log('🎉 Monetag Rewarded Video completed successfully!');
-                try { playSound('fanfare'); } catch(e){}
-                if (typeof onSuccess === 'function') onSuccess();
-              })
-              .catch((err) => {
-                console.warn('⚠️ Monetag standard format unavailable, trying Rewarded Pop fallback (Zone 12182126)...', err);
-                if (typeof popupFn === 'function') {
-                  try {
-                    const popPromise = popupFn('pop') || popupFn();
-                    if (popPromise && typeof popPromise.then === 'function') {
-                      popPromise
-                        .then(() => {
-                          isAdLoadingOrShowing = false;
-                          console.log('🎉 Monetag Rewarded Popup completed successfully!');
-                          try { playSound('fanfare'); } catch(e){}
-                          if (typeof onSuccess === 'function') onSuccess();
-                        })
-                        .catch((popErr) => {
-                          isAdLoadingOrShowing = false;
-                          console.warn('⚠️ Monetag Pop ad error:', popErr);
-                          if (typeof onFail === 'function') onFail(popErr);
-                        });
-                      return;
-                    }
-                  } catch(popEx) {
-                    console.warn('Monetag Pop invocation error:', popEx);
-                  }
-                }
-                isAdLoadingOrShowing = false;
-                if (typeof onFail === 'function') {
-                  onFail(err);
-                } else {
-                  showWalletToast('⚠️ Ad unavailable. Please try again shortly!');
-                }
-              });
-          } else {
-            isAdLoadingOrShowing = false;
-            try { playSound('fanfare'); } catch(e){}
-            if (typeof onSuccess === 'function') onSuccess();
-          }
-        } catch(e) {
-          isAdLoadingOrShowing = false;
-          console.error('Monetag invocation error:', e);
-          if (typeof onFail === 'function') onFail(e);
-        }
-      } else {
-        console.warn('Monetag SDK function not available yet.');
-        if (typeof onFail === 'function') onFail(new Error('Monetag not ready'));
+    function resetAdWatchdog() {
+      if (adWatchdogTimeout) {
+        clearTimeout(adWatchdogTimeout);
+        adWatchdogTimeout = null;
       }
     }
 
-    // Automatic In-App interstitial disabled - Ads only show when player explicitly requests rewarded actions
-    function initMonetagInAppAds() {}
-
-    // ==================== TADS OFFICIAL SDK (CRYPTO / TON ADS) ====================
-    const TADS_WIDGET_ID = 13073; // CrazyFarm_Reward (FULLSCREEN_REWARDED)
-
-    function showTadsAd(onSuccess, onFail) {
-      if (window.tads && typeof window.tads.init === 'function') {
-        isAdLoadingOrShowing = true;
-        showWalletToast('💎 Loading TON sponsor ad...');
-        try {
-          const tadsInstance = window.tads.init({
-            widgetId: TADS_WIDGET_ID,
-            onShowReward: (res) => {
-              isAdLoadingOrShowing = false;
-              console.log('🎉 TADS Fullscreen Rewarded completed successfully!', res);
-              try { playSound('fanfare'); } catch(e){}
-              if (typeof onSuccess === 'function') onSuccess();
-            },
-            onClickReward: (res) => {
-              isAdLoadingOrShowing = false;
-              console.log('🎉 TADS Rewarded by click!', res);
-              try { playSound('fanfare'); } catch(e){}
-              if (typeof onSuccess === 'function') onSuccess();
-            },
-            onAdsNotFound: () => {
-              isAdLoadingOrShowing = false;
-              console.warn('⚠️ TADS no inventory, falling back...');
-              if (typeof onFail === 'function') onFail(new Error('TADS no inventory'));
-            }
-          });
-
-          if (tadsInstance && typeof tadsInstance.showAd === 'function') {
-            tadsInstance.showAd()
-              .catch((err) => {
-                isAdLoadingOrShowing = false;
-                console.warn('⚠️ TADS showAd error:', err);
-                if (typeof onFail === 'function') onFail(err);
-              });
-          } else {
-            isAdLoadingOrShowing = false;
-            if (typeof onFail === 'function') onFail(new Error('TADS not ready'));
-          }
-        } catch (e) {
+    function startAdWatchdog(onTimeout) {
+      resetAdWatchdog();
+      adWatchdogTimeout = setTimeout(() => {
+        if (isAdLoadingOrShowing) {
+          console.warn('⏱️ Ad network response timed out (12s). Cascading to next network...');
           isAdLoadingOrShowing = false;
-          console.error('TADS invocation error:', e);
-          if (typeof onFail === 'function') onFail(e);
+          if (typeof onTimeout === 'function') onTimeout();
         }
-      } else {
-        console.warn('TADS SDK not available yet.');
-        if (typeof onFail === 'function') onFail(new Error('TADS not loaded'));
-      }
+      }, 12000);
     }
 
-    // ==================== ADSGRAM OFFICIAL REWARDED ADS SDK (UNIT ID: 59451) ====================
+    // -------------------------------------------------------------
+    // PRIORITY 1: ADSGRAM (Official Telegram Mini App Rewarded SDK)
+    // Block / Unit ID: 59451
+    // -------------------------------------------------------------
     const ADSGRAM_BLOCK_ID = "59451";
     let adsgramController = null;
 
@@ -9004,60 +8904,220 @@
     function showAdsgramAd(onSuccess, onFail) {
       const controller = getAdsgramController();
       if (!controller) {
-        console.warn('⚠️ Adsgram SDK not loaded yet, falling back...');
+        console.warn('⚠️ Adsgram SDK not loaded or init failed, cascading to Monetag...');
         if (typeof onFail === 'function') onFail(new Error('Adsgram not ready'));
         return;
       }
 
       isAdLoadingOrShowing = true;
       showWalletToast('🎬 Loading Adsgram sponsored ad...');
+      startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Adsgram timeout')); });
 
       controller.show()
         .then((result) => {
+          resetAdWatchdog();
           isAdLoadingOrShowing = false;
           console.log('🎉 Adsgram Rewarded completed successfully!', result);
           try { playSound('fanfare'); } catch(e){}
           if (typeof onSuccess === 'function') onSuccess();
         })
         .catch((result) => {
+          resetAdWatchdog();
           isAdLoadingOrShowing = false;
-          console.warn('⚠️ Adsgram ad skipped, error or no inventory:', result);
+
+          // Check if user manually closed/dismissed the ad before completion
+          const isUserClosed = result && (
+            result.done === false && (
+              result.description === 'User closed ad' ||
+              result.description === 'User closed the ad' ||
+              result.state === 'destroy'
+            ) && !result.error
+          );
+
+          if (isUserClosed) {
+            console.log('ℹ️ User voluntarily closed Adsgram ad before completion.');
+            showWalletToast('⚠️ Ad was closed before completion.');
+            return;
+          }
+
+          console.warn('⚠️ Adsgram ad unavailable or no inventory:', result);
           if (typeof onFail === 'function') onFail(result);
         });
     }
 
-    let adEngineTurn = 0; // Alternates fallback between Monetag and TADS
+    // -------------------------------------------------------------
+    // PRIORITY 2: MONETAG (Global Rewarded Interstitial & Rewarded Pop SDK)
+    // Zones: 12182125 (Video) & 12182126 (Popup)
+    // -------------------------------------------------------------
+    const MONETAG_ZONE_REWARDED_VIDEO = "12182125";      // happyfarmHFCbot_rewarded_interstitial
+    const MONETAG_ZONE_REWARDED_POPUP = "12182126";      // happyfarmHFCbot_rewarded_popup
+    const MONETAG_ZONE_INAPP_INTERSTITIAL = "12182127";  // happyfarmHFCbot_inapp_interstitial
 
+    function showMonetagAd(onSuccess, onFail) {
+      const rewardedFn = window['show_' + MONETAG_ZONE_REWARDED_VIDEO] || window.show_12182125;
+      const popupFn = window['show_' + MONETAG_ZONE_REWARDED_POPUP] || window.show_12182126 || rewardedFn;
+
+      if (typeof rewardedFn === 'function') {
+        isAdLoadingOrShowing = true;
+        showWalletToast('🎬 Loading Monetag sponsor ad...');
+        startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Monetag timeout')); });
+
+        try {
+          const adPromise = rewardedFn();
+          if (adPromise && typeof adPromise.then === 'function') {
+            adPromise
+              .then(() => {
+                resetAdWatchdog();
+                isAdLoadingOrShowing = false;
+                console.log('🎉 Monetag Rewarded Video completed successfully!');
+                try { playSound('fanfare'); } catch(e){}
+                if (typeof onSuccess === 'function') onSuccess();
+              })
+              .catch((err) => {
+                resetAdWatchdog();
+                console.warn('⚠️ Monetag video format unavailable, trying Rewarded Pop (Zone 12182126)...', err);
+                if (typeof popupFn === 'function') {
+                  try {
+                    const popPromise = popupFn('pop') || popupFn();
+                    if (popPromise && typeof popPromise.then === 'function') {
+                      startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Monetag Pop timeout')); });
+                      popPromise
+                        .then(() => {
+                          resetAdWatchdog();
+                          isAdLoadingOrShowing = false;
+                          console.log('🎉 Monetag Rewarded Popup completed successfully!');
+                          try { playSound('fanfare'); } catch(e){}
+                          if (typeof onSuccess === 'function') onSuccess();
+                        })
+                        .catch((popErr) => {
+                          resetAdWatchdog();
+                          isAdLoadingOrShowing = false;
+                          console.warn('⚠️ Monetag Pop ad error:', popErr);
+                          if (typeof onFail === 'function') onFail(popErr);
+                        });
+                      return;
+                    }
+                  } catch(popEx) {
+                    console.warn('Monetag Pop invocation error:', popEx);
+                  }
+                }
+                isAdLoadingOrShowing = false;
+                if (typeof onFail === 'function') onFail(err);
+              });
+          } else {
+            resetAdWatchdog();
+            isAdLoadingOrShowing = false;
+            try { playSound('fanfare'); } catch(e){}
+            if (typeof onSuccess === 'function') onSuccess();
+          }
+        } catch(e) {
+          resetAdWatchdog();
+          isAdLoadingOrShowing = false;
+          console.error('Monetag invocation error:', e);
+          if (typeof onFail === 'function') onFail(e);
+        }
+      } else {
+        console.warn('Monetag SDK not loaded yet, cascading to TADS...');
+        if (typeof onFail === 'function') onFail(new Error('Monetag not ready'));
+      }
+    }
+
+    // Automatic In-App interstitial disabled - Ads only show when player explicitly requests rewarded actions
+    function initMonetagInAppAds() {}
+
+    // -------------------------------------------------------------
+    // PRIORITY 3: TADS (Official Telegram Crypto / TON Ads SDK)
+    // Widget ID: 13073
+    // -------------------------------------------------------------
+    const TADS_WIDGET_ID = 13073; // CrazyFarm_Reward (FULLSCREEN_REWARDED)
+
+    function showTadsAd(onSuccess, onFail) {
+      if (window.tads && typeof window.tads.init === 'function') {
+        isAdLoadingOrShowing = true;
+        showWalletToast('💎 Loading TON sponsor ad...');
+        startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('TADS timeout')); });
+
+        try {
+          const tadsInstance = window.tads.init({
+            widgetId: TADS_WIDGET_ID,
+            onShowReward: (res) => {
+              resetAdWatchdog();
+              isAdLoadingOrShowing = false;
+              console.log('🎉 TADS Fullscreen Rewarded completed successfully!', res);
+              try { playSound('fanfare'); } catch(e){}
+              if (typeof onSuccess === 'function') onSuccess();
+            },
+            onClickReward: (res) => {
+              resetAdWatchdog();
+              isAdLoadingOrShowing = false;
+              console.log('🎉 TADS Rewarded by click!', res);
+              try { playSound('fanfare'); } catch(e){}
+              if (typeof onSuccess === 'function') onSuccess();
+            },
+            onAdsNotFound: () => {
+              resetAdWatchdog();
+              isAdLoadingOrShowing = false;
+              console.warn('⚠️ TADS no inventory, cascading to guaranteed fallback...');
+              if (typeof onFail === 'function') onFail(new Error('TADS no inventory'));
+            }
+          });
+
+          if (tadsInstance && typeof tadsInstance.showAd === 'function') {
+            tadsInstance.showAd()
+              .catch((err) => {
+                resetAdWatchdog();
+                isAdLoadingOrShowing = false;
+                console.warn('⚠️ TADS showAd error:', err);
+                if (typeof onFail === 'function') onFail(err);
+              });
+          } else {
+            resetAdWatchdog();
+            isAdLoadingOrShowing = false;
+            if (typeof onFail === 'function') onFail(new Error('TADS not ready'));
+          }
+        } catch (e) {
+          resetAdWatchdog();
+          isAdLoadingOrShowing = false;
+          console.error('TADS invocation error:', e);
+          if (typeof onFail === 'function') onFail(e);
+        }
+      } else {
+        console.warn('TADS SDK not loaded yet, cascading to guaranteed fallback...');
+        if (typeof onFail === 'function') onFail(new Error('TADS not loaded'));
+      }
+    }
+
+    // -------------------------------------------------------------
+    // PRIORITY 4: MASTER WATERFALL AD DISPATCHER
+    // Order: Adsgram (59451) -> Monetag (12182125/26) -> TADS (13073) -> In-Game Safety Fallback
+    // -------------------------------------------------------------
     function showUniversalAd(onSuccess, adTitle = 'Reward Ad') {
-      // 1. Anti-spam / Mutex check: prevent parallel requests or double-clicks
       if (isAdLoadingOrShowing) {
         console.warn('⚠️ Ad request already in progress, ignoring duplicate tap.');
         return;
       }
 
-      // PRIMARY #1: Adsgram (Unit ID: 59451)
-      console.log('🚀 Ad Engine: Showing Adsgram (Unit ID: 59451) as Primary...');
-      showAdsgramAd(onSuccess, () => {
-        console.log('🔄 Adsgram fallback -> switching to secondary networks...');
-        adEngineTurn = (adEngineTurn + 1) % 2;
-        if (adEngineTurn === 1) {
-          showTadsAd(onSuccess, () => {
-            showMonetagAd(onSuccess, () => {
-              showFallbackAdModal(onSuccess, adTitle);
-            });
+      console.log('🚀 [Ad Waterfall] Priority 1: Requesting Adsgram (Unit: ' + ADSGRAM_BLOCK_ID + ')...');
+      showAdsgramAd(onSuccess, (adsgramErr) => {
+        console.log('🔄 [Ad Waterfall] Priority 2: Adsgram unavailable, cascading to Monetag...');
+        showMonetagAd(onSuccess, (monetagErr) => {
+          console.log('🔄 [Ad Waterfall] Priority 3: Monetag unavailable, cascading to TADS...');
+          showTadsAd(onSuccess, (tadsErr) => {
+            console.log('🛡️ [Ad Waterfall] Priority 4: All live networks exhausted, playing guaranteed sponsor modal...');
+            showFallbackAdModal(onSuccess, adTitle);
           });
-        } else {
-          showMonetagAd(onSuccess, () => {
-            showTadsAd(onSuccess, () => {
-              showFallbackAdModal(onSuccess, adTitle);
-            });
-          });
-        }
+        });
       });
     }
 
+    // -------------------------------------------------------------
+    // PRIORITY 5: GUARANTEED SAFETY SPONSOR MODAL
+    // Ensures player NEVER loses rewards due to adblockers, regional no-fill or network drops
+    // -------------------------------------------------------------
+    let fallbackInterval = null;
+
     function showFallbackAdModal(onSuccess, adTitle = 'Reward Ad') {
-      if (isAdLoadingOrShowing) return;
+      if (fallbackInterval) { clearInterval(fallbackInterval); fallbackInterval = null; }
       isAdLoadingOrShowing = true;
 
       const modal = document.getElementById('adModal');
@@ -9073,14 +9133,15 @@
       if (bar) bar.style.width = '0%';
 
       let progress = 0;
-      const interval = setInterval(() => {
-        progress += 33.3;
+      fallbackInterval = setInterval(() => {
+        progress += 33.34;
         if (bar) bar.style.width = Math.min(progress, 100) + '%';
-        const left = Math.ceil((100 - progress) / 33.3);
+        const left = Math.ceil((100 - progress) / 33.34);
         if (countdown) countdown.innerText = Math.max(left, 0) + ' seconds remaining';
 
         if (progress >= 100) {
-          clearInterval(interval);
+          clearInterval(fallbackInterval);
+          fallbackInterval = null;
           isAdLoadingOrShowing = false;
           setTimeout(() => {
             if (modal) {
@@ -9093,7 +9154,21 @@
         }
       }, 700);
     }
-    // ==================== END MONETAG ====================
+
+    function cancelFallbackAdModal() {
+      if (fallbackInterval) {
+        clearInterval(fallbackInterval);
+        fallbackInterval = null;
+      }
+      isAdLoadingOrShowing = false;
+      const modal = document.getElementById('adModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('pop'); } catch(e){}
+    }
+    // ==================== END AD ENGINE ====================
 
     // Profile Actions & Handlers
     function copyTonWallet() {
