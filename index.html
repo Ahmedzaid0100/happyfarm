@@ -8669,20 +8669,27 @@
         showWalletToast('⏳ You have already claimed today\'s Points Booster! Available tomorrow.');
         return;
       }
-      if (adsPointsBoosterStep >= 3) {
+      let currentStep = sanitizeNumber(localStorage.getItem('crazyfarm_ads_points_step'), 0, 0, 3);
+      if (currentStep >= 3) {
         claimAdsPointsBoosterReward();
         return;
       }
-      const nextNum = adsPointsBoosterStep + 1;
+      if (!ActionLock.run('pts_booster_watch', 1500, () => _doWatchNextPointsBoosterAd(currentStep))) return;
+    }
+
+    function _doWatchNextPointsBoosterAd(currentStep) {
+      const nextNum = currentStep + 1;
       showUniversalAd(() => {
-        adsPointsBoosterStep++;
-        localStorage.setItem('crazyfarm_ads_points_step', String(adsPointsBoosterStep));
+        let cur = sanitizeNumber(localStorage.getItem('crazyfarm_ads_points_step'), 0, 0, 3);
+        cur = Math.min(cur + 1, 3);
+        adsPointsBoosterStep = cur;
+        localStorage.setItem('crazyfarm_ads_points_step', String(cur));
         try { playSound('fanfare'); } catch(e){}
         updateAdsPointsBoosterUI();
-        if (adsPointsBoosterStep === 3) {
+        if (cur === 3) {
           showWalletToast('🎉 All 3 Ads completed! Tap Claim for +3,000 Points!');
         } else {
-          showWalletToast('✅ Ad ' + nextNum + '/3 finished! Next ad unlocked.');
+          showWalletToast('✅ Ad ' + cur + '/3 finished! Next ad unlocked (' + (cur + 1) + '/3).');
         }
       }, 'Points Booster Ad ' + nextNum);
     }
@@ -8810,20 +8817,27 @@
         showWalletToast('⏳ You have already claimed today\'s CFT Booster! Available tomorrow.');
         return;
       }
-      if (adsCftBoosterStep >= 3) {
+      let currentStep = sanitizeNumber(localStorage.getItem('crazyfarm_ads_cft_step'), 0, 0, 3);
+      if (adsCftBoosterStep >= 3 || currentStep >= 3) {
         claimAdsCftBoosterReward();
         return;
       }
-      const nextNum = adsCftBoosterStep + 1;
+      if (!ActionLock.run('cft_booster_watch', 1500, () => _doWatchNextCftBoosterAd(currentStep))) return;
+    }
+
+    function _doWatchNextCftBoosterAd(currentStep) {
+      const nextNum = currentStep + 1;
       showUniversalAd(() => {
-        adsCftBoosterStep++;
-        localStorage.setItem('crazyfarm_ads_cft_step', String(adsCftBoosterStep));
+        let cur = sanitizeNumber(localStorage.getItem('crazyfarm_ads_cft_step'), 0, 0, 3);
+        cur = Math.min(cur + 1, 3);
+        adsCftBoosterStep = cur;
+        localStorage.setItem('crazyfarm_ads_cft_step', String(cur));
         try { playSound('fanfare'); } catch(e){}
         updateAdsCftBoosterUI();
-        if (adsCftBoosterStep === 3) {
+        if (cur === 3) {
           showWalletToast('🎉 All 3 Ads completed! Tap Claim for +3,000 Pts & 3 CFT!');
         } else {
-          showWalletToast('✅ Ad ' + nextNum + '/3 finished! Next ad unlocked.');
+          showWalletToast('✅ Ad ' + cur + '/3 finished! Next ad unlocked (' + (cur + 1) + '/3).');
         }
       }, 'CFT Booster Ad ' + nextNum);
     }
@@ -9098,14 +9112,25 @@
         return;
       }
 
+      let rewardDelivered = false;
+      const safeSuccess = () => {
+        if (rewardDelivered) {
+          console.warn('⚠️ Ad reward already delivered for this session, ignoring duplicate callback.');
+          return;
+        }
+        rewardDelivered = true;
+        isAdLoadingOrShowing = false;
+        if (typeof onSuccess === 'function') onSuccess();
+      };
+
       console.log('🚀 [Ad Waterfall] Priority 1: Requesting Adsgram (Unit: ' + ADSGRAM_BLOCK_ID + ')...');
-      showAdsgramAd(onSuccess, (adsgramErr) => {
+      showAdsgramAd(safeSuccess, (adsgramErr) => {
         console.log('🔄 [Ad Waterfall] Priority 2: Adsgram unavailable, cascading to Monetag...');
-        showMonetagAd(onSuccess, (monetagErr) => {
+        showMonetagAd(safeSuccess, (monetagErr) => {
           console.log('🔄 [Ad Waterfall] Priority 3: Monetag unavailable, cascading to TADS...');
-          showTadsAd(onSuccess, (tadsErr) => {
+          showTadsAd(safeSuccess, (tadsErr) => {
             console.log('🛡️ [Ad Waterfall] Priority 4: All live networks exhausted, playing guaranteed sponsor modal...');
-            showFallbackAdModal(onSuccess, adTitle);
+            showFallbackAdModal(safeSuccess, adTitle);
           });
         });
       });
