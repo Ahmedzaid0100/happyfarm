@@ -89,6 +89,16 @@
       box-shadow: 0 1px 0 #b26a00, 0 2px 3px rgba(0,0,0,0.2);
     }
 
+    .btn-3d-orange {
+      background: linear-gradient(180deg, #fb923c 0%, #ea580c 70%, #9a3412 100%);
+      box-shadow: 0 3px 0 #7c2d12, 0 4px 6px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-orange:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #7c2d12, 0 2px 3px rgba(0,0,0,0.2);
+    }
+
     .btn-3d-purple {
       background: linear-gradient(180deg, #c084fc 0%, #9333ea 70%, #6b21a8 100%);
       box-shadow: 0 3px 0 #581c87, 0 4px 6px rgba(0,0,0,0.3);
@@ -1320,6 +1330,23 @@
             <div id="adBoostActionContainer">
               <button id="adBoostBtn" onclick="triggerAdBoost()" class="btn-3d-purple w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
                 <span>⚡</span> <span id="adBoostBtnText">Ad Boost (+80 Pts) [1/10]</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Divider & Mega Ad Surge Section (3 Min Cooldown) -->
+          <div class="mt-3 pt-2.5 border-t border-amber-800/60">
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-200 mb-1.5 px-1">
+              <span class="flex items-center gap-1 text-orange-400 font-black">
+                <span>🔥</span> Mega Ad Surge (3 Min Cooldown)
+              </span>
+              <span id="megaAdBoostCounterBadge" class="bg-orange-950/80 border border-orange-500/60 text-orange-200 text-[10px] font-black px-2 py-0.5 rounded-full">
+                0/10
+              </span>
+            </div>
+            <div id="megaAdBoostActionContainer">
+              <button id="megaAdBoostBtn" onclick="triggerMegaAdBoost()" class="btn-3d-orange w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-yellow-300/30">
+                <span>🔥</span> <span id="megaAdBoostBtnText">Mega Surge (+500 Pts) [1/10]</span>
               </button>
             </div>
           </div>
@@ -7981,6 +8008,7 @@
     function syncOthersView() {
       renderOtherAdSteps();
       renderAdBoostBtn();
+      renderMegaAdBoostBtn();
     }
 
     function renderOtherAdSteps() {
@@ -8096,6 +8124,11 @@
         const rem = getAdBoostRemainingCooldownSec();
         if (rem >= 0) renderAdBoostBtn();
       }
+      const megaContainer = document.getElementById('megaAdBoostActionContainer');
+      if (megaContainer && megaAdBoostCount < MEGA_AD_BOOST_MAX) {
+        const remMega = getMegaAdBoostRemainingCooldownSec();
+        if (remMega >= 0) renderMegaAdBoostBtn();
+      }
     }, 1000);
 
     function triggerAdBoost() {
@@ -8151,6 +8184,132 @@
         }
       }, adTitle);
     }
+
+    // ==================== MEGA AD SURGE FEATURE (3 MIN COOLDOWN, 500 TO 5000 PTS, 10 ADS MAX) ====================
+    const MEGA_AD_BOOST_MAX = 10;
+    const MEGA_AD_BOOST_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes = 180 seconds
+    let megaAdBoostCount = Number(localStorage.getItem('crazyfarm_mega_ad_boost_count') || 0);
+    let megaAdBoostLastTime = Number(localStorage.getItem('crazyfarm_mega_ad_boost_time') || 0);
+    const lastMegaAdBoostDay = localStorage.getItem('crazyfarm_mega_ad_boost_day');
+
+    if (lastMegaAdBoostDay !== todayAdBoostStr) {
+      megaAdBoostCount = 0;
+      localStorage.setItem('crazyfarm_mega_ad_boost_day', todayAdBoostStr);
+      localStorage.setItem('crazyfarm_mega_ad_boost_count', '0');
+    }
+
+    function getMegaAdBoostRemainingCooldownSec() {
+      const elapsed = Date.now() - megaAdBoostLastTime;
+      if (elapsed >= MEGA_AD_BOOST_COOLDOWN_MS) return 0;
+      return Math.ceil((MEGA_AD_BOOST_COOLDOWN_MS - elapsed) / 1000);
+    }
+
+    function formatCooldownTime(sec) {
+      if (sec < 60) return `${sec}s`;
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return s > 0 ? `${m}m ${s}s` : `${m}m`;
+    }
+
+    function renderMegaAdBoostBtn() {
+      const container = document.getElementById('megaAdBoostActionContainer');
+      const badge = document.getElementById('megaAdBoostCounterBadge');
+      if (!container) return;
+
+      const remSec = getMegaAdBoostRemainingCooldownSec();
+      const currentStep = Math.min(MEGA_AD_BOOST_MAX, megaAdBoostCount + 1);
+      const nextPts = currentStep * 500; // 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000
+      const isFinalStep = (currentStep === MEGA_AD_BOOST_MAX);
+
+      if (badge) {
+        badge.innerText = `${megaAdBoostCount}/${MEGA_AD_BOOST_MAX}`;
+        if (megaAdBoostCount >= MEGA_AD_BOOST_MAX) {
+          badge.className = 'bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full';
+        } else {
+          badge.className = 'bg-orange-950/80 border border-orange-500/60 text-orange-200 text-[10px] font-black px-2 py-0.5 rounded-full';
+        }
+      }
+
+      if (megaAdBoostCount >= MEGA_AD_BOOST_MAX) {
+        container.innerHTML = `
+          <button disabled class="w-full py-2.5 rounded-2xl bg-emerald-900/80 border border-emerald-500/80 text-emerald-200 font-black text-xs shadow flex items-center justify-center gap-1.5 cursor-not-allowed">
+            <span>✅</span> All 10 Mega Surges Completed Today (+27,500 Pts &amp; 3 CFT 💎)
+          </button>
+        `;
+      } else if (remSec > 0) {
+        const timeStr = formatCooldownTime(remSec);
+        const stepLabel = isFinalStep ? `[10/10 &bull; +5,000 Pts &amp; 3 CFT 💎]` : `[${currentStep}/${MEGA_AD_BOOST_MAX}]`;
+        container.innerHTML = `
+          <button disabled class="w-full py-2.5 rounded-2xl bg-orange-950/80 border border-orange-700/60 text-orange-300 font-bold text-xs shadow flex items-center justify-center gap-2 cursor-not-allowed opacity-85">
+            <span class="animate-spin">⏳</span> Mega Surge Ready in ${timeStr} ${stepLabel}
+          </button>
+        `;
+      } else {
+        const btnText = isFinalStep
+          ? `Mega Surge (+5,000 Pts &amp; 3 CFT 💎) [10/10]`
+          : `Mega Surge (+${nextPts.toLocaleString()} Pts) [${currentStep}/${MEGA_AD_BOOST_MAX}]`;
+        container.innerHTML = `
+          <button onclick="triggerMegaAdBoost()" class="btn-3d-orange w-full py-2.5 rounded-2xl text-white font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse border border-yellow-300/30">
+            <span>🔥</span> ${btnText}
+          </button>
+        `;
+      }
+    }
+
+    function triggerMegaAdBoost() {
+      if (megaAdBoostCount >= MEGA_AD_BOOST_MAX) {
+        showWalletToast('✅ You have reached the maximum 10 Mega Surges today!');
+        return;
+      }
+      const rem = getMegaAdBoostRemainingCooldownSec();
+      if (rem > 0) {
+        showWalletToast(`⏳ Please wait ${formatCooldownTime(rem)} for the next Mega Surge!`);
+        return;
+      }
+
+      if (!ActionLock.run('mega_ad_boost', 1500, () => _doTriggerMegaAdBoost())) return;
+    }
+
+    function _doTriggerMegaAdBoost() {
+      const awardStep = megaAdBoostCount + 1;
+      const awardPts = awardStep * 500;
+      const isFinalStep = (awardStep === MEGA_AD_BOOST_MAX);
+      const adTitle = isFinalStep
+        ? `Mega Surge (+5,000 Pts & 3 CFT) [10/10]`
+        : `Mega Surge (+${awardPts.toLocaleString()} Pts) [${awardStep}/${MEGA_AD_BOOST_MAX}]`;
+
+      showUniversalAd(() => {
+        points += awardPts;
+        if (isFinalStep) {
+          cftBalance = (typeof cftBalance === 'number' ? cftBalance : (parseFloat(cftBalance) || 0)) + 3.0;
+          hfcBalance = Math.floor(cftBalance);
+          try {
+            localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+            localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+          } catch(e){}
+        }
+
+        megaAdBoostCount++;
+        megaAdBoostLastTime = Date.now();
+        localStorage.setItem('crazyfarm_mega_ad_boost_count', String(megaAdBoostCount));
+        localStorage.setItem('crazyfarm_mega_ad_boost_time', String(megaAdBoostLastTime));
+        localStorage.setItem('crazyfarm_mega_ad_boost_day', new Date().toISOString().slice(0, 10));
+
+        updateDisplays();
+        renderMegaAdBoostBtn();
+        queueCloudSave();
+
+        try { playSound('fanfare'); } catch(e){}
+        playSound('coin');
+        if (isFinalStep) {
+          showWalletToast(`🔥 Mega Surge: +5,000 Points & +3.0 CFT Added! 💎 (10/10 Completed!)`);
+          try { confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } }); } catch(e){}
+        } else {
+          showWalletToast(`🔥 Mega Surge: +${awardPts.toLocaleString()} Points Added! (${megaAdBoostCount}/${MEGA_AD_BOOST_MAX})`);
+        }
+      }, adTitle);
+    }
+    try { renderMegaAdBoostBtn(); } catch(e){}
 
     // ==================== WATCH MORE COLLECT MODAL ====================
     function showWatchMoreCollectModal() {
@@ -10671,7 +10830,10 @@ window.addEventListener('load', () => {
 });
 
     // ==================== HOME GIFT MODAL CONTROLS ====================
+    let isClaimingGift = false;
+
     function openGiftModal() {
+      isClaimingGift = false;
       try { playSound('click'); } catch(e){}
       renderGiftModalUI();
       const m = document.getElementById('homeGiftModal');
@@ -10682,6 +10844,7 @@ window.addEventListener('load', () => {
     }
 
     function closeGiftModal() {
+      isClaimingGift = false;
       try { playSound('click'); } catch(e){}
       const m = document.getElementById('homeGiftModal');
       if (m) {
@@ -10751,22 +10914,58 @@ window.addEventListener('load', () => {
       }
 
       if (actionBox) {
-        actionBox.innerHTML = '<button onclick="finalizeGiftClaim()" class="btn-3d-green w-full py-3.5 rounded-2xl text-white font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse"><span>&#127873;</span> COLLECT +' + currentCrazyBoxWin.toLocaleString() + ' POINTS!</button>';
+        const doublePoints = currentCrazyBoxWin * 2;
+        actionBox.innerHTML = `
+          <div class="space-y-2 w-full pt-1">
+            <button onclick="doubleGiftRewardWithAd()" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer animate-pulse border-2 border-yellow-200">
+              <span class="text-base">&#127916;</span> DOUBLE REWARD 2X (+${doublePoints.toLocaleString()} PTS)
+            </button>
+            <button onclick="finalizeGiftClaim(1)" class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+              <span>&#127873;</span> Collect Single (+${currentCrazyBoxWin.toLocaleString()} Pts)
+            </button>
+          </div>
+        `;
       }
     }
 
-    function finalizeGiftClaim() {
-      const amount = currentCrazyBoxWin;
+    function doubleGiftRewardWithAd() {
+      if (isClaimingGift) return;
+      try { playSound('click'); } catch(e){}
+
+      showUniversalAd(() => {
+        finalizeGiftClaim(2);
+      }, 'Mystery Gift 2X Multiplier');
+    }
+
+    function finalizeGiftClaim(multiplier = 1) {
+      if (isClaimingGift) return;
+      isClaimingGift = true;
+
+      const baseWin = currentCrazyBoxWin || 500;
+      const mult = (multiplier === 2) ? 2 : 1;
+      const amount = baseWin * mult;
       points += amount;
 
       localStorage.setItem('crazyfarm_points', String(points));
       localStorage.setItem('crazyfarm_farm_points', String(points));
-      try { playSound('coin'); } catch(e){}
+      try { 
+        if (mult === 2) playSound('level');
+        playSound('coin'); 
+      } catch(e){}
       if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
       updateDisplays();
       if (typeof queueCloudSave === 'function') queueCloudSave();
 
-      showWalletToast('&#127881; Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
+      if (mult === 2) {
+        showWalletToast('&#128640; 2X DOUBLED! Claimed +' + amount.toLocaleString() + ' Farm Points!');
+      } else {
+        showWalletToast('&#127881; Claimed +' + amount.toLocaleString() + ' Farm Points from Mystery Gift!');
+      }
+
+      setTimeout(() => {
+        isClaimingGift = false;
+      }, 1000);
+
       closeGiftModal();
     }
 
