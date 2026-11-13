@@ -341,45 +341,45 @@
             </span>
           </div>
 
-          <!-- Full Vertical Visual Collage (Runner + Wheel + Battles) -->
-          <div class="relative z-10 w-full h-full flex flex-col justify-between p-3 pt-9 pb-2">
+          <!-- Full Vertical Visual Collage (Runner + Wheel + Battles) - BIGGER & NO GAPS -->
+          <div class="relative z-10 w-full h-full flex flex-col justify-between p-2 pt-8 pb-1.5">
             
             <!-- Top Card: Dog Runner In-Game Screenshot -->
-            <div class="relative w-full h-36 rounded-xl overflow-hidden border border-yellow-400/60 shadow-lg">
-              <img src="${data.runnerImg}" alt="Dog Runner 3D Sprint" class="w-full h-full object-cover object-top">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
-              <span class="absolute bottom-1.5 ${isAr ? 'right-2' : 'left-2'} text-[10px] font-black px-2 py-0.5 rounded bg-black/80 text-yellow-300 border border-yellow-400/50">
+            <div class="relative w-full h-44 sm:h-48 rounded-2xl overflow-hidden border-2 border-yellow-400/80 shadow-xl bg-black/50">
+              <img src="${data.runnerImg}" alt="Dog Runner 3D Sprint" class="w-full h-full object-cover object-center">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none"></div>
+              <span class="absolute bottom-2 ${isAr ? 'right-2' : 'left-2'} text-[11px] font-black px-2.5 py-1 rounded-full bg-black/85 text-yellow-300 border border-yellow-400/70 shadow">
                 🐕 ${isAr ? 'لعبة الجري 3D' : 'Dog Runner 3D Sprint'}
               </span>
             </div>
 
             <!-- Bottom Split Cards: Fortune Wheel & Battle Arena -->
-            <div class="grid grid-cols-2 gap-2 my-1.5">
+            <div class="grid grid-cols-2 gap-2 my-1 w-full">
               <!-- Wheel Screenshot -->
-              <div class="relative h-28 rounded-xl overflow-hidden border border-amber-500/60 shadow">
+              <div class="relative h-36 rounded-2xl overflow-hidden border-2 border-amber-400/80 shadow-lg bg-black/50">
                 <img src="${data.wheelImg}" alt="Fortune Wheel" class="w-full h-full object-cover object-center">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                <span class="absolute bottom-1 ${isAr ? 'right-1.5' : 'left-1.5'} text-[9px] font-black px-1.5 py-0.5 rounded bg-black/85 text-amber-200 border border-amber-400/40">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none"></div>
+                <span class="absolute bottom-1.5 ${isAr ? 'right-1.5' : 'left-1.5'} text-[10px] font-black px-2 py-0.5 rounded-full bg-black/85 text-amber-200 border border-amber-400/60 shadow">
                   🎡 ${isAr ? 'عجلة الحظ' : 'Fortune Wheel'}
                 </span>
               </div>
 
               <!-- Battle Screenshot -->
-              <div class="relative h-28 rounded-xl overflow-hidden border border-red-500/60 shadow">
-                <img src="${data.battleImg}" alt="PvP Battles" class="w-full h-full object-cover object-center">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                <span class="absolute bottom-1 ${isAr ? 'right-1.5' : 'left-1.5'} text-[9px] font-black px-1.5 py-0.5 rounded bg-black/85 text-red-300 border border-red-400/40">
+              <div class="relative h-36 rounded-2xl overflow-hidden border-2 border-red-500/80 shadow-lg bg-black/50">
+                <img src="${data.battleImg}" alt="PvP Battles" class="w-full h-full object-cover object-top">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none"></div>
+                <span class="absolute bottom-1.5 ${isAr ? 'right-1.5' : 'left-1.5'} text-[10px] font-black px-2 py-0.5 rounded-full bg-black/85 text-red-300 border border-red-400/60 shadow">
                   ⚔️ ${isAr ? 'معارك 3v3' : '3v3 Arena'}
                 </span>
               </div>
             </div>
 
             <!-- Bottom Text Description Box -->
-            <div class="bg-black/60 backdrop-blur-md rounded-2xl p-2.5 border border-amber-700/60 text-center">
-              <h2 class="text-base font-black text-yellow-300 drop-shadow mb-0.5">
+            <div class="bg-black/80 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 border border-amber-600/70 text-center shadow-xl">
+              <h2 class="text-base sm:text-lg font-black text-yellow-300 drop-shadow mb-0.5">
                 ${t.title}
               </h2>
-              <p class="text-[10.5px] text-amber-100 font-medium leading-tight">
+              <p class="text-[11px] text-amber-100 font-medium leading-snug">
                 ${t.desc}
               </p>
             </div>
