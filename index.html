@@ -8862,24 +8862,25 @@
 
     // ==================== REWARDED AD NETWORKS ENGINE (CASCADE WATERFALL) ====================
     let isAdLoadingOrShowing = false;
-    let adWatchdogTimeout = null;
+    let adSafetyTimeout = null;
 
-    function resetAdWatchdog() {
-      if (adWatchdogTimeout) {
-        clearTimeout(adWatchdogTimeout);
-        adWatchdogTimeout = null;
+    function clearAdSafetyTimer() {
+      if (adSafetyTimeout) {
+        clearTimeout(adSafetyTimeout);
+        adSafetyTimeout = null;
       }
     }
 
-    function startAdWatchdog(onTimeout) {
-      resetAdWatchdog();
-      adWatchdogTimeout = setTimeout(() => {
+    function setAdSafetyTimer() {
+      clearAdSafetyTimer();
+      // Generous 60s safety timeout solely to unlock mutex if app gets stuck in background
+      // NEVER cascades to another ad on timeout!
+      adSafetyTimeout = setTimeout(() => {
         if (isAdLoadingOrShowing) {
-          console.warn('⏱️ Ad network response timed out (12s). Cascading to next network...');
+          console.warn('⚠️ Ad session safety reset (60s). Unlocking ad state.');
           isAdLoadingOrShowing = false;
-          if (typeof onTimeout === 'function') onTimeout();
         }
-      }, 12000);
+      }, 60000);
     }
 
     // -------------------------------------------------------------
@@ -8910,19 +8911,19 @@
       }
 
       isAdLoadingOrShowing = true;
+      setAdSafetyTimer();
       showWalletToast('🎬 Loading Adsgram sponsored ad...');
-      startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Adsgram timeout')); });
 
       controller.show()
         .then((result) => {
-          resetAdWatchdog();
+          clearAdSafetyTimer();
           isAdLoadingOrShowing = false;
           console.log('🎉 Adsgram Rewarded completed successfully!', result);
           try { playSound('fanfare'); } catch(e){}
           if (typeof onSuccess === 'function') onSuccess();
         })
         .catch((result) => {
-          resetAdWatchdog();
+          clearAdSafetyTimer();
           isAdLoadingOrShowing = false;
 
           // Check if user manually closed/dismissed the ad before completion
@@ -8930,14 +8931,15 @@
             result.done === false && (
               result.description === 'User closed ad' ||
               result.description === 'User closed the ad' ||
-              result.state === 'destroy'
+              result.state === 'destroy' ||
+              result.state === 'dismiss'
             ) && !result.error
           );
 
           if (isUserClosed) {
             console.log('ℹ️ User voluntarily closed Adsgram ad before completion.');
             showWalletToast('⚠️ Ad was closed before completion.');
-            return;
+            return; // Player voluntarily closed ad: DO NOT cascade!
           }
 
           console.warn('⚠️ Adsgram ad unavailable or no inventory:', result);
@@ -8959,38 +8961,36 @@
 
       if (typeof rewardedFn === 'function') {
         isAdLoadingOrShowing = true;
+        setAdSafetyTimer();
         showWalletToast('🎬 Loading Monetag sponsor ad...');
-        startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Monetag timeout')); });
 
         try {
           const adPromise = rewardedFn();
           if (adPromise && typeof adPromise.then === 'function') {
             adPromise
               .then(() => {
-                resetAdWatchdog();
+                clearAdSafetyTimer();
                 isAdLoadingOrShowing = false;
                 console.log('🎉 Monetag Rewarded Video completed successfully!');
                 try { playSound('fanfare'); } catch(e){}
                 if (typeof onSuccess === 'function') onSuccess();
               })
               .catch((err) => {
-                resetAdWatchdog();
                 console.warn('⚠️ Monetag video format unavailable, trying Rewarded Pop (Zone 12182126)...', err);
                 if (typeof popupFn === 'function') {
                   try {
                     const popPromise = popupFn('pop') || popupFn();
                     if (popPromise && typeof popPromise.then === 'function') {
-                      startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('Monetag Pop timeout')); });
                       popPromise
                         .then(() => {
-                          resetAdWatchdog();
+                          clearAdSafetyTimer();
                           isAdLoadingOrShowing = false;
                           console.log('🎉 Monetag Rewarded Popup completed successfully!');
                           try { playSound('fanfare'); } catch(e){}
                           if (typeof onSuccess === 'function') onSuccess();
                         })
                         .catch((popErr) => {
-                          resetAdWatchdog();
+                          clearAdSafetyTimer();
                           isAdLoadingOrShowing = false;
                           console.warn('⚠️ Monetag Pop ad error:', popErr);
                           if (typeof onFail === 'function') onFail(popErr);
@@ -9001,17 +9001,18 @@
                     console.warn('Monetag Pop invocation error:', popEx);
                   }
                 }
+                clearAdSafetyTimer();
                 isAdLoadingOrShowing = false;
                 if (typeof onFail === 'function') onFail(err);
               });
           } else {
-            resetAdWatchdog();
+            clearAdSafetyTimer();
             isAdLoadingOrShowing = false;
             try { playSound('fanfare'); } catch(e){}
             if (typeof onSuccess === 'function') onSuccess();
           }
         } catch(e) {
-          resetAdWatchdog();
+          clearAdSafetyTimer();
           isAdLoadingOrShowing = false;
           console.error('Monetag invocation error:', e);
           if (typeof onFail === 'function') onFail(e);
@@ -9034,28 +9035,28 @@
     function showTadsAd(onSuccess, onFail) {
       if (window.tads && typeof window.tads.init === 'function') {
         isAdLoadingOrShowing = true;
+        setAdSafetyTimer();
         showWalletToast('💎 Loading TON sponsor ad...');
-        startAdWatchdog(() => { if (typeof onFail === 'function') onFail(new Error('TADS timeout')); });
 
         try {
           const tadsInstance = window.tads.init({
             widgetId: TADS_WIDGET_ID,
             onShowReward: (res) => {
-              resetAdWatchdog();
+              clearAdSafetyTimer();
               isAdLoadingOrShowing = false;
               console.log('🎉 TADS Fullscreen Rewarded completed successfully!', res);
               try { playSound('fanfare'); } catch(e){}
               if (typeof onSuccess === 'function') onSuccess();
             },
             onClickReward: (res) => {
-              resetAdWatchdog();
+              clearAdSafetyTimer();
               isAdLoadingOrShowing = false;
               console.log('🎉 TADS Rewarded by click!', res);
               try { playSound('fanfare'); } catch(e){}
               if (typeof onSuccess === 'function') onSuccess();
             },
             onAdsNotFound: () => {
-              resetAdWatchdog();
+              clearAdSafetyTimer();
               isAdLoadingOrShowing = false;
               console.warn('⚠️ TADS no inventory, cascading to guaranteed fallback...');
               if (typeof onFail === 'function') onFail(new Error('TADS no inventory'));
@@ -9065,18 +9066,18 @@
           if (tadsInstance && typeof tadsInstance.showAd === 'function') {
             tadsInstance.showAd()
               .catch((err) => {
-                resetAdWatchdog();
+                clearAdSafetyTimer();
                 isAdLoadingOrShowing = false;
                 console.warn('⚠️ TADS showAd error:', err);
                 if (typeof onFail === 'function') onFail(err);
               });
           } else {
-            resetAdWatchdog();
+            clearAdSafetyTimer();
             isAdLoadingOrShowing = false;
             if (typeof onFail === 'function') onFail(new Error('TADS not ready'));
           }
         } catch (e) {
-          resetAdWatchdog();
+          clearAdSafetyTimer();
           isAdLoadingOrShowing = false;
           console.error('TADS invocation error:', e);
           if (typeof onFail === 'function') onFail(e);
