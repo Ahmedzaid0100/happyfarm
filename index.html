@@ -2486,6 +2486,27 @@
       </div>
     </div>
 
+    <!-- ==================== UNIVERSAL IN-GAME CONFIRMATION MODAL ==================== -->
+    <div id="gameConfirmModal" style="display: none;" onclick="if(event.target === this) closeGameConfirmModal(false)" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[125] hidden flex items-center justify-center p-4 select-none">
+      <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-amber-500 shadow-2xl relative animate-scale-up text-white pointer-events-auto">
+        <!-- Close Button -->
+        <button type="button" onclick="event.stopPropagation(); closeGameConfirmModal(false);" ontouchend="event.stopPropagation(); closeGameConfirmModal(false);" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+        
+        <div id="gameConfirmIcon" class="text-4xl mb-1.5 animate-bounce">❓</div>
+        <h3 id="gameConfirmTitle" class="text-lg font-black text-yellow-300 drop-shadow mb-2" style="font-family: 'Fredoka', cursive;">Confirm</h3>
+        <div id="gameConfirmBody" class="text-xs text-amber-100 font-semibold mb-3.5 whitespace-pre-line leading-relaxed bg-black/50 p-3 rounded-2xl border border-amber-600/50 text-center"></div>
+        
+        <div class="flex gap-2">
+          <button type="button" id="gameConfirmOkBtn" class="btn-3d-green flex-1 py-2.5 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-transform cursor-pointer">
+            Confirm
+          </button>
+          <button type="button" onclick="event.stopPropagation(); closeGameConfirmModal(false);" class="w-24 py-2.5 rounded-2xl bg-black/60 hover:bg-black/80 text-amber-200 text-xs font-bold border border-amber-600/40 active:scale-95 transition-transform cursor-pointer">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
     <div id="battleArenaModal" onclick="if(event.target === this) closeBattleArena()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
@@ -4773,26 +4794,26 @@
         const needed = cost - points;
         playSound('click');
         showWalletToast(`🔒 Need ${cost.toLocaleString()} points to unlock ${animalName}! (${needed.toLocaleString()} more needed)`);
-        alert(`🔒 ${animalName} Farm is Locked!\n\nUnlock Cost: ${cost.toLocaleString()} Farm Points 🌾\nYour Balance: ${points.toLocaleString()} Points\nRemaining needed: ${needed.toLocaleString()} Points`);
+        showGameNoticeModal(`🔒 ${animalName} Farm Locked`, `Unlock Cost: ${cost.toLocaleString()} Farm Points 🌾\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${needed.toLocaleString()} Points`, '🔒');
         return;
       }
 
-      if (!confirm(`Unlock ${animalName} Farm for ${cost.toLocaleString()} Farm Points?`)) return;
+      showGameConfirmModal('Unlock ' + animalName, `Unlock ${animalName} Farm for ${cost.toLocaleString()} Farm Points 🌾?`, '🔓', () => {
+        points -= cost;
+        unlockedFarms[key] = true;
+        try {
+          localStorage.setItem('crazyfarm_unlocked_farms_v3', JSON.stringify(unlockedFarms));
+          localStorage.setItem('crazyfarm_points', points);
+        } catch(e) {}
 
-      points -= cost;
-      unlockedFarms[key] = true;
-      try {
-        localStorage.setItem('crazyfarm_unlocked_farms_v3', JSON.stringify(unlockedFarms));
-        localStorage.setItem('crazyfarm_points', points);
-      } catch(e) {}
+        try { playSound('fanfare'); } catch(e){}
+        playSound('coin');
+        updateDisplays();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
 
-      try { playSound('fanfare'); } catch(e){}
-      playSound('coin');
-      updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
-
-      showWalletToast(`🎉 ${animalName} Farm Unlocked! (-${cost.toLocaleString()} Pts)`);
-      setTimeout(() => openAnimalFarmModal(key), 300);
+        showWalletToast(`🎉 ${animalName} Farm Unlocked! (-${cost.toLocaleString()} Pts)`);
+        setTimeout(() => openAnimalFarmModal(key), 300);
+      });
     }
 
     // Level-by-Level Upgrade Costs & Points Reward Table
@@ -6888,42 +6909,43 @@
       if (points < UNLOCK_COST) {
         const remaining = UNLOCK_COST - points;
         showWalletToast(`⚠️ Need ${UNLOCK_COST.toLocaleString()} points! (${remaining.toLocaleString()} more needed)`);
-        alert(`🔒 Crazy Farm 2 requires 1,000,000 Farm Points (1M) to unlock!\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${remaining.toLocaleString()} Points`);
+        showGameNoticeModal('Crazy Farm 2 Locked', `🔒 Crazy Farm 2 requires 1,000,000 Farm Points (1M) to unlock!\n\nYour Current Balance: ${points.toLocaleString()} Points\nPoints Needed: ${remaining.toLocaleString()} Points`, '🔒');
         return;
       }
 
-      if (!confirm('Unlock Crazy Farm 2 for 1,000,000 Farm Points (1M)?')) return;
+      showGameConfirmModal('Unlock Crazy Farm 2', 'Unlock Crazy Farm 2 for 1,000,000 Farm Points (1M 🌾)?', '🔓', () => {
+        points -= UNLOCK_COST;
+        isCrazyFarm2Unlocked = true;
+        try {
+          localStorage.setItem('crazyfarm_unlocked_farm_2', 'true');
+          localStorage.setItem('crazyfarm_points', points);
+        } catch(e) {}
 
-      points -= UNLOCK_COST;
-      isCrazyFarm2Unlocked = true;
-      try {
-        localStorage.setItem('crazyfarm_unlocked_farm_2', 'true');
-        localStorage.setItem('crazyfarm_points', points);
-      } catch(e) {}
+        try { playSound('fanfare'); } catch(e){}
+        playSound('coin');
 
-      try { playSound('fanfare'); } catch(e){}
-      playSound('coin');
+        // Disperse Fog Animation
+        const fogOverlay = document.getElementById('crazyFarm2FogOverlay');
+        if (fogOverlay) {
+          fogOverlay.classList.add('transition-all', 'duration-1000', 'opacity-0');
+          setTimeout(() => {
+            fogOverlay.style.display = 'none';
+          }, 1000);
+        }
 
-      // Disperse Fog Animation
-      const fogOverlay = document.getElementById('crazyFarm2FogOverlay');
-      if (fogOverlay) {
-        fogOverlay.classList.add('transition-all', 'duration-1000', 'opacity-0');
-        setTimeout(() => {
-          fogOverlay.style.display = 'none';
-        }, 1000);
-      }
+        const badge = document.getElementById('cf2StatusBadge');
+        if (badge) {
+          badge.className = 'bg-emerald-800 px-2 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-200';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🌾 مفتوحة' : '🌾 Unlocked';
+        }
 
-      const badge = document.getElementById('cf2StatusBadge');
-      if (badge) {
-        badge.className = 'bg-emerald-800 px-2 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-200';
-        badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🌾 مفتوحة' : '🌾 Unlocked';
-      }
+        updateDisplays();
+        initCrazyFarm2State();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
 
-      updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
-
-      showWalletToast('🎉 Congratulations! Crazy Farm 2 is now UNLOCKED!');
-      alert('🎉 Welcome to Crazy Farm 2!\n\nThe mystical fog has cleared! You now have access to 7 new exotic animal farms!');
+        showWalletToast('🎉 Congratulations! Crazy Farm 2 is now UNLOCKED!');
+        showGameNoticeModal('Farm Unlocked!', '🎉 Congratulations! Crazy Farm 2 is now UNLOCKED!\n\nNew animal enclosures are now open for upgrade and production.', '🎉');
+      });
     }
 
     // Call on load
@@ -7024,43 +7046,44 @@
           showWalletToast(`⚠️ Need 15,000,000 Farm Points! (${remaining.toLocaleString()} more)`);
         }
 
-        alert(msg);
+        showGameNoticeModal('Jurassic Farm Requirements', msg, '🔒');
         return;
       }
 
-      if (!confirm(`Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 15,000,000 Farm Points (15M 🌾)\n\nProceed to unlock?`)) return;
+      showGameConfirmModal('Unlock Jurassic Farm', `Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 15,000,000 Farm Points (15M 🌾)\n\nProceed to unlock?`, '🦖', () => {
+        points -= UNLOCK_COST;
+        isCrazyFarm3Unlocked = true;
+        try {
+          localStorage.setItem('crazyfarm_unlocked_farm_3', 'true');
+          localStorage.setItem('crazyfarm_points', String(points));
+          localStorage.setItem('crazyfarm_farm_points', String(points));
+        } catch(e) {}
 
-      points -= UNLOCK_COST;
-      isCrazyFarm3Unlocked = true;
-      try {
-        localStorage.setItem('crazyfarm_unlocked_farm_3', 'true');
-        localStorage.setItem('crazyfarm_points', String(points));
-        localStorage.setItem('crazyfarm_farm_points', String(points));
-      } catch(e) {}
+        try { playSound('fanfare'); } catch(e){}
+        try { playSound('coin'); } catch(e){}
 
-      try { playSound('fanfare'); } catch(e){}
-      try { playSound('coin'); } catch(e){}
+        // Disperse Fog Animation
+        const fogOverlay = document.getElementById('crazyFarm3FogOverlay');
+        if (fogOverlay) {
+          fogOverlay.classList.add('transition-all', 'duration-1000', 'opacity-0');
+          setTimeout(() => {
+            fogOverlay.style.display = 'none';
+          }, 1000);
+        }
 
-      // Disperse Fog Animation
-      const fogOverlay = document.getElementById('crazyFarm3FogOverlay');
-      if (fogOverlay) {
-        fogOverlay.classList.add('transition-all', 'duration-1000', 'opacity-0');
-        setTimeout(() => {
-          fogOverlay.style.display = 'none';
-        }, 1000);
-      }
+        const badge = document.getElementById('cf3StatusBadge');
+        if (badge) {
+          badge.className = 'bg-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[10px] font-black text-emerald-200';
+          badge.innerHTML = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar') ? '🌾 مفتوحة' : '🌾 Unlocked';
+        }
 
-      const badge = document.getElementById('cf3StatusBadge');
-      if (badge) {
-        badge.className = 'bg-gradient-to-r from-emerald-600 to-teal-700 px-2.5 py-0.5 rounded-full border border-emerald-400 text-[9.5px] font-black text-emerald-100 shadow-md flex items-center gap-1';
-        badge.innerHTML = '<span>⚡</span> <span>CFT Mining Active</span>';
-      }
+        updateDisplays();
+        initCrazyFarm3State();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
 
-      updateDisplays();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
-
-      showWalletToast('🎉 Congratulations! Jurassic Farm is now UNLOCKED!');
-      alert('🎉 Welcome to Jurassic Farm!\n\nThe volcanic fog has cleared! You can now mine CFT tokens and upgrade your 5 legendary creatures!');
+        showWalletToast('🌋 Welcome to Jurassic Farm! Mythical CFT Mining Unlocked!');
+        showGameNoticeModal('Jurassic Farm Unlocked!', '🌋 Welcome to Jurassic Farm!\n\nThe mythical sanctuary is now UNLOCKED! You can now start 24h CFT token mining on your legendary animals!', '🦖');
+      });
     }
 
     // ==================== TON BOOST PACKAGES (SILVER, GOLD, DIAMOND) ====================
@@ -7725,14 +7748,15 @@
         showWalletToast('⚠️ No wallet connected.');
         return;
       }
-      if (!confirm('Disconnect your TON wallet?')) return;
-      playSound('click');
-      if (tonConnectUI && tonConnectUI.connected) {
-        try {
-          await tonConnectUI.disconnect();
-        } catch(e) {}
-      }
-      handleWalletDisconnected();
+      showGameConfirmModal('Disconnect Wallet', 'Are you sure you want to disconnect your TON wallet?', '👛', async () => {
+        playSound('click');
+        if (tonConnectUI && tonConnectUI.connected) {
+          try {
+            await tonConnectUI.disconnect();
+          } catch(e) {}
+        }
+        handleWalletDisconnected();
+      });
     }
 
     function copyWalletAddress() {
@@ -7840,6 +7864,55 @@
         modal.style.display = 'none';
       }
       try { playSound('pop'); } catch(e){}
+    }
+
+    // ==================== UNIVERSAL IN-GAME CONFIRMATION MODAL ====================
+    let gameConfirmCallback = null;
+
+    function showGameConfirmModal(title, message, icon = '❓', onConfirm = null) {
+      const modal = document.getElementById('gameConfirmModal');
+      const titleEl = document.getElementById('gameConfirmTitle');
+      const bodyEl = document.getElementById('gameConfirmBody');
+      const iconEl = document.getElementById('gameConfirmIcon');
+      const okBtn = document.getElementById('gameConfirmOkBtn');
+
+      if (titleEl) titleEl.innerText = title;
+      if (bodyEl) bodyEl.innerText = message;
+      if (iconEl) iconEl.innerText = icon;
+
+      gameConfirmCallback = onConfirm;
+
+      if (okBtn) {
+        okBtn.onclick = (e) => {
+          if (e) e.stopPropagation();
+          closeGameConfirmModal(true);
+        };
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
+      }
+    }
+
+    function closeGameConfirmModal(isConfirmed = false) {
+      const modal = document.getElementById('gameConfirmModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (isConfirmed && typeof gameConfirmCallback === 'function') {
+        const cb = gameConfirmCallback;
+        gameConfirmCallback = null;
+        cb();
+      } else {
+        gameConfirmCallback = null;
+      }
     }
 
     // Override browser window.alert so github.io domain header NEVER appears anywhere in the app!
@@ -9000,21 +9073,20 @@
     function copyTonWallet() {
       if (!isWalletConnected || !connectedWalletAddress) {
         playSound('click');
-        if (confirm('No TON wallet connected yet.\n\nWould you like to connect your TON wallet now?')) {
+        showGameConfirmModal('Connect TON Wallet', 'No TON wallet connected yet.\n\nWould you like to connect your TON wallet now?', '👛', () => {
           connectTONWallet();
-        }
+        });
         return;
       }
       playSound('coin');
       navigator.clipboard.writeText(connectedWalletAddress);
       showWalletToast('📋 TON Wallet address copied!');
-      alert('📋 Your TON Wallet address copied:\n\n' + connectedWalletAddress);
     }
 
     function copyUserId() {
       playSound('click');
       navigator.clipboard.writeText('84927510');
-      alert('📋 Player ID copied: 8492 7510');
+      showWalletToast('📋 Player ID copied: 8492 7510');
     }
 
     function editPlayerName() {
@@ -9123,10 +9195,10 @@
 
     function logoutWallet() {
       playSound('click');
-      if (confirm('Are you sure you want to log out and disconnect your wallet?')) {
+      showGameConfirmModal('Log Out', 'Are you sure you want to log out and disconnect your wallet?', '🚪', () => {
         playSound('click');
-        alert('🚪 Logged out successfully.');
-      }
+        showWalletToast('🚪 Logged out successfully.');
+      });
     }
 
 
