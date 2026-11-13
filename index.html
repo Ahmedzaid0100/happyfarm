@@ -5102,7 +5102,13 @@
       playSound('coin');
       showWalletToast('\u{1F389} Upgraded ' + key.toUpperCase() + ' Farm to Lv. ' + farmLevels[key] + '! (+' + getFarmCurrentReward(key) + ' Pts)');
       updateDisplays();
-      saveProgressToCloud();
+      if (typeof savePlayerDataToCloud === 'function') savePlayerDataToCloud();
+      else if (typeof queueCloudSave === 'function') queueCloudSave();
+    }
+
+    function saveProgressToCloud() {
+      if (typeof savePlayerDataToCloud === 'function') return savePlayerDataToCloud();
+      if (typeof queueCloudSave === 'function') return queueCloudSave();
     }
 
     // Update Displays with Exact User Math
@@ -5237,7 +5243,12 @@
       showWalletToast(`\u{1F389} Claimed +${pending.toFixed(4)} CFT to Wallet!`);
       updateDisplays();
       updateLiveCftMiningTicker();
-      if (typeof queueCloudSave === 'function') queueCloudSave();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
     }
 
     // Upgrade Main Farm (Level 1 to 100)
@@ -9557,8 +9568,14 @@
           }
           if (data.farms_data && Array.isArray(data.farms_data.watched)) {
             watchedAnimalFarms = Array.from(new Set([...watchedAnimalFarms, ...data.farms_data.watched]));
-            if (data.farms_data.bee_last_collect) lastBeeCollectTimestamp = Number(data.farms_data.bee_last_collect) || Date.now();
-            if (data.farms_data.cft_last_collect) cftLastCollectTime = Number(data.farms_data.cft_last_collect) || cftLastCollectTime;
+            if (data.farms_data.bee_last_collect) {
+              lastBeeCollectTimestamp = Math.max(lastBeeCollectTimestamp, Number(data.farms_data.bee_last_collect) || 0);
+              try { localStorage.setItem('crazyfarm_bee_last_collect', lastBeeCollectTimestamp); } catch(e){}
+            }
+            if (data.farms_data.cft_last_collect) {
+              cftLastCollectTime = Math.max(cftLastCollectTime, Number(data.farms_data.cft_last_collect) || 0);
+              try { localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime); } catch(e){}
+            }
             if (data.farms_data.cft_balance) cftBalance = Math.max(cftBalance, Number(data.farms_data.cft_balance) || 0);
             if (data.farms_data.bee_mined) beeMinedPoints = Math.max(beeMinedPoints, Number(data.farms_data.bee_mined) || 0);
             if (data.farms_data.crazy_box_last) lastCrazyBoxOpenTimestamp = Math.max(lastCrazyBoxOpenTimestamp, Number(data.farms_data.crazy_box_last) || 0);
@@ -9607,6 +9624,8 @@
           try {
             localStorage.setItem('crazyfarm_points', points);
             localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+            localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+            localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
             localStorage.setItem('crazyfarm_level', userLevel);
             localStorage.setItem('crazyfarm_is_vip', isDogVipActive ? 'true' : 'false');
             localStorage.setItem('crazyfarm_invited_friends_count', invitedFriendsCount);
@@ -10799,7 +10818,7 @@ document.addEventListener('visibilitychange', () => {
     if (mapVideo && !mapVideo.paused) { try { mapVideo.pause(); } catch(e){} }
     if (animalVid && !animalVid.paused) { try { animalVid.pause(); } catch(e){} }
     if (mainVid && !mainVid.paused) { try { mainVid.pause(); } catch(e){} }
-    try { saveProgressToCloud(); } catch(e){} 
+    try { if (typeof savePlayerDataToCloud === 'function') savePlayerDataToCloud(); } catch(e){} 
   } else {
     const farmsViewVis = document.getElementById('farmsView');
     if (farmsViewVis && farmsViewVis.style.display !== 'none' && mapVideo && mapVideo.paused) {
