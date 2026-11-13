@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr" id="docHtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,24 +12,24 @@
     * {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      font-family: 'Tajawal', 'Fredoka', system-ui, sans-serif;
+      font-family: 'Fredoka', 'Tajawal', system-ui, sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at center, #1e3a2f 0%, #0c1a14 100%);
+      background: radial-gradient(circle at center, #1b382d 0%, #0a1711 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 0;
-      padding: 12px;
+      padding: 10px;
       overflow-x: hidden;
     }
 
-    /* 3D Cartoon Effects */
+    /* 3D Wood Board Frame */
     .wood-board {
-      background: linear-gradient(180deg, #96531d 0%, #68350d 50%, #4a2104 100%);
-      box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), 0 10px 25px rgba(0,0,0,0.65), 0 3px 6px rgba(0,0,0,0.4);
+      background: linear-gradient(180deg, #874618 0%, #572b09 50%, #361702 100%);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), 0 14px 35px rgba(0,0,0,0.75), 0 3px 6px rgba(0,0,0,0.5);
       border: 3.5px solid #ffca28;
     }
 
@@ -54,44 +54,60 @@
     }
 
     .glow-gold {
-      filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.7));
+      filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.75));
     }
 
     .slide-enter {
-      animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes fadeInScale {
-      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      from { opacity: 0; transform: scale(0.98) translateY(4px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .text-shadow-md {
+      text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .text-shadow-sm {
+      text-shadow: 0 1px 3px rgba(0,0,0,0.85);
     }
   </style>
 </head>
 <body>
 
-  <!-- Simulated Telegram Mini App Viewport Container -->
-  <div class="relative w-full max-w-sm rounded-[36px] overflow-hidden shadow-2xl wood-board p-5 text-white flex flex-col justify-between" style="min-height: 620px;">
+  <!-- Simulated Telegram Mini App Viewport Container (Fixed Height 640px) -->
+  <div class="relative w-full max-w-sm rounded-[36px] overflow-hidden shadow-2xl wood-board text-white flex flex-col justify-between" style="height: 640px; max-height: 94vh;">
     
-    <!-- Top Header: Step Indicator & Skip Button -->
-    <div class="flex items-center justify-between pb-2 border-b border-amber-700/60 z-20">
+    <!-- Top Header: Step Indicator, Title & Language Toggle & Skip -->
+    <div class="flex items-center justify-between px-4 py-2.5 border-b border-amber-600/50 bg-amber-950/90 backdrop-blur-md z-30 shrink-0">
       <div class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded-full bg-amber-950/80 border border-yellow-400/80 flex items-center justify-center text-sm font-black text-yellow-300 shadow">
+        <span class="w-7 h-7 rounded-full bg-amber-900 border border-yellow-400 flex items-center justify-center text-xs font-black text-yellow-300 shadow">
           <span id="slideNumberDisplay">1</span>/4
         </span>
-        <span class="text-xs font-black text-amber-200 tracking-wide">دليل مزارع Crazy Farm</span>
+        <span id="headerTitle" class="text-xs font-black text-amber-200 tracking-wide">Crazy Farm Guide</span>
       </div>
-      <button onclick="skipIntro()" class="text-[11px] font-bold px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-amber-200 border border-white/20 active:scale-95 transition-transform cursor-pointer">
-        تخطي ✕
-      </button>
+
+      <div class="flex items-center gap-2">
+        <!-- Bilingual Toggle Button -->
+        <button onclick="toggleLanguage()" class="px-2.5 py-1 rounded-full bg-amber-900 hover:bg-amber-800 text-[11px] font-black text-yellow-300 border border-yellow-400/70 shadow active:scale-95 transition-all flex items-center gap-1 cursor-pointer">
+          <span id="langFlag">🌐</span> <span id="langBtnText">عربي</span>
+        </button>
+
+        <!-- Skip Button -->
+        <button id="skipBtn" onclick="skipIntro()" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/50 hover:bg-black/70 text-amber-200 border border-white/20 active:scale-95 transition-transform cursor-pointer">
+          Skip ✕
+        </button>
+      </div>
     </div>
 
-    <!-- Active Slide Container -->
-    <div id="slideContent" class="flex-1 flex flex-col items-center justify-center my-3 text-center slide-enter z-10">
-      <!-- Dynamic Slide Injected by JS -->
+    <!-- Active Slide Container (Stretches Full Height from Header to Footer) -->
+    <div id="slideContent" class="flex-1 relative overflow-hidden flex flex-col z-10 w-full slide-enter">
+      <!-- Dynamic Slide Content Injected by renderSlide() -->
     </div>
 
     <!-- Bottom Controls: Dots Indicator & Navigation Buttons -->
-    <div class="pt-3 border-t border-amber-800/80 z-20 space-y-3">
+    <div class="px-5 py-3 border-t border-amber-600/50 bg-amber-950/90 backdrop-blur-md z-30 shrink-0 space-y-2.5">
       
       <!-- Dots Indicator (● ○ ○ ○) -->
       <div class="flex items-center justify-center gap-2">
@@ -104,10 +120,10 @@
       <!-- Action Buttons Row -->
       <div class="flex items-center gap-2 w-full">
         <button id="prevBtn" onclick="prevSlide()" class="py-3 px-4 rounded-2xl bg-black/40 hover:bg-black/60 text-amber-200 font-bold text-xs border border-white/20 active:scale-95 transition-all opacity-40 cursor-not-allowed" disabled>
-          السابق
+          <span id="prevBtnText">Back</span>
         </button>
         <button id="nextBtn" onclick="nextSlide()" class="flex-1 btn-3d-yellow py-3.5 rounded-2xl text-amber-950 font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
-          <span id="nextBtnText">التالي</span> <span>⬅️</span>
+          <span id="nextBtnText">Next</span> <span id="nextBtnArrow">➡️</span>
         </button>
       </div>
 
@@ -116,57 +132,133 @@
   </div>
 
   <script>
+    // Language State: default 'en', supports 'ar'
+    let currentLang = localStorage.getItem('crazyfarm_lang') || 'en';
+
     const slidesData = [
+      // Slide 1: Crazy Farm 1 Map Fullscreen
       {
         id: 1,
-        badge: "🌾 البداية في المزرعة",
-        title: "مرحباً بك في Crazy Farm!",
-        subtitle: "ابنِ مزرعتك واحصد خيراتها يومياً",
-        desc: "انطلق في رحلة ريفية ممتعة، احرث الحقول، ارعَ الحيوانات لجمع النقاط وترقية مزارعك خطوة بخطوة نحو الاحتراف!",
-        image: "assets/farms/main_farm.jpg",
-        imageClass: "w-full h-44 object-cover rounded-2xl border-2 border-yellow-300 shadow-xl",
-        iconOverlay: "🚜"
+        type: "fullscreen_single",
+        image: "assets/crazy_farm_map.jpg",
+        iconOverlay: "🌾",
+        en: {
+          badge: "Farm Genesis",
+          title: "Welcome to Crazy Farm!",
+          subtitle: "Build, harvest & earn daily crypto rewards",
+          desc: "Start your adventure on Farm 1! Plow the land, tend animals, collect Farm Points, and upgrade your territory step-by-step toward farming mastery!"
+        },
+        ar: {
+          badge: "البداية في المزرعة",
+          title: "مرحباً بك في Crazy Farm!",
+          subtitle: "ابنِ مزرعتك واحصد خيراتها يومياً",
+          desc: "انطلق في رحلة ريفية ممتعة في المزرعة الأولى! احرث الحقول، ارعَ الحيوانات لجمع النقاط وترقية مزارعك خطوة بخطوة نحو الاحتراف!"
+        }
       },
+      // Slide 2: Games Showcase (Runner + Fortune Wheel + Battles) Fullscreen
       {
         id: 2,
-        badge: "⚔️ الحماس والتحدي",
-        title: "معارك وجوائز يومية كبرى!",
-        subtitle: "PvP Battles & Fortune Wheel",
-        desc: "نافس في حلبات معارك الحيوانات (3v3 و 5v5 و 7v7)، دوّر عجلة الحظ، وافتح صناديق الهدايا اليومية لتربح كوينزات مضاعفة!",
-        image: "assets/farms/dog_runner_3d.png",
-        imageClass: "h-44 w-auto object-contain mx-auto drop-shadow-2xl animate-bounce",
-        iconOverlay: "🏆"
+        type: "arcade_triplet",
+        runnerImg: "assets/runner_game_screen.png",
+        wheelImg: "assets/fortune_wheel_screen.png",
+        battleImg: "assets/battle_arena_live.png",
+        iconOverlay: "⚔️",
+        en: {
+          badge: "Mini-Games & PvP Battles",
+          title: "3D Dog Runner & Arena Battles!",
+          subtitle: "Action-packed gameplay & lucky wheel spins",
+          desc: "Sprint through 3D obstacle tracks in Dog Runner, lead 3v3 to 7v7 animal squads in combat, and spin the Fortune Wheel daily for huge point bonuses!"
+        },
+        ar: {
+          badge: "الألعاب التفاعلية والمعارك",
+          title: "سباق الجري ثلاثي الأبعاد والمعارك!",
+          subtitle: "تحديات حماسية وعجلة الحظ اليومية",
+          desc: "اركض وتفادَ العوائق في لعبة الجري 3D، قُد فريقك في معارك الحيوانات (3v3 حتى 7v7)، ودوّر عجلة الحظ يومياً لتربح كوينزات وهدايا كبرى!"
+        }
       },
+      // Slide 3: Main Farm Screenshot with CFT Mining Counter Fullscreen
       {
         id: 3,
-        badge: "💎 التعدين الذكي",
-        title: "عدّن عملة CFT مجاناً!",
-        subtitle: "24h Automatic Cloud Mining",
-        desc: "مزرعتك بتعدّن لك عملة CFT الحقيقية تلقائياً على مدار 24 ساعة! اضغط لتسريع التعدين وطوّر مستواك لمضاعفة أرباحك اليومية!",
-        image: "assets/cft_gold_coin.png",
-        imageClass: "w-40 h-40 object-contain mx-auto glow-gold animate-pulse",
-        iconOverlay: "⚡"
+        type: "mining_screen",
+        image: "assets/main_farm_mining_screen.png",
+        coinImg: "assets/cft_gold_coin.png",
+        iconOverlay: "💎",
+        en: {
+          badge: "24h Cloud Mining",
+          title: "Mine Real CFT Tokens Free!",
+          subtitle: "Automated 24/7 background yield generation",
+          desc: "Your farm automatically mines genuine CFT tokens around the clock! Tap the center coin to accelerate speed, upgrade mining levels, and harvest anytime!"
+        },
+        ar: {
+          badge: "التعدين الذكي 24 ساعة",
+          title: "عدّن عملة CFT مجاناً!",
+          subtitle: "تعدين سحابي تلقائي ومستمر على مدار اليوم",
+          desc: "مزرعتك بتعدّن لك عملة CFT الحقيقية تلقائياً 24/7! اضغط على العملة لتسريع التعدين، وطوّر مستواك لمضاعفة أرباحك وجني العملات في أي وقت!"
+        }
       },
+      // Slide 4: Jurassic World 3X Realm Fullscreen
       {
         id: 4,
-        badge: "🌋 العوالم الأسطورية",
-        title: "افتح عالم الجوراسيك الخارق!",
-        subtitle: "Prehistoric Jurassic Sanctum",
-        desc: "فك قفل أرض الديناصورات النادرة، وضاعف سرعة تعدين عملات الـ CFT بمعدل 3X مع 5 كائنات أسطورية خارقة!",
+        type: "fullscreen_single",
         image: "assets/farms/crazy_farm_3_poster.jpg",
-        imageClass: "w-full h-44 object-cover rounded-2xl border-2 border-amber-400 shadow-2xl",
-        iconOverlay: "🦖"
+        iconOverlay: "🦖",
+        en: {
+          badge: "Mythic Jurassic Realm",
+          title: "Unleash Jurassic World!",
+          subtitle: "Instant 3X CFT Mining Speed Multiplier",
+          desc: "Unlock the prehistoric apex territory to supercharge your CFT mining speed by 300%! Harness 5 legendary creatures: T-Rex, Anaconda, Dragon, Phoenix & Titan!"
+        },
+        ar: {
+          badge: "العوالم الأسطورية",
+          title: "افتح عالم الجوراسيك الخارق!",
+          subtitle: "مضاعفة سرعة تعدين عملات الـ CFT بمعدل 3X",
+          desc: "فك قفل أرض الديناصورات النادرة، وضاعف سرعة تعدين عملات الـ CFT بمعدل 3X مع 5 كائنات أسطورية خارقة: تي ريكس، أناكوندا، وتنين فينيكس!"
+        }
       }
     ];
 
     let currentSlide = 0;
 
+    function updateLanguageUI() {
+      const isAr = currentLang === 'ar';
+      const doc = document.getElementById('docHtml');
+      doc.lang = currentLang;
+      doc.dir = isAr ? 'rtl' : 'ltr';
+
+      // Header UI
+      document.getElementById('headerTitle').innerText = isAr ? 'دليل مزارع Crazy Farm' : 'Crazy Farm Guide';
+      document.getElementById('langBtnText').innerText = isAr ? 'English' : 'عربي';
+      document.getElementById('skipBtn').innerText = isAr ? 'تخطي ✕' : 'Skip ✕';
+      document.getElementById('prevBtnText').innerText = isAr ? 'السابق' : 'Back';
+      
+      const nextBtnText = document.getElementById('nextBtnText');
+      const nextBtnArrow = document.getElementById('nextBtnArrow');
+      if (currentSlide === slidesData.length - 1) {
+        nextBtnText.innerText = isAr ? '🚀 ابدأ المغامرة الآن!' : '🚀 Start Farming Now!';
+        nextBtnArrow.innerText = '';
+      } else {
+        nextBtnText.innerText = isAr ? 'التالي' : 'Next';
+        nextBtnArrow.innerText = isAr ? '⬅️' : '➡️';
+      }
+
+      renderSlide(currentSlide);
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      localStorage.setItem('crazyfarm_lang', currentLang);
+      updateLanguageUI();
+    }
+
     function renderSlide(index) {
       const data = slidesData[index];
+      const isAr = currentLang === 'ar';
+      const t = isAr ? data.ar : data.en;
       const container = document.getElementById('slideContent');
       const numEl = document.getElementById('slideNumberDisplay');
-      const nextBtnText = document.getElementById('nextBtnText');
       const nextBtn = document.getElementById('nextBtn');
+      const nextBtnText = document.getElementById('nextBtnText');
+      const nextBtnArrow = document.getElementById('nextBtnArrow');
       const prevBtn = document.getElementById('prevBtn');
 
       numEl.innerText = index + 1;
@@ -193,36 +285,153 @@
       // Next / Finish Button State
       if (index === slidesData.length - 1) {
         nextBtn.className = "flex-1 btn-3d-green py-3.5 rounded-2xl text-white font-black text-sm shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-lime-300 animate-pulse";
-        nextBtnText.innerText = "🚀 ابدأ المغامرة الآن!";
+        nextBtnText.innerText = isAr ? "🚀 ابدأ المغامرة الآن!" : "🚀 Start Farming Now!";
+        nextBtnArrow.innerText = "";
       } else {
         nextBtn.className = "flex-1 btn-3d-yellow py-3.5 rounded-2xl text-amber-950 font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer";
-        nextBtnText.innerText = "التالي";
+        nextBtnText.innerText = isAr ? "التالي" : "Next";
+        nextBtnArrow.innerText = isAr ? "⬅️" : "➡️";
       }
 
-      // Inject Content with Animation
-      container.className = "flex-1 flex flex-col items-center justify-center my-2 text-center slide-enter z-10 w-full";
-      container.innerHTML = `
-        <!-- Visual Presentation -->
-        <div class="relative w-full mb-3 flex items-center justify-center">
-          <img src="${data.image}" alt="${data.title}" class="${data.imageClass}">
-          <span class="absolute -bottom-2 -left-2 w-9 h-9 rounded-2xl bg-amber-950/90 border border-yellow-400 flex items-center justify-center text-lg shadow-lg">
-            ${data.iconOverlay}
-          </span>
-        </div>
+      // Re-trigger animation
+      container.classList.remove('slide-enter');
+      void container.offsetWidth; // reflow
+      container.classList.add('slide-enter');
 
-        <!-- Text Description -->
-        <div class="bg-black/40 rounded-2xl p-3 border border-amber-800/60 w-full text-center">
-          <span class="inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-950/80 text-yellow-300 border border-yellow-400/50 mb-1.5 shadow">
-            ${data.badge}
-          </span>
-          <h2 class="text-base sm:text-lg font-black text-yellow-300 drop-shadow mb-0.5" style="font-family: 'Fredoka', 'Tajawal', sans-serif;">
-            ${data.title}
-          </h2>
-          <p class="text-[11px] text-amber-100 font-semibold leading-relaxed mt-1">
-            ${data.desc}
-          </p>
-        </div>
-      `;
+      // Slide 1 & Slide 4: Fullscreen single landscape image (From below header to above footer)
+      if (data.type === "fullscreen_single") {
+        container.innerHTML = `
+          <!-- Fullscreen Background Image Edge-to-Edge -->
+          <img src="${data.image}" alt="${t.title}" class="absolute inset-0 w-full h-full object-cover">
+          
+          <!-- Deep Bottom Gradient Overlay for High Text Readability -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none"></div>
+
+          <!-- Top Badge Corner Tag -->
+          <div class="absolute top-3 ${isAr ? 'right-3' : 'left-3'} z-10">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1 rounded-full bg-amber-950/90 text-yellow-300 border border-yellow-400/70 shadow-lg backdrop-blur-md">
+              <span>${data.iconOverlay}</span> <span>${t.badge}</span>
+            </span>
+          </div>
+
+          <!-- Bottom Text Description Overlay -->
+          <div class="relative z-10 mt-auto p-4 pb-3 text-center">
+            <h2 class="text-xl font-black text-yellow-300 drop-shadow-md mb-1 text-shadow-md">
+              ${t.title}
+            </h2>
+            <div class="text-xs text-amber-200 font-bold mb-1.5 text-shadow-sm">
+              ${t.subtitle}
+            </div>
+            <p class="text-[11.5px] text-amber-100 font-medium leading-relaxed px-1 text-shadow-sm">
+              ${t.desc}
+            </p>
+          </div>
+        `;
+      } 
+      // Slide 2: Arcade Triplet (Dog Runner + Fortune Wheel + Battles) Fullscreen
+      else if (data.type === "arcade_triplet") {
+        container.innerHTML = `
+          <!-- Background Atmospheric Tone -->
+          <div class="absolute inset-0 bg-gradient-to-b from-[#1f1005] via-[#2a1306] to-[#120702]"></div>
+
+          <!-- Top Badge Corner Tag -->
+          <div class="absolute top-2.5 ${isAr ? 'right-3' : 'left-3'} z-20">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-950/90 text-yellow-300 border border-yellow-400/70 shadow-md backdrop-blur-md">
+              <span>${data.iconOverlay}</span> <span>${t.badge}</span>
+            </span>
+          </div>
+
+          <!-- Full Vertical Visual Collage (Runner + Wheel + Battles) -->
+          <div class="relative z-10 w-full h-full flex flex-col justify-between p-3 pt-9 pb-2">
+            
+            <!-- Top Card: Dog Runner In-Game Screenshot -->
+            <div class="relative w-full h-36 rounded-xl overflow-hidden border border-yellow-400/60 shadow-lg">
+              <img src="${data.runnerImg}" alt="Dog Runner 3D Sprint" class="w-full h-full object-cover object-top">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
+              <span class="absolute bottom-1.5 ${isAr ? 'right-2' : 'left-2'} text-[10px] font-black px-2 py-0.5 rounded bg-black/80 text-yellow-300 border border-yellow-400/50">
+                🐕 ${isAr ? 'لعبة الجري 3D' : 'Dog Runner 3D Sprint'}
+              </span>
+            </div>
+
+            <!-- Bottom Split Cards: Fortune Wheel & Battle Arena -->
+            <div class="grid grid-cols-2 gap-2 my-1.5">
+              <!-- Wheel Screenshot -->
+              <div class="relative h-28 rounded-xl overflow-hidden border border-amber-500/60 shadow">
+                <img src="${data.wheelImg}" alt="Fortune Wheel" class="w-full h-full object-cover object-center">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                <span class="absolute bottom-1 ${isAr ? 'right-1.5' : 'left-1.5'} text-[9px] font-black px-1.5 py-0.5 rounded bg-black/85 text-amber-200 border border-amber-400/40">
+                  🎡 ${isAr ? 'عجلة الحظ' : 'Fortune Wheel'}
+                </span>
+              </div>
+
+              <!-- Battle Screenshot -->
+              <div class="relative h-28 rounded-xl overflow-hidden border border-red-500/60 shadow">
+                <img src="${data.battleImg}" alt="PvP Battles" class="w-full h-full object-cover object-center">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                <span class="absolute bottom-1 ${isAr ? 'right-1.5' : 'left-1.5'} text-[9px] font-black px-1.5 py-0.5 rounded bg-black/85 text-red-300 border border-red-400/40">
+                  ⚔️ ${isAr ? 'معارك 3v3' : '3v3 Arena'}
+                </span>
+              </div>
+            </div>
+
+            <!-- Bottom Text Description Box -->
+            <div class="bg-black/60 backdrop-blur-md rounded-2xl p-2.5 border border-amber-700/60 text-center">
+              <h2 class="text-base font-black text-yellow-300 drop-shadow mb-0.5">
+                ${t.title}
+              </h2>
+              <p class="text-[10.5px] text-amber-100 font-medium leading-tight">
+                ${t.desc}
+              </p>
+            </div>
+
+          </div>
+        `;
+      }
+      // Slide 3: Main Farm Screenshot with Live Mining Counter Fullscreen
+      else if (data.type === "mining_screen") {
+        container.innerHTML = `
+          <!-- Fullscreen Main Farm Screenshot (from under header to above footer) -->
+          <img src="${data.image}" alt="${t.title}" class="absolute inset-0 w-full h-full object-cover object-top">
+          
+          <!-- Bottom Vignette Gradient -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
+
+          <!-- Top Badge & Golden Coin Callout -->
+          <div class="absolute top-3 ${isAr ? 'right-3' : 'left-3'} z-10 flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1 rounded-full bg-amber-950/90 text-yellow-300 border border-yellow-400/70 shadow-lg backdrop-blur-md">
+              <span>${data.iconOverlay}</span> <span>${t.badge}</span>
+            </span>
+          </div>
+
+          <!-- Floating 3D Gold CFT Coin Badge -->
+          <div class="absolute top-3 ${isAr ? 'left-3' : 'right-3'} z-10">
+            <img src="${data.coinImg}" alt="CFT Gold Coin" class="w-11 h-11 object-contain glow-gold animate-bounce">
+          </div>
+
+          <!-- Live Mining Rate Spotlight Tag in Middle -->
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+            <div class="bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-yellow-400/80 shadow-2xl flex items-center gap-2 animate-pulse">
+              <span class="text-xs">⚡</span>
+              <span class="text-[11px] font-black text-yellow-300 tracking-wider">
+                ${isAr ? 'تعدين سحابي 24/7 نشط' : '24/7 Cloud Mining Active'}
+              </span>
+            </div>
+          </div>
+
+          <!-- Bottom Text Description Overlay -->
+          <div class="relative z-10 mt-auto p-4 pb-3 text-center">
+            <h2 class="text-xl font-black text-yellow-300 drop-shadow-md mb-1 text-shadow-md">
+              ${t.title}
+            </h2>
+            <div class="text-xs text-amber-200 font-bold mb-1.5 text-shadow-sm">
+              ${t.subtitle}
+            </div>
+            <p class="text-[11.5px] text-amber-100 font-medium leading-relaxed px-1 text-shadow-sm">
+              ${t.desc}
+            </p>
+          </div>
+        `;
+      }
     }
 
     function nextSlide() {
@@ -230,7 +439,8 @@
         currentSlide++;
         renderSlide(currentSlide);
       } else {
-        alert("🎉 مبروك! كده اللاعب فهم كل حاجة ويدخل على المزرعة علطول!");
+        const isAr = currentLang === 'ar';
+        alert(isAr ? "🎉 مبروك! اللاعب جاهز للانطلاق في المزرعة!" : "🎉 Awesome! Player is ready to start farming!");
       }
     }
 
@@ -242,8 +452,10 @@
     }
 
     function skipIntro() {
-      if (confirm("هل تريد تخطي الشرح والدخول للمزرعة فوراً؟")) {
-        alert("تم التخطي والدخول للمزرعة!");
+      const isAr = currentLang === 'ar';
+      const msg = isAr ? "هل تريد تخطي الشرح والدخول للمزرعة فوراً؟" : "Skip intro and enter Crazy Farm directly?";
+      if (confirm(msg)) {
+        alert(isAr ? "تم التخطي والدخول للمزرعة!" : "Intro skipped! Welcome to Crazy Farm!");
       }
     }
 
@@ -254,14 +466,20 @@
       let touchEndX = e.changedTouches[0].screenX;
       let diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 45) {
-        // RTL Swipe: right-to-left is next, left-to-right is prev
-        if (diff > 0) nextSlide();
-        else prevSlide();
+        const isAr = currentLang === 'ar';
+        // RTL vs LTR Swipe direction
+        if (isAr) {
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        } else {
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        }
       }
     }, false);
 
-    // Initial render
-    renderSlide(0);
+    // Initial load
+    updateLanguageUI();
   </script>
 </body>
 </html>
