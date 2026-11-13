@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Crazy Farm - Onboarding Story Intro Prototype</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: 'Tajawal', 'Fredoka', system-ui, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #1e3a2f 0%, #0c1a14 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    /* 3D Cartoon Effects */
+    .wood-board {
+      background: linear-gradient(180deg, #96531d 0%, #68350d 50%, #4a2104 100%);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), 0 10px 25px rgba(0,0,0,0.65), 0 3px 6px rgba(0,0,0,0.4);
+      border: 3.5px solid #ffca28;
+    }
+
+    .btn-3d-yellow {
+      background: linear-gradient(180deg, #ffca28 0%, #ffa000 70%, #e65100 100%);
+      box-shadow: 0 4px 0 #b26a00, 0 6px 12px rgba(0,0,0,0.3);
+      transition: all 0.15s ease;
+    }
+    .btn-3d-yellow:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #b26a00, 0 2px 4px rgba(0,0,0,0.25);
+    }
+
+    .btn-3d-green {
+      background: linear-gradient(180deg, #66bb6a 0%, #388e3c 70%, #1b5e20 100%);
+      box-shadow: 0 4px 0 #134417, 0 6px 12px rgba(0,0,0,0.3);
+      transition: all 0.15s ease;
+    }
+    .btn-3d-green:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #134417, 0 2px 4px rgba(0,0,0,0.25);
+    }
+
+    .glow-gold {
+      filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.7));
+    }
+
+    .slide-enter {
+      animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Simulated Telegram Mini App Viewport Container -->
+  <div class="relative w-full max-w-sm rounded-[36px] overflow-hidden shadow-2xl wood-board p-5 text-white flex flex-col justify-between" style="min-height: 620px;">
+    
+    <!-- Top Header: Step Indicator & Skip Button -->
+    <div class="flex items-center justify-between pb-2 border-b border-amber-700/60 z-20">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-full bg-amber-950/80 border border-yellow-400/80 flex items-center justify-center text-sm font-black text-yellow-300 shadow">
+          <span id="slideNumberDisplay">1</span>/4
+        </span>
+        <span class="text-xs font-black text-amber-200 tracking-wide">دليل مزارع Crazy Farm</span>
+      </div>
+      <button onclick="skipIntro()" class="text-[11px] font-bold px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-amber-200 border border-white/20 active:scale-95 transition-transform cursor-pointer">
+        تخطي ✕
+      </button>
+    </div>
+
+    <!-- Active Slide Container -->
+    <div id="slideContent" class="flex-1 flex flex-col items-center justify-center my-3 text-center slide-enter z-10">
+      <!-- Dynamic Slide Injected by JS -->
+    </div>
+
+    <!-- Bottom Controls: Dots Indicator & Navigation Buttons -->
+    <div class="pt-3 border-t border-amber-800/80 z-20 space-y-3">
+      
+      <!-- Dots Indicator (● ○ ○ ○) -->
+      <div class="flex items-center justify-center gap-2">
+        <span id="dot-0" class="w-7 h-2.5 rounded-full bg-yellow-400 shadow-md transition-all duration-300"></span>
+        <span id="dot-1" class="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-600 transition-all duration-300"></span>
+        <span id="dot-2" class="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-600 transition-all duration-300"></span>
+        <span id="dot-3" class="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-600 transition-all duration-300"></span>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="flex items-center gap-2 w-full">
+        <button id="prevBtn" onclick="prevSlide()" class="py-3 px-4 rounded-2xl bg-black/40 hover:bg-black/60 text-amber-200 font-bold text-xs border border-white/20 active:scale-95 transition-all opacity-40 cursor-not-allowed" disabled>
+          السابق
+        </button>
+        <button id="nextBtn" onclick="nextSlide()" class="flex-1 btn-3d-yellow py-3.5 rounded-2xl text-amber-950 font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+          <span id="nextBtnText">التالي</span> <span>⬅️</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const slidesData = [
+      {
+        id: 1,
+        badge: "🌾 البداية في المزرعة",
+        title: "مرحباً بك في Crazy Farm!",
+        subtitle: "ابنِ مزرعتك واحصد خيراتها يومياً",
+        desc: "انطلق في رحلة ريفية ممتعة، احرث الحقول، ارعَ الحيوانات لجمع النقاط وترقية مزارعك خطوة بخطوة نحو الاحتراف!",
+        image: "assets/farms/main_farm.jpg",
+        imageClass: "w-full h-44 object-cover rounded-2xl border-2 border-yellow-300 shadow-xl",
+        iconOverlay: "🚜"
+      },
+      {
+        id: 2,
+        badge: "⚔️ الحماس والتحدي",
+        title: "معارك وجوائز يومية كبرى!",
+        subtitle: "PvP Battles & Fortune Wheel",
+        desc: "نافس في حلبات معارك الحيوانات (3v3 و 5v5 و 7v7)، دوّر عجلة الحظ، وافتح صناديق الهدايا اليومية لتربح كوينزات مضاعفة!",
+        image: "assets/farms/dog_runner_3d.png",
+        imageClass: "h-44 w-auto object-contain mx-auto drop-shadow-2xl animate-bounce",
+        iconOverlay: "🏆"
+      },
+      {
+        id: 3,
+        badge: "💎 التعدين الذكي",
+        title: "عدّن عملة CFT مجاناً!",
+        subtitle: "24h Automatic Cloud Mining",
+        desc: "مزرعتك بتعدّن لك عملة CFT الحقيقية تلقائياً على مدار 24 ساعة! اضغط لتسريع التعدين وطوّر مستواك لمضاعفة أرباحك اليومية!",
+        image: "assets/cft_gold_coin.png",
+        imageClass: "w-40 h-40 object-contain mx-auto glow-gold animate-pulse",
+        iconOverlay: "⚡"
+      },
+      {
+        id: 4,
+        badge: "🌋 العوالم الأسطورية",
+        title: "افتح عالم الجوراسيك الخارق!",
+        subtitle: "Prehistoric Jurassic Sanctum",
+        desc: "فك قفل أرض الديناصورات النادرة، وضاعف سرعة تعدين عملات الـ CFT بمعدل 3X مع 5 كائنات أسطورية خارقة!",
+        image: "assets/farms/crazy_farm_3_poster.jpg",
+        imageClass: "w-full h-44 object-cover rounded-2xl border-2 border-amber-400 shadow-2xl",
+        iconOverlay: "🦖"
+      }
+    ];
+
+    let currentSlide = 0;
+
+    function renderSlide(index) {
+      const data = slidesData[index];
+      const container = document.getElementById('slideContent');
+      const numEl = document.getElementById('slideNumberDisplay');
+      const nextBtnText = document.getElementById('nextBtnText');
+      const nextBtn = document.getElementById('nextBtn');
+      const prevBtn = document.getElementById('prevBtn');
+
+      numEl.innerText = index + 1;
+
+      // Update dots
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('dot-' + i);
+        if (i === index) {
+          dot.className = "w-7 h-2.5 rounded-full bg-yellow-400 shadow-lg shadow-yellow-500/50 transition-all duration-300";
+        } else {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-amber-950/80 border border-amber-600 transition-all duration-300";
+        }
+      }
+
+      // Prev Button state
+      if (index === 0) {
+        prevBtn.disabled = true;
+        prevBtn.className = "py-3 px-4 rounded-2xl bg-black/40 text-amber-200/40 font-bold text-xs border border-white/10 opacity-40 cursor-not-allowed";
+      } else {
+        prevBtn.disabled = false;
+        prevBtn.className = "py-3 px-4 rounded-2xl bg-black/50 hover:bg-black/70 text-amber-200 font-bold text-xs border border-white/20 active:scale-95 transition-all cursor-pointer";
+      }
+
+      // Next / Finish Button State
+      if (index === slidesData.length - 1) {
+        nextBtn.className = "flex-1 btn-3d-green py-3.5 rounded-2xl text-white font-black text-sm shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer border border-lime-300 animate-pulse";
+        nextBtnText.innerText = "🚀 ابدأ المغامرة الآن!";
+      } else {
+        nextBtn.className = "flex-1 btn-3d-yellow py-3.5 rounded-2xl text-amber-950 font-black text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer";
+        nextBtnText.innerText = "التالي";
+      }
+
+      // Inject Content with Animation
+      container.className = "flex-1 flex flex-col items-center justify-center my-2 text-center slide-enter z-10 w-full";
+      container.innerHTML = `
+        <!-- Visual Presentation -->
+        <div class="relative w-full mb-3 flex items-center justify-center">
+          <img src="${data.image}" alt="${data.title}" class="${data.imageClass}">
+          <span class="absolute -bottom-2 -left-2 w-9 h-9 rounded-2xl bg-amber-950/90 border border-yellow-400 flex items-center justify-center text-lg shadow-lg">
+            ${data.iconOverlay}
+          </span>
+        </div>
+
+        <!-- Text Description -->
+        <div class="bg-black/40 rounded-2xl p-3 border border-amber-800/60 w-full text-center">
+          <span class="inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-950/80 text-yellow-300 border border-yellow-400/50 mb-1.5 shadow">
+            ${data.badge}
+          </span>
+          <h2 class="text-base sm:text-lg font-black text-yellow-300 drop-shadow mb-0.5" style="font-family: 'Fredoka', 'Tajawal', sans-serif;">
+            ${data.title}
+          </h2>
+          <p class="text-[11px] text-amber-100 font-semibold leading-relaxed mt-1">
+            ${data.desc}
+          </p>
+        </div>
+      `;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slidesData.length - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+      } else {
+        alert("🎉 مبروك! كده اللاعب فهم كل حاجة ويدخل على المزرعة علطول!");
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide(currentSlide);
+      }
+    }
+
+    function skipIntro() {
+      if (confirm("هل تريد تخطي الشرح والدخول للمزرعة فوراً؟")) {
+        alert("تم التخطي والدخول للمزرعة!");
+      }
+    }
+
+    // Touch Swipe Support for mobile feeling
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, false);
+    document.addEventListener('touchend', e => {
+      let touchEndX = e.changedTouches[0].screenX;
+      let diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 45) {
+        // RTL Swipe: right-to-left is next, left-to-right is prev
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    }, false);
+
+    // Initial render
+    renderSlide(0);
+  </script>
+</body>
+</html>
