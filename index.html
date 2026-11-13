@@ -2203,7 +2203,7 @@
               <span id="mainFarmModalLevel" class="bg-gradient-to-r from-emerald-500 to-lime-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md border border-emerald-300/80">Lv. 1</span>
             </div>
           </div>
-          <button type="button" onclick="event.stopPropagation(); closeMainFarmModal();" ontouchend="event.stopPropagation(); closeMainFarmModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeMainFarmModal();" ontouchend="event.stopPropagation(); event.preventDefault(); closeMainFarmModal();" style="touch-action: manipulation;" class="w-10 h-10 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-base shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- Visual Stage for Main Farm (Tall & Spacious with Dedicated Video Player) -->
@@ -2271,7 +2271,7 @@
           </div>
 
           <!-- Tactile 3D Red Close Button -->
-          <button type="button" onclick="event.stopPropagation(); closeAnimalFarmModal();" ontouchend="event.stopPropagation(); closeAnimalFarmModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeAnimalFarmModal();" ontouchend="event.stopPropagation(); event.preventDefault(); closeAnimalFarmModal();" style="touch-action: manipulation;" class="w-10 h-10 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-base shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- HERO ANIMAL VIDEO & ANIMATION STAGE (Spacious & Tall for High-Res Animal Video) -->
@@ -2358,7 +2358,7 @@
           </div>
 
           <!-- Tactile 3D Red Close Button -->
-          <button type="button" onclick="event.stopPropagation(); closeJurassicMinerModal();" ontouchend="event.stopPropagation(); closeJurassicMinerModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeJurassicMinerModal();" ontouchend="event.stopPropagation(); event.preventDefault(); closeJurassicMinerModal();" style="touch-action: manipulation;" class="w-10 h-10 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-base shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- HERO ANIMAL VIDEO & ANIMATION STAGE -->
@@ -2428,6 +2428,11 @@
             </span>
           </button>
         </div>
+
+        <!-- Quick Close Button for Mobile -->
+        <button type="button" onclick="event.stopPropagation(); closeJurassicMinerModal();" ontouchend="event.stopPropagation(); event.preventDefault(); closeJurassicMinerModal();" class="w-full py-2 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-emerald-200 font-bold text-xs border border-emerald-600/50 shadow-md active:scale-95 transition-transform cursor-pointer flex items-center justify-center gap-1 shrink-0">
+          <span>✕</span> <span>Close Enclosure</span>
+        </button>
 
         <!-- Setup Note Footer -->
         <div class="text-center pt-0.5 shrink-0">
@@ -10972,7 +10977,14 @@ window.addEventListener('load', () => {
       return { state: 'mining', remaining: JURASSIC_CYCLE_MS - elapsed, elapsed };
     }
 
+    let lastJurassicModalCloseTime = 0;
+
     function openJurassicMinerModal(key) {
+      // Prevent mobile ghost-clicks immediately after closing
+      if (Date.now() - lastJurassicModalCloseTime < 450) {
+        console.log('Ignored ghost-click on Jurassic animal hotspot:', key);
+        return;
+      }
       if (!isCrazyFarm3Unlocked) {
         try { playSound('click'); } catch(e){}
         showWalletToast('🔒 Unlock Jurassic Farm with 15,000,000 points (15M 🌾) first!');
@@ -10981,6 +10993,11 @@ window.addEventListener('load', () => {
       const miner = JURASSIC_MINERS[key];
       if (!miner) return;
       currentJurassicModalKey = key;
+
+      // Temporarily disable map hotspots underneath to prevent touch leaking through
+      const cf3Container = document.getElementById('cf3AnimalsContainer');
+      if (cf3Container) cf3Container.style.pointerEvents = 'none';
+
       const lvl = getJurassicMinerLevel(key);
       const rate = getJurassicMinerRate(key, lvl);
       const nextBoost = miner.rateBoostPerLvl.toFixed(2);
@@ -11096,6 +11113,7 @@ window.addEventListener('load', () => {
     }
 
     function closeJurassicMinerModal() {
+      lastJurassicModalCloseTime = Date.now();
       currentJurassicModalKey = null;
       try { playSound('pop'); } catch(e){}
       if (window.Telegram?.WebApp?.HapticFeedback) {
@@ -11106,6 +11124,11 @@ window.addEventListener('load', () => {
         modal.classList.add('hidden');
         modal.style.display = 'none';
       }
+      // Re-enable map hotspots after touch ghost-click window has safely passed
+      setTimeout(() => {
+        const cf3Container = document.getElementById('cf3AnimalsContainer');
+        if (cf3Container) cf3Container.style.pointerEvents = 'auto';
+      }, 450);
     }
 
     function upgradeJurassicMinerFromModal() {
