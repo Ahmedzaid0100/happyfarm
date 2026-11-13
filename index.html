@@ -3303,6 +3303,170 @@
     function pauseBgmForBattle() {}
     function resumeBgmAfterBattle() {}
 
+    // ==================== PROCEDURAL ROYALTY-FREE WEB AUDIO BGM ENGINES ====================
+    let runnerBgmTimer = null;
+    let runnerBgmStep = 0;
+
+    function startRunnerBgm() {
+      if (!audioEnabled) return;
+      stopRunnerBgm();
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+
+      // Upbeat, cheerful yet calm & pleasant adventure pentatonic melody (C major / G major)
+      // 100% procedurally synthesized in Web Audio API (Zero external audio, royalty-free & copyright-free)
+      const melodyNotes = [
+        523.25, 0, 659.25, 783.99,  0, 880.00, 783.99, 0,
+        659.25, 587.33, 523.25, 659.25,  783.99, 0, 880.00, 0
+      ];
+      const bassNotes = [
+        261.63, 0, 0, 0,  329.63, 0, 0, 0,
+        392.00, 0, 0, 0,  440.00, 0, 392.00, 0
+      ];
+
+      runnerBgmStep = 0;
+      runnerBgmTimer = setInterval(() => {
+        if (!audioEnabled || !runGameActive) {
+          stopRunnerBgm();
+          return;
+        }
+        try {
+          const now = ctx.currentTime;
+          const melFreq = melodyNotes[runnerBgmStep];
+          const bassFreq = bassNotes[runnerBgmStep];
+
+          // Gentle Marimba / Kalimba Pluck (Warm sine wave at gentle volume)
+          if (melFreq > 0) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(melFreq, now);
+            gain.gain.setValueAtTime(0.035, now);
+            gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.16);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.16);
+          }
+
+          // Gentle Bass note
+          if (bassFreq > 0) {
+            const bOsc = ctx.createOscillator();
+            const bGain = ctx.createGain();
+            bOsc.type = 'triangle';
+            bOsc.frequency.setValueAtTime(bassFreq / 2, now);
+            bGain.gain.setValueAtTime(0.03, now);
+            bGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.22);
+            bOsc.connect(bGain);
+            bGain.connect(ctx.destination);
+            bOsc.start(now);
+            bOsc.stop(now + 0.22);
+          }
+
+          runnerBgmStep = (runnerBgmStep + 1) % 16;
+        } catch(e) {}
+      }, 210); // ~143 BPM 8th notes: energetic, cheerful, non-intrusive
+    }
+
+    function stopRunnerBgm() {
+      if (runnerBgmTimer) {
+        clearInterval(runnerBgmTimer);
+        runnerBgmTimer = null;
+      }
+    }
+
+    let battleBgmTimer = null;
+    let battleBgmStep = 0;
+
+    function startBattleBgm() {
+      if (!audioEnabled) return;
+      stopBattleBgm();
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+
+      // Upbeat, heroic, rhythmic battle synth loop (Am - F - C - G progression)
+      // 100% procedurally synthesized in Web Audio API (Zero external audio, royalty-free & copyright-free)
+      const leadNotes = [
+        440.00, 523.25, 659.25, 523.25,
+        349.23, 440.00, 523.25, 440.00,
+        523.25, 659.25, 783.99, 659.25,
+        392.00, 493.88, 587.33, 493.88
+      ];
+      const bassNotes = [
+        220.00, 0, 220.00, 0,
+        174.61, 0, 174.61, 0,
+        261.63, 0, 261.63, 0,
+        196.00, 0, 196.00, 0
+      ];
+
+      battleBgmStep = 0;
+      battleBgmTimer = setInterval(() => {
+        if (!audioEnabled || !isBattleInProgress) {
+          stopBattleBgm();
+          return;
+        }
+        try {
+          const now = ctx.currentTime;
+          const leadFreq = leadNotes[battleBgmStep];
+          const bassFreq = bassNotes[battleBgmStep];
+
+          // Heroic lead arpeggio note (warm triangle wave)
+          if (leadFreq > 0) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(leadFreq, now);
+            gain.gain.setValueAtTime(0.035, now);
+            gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          }
+
+          // Rhythmic bass pulse
+          if (bassFreq > 0) {
+            const bOsc = ctx.createOscillator();
+            const bGain = ctx.createGain();
+            bOsc.type = 'sine';
+            bOsc.frequency.setValueAtTime(bassFreq / 2, now);
+            bGain.gain.setValueAtTime(0.038, now);
+            bGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.18);
+            bOsc.connect(bGain);
+            bGain.connect(ctx.destination);
+            bOsc.start(now);
+            bOsc.stop(now + 0.18);
+          }
+
+          // Soft subtle kick drum tap on quarter notes (steps 0, 4, 8, 12)
+          if (battleBgmStep % 4 === 0) {
+            const kickOsc = ctx.createOscillator();
+            const kickGain = ctx.createGain();
+            kickOsc.type = 'sine';
+            kickOsc.frequency.setValueAtTime(110, now);
+            kickOsc.frequency.exponentialRampToValueAtTime(45, now + 0.08);
+            kickGain.gain.setValueAtTime(0.045, now);
+            kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            kickOsc.connect(kickGain);
+            kickGain.connect(ctx.destination);
+            kickOsc.start(now);
+            kickOsc.stop(now + 0.08);
+          }
+
+          battleBgmStep = (battleBgmStep + 1) % 16;
+        } catch(e) {}
+      }, 190); // ~158 BPM 8th-note pace: energetic, heroic, rhythmic drive
+    }
+
+    function stopBattleBgm() {
+      if (battleBgmTimer) {
+        clearInterval(battleBgmTimer);
+        battleBgmTimer = null;
+      }
+    }
+
     // Auto-resume AudioContext on first user interaction anywhere
     function unlockAudioOnGesture() {
       const ctx = getAudioContext();
@@ -3339,6 +3503,14 @@
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
           osc.start(now);
           osc.stop(now + 0.25);
+        } else if (type === 'soft_coin') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(659.25, now); // E5
+          osc.frequency.exponentialRampToValueAtTime(987.77, now + 0.08); // B5
+          gain.gain.setValueAtTime(0.04, now); // Soft, gentle, subtle chime
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
         } else if (type === 'fanfare') {
           osc.type = 'sine';
           osc.frequency.setValueAtTime(440, now);
@@ -3411,7 +3583,7 @@
         // Telegram Haptic Feedback (Physical vibration on Telegram Mobile)
         if (window.Telegram?.WebApp?.HapticFeedback) {
           try {
-            if (type === 'click' || type === 'pop' || type === 'wheel_tick') {
+            if (type === 'click' || type === 'pop' || type === 'wheel_tick' || type === 'soft_coin') {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
             } else if (type === 'coin' || type === 'chime') {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
@@ -4516,6 +4688,7 @@
       if (isBattleInProgress) return;
       isBattleInProgress = true;
       battleStartTime = Date.now();
+      try { startBattleBgm(); } catch(e){}
 
       const fightOverlay = document.getElementById('battleFightOverlay');
       if (fightOverlay) fightOverlay.classList.add('hidden');
@@ -4734,6 +4907,7 @@
 
     function triggerBattleVictory() {
       isBattleInProgress = false;
+      try { stopBattleBgm(); } catch(e){}
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       if (battleClockInterval) clearInterval(battleClockInterval);
 
@@ -4802,6 +4976,7 @@
     }
 
     function closeBattleArena() {
+      try { stopBattleBgm(); } catch(e){}
       try { playSound('pop'); } catch(e){}
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
@@ -4832,6 +5007,7 @@
 
     function triggerBattleDefeat() {
       isBattleInProgress = false;
+      try { stopBattleBgm(); } catch(e){}
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       if (battleClockInterval) clearInterval(battleClockInterval);
 
@@ -6653,6 +6829,10 @@
 
     function toggleAudio(btn) {
       audioEnabled = !audioEnabled;
+      if (!audioEnabled) {
+        try { stopRunnerBgm(); } catch(e){}
+        try { stopBattleBgm(); } catch(e){}
+      }
       btn.innerText = audioEnabled ? 'Sound ON 🔊' : 'Muted 🔇';
       btn.className = audioEnabled ? 'px-2.5 py-1 rounded-md bg-emerald-600 font-bold text-[10px]' : 'px-2.5 py-1 rounded-md bg-slate-600 font-bold text-[10px]';
     }
@@ -7606,23 +7786,25 @@
       return addr.substring(0, 6) + '...' + addr.substring(addr.length - 4);
     }
 
-    function handleWalletConnected(address) {
+    function handleWalletConnected(address, isInitialLoad = false) {
       if (!address) return;
+      const isAlreadyConnected = (isWalletConnected && connectedWalletAddress === address.trim());
       isWalletConnected = true;
       connectedWalletAddress = address.trim();
       try {
         localStorage.setItem('crazyfarm_ton_wallet', connectedWalletAddress);
         if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+          switchTab(urlParams.get('testTab'));
+        }
+      } catch(e) {}
 
       updateWalletConnectionUI();
       queueCloudSave();
 
-      try { playSound('fanfare'); } catch(e){}
-      playSound('coin');
-      showWalletToast('✅ TON Wallet linked: ' + shortenAddress(connectedWalletAddress));
+      // Silenced startup noise completely per user request (no annoying fanfare/coin on boot)
+      if (!isInitialLoad && !isAlreadyConnected) {
+        showWalletToast('✅ TON Wallet linked: ' + shortenAddress(connectedWalletAddress));
+      }
     }
 
     function handleWalletDisconnected() {
@@ -8056,7 +8238,7 @@
                   addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
                 }
               } catch(e) {}
-              handleWalletConnected(addr);
+              handleWalletConnected(addr, true);
             } else if (!wallet && isWalletConnected) {
               handleWalletDisconnected();
             }
@@ -8069,7 +8251,7 @@
                 addr = TON_CONNECT_UI.toUserFriendlyAddress(addr);
               }
             } catch(e) {}
-            handleWalletConnected(addr);
+            handleWalletConnected(addr, true);
           }
         } catch(e) {
           console.warn('TonConnect UI init failed:', e);
@@ -10293,6 +10475,7 @@
       runInvulnerableTimer = 0;
       runGameActive = true;
       runGameStartTime = Date.now();
+      try { startRunnerBgm(); } catch(e){}
 
       updateRunHud();
       bindRun3DControls();
@@ -10524,7 +10707,7 @@
               } else {
                 runBonusPoints += 10;
                 runCoinsCollectedCount++;
-                playSound('coin');
+                playSound('soft_coin');
               }
               updateRunHud();
               if (item.shadow) run3D.scene.remove(item.shadow);
@@ -10717,7 +10900,7 @@
       if (run3D.currentLane !== targetLane) {
         run3D.currentLane = targetLane;
         run3D.targetX = run3D.lanes[targetLane];
-        try { playSound('click'); } catch(e){}
+        // Silenced lane steer sound per user request (silent, smooth lane transitions)
         if (window.Telegram?.WebApp?.HapticFeedback) {
           try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
         }
@@ -10812,6 +10995,7 @@
     // ==================== VICTORY & GAME OVER ====================
     function triggerRunVictory() {
       runGameActive = false;
+      try { stopRunnerBgm(); } catch(e){}
       playSound('fanfare');
       playSound('coin');
 
@@ -10873,6 +11057,7 @@
 
     function triggerRunGameOver() {
       runGameActive = false;
+      try { stopRunnerBgm(); } catch(e){}
       playSound('click');
 
       const overlay = document.getElementById('runGameOverOverlay');
@@ -10899,6 +11084,7 @@
 
     function exitRunSprintGame() {
       runGameActive = false;
+      try { stopRunnerBgm(); } catch(e){}
       if (runGameAnimFrame) {
         cancelAnimationFrame(runGameAnimFrame);
         runGameAnimFrame = null;
