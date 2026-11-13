@@ -4905,8 +4905,11 @@
       setTimeout(() => el.remove(), 1000);
     }
 
+    let battleVictoryRewardPending = false;
+
     function triggerBattleVictory() {
       isBattleInProgress = false;
+      battleVictoryRewardPending = true;
       try { stopBattleBgm(); } catch(e){}
       if (battleRoundInterval) clearInterval(battleRoundInterval);
       if (battleClockInterval) clearInterval(battleClockInterval);
@@ -4943,6 +4946,9 @@
       if (!ActionLock.run('battle_claim', 1500, () => _doClaimBattleVictoryReward(isDouble))) return;
     }
     function _doClaimBattleVictoryReward(isDouble = false) {
+      if (!battleVictoryRewardPending) return;
+      battleVictoryRewardPending = false;
+
       playSound('coin');
       try { playSound('fanfare'); } catch(e){}
 
@@ -4976,6 +4982,7 @@
     }
 
     function closeBattleArena() {
+      battleVictoryRewardPending = false;
       try { stopBattleBgm(); } catch(e){}
       try { playSound('pop'); } catch(e){}
       if (window.Telegram?.WebApp?.HapticFeedback) {
@@ -5083,6 +5090,119 @@
       if (isNaN(n) || !isFinite(n) || n < min) return defaultVal;
       return Math.min(n, max);
     }
+
+    // ==================== ENTERPRISE ANTI-CHEAT & ANTI-INJECTION ENGINE ====================
+    const AntiCheat = (function() {
+      const SALT = 'CF_SEC_9942_K9A#';
+      let _lastVerifiedPoints = 0;
+      let _lastVerifiedCft = 0;
+      let _lastVerifiedTimestamp = Date.now();
+      let _trustedBaselineInitialized = false;
+
+      // 32-bit FNV-1a Hash with bitwise avalanche for fast cryptographic data signing
+      function hashStr(str) {
+        let hash = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+          hash ^= str.charCodeAt(i);
+          hash = Math.imul(hash, 0x01000193) >>> 0;
+        }
+        hash = (hash ^ (hash >>> 16)) >>> 0;
+        hash = Math.imul(hash, 0x85ebca6b) >>> 0;
+        hash = (hash ^ (hash >>> 13)) >>> 0;
+        return hash.toString(16).padStart(8, '0');
+      }
+
+      function generateSignature(pts, cft, lvl, tId) {
+        const p = Math.floor(Number(pts) || 0);
+        const c = (Number(cft) || 0).toFixed(2);
+        const l = Math.floor(Number(lvl) || 1);
+        const id = String(tId || 'guest');
+        return hashStr(`${p}|${c}|${l}|${id}|${SALT}`);
+      }
+
+      // Hard ceilings on plausible progression deltas between cloud syncs (15-second window)
+      const MAX_POINTS_DELTA_PER_SYNC = 120000; // max reasonable points gained in 15s (even with big claim)
+      const MAX_CFT_DELTA_PER_SYNC = 10.0;       // max reasonable CFT gained in 15s
+
+      return {
+        initBaseline(pts, cft) {
+          _lastVerifiedPoints = Number(pts) || 0;
+          _lastVerifiedCft = Number(cft) || 0;
+          _lastVerifiedTimestamp = Date.now();
+          _trustedBaselineInitialized = true;
+        },
+        signCurrentState(pts, cft, lvl, tId) {
+          const sig = generateSignature(pts, cft, lvl, tId);
+          try {
+            localStorage.setItem('crazyfarm_sec_sig', sig);
+          } catch(e) {}
+          _lastVerifiedPoints = Number(pts) || 0;
+          _lastVerifiedCft = Number(cft) || 0;
+          _lastVerifiedTimestamp = Date.now();
+          return sig;
+        },
+        verifyCurrentSignature(pts, cft, lvl, tId) {
+          try {
+            const storedSig = localStorage.getItem('crazyfarm_sec_sig');
+            if (!storedSig) return false;
+            return generateSignature(pts, cft, lvl, tId) === storedSig;
+          } catch(e) {
+            return false;
+          }
+        },
+        validateStateBeforeCloudSave(pts, cft, lvl, tId) {
+          pts = Number(pts) || 0;
+          cft = Number(cft) || 0;
+
+          // Clamp negative or NaN values
+          if (pts < 0 || isNaN(pts)) pts = 0;
+          if (cft < 0 || isNaN(cft)) cft = 0;
+
+          if (!_trustedBaselineInitialized) {
+            this.initBaseline(pts, cft);
+            this.signCurrentState(pts, cft, lvl, tId);
+            return { valid: true, sanitizedPoints: pts, sanitizedCft: cft };
+          }
+
+          const pointsDelta = pts - _lastVerifiedPoints;
+          const cftDelta = cft - _lastVerifiedCft;
+
+          // Check 1: Impossible points surge (e.g. injected 999999999 via console)
+          if (pointsDelta > MAX_POINTS_DELTA_PER_SYNC) {
+            console.warn('🛡️ [Anti-Cheat] Anomalous points surge blocked! Delta:', pointsDelta, 'Max allowed:', MAX_POINTS_DELTA_PER_SYNC);
+            pts = _lastVerifiedPoints;
+            window.points = pts;
+            this.signCurrentState(pts, cft, lvl, tId);
+            return { valid: false, reason: 'POINTS_INJECTION_DETECTED', sanitizedPoints: pts, sanitizedCft: cft };
+          }
+
+          // Check 2: Impossible CFT surge (e.g. injected 5000 CFT)
+          if (cftDelta > MAX_CFT_DELTA_PER_SYNC) {
+            console.warn('🛡️ [Anti-Cheat] Anomalous CFT surge blocked! Delta:', cftDelta, 'Max allowed:', MAX_CFT_DELTA_PER_SYNC);
+            cft = _lastVerifiedCft;
+            window.cftBalance = cft;
+            this.signCurrentState(pts, cft, lvl, tId);
+            return { valid: false, reason: 'CFT_INJECTION_DETECTED', sanitizedPoints: pts, sanitizedCft: cft };
+          }
+
+          // Check 3: LocalStorage offline tampering signature verification
+          const storedSig = localStorage.getItem('crazyfarm_sec_sig');
+          if (storedSig && !this.verifyCurrentSignature(_lastVerifiedPoints, _lastVerifiedCft, lvl, tId)) {
+            console.warn('🛡️ [Anti-Cheat] Local storage tampering detected! Signatures mismatch.');
+            pts = _lastVerifiedPoints;
+            cft = _lastVerifiedCft;
+            window.points = pts;
+            window.cftBalance = cft;
+            this.signCurrentState(pts, cft, lvl, tId);
+            return { valid: false, reason: 'LOCALSTORAGE_TAMPERING', sanitizedPoints: pts, sanitizedCft: cft };
+          }
+
+          // Legitimate state update
+          this.signCurrentState(pts, cft, lvl, tId);
+          return { valid: true, sanitizedPoints: pts, sanitizedCft: cft };
+        }
+      };
+    })();
 
     // Game State (Local dual-persistence + Cloud sync with Anti-Tamper protection)
     let points = sanitizeNumber(localStorage.getItem('crazyfarm_points'), 0, 0, 1000000000);
@@ -9842,9 +9962,28 @@
         }
 
         if (data) {
-          points = Math.max(points, Number(data.points) || 0);
-          hfcBalance = Math.max(hfcBalance, Number(data.hfc_balance) || 0);
-          userLevel = Math.max(userLevel, Number(data.user_level) || 1);
+          const cloudPts = Number(data.points) || 0;
+          const cloudCft = Number(data.farms_data?.cft_balance !== undefined ? data.farms_data.cft_balance : (data.hfc_balance || 0));
+          const cloudLvl = Number(data.user_level) || 1;
+
+          // Anti-Cheat: Validate local storage signature against cloud baseline
+          const localSigValid = AntiCheat.verifyCurrentSignature(points, cftBalance, userLevel, tId);
+          if (!localSigValid || points > cloudPts + 120000 || cftBalance > cloudCft + 10) {
+            if (!localSigValid && (points !== 0 || cftBalance !== 0)) {
+              console.warn('🛡️ [Anti-Cheat] Local untrusted/tampered data discarded. Restoring verified cloud balance.');
+            }
+            points = cloudPts;
+            cftBalance = cloudCft;
+            hfcBalance = Math.floor(cftBalance);
+            userLevel = cloudLvl;
+          } else {
+            points = Math.max(points, cloudPts);
+            cftBalance = Math.max(cftBalance, cloudCft);
+            hfcBalance = Math.floor(cftBalance);
+            userLevel = Math.max(userLevel, cloudLvl);
+          }
+          AntiCheat.initBaseline(points, cftBalance);
+          AntiCheat.signCurrentState(points, cftBalance, userLevel, tId);
           isDogVipActive = false;
           if (data.wallet_address) {
             connectedWalletAddress = data.wallet_address;
@@ -10020,6 +10159,16 @@
       const tId = getEffectiveTelegramId();
       const uname = tgUser?.username || tgUser?.first_name || 'Farmer';
       const fname = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ') || uname;
+
+      // ==================== ANTI-CHEAT VELOCITY & INTEGRITY CHECK ====================
+      const antiCheatResult = AntiCheat.validateStateBeforeCloudSave(points, cftBalance, userLevel, tId);
+      points = antiCheatResult.sanitizedPoints;
+      cftBalance = antiCheatResult.sanitizedCft;
+      hfcBalance = Math.floor(cftBalance);
+      if (!antiCheatResult.valid) {
+        console.warn('🛡️ [Anti-Cheat] Suspicious memory/storage modification neutralized:', antiCheatResult.reason);
+        updateDisplays();
+      }
 
       const jurassicMiningStarts = {};
       const jurassicKeys = ['dinosaur', 'phoenix', 'anaconda', 'dragon', 'dolphin'];
@@ -10992,9 +11141,12 @@
       }
     }
 
+    let runSprintVictoryPending = false;
+
     // ==================== VICTORY & GAME OVER ====================
     function triggerRunVictory() {
       runGameActive = false;
+      runSprintVictoryPending = true;
       try { stopRunnerBgm(); } catch(e){}
       playSound('fanfare');
       playSound('coin');
@@ -11033,6 +11185,9 @@
     }
 
     function _doClaimRunSprintVictory(isDouble = false) {
+      if (!runSprintVictoryPending) return;
+      runSprintVictoryPending = false;
+
       playSound('coin');
       playSound('fanfare');
 
@@ -11084,6 +11239,7 @@
 
     function exitRunSprintGame() {
       runGameActive = false;
+      runSprintVictoryPending = false;
       try { stopRunnerBgm(); } catch(e){}
       if (runGameAnimFrame) {
         cancelAnimationFrame(runGameAnimFrame);
