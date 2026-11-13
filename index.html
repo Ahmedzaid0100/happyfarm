@@ -2203,7 +2203,7 @@
               <span id="mainFarmModalLevel" class="bg-gradient-to-r from-emerald-500 to-lime-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md border border-emerald-300/80">Lv. 1</span>
             </div>
           </div>
-          <button type="button" onclick="closeMainFarmModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeMainFarmModal();" ontouchend="event.stopPropagation(); closeMainFarmModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- Visual Stage for Main Farm (Tall & Spacious with Dedicated Video Player) -->
@@ -2271,7 +2271,7 @@
           </div>
 
           <!-- Tactile 3D Red Close Button -->
-          <button type="button" onclick="closeAnimalFarmModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeAnimalFarmModal();" ontouchend="event.stopPropagation(); closeAnimalFarmModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- HERO ANIMAL VIDEO & ANIMATION STAGE (Spacious & Tall for High-Res Animal Video) -->
@@ -2358,7 +2358,7 @@
           </div>
 
           <!-- Tactile 3D Red Close Button -->
-          <button type="button" onclick="closeJurassicMinerModal()" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer" title="Close">&#10005;</button>
+          <button type="button" onclick="event.stopPropagation(); closeJurassicMinerModal();" ontouchend="event.stopPropagation(); closeJurassicMinerModal();" style="touch-action: manipulation;" class="w-9 h-9 rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 border-2 border-white text-white font-black flex items-center justify-center text-sm shadow-[0_4px_10px_rgba(220,38,38,0.5),inset_0_2px_2px_rgba(255,255,255,0.4)] active:scale-90 transition-transform cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         </div>
 
         <!-- HERO ANIMAL VIDEO & ANIMATION STAGE -->
@@ -2856,7 +2856,7 @@
     </div>
 
     <!-- Farm Harvest Collect Modal -->
-    <div id="farmCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
+    <div id="farmCollectModal" onclick="if(event.target === this) hideFarmCollectModal();" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
         <button type="button" onclick="event.stopPropagation(); hideFarmCollectModal();" ontouchend="event.stopPropagation(); hideFarmCollectModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-5xl mb-1 animate-bounce" id="farmCollectEmoji">&#127806;</div>
@@ -2878,7 +2878,7 @@
     </div>
 
     <!-- Watch More / Daily Bonus Collect Modal -->
-    <div id="watchMoreCollectModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
+    <div id="watchMoreCollectModal" onclick="if(event.target === this) hideWatchMoreCollectModal();" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[150] hidden flex flex-col items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-xs w-full text-center border-4 border-yellow-400 shadow-2xl relative">
         <button type="button" onclick="event.stopPropagation(); hideWatchMoreCollectModal();" ontouchend="event.stopPropagation(); hideWatchMoreCollectModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-5xl mb-1 animate-bounce" id="watchMoreCollectEmoji">&#127873;</div>
@@ -2900,7 +2900,7 @@
     </div>
 
     <!-- 2. Wallet Modal (TON Connect) -->
-    <div id="walletModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="walletModal" onclick="if(event.target === this) closeModal('walletModal');" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600">
         <button type="button" onclick="event.stopPropagation(); closeModal('walletModal');" ontouchend="event.stopPropagation(); closeModal('walletModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-center mb-4">
@@ -2936,7 +2936,7 @@
     </div>
 
     <!-- 3. Tasks Modal -->
-    <div id="tasksModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="tasksModal" onclick="if(event.target === this) closeModal('tasksModal');" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 max-h-[85vh] overflow-y-auto">
         <button type="button" onclick="event.stopPropagation(); closeModal('tasksModal');" ontouchend="event.stopPropagation(); closeModal('tasksModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-center mb-3">
@@ -2975,7 +2975,7 @@
     </div>
 
     <!-- 4. Profile Modal -->
-    <div id="profileModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="profileModal" onclick="if(event.target === this) closeModal('profileModal');" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 text-center">
         <button type="button" onclick="event.stopPropagation(); closeModal('profileModal');" ontouchend="event.stopPropagation(); closeModal('profileModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div id="profileModalAvatar" class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 border-4 border-amber-300 mx-auto flex items-center justify-center text-4xl shadow-lg mb-2">
@@ -3012,7 +3012,7 @@
     </div>
 
     <!-- 5. Others Modal -->
-    <div id="othersModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="othersModal" onclick="if(event.target === this) closeModal('othersModal');" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="wood-board rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl relative border-amber-600 text-center">
         <button type="button" onclick="event.stopPropagation(); closeModal('othersModal');" ontouchend="event.stopPropagation(); closeModal('othersModal');" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
         <div class="text-3xl mb-1">⭐</div>
@@ -3043,6 +3043,110 @@
 
   <!-- Interactive JavaScript Engine -->
   <script>
+    // ==================== UNIVERSAL IN-GAME ALERT & CONFIRM MODALS (REPLACES BROWSER ALERTS) ====================
+    let gameConfirmCallback = null;
+
+    function showGameNoticeModal(title, message, icon = '📢') {
+      const modal = document.getElementById('gameNoticeModal');
+      const titleEl = document.getElementById('gameNoticeTitle');
+      const bodyEl = document.getElementById('gameNoticeBody');
+      const iconEl = document.getElementById('gameNoticeIcon');
+      if (titleEl) titleEl.innerText = title;
+      if (bodyEl) bodyEl.innerText = message;
+      if (iconEl) iconEl.innerText = icon;
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
+      }
+    }
+
+    function closeGameNoticeModal() {
+      const modal = document.getElementById('gameNoticeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('pop'); } catch(e){}
+    }
+
+    function showGameConfirmModal(title, message, icon = '❓', onConfirm = null) {
+      const modal = document.getElementById('gameConfirmModal');
+      const titleEl = document.getElementById('gameConfirmTitle');
+      const bodyEl = document.getElementById('gameConfirmBody');
+      const iconEl = document.getElementById('gameConfirmIcon');
+      const okBtn = document.getElementById('gameConfirmOkBtn');
+
+      if (titleEl) titleEl.innerText = title;
+      if (bodyEl) bodyEl.innerText = message;
+      if (iconEl) iconEl.innerText = icon;
+
+      gameConfirmCallback = onConfirm;
+
+      if (okBtn) {
+        okBtn.onclick = (e) => {
+          if (e) e.stopPropagation();
+          closeGameConfirmModal(true);
+        };
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
+      }
+    }
+
+    function closeGameConfirmModal(isConfirmed = false) {
+      const modal = document.getElementById('gameConfirmModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('pop'); } catch(e){}
+      if (isConfirmed && typeof gameConfirmCallback === 'function') {
+        const cb = gameConfirmCallback;
+        gameConfirmCallback = null;
+        cb();
+      } else {
+        gameConfirmCallback = null;
+      }
+    }
+
+    // Override browser window.alert so github.io domain header NEVER appears anywhere in the app!
+    window.alert = function(msg) {
+      if (typeof msg !== 'string') msg = String(msg || '');
+      let icon = '📢';
+      let title = 'Crazy Farm Notice';
+      if (msg.includes('🔒') || msg.includes('Locked') || msg.includes('Requirements')) {
+        icon = '🔒';
+        title = 'Farm Requirements';
+      } else if (msg.includes('✅') || msg.includes('CONGRATULATIONS') || msg.includes('🎉') || msg.includes('UNLOCKED')) {
+        icon = '🎉';
+        title = 'Congratulations!';
+      } else if (msg.includes('⚠️')) {
+        icon = '⚠️';
+        title = 'Attention!';
+      } else if (msg.includes('⏳')) {
+        icon = '⏳';
+        title = 'Cooldown Active';
+      }
+      showGameNoticeModal(title, msg, icon);
+    };
+
+    // Override browser window.confirm to eliminate native popup with domain header
+    window.confirm = function(msg) {
+      if (typeof msg !== 'string') msg = String(msg || '');
+      showGameNoticeModal('Confirmation', msg, '❓');
+      return false;
+    };
+
     // ==================== SECURITY & ANTI-EXPLOIT UTILITIES ====================
     // Safe HTML Escaping (Protects against XSS & script injection)
     function escapeHtml(str) {
@@ -5733,6 +5837,10 @@
     }
 
     function hideFarmCollectModal() {
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const modal = document.getElementById('farmCollectModal');
       if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
       farmCollectCurrentKey = null;
@@ -5922,6 +6030,10 @@
 
     function closeAnimalFarmModal() {
       currentModalAnimalKey = null;
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const vidEl = document.getElementById('animalModalVideo');
       const vidSrc = document.getElementById('animalModalVideoSource');
       if (vidEl) {
@@ -6067,6 +6179,10 @@
       showWalletToast('\u{1F69C} Welcome to Main Farm! Mining CFT Live!');
     }
     function closeMainFarmModal() {
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const vidEl = document.getElementById('mainFarmModalVideo');
       if (vidEl) {
         try { vidEl.pause(); } catch(e){}
@@ -6328,7 +6444,10 @@
     }
 
     function closeModal(id) {
-      try { playSound('click'); } catch(e){}
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const el = document.getElementById(id);
       if (el) {
         el.classList.add('hidden');
@@ -7838,103 +7957,6 @@
       setTimeout(() => toast.remove(), 2500);
     }
 
-    // ==================== UNIVERSAL IN-GAME ALERT MODAL (REPLACES BROWSER ALERTS) ====================
-    function showGameNoticeModal(title, message, icon = '📢') {
-      const modal = document.getElementById('gameNoticeModal');
-      const titleEl = document.getElementById('gameNoticeTitle');
-      const bodyEl = document.getElementById('gameNoticeBody');
-      const iconEl = document.getElementById('gameNoticeIcon');
-      if (titleEl) titleEl.innerText = title;
-      if (bodyEl) bodyEl.innerText = message;
-      if (iconEl) iconEl.innerText = icon;
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
-      try { playSound('pop'); } catch(e){}
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
-      }
-    }
-
-    function closeGameNoticeModal() {
-      const modal = document.getElementById('gameNoticeModal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-      }
-      try { playSound('pop'); } catch(e){}
-    }
-
-    // ==================== UNIVERSAL IN-GAME CONFIRMATION MODAL ====================
-    let gameConfirmCallback = null;
-
-    function showGameConfirmModal(title, message, icon = '❓', onConfirm = null) {
-      const modal = document.getElementById('gameConfirmModal');
-      const titleEl = document.getElementById('gameConfirmTitle');
-      const bodyEl = document.getElementById('gameConfirmBody');
-      const iconEl = document.getElementById('gameConfirmIcon');
-      const okBtn = document.getElementById('gameConfirmOkBtn');
-
-      if (titleEl) titleEl.innerText = title;
-      if (bodyEl) bodyEl.innerText = message;
-      if (iconEl) iconEl.innerText = icon;
-
-      gameConfirmCallback = onConfirm;
-
-      if (okBtn) {
-        okBtn.onclick = (e) => {
-          if (e) e.stopPropagation();
-          closeGameConfirmModal(true);
-        };
-      }
-
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
-      try { playSound('pop'); } catch(e){}
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('warning'); } catch(e){}
-      }
-    }
-
-    function closeGameConfirmModal(isConfirmed = false) {
-      const modal = document.getElementById('gameConfirmModal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-      }
-      try { playSound('pop'); } catch(e){}
-      if (isConfirmed && typeof gameConfirmCallback === 'function') {
-        const cb = gameConfirmCallback;
-        gameConfirmCallback = null;
-        cb();
-      } else {
-        gameConfirmCallback = null;
-      }
-    }
-
-    // Override browser window.alert so github.io domain header NEVER appears anywhere in the app!
-    window.alert = function(msg) {
-      if (typeof msg !== 'string') msg = String(msg || '');
-      let icon = '📢';
-      let title = 'Crazy Farm Notice';
-      if (msg.includes('🔒') || msg.includes('Locked') || msg.includes('Requirements')) {
-        icon = '🔒';
-        title = 'Farm Requirements';
-      } else if (msg.includes('✅') || msg.includes('CONGRATULATIONS') || msg.includes('🎉') || msg.includes('UNLOCKED')) {
-        icon = '🎉';
-        title = 'Congratulations!';
-      } else if (msg.includes('⚠️')) {
-        icon = '⚠️';
-        title = 'Attention!';
-      } else if (msg.includes('⏳')) {
-        icon = '⏳';
-        title = 'Cooldown Active';
-      }
-      showGameNoticeModal(title, msg, icon);
-    };
     // ==================== END WALLET ====================
 
     // ==================== OTHERS & FAQ VIEW LOGIC ====================
@@ -8156,6 +8178,10 @@
     }
 
     function hideWatchMoreCollectModal() {
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const modal = document.getElementById('watchMoreCollectModal');
       if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
     }
@@ -10969,6 +10995,11 @@ window.addEventListener('load', () => {
     }
 
     function closeJurassicMinerModal() {
+      currentJurassicModalKey = null;
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
       const modal = document.getElementById('jurassicMinerModal');
       if (modal) {
         modal.classList.add('hidden');
