@@ -7922,7 +7922,11 @@
       } catch(e) {}
 
       updateWalletConnectionUI();
-      queueCloudSave();
+      if (!isAlreadyConnected) {
+        if (typeof savePlayerDataToCloud === 'function') savePlayerDataToCloud();
+      } else {
+        queueCloudSave();
+      }
 
       // Silenced startup noise completely per user request (no annoying fanfare/coin on boot)
       if (!isInitialLoad && !isAlreadyConnected) {
@@ -7936,12 +7940,12 @@
       try {
         localStorage.removeItem('crazyfarm_ton_wallet');
         if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+          switchTab(urlParams.get('testTab'));
+        }
+      } catch(e) {}
 
       updateWalletConnectionUI();
-      queueCloudSave();
+      if (typeof savePlayerDataToCloud === 'function') savePlayerDataToCloud();
       showWalletToast('🔌 Wallet disconnected.');
     }
 
