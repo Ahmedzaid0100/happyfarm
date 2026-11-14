@@ -7391,12 +7391,10 @@
         // Consecutive next calendar day! Advance to next day in streak
         hasCheckedInToday = false;
         checkInStreak = (storedStreak >= 10) ? 1 : (storedStreak + 1);
-        try { localStorage.setItem('crazyfarm_checkin_streak', checkInStreak); } catch(e){}
       } else {
         // Missed one or more days -> Reset streak back to Day 1
         hasCheckedInToday = false;
         checkInStreak = 1;
-        try { localStorage.setItem('crazyfarm_checkin_streak', 1); } catch(e){}
       }
     }
 
@@ -7568,18 +7566,19 @@
       const btnText = document.getElementById('dailyCheckInBtnText');
       const dblBtnText = document.getElementById('dailyCheckInDoubleBtnText');
 
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       if (hasCheckedInToday) {
         if (btnContainer) {
           btnContainer.innerHTML = `
             <button disabled class="w-full py-2.5 rounded-2xl bg-emerald-800/80 border-2 border-emerald-600 text-emerald-200 font-bold text-xs shadow cursor-not-allowed flex items-center justify-center gap-1.5">
-              <span>✓</span> Checked in Today (Come back tomorrow!)
+              <span>✓</span> ${isAr ? 'تم استلام مكافأة اليوم (عد غداً للمكافأة التالية!)' : 'Checked in Today (Come back tomorrow!)'}
             </button>
           `;
         }
       } else {
         const todayBonus = checkInRewards[checkInStreak - 1] || 10;
-        if (dblBtnText) dblBtnText.innerText = `2x Boost: Claim +${todayBonus * 2} 🌾 (Watch Ad)`;
-        if (btnText) btnText.innerText = `Claim Normal (+${todayBonus} 🌾)`;
+        if (dblBtnText) dblBtnText.innerText = isAr ? `مضاعفة 2x: احصل على +${todayBonus * 2} 🌾 (شاهد إعلان)` : `2x Boost: Claim +${todayBonus * 2} 🌾 (Watch Ad)`;
+        if (btnText) btnText.innerText = isAr ? `استلام عادي (+${todayBonus} 🌾)` : `Claim Normal (+${todayBonus} 🌾)`;
       }
 
       // 4. Update Available Tasks Counter & Items UI
@@ -7628,9 +7627,10 @@
 
     function _doClaimDailyCheckIn(isDouble = false) {
       refreshDailyCheckInState();
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       if (hasCheckedInToday) {
         playSound('click');
-        showWalletToast('\u26A0\uFE0F You already checked in today! Come back tomorrow.');
+        showWalletToast(isAr ? '⚠️ لقد استلمت مكافأة اليوم بالفعل! عد غداً للمكافأة التالية.' : '⚠️ You already checked in today! Come back tomorrow.');
         return;
       }
       const baseReward = checkInRewards[checkInStreak - 1] || 10;
@@ -7649,7 +7649,9 @@
       updateDisplays();
       syncTasksView();
       if (typeof queueCloudSave === 'function') queueCloudSave();
-      showWalletToast(`🎉 Claimed Day ${checkInStreak} Daily Bonus: +${finalReward} Points!${isDouble ? ' (2x Double Reward!)' : ''}`);
+      showWalletToast(isAr 
+        ? `🎉 تم استلام مكافأة اليوم ${checkInStreak}: +${finalReward} نقطة!${isDouble ? ' (مضاعفة 2x!)' : ''}`
+        : `🎉 Claimed Day ${checkInStreak} Daily Bonus: +${finalReward} Points!${isDouble ? ' (2x Double Reward!)' : ''}`);
     }
 
     // Task Execution: Start -> Claim -> Claimed ✓
