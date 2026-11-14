@@ -3179,7 +3179,10 @@
           </div>
           <div class="bg-amber-950/70 p-2.5 rounded-xl flex justify-between items-center border border-amber-800">
             <span>Smart Contract (TON Jetton):</span>
-            <span class="font-mono text-amber-300 text-[10px]">EQBv...9x2A</span>
+            <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="font-mono text-yellow-300 hover:text-amber-200 underline text-[10px] flex items-center gap-1 font-bold" title="View on Tonviewer Explorer">
+              <span>EQDejQt...7NoP-</span>
+              <span class="text-[9px]">🔗</span>
+            </a>
           </div>
           <div class="bg-amber-950/70 p-2.5 rounded-xl flex justify-between items-center border border-amber-800">
             <span>Game Guide & Mining Rules:</span>
@@ -8035,6 +8038,7 @@
     }
 
     // ==================== OFFICIAL WEB3 CFT WITHDRAWAL SYSTEM ====================
+    const CFT_JETTON_CONTRACT_ADDRESS = 'EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-';
     let totalAdsWatchedCount = Number(localStorage.getItem('crazyfarm_ads_watched_total')) || 0;
     let lastWithdrawalTimestamp = Number(localStorage.getItem('crazyfarm_last_withdrawal_time')) || 0;
     const WITHDRAWAL_LAUNCH_TIMESTAMP = 1796410000000; // 20-Day Official Launch Countdown Target
