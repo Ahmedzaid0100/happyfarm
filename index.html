@@ -1196,8 +1196,8 @@
           <div class="flex items-center gap-2 mb-3">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-600 flex items-center justify-center text-lg shadow border border-emerald-300">💎</div>
             <div>
-              <h3 class="font-black text-base text-emerald-200">CFT Official Withdrawal</h3>
-              <p class="text-[10px] text-emerald-300 font-semibold">سحب الأرباح المباشر إلى محفظة TON</p>
+              <h3 id="cftWithdrawMainTitle" class="font-black text-base text-emerald-200">CFT Official Withdrawal</h3>
+              <p id="cftWithdrawSubTitle" class="text-[10px] text-emerald-300 font-semibold">Direct CFT profit withdrawal to TON wallet</p>
             </div>
             <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-300 border border-emerald-500">20-Day Launch</span>
           </div>
@@ -1209,7 +1209,7 @@
               <span class="text-xl font-black text-emerald-200">CFT</span>
             </div>
             <div class="text-xs text-emerald-300 font-semibold flex items-center justify-center gap-1">
-              <span>💎 الرصيد القابل للسحب:</span>
+              <span id="cftWithdrawableLabel">💎 Withdrawable Balance:</span>
               <span id="cftWithdrawableDisplay" class="text-yellow-300 font-bold">0.00 CFT</span>
             </div>
           </div>
@@ -1217,26 +1217,26 @@
           <!-- 20-Day Live Countdown Banner -->
           <div class="bg-gradient-to-r from-amber-950/80 via-black/70 to-emerald-950/80 border border-amber-500/60 rounded-2xl p-3 mb-3 shadow-inner">
             <div class="flex items-center justify-between text-xs mb-1.5 font-bold">
-              <span class="text-amber-300 flex items-center gap-1"><span>⏳</span> موعد فتح السحب:</span>
-              <span id="withdrawCountdownStatusTag" class="text-emerald-400 font-black text-[11px]">متبقي 20 يوم</span>
+              <span id="withdrawCountdownLabel" class="text-amber-300 flex items-center gap-1"><span>⏳</span> Withdrawal Launch:</span>
+              <span id="withdrawCountdownStatusTag" class="text-emerald-400 font-black text-[11px]">20 Days Remaining</span>
             </div>
             <!-- Live Ticker Grid -->
             <div class="grid grid-cols-4 gap-1.5 text-center font-mono">
               <div class="bg-black/70 rounded-xl p-1.5 border border-amber-400/30">
                 <div id="withdrawCountDays" class="text-base font-black text-yellow-300">20</div>
-                <div class="text-[8px] text-slate-300 font-sans font-bold">يوم (Days)</div>
+                <div id="withdrawCountDaysLabel" class="text-[8px] text-slate-300 font-sans font-bold">Days</div>
               </div>
               <div class="bg-black/70 rounded-xl p-1.5 border border-amber-400/30">
                 <div id="withdrawCountHours" class="text-base font-black text-yellow-300">00</div>
-                <div class="text-[8px] text-slate-300 font-sans font-bold">ساعة (Hrs)</div>
+                <div id="withdrawCountHoursLabel" class="text-[8px] text-slate-300 font-sans font-bold">Hours</div>
               </div>
               <div class="bg-black/70 rounded-xl p-1.5 border border-amber-400/30">
                 <div id="withdrawCountMins" class="text-base font-black text-yellow-300">00</div>
-                <div class="text-[8px] text-slate-300 font-sans font-bold">دقيقة (Min)</div>
+                <div id="withdrawCountMinsLabel" class="text-[8px] text-slate-300 font-sans font-bold">Mins</div>
               </div>
               <div class="bg-black/70 rounded-xl p-1.5 border border-amber-400/30">
                 <div id="withdrawCountSecs" class="text-base font-black text-emerald-300 animate-pulse">00</div>
-                <div class="text-[8px] text-slate-300 font-sans font-bold">ثانية (Sec)</div>
+                <div id="withdrawCountSecsLabel" class="text-[8px] text-slate-300 font-sans font-bold">Secs</div>
               </div>
             </div>
           </div>
@@ -1244,30 +1244,30 @@
           <!-- Withdrawal Conditions Quick Summary Checklist -->
           <div class="bg-black/50 border border-emerald-900/80 rounded-2xl p-2.5 mb-3 text-[10.5px] space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-slate-300 flex items-center gap-1.5"><span>🌾</span> مستوى المزرعة الرئيسية:</span>
+              <span id="withdrawCondLvlLabel" class="text-slate-300 flex items-center gap-1.5"><span>🌾</span> Main Farm Level:</span>
               <span id="withdrawCondLvl" class="font-black text-yellow-300">Lv. 1 / 5</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-300 flex items-center gap-1.5"><span>📺</span> مشاهدة الفيديوهات:</span>
-              <span id="withdrawCondAds" class="font-black text-yellow-300">0 / 10 إعلانات</span>
+              <span id="withdrawCondAdsLabel" class="text-slate-300 flex items-center gap-1.5"><span>📺</span> Video Ads Watched:</span>
+              <span id="withdrawCondAds" class="font-black text-yellow-300">0 / 10 Videos</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-300 flex items-center gap-1.5"><span>💰</span> حدود السحب:</span>
+              <span id="withdrawCondLimitsLabel" class="text-slate-300 flex items-center gap-1.5"><span>💰</span> Withdrawal Limits:</span>
               <span class="font-black text-emerald-300">2,000 - 5,000 CFT</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-300 flex items-center gap-1.5"><span>⛽</span> مصاريف السحب:</span>
+              <span id="withdrawCondFeeLabel" class="text-slate-300 flex items-center gap-1.5"><span>⛽</span> Network Fee:</span>
               <span class="font-black text-amber-300">70 CFT</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-300 flex items-center gap-1.5"><span>⏱️</span> معدل السحب:</span>
-              <span id="withdrawCondCooldown" class="font-black text-sky-300">مرة كل 3 أيام</span>
+              <span id="withdrawCondCooldownLabel" class="text-slate-300 flex items-center gap-1.5"><span>⏱️</span> Withdrawal Cooldown:</span>
+              <span id="withdrawCondCooldown" class="font-black text-sky-300">Every 3 Days</span>
             </div>
           </div>
 
           <!-- Withdraw Action Button -->
           <button onclick="openWithdrawalModal()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all">
-            <span>💸</span> طلب سحب CFT (Withdraw)
+            <span>💸</span> <span id="withdrawActionBtnText">Request CFT Withdrawal</span>
           </button>
         </div>
 
@@ -3198,116 +3198,116 @@
         <!-- Header -->
         <div class="flex items-center gap-2 justify-center mb-1 mt-1">
           <span class="text-2xl animate-pulse">💎</span>
-          <h3 class="text-lg sm:text-xl font-black text-emerald-300 drop-shadow">
-            طلب سحب Crazy Farm Token
+          <h3 id="modalWithdrawTitle" class="text-lg sm:text-xl font-black text-emerald-300 drop-shadow">
+            Request CFT Withdrawal
           </h3>
         </div>
-        <p class="text-[11px] text-emerald-200/90 font-bold mb-3">السحب المباشر لعملات CFT إلى محفظة TON الرسمية</p>
+        <p id="modalWithdrawSubTitle" class="text-[11px] text-emerald-200/90 font-bold mb-3">Direct CFT withdrawal to your verified TON wallet</p>
 
         <!-- 20-Day Live Countdown Mini-Ticker -->
         <div class="w-full bg-gradient-to-r from-amber-950/80 via-black/70 to-emerald-950/80 border border-amber-400/50 rounded-2xl p-2.5 mb-3 shadow-inner">
           <div class="flex items-center justify-between text-[11px] mb-1 font-bold">
-            <span class="text-amber-300 flex items-center gap-1"><span>⏳</span> موعد فتح السحب الرسمي:</span>
-            <span id="modalWithdrawCountdownTag" class="text-emerald-400 font-black">متبقي 20 يوم</span>
+            <span id="modalWithdrawCountdownLabel" class="text-amber-300 flex items-center gap-1"><span>⏳</span> Official Launch Countdown:</span>
+            <span id="modalWithdrawCountdownTag" class="text-emerald-400 font-black">20 Days Remaining</span>
           </div>
           <div class="grid grid-cols-4 gap-1 text-center font-mono">
             <div class="bg-black/60 rounded-xl p-1 border border-amber-400/20">
               <div id="modalWithdrawCountDays" class="text-sm font-black text-yellow-300">20</div>
-              <div class="text-[7.5px] text-slate-300 font-sans font-bold">يوم (Days)</div>
+              <div id="modalCountDaysLabel" class="text-[7.5px] text-slate-300 font-sans font-bold">Days</div>
             </div>
             <div class="bg-black/60 rounded-xl p-1 border border-amber-400/20">
               <div id="modalWithdrawCountHours" class="text-sm font-black text-yellow-300">00</div>
-              <div class="text-[7.5px] text-slate-300 font-sans font-bold">ساعة (Hrs)</div>
+              <div id="modalCountHoursLabel" class="text-[7.5px] text-slate-300 font-sans font-bold">Hours</div>
             </div>
             <div class="bg-black/60 rounded-xl p-1 border border-amber-400/20">
               <div id="modalWithdrawCountMins" class="text-sm font-black text-yellow-300">00</div>
-              <div class="text-[7.5px] text-slate-300 font-sans font-bold">دقيقة (Min)</div>
+              <div id="modalCountMinsLabel" class="text-[7.5px] text-slate-300 font-sans font-bold">Mins</div>
             </div>
             <div class="bg-black/60 rounded-xl p-1 border border-amber-400/20">
               <div id="modalWithdrawCountSecs" class="text-sm font-black text-emerald-300 animate-pulse">00</div>
-              <div class="text-[7.5px] text-slate-300 font-sans font-bold">ثانية (Sec)</div>
+              <div id="modalCountSecsLabel" class="text-[7.5px] text-slate-300 font-sans font-bold">Secs</div>
             </div>
           </div>
         </div>
 
         <!-- Connected TON Wallet Card -->
-        <div class="w-full bg-black/50 border border-emerald-500/40 rounded-2xl p-2.5 mb-3 text-right">
+        <div class="w-full bg-black/50 border border-emerald-500/40 rounded-2xl p-2.5 mb-3 text-left">
           <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 mb-1">
-            <span>محفظة السحب (TON Wallet):</span>
-            <span id="modalWalletStatusBadge" class="text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]">✓ متصلة</span>
+            <span id="modalWalletLabel">Withdrawal TON Wallet:</span>
+            <span id="modalWalletStatusBadge" class="text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]">✓ Connected</span>
           </div>
           <div id="modalWalletAddressDisplay" class="font-mono text-[11px] text-yellow-300 break-all bg-black/60 p-1.5 rounded-xl border border-yellow-500/30 text-center">
-            غير متصلة
+            Not Connected
           </div>
         </div>
 
         <!-- Requirements Status Checklist -->
-        <div class="w-full bg-black/40 border border-emerald-900 rounded-2xl p-2.5 mb-3 text-[11px] text-right space-y-1.5">
+        <div class="w-full bg-black/40 border border-emerald-900 rounded-2xl p-2.5 mb-3 text-[11px] text-left space-y-1.5">
           <div class="text-[11px] font-black text-emerald-300 mb-1 flex items-center justify-between border-b border-emerald-800/40 pb-1">
-            <span>📋 حالة شروط السحب المؤهلة:</span>
+            <span id="modalReqTitle">📋 Withdrawal Eligibility Status:</span>
             <span class="text-[10px] text-slate-400">Crazy Farm Web3</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-300">🌾 المزرعة الرئيسية (مستوى 5+):</span>
+            <span id="modalReqFarmLvlLabel" class="text-slate-300">🌾 Main Farm (Lv. 5+):</span>
             <span id="modalReqFarmLvl" class="font-bold text-yellow-300">Lv. 1 / 5</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-300">📺 مشاهدة 10 فيديوهات:</span>
+            <span id="modalReqAdsLabel" class="text-slate-300">📺 Watch 10 Video Ads:</span>
             <span id="modalReqAdsWatched" class="font-bold text-yellow-300">0 / 10</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-300">⏱️ فترة التهدئة (مرة كل 3 أيام):</span>
-            <span id="modalReqCooldown" class="font-bold text-emerald-400">✓ متاح الآن</span>
+            <span id="modalReqCooldownLabel" class="text-slate-300">⏱️ Cooldown (Once every 3 days):</span>
+            <span id="modalReqCooldown" class="font-bold text-emerald-400">✓ Available Now</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-300">💎 رصيدك الحالي القابل للسحب:</span>
+            <span id="modalReqBalanceLabel" class="text-slate-300">💎 Your Withdrawable CFT:</span>
             <span id="modalAvailableCftDisplay" class="font-black text-emerald-300">0.00 CFT</span>
           </div>
         </div>
 
         <!-- Amount Input Field -->
-        <div class="w-full bg-black/60 border border-emerald-500/60 rounded-2xl p-3 mb-3 text-right">
+        <div class="w-full bg-black/60 border border-emerald-500/60 rounded-2xl p-3 mb-3 text-left">
           <div class="flex items-center justify-between text-xs font-bold text-slate-200 mb-1.5">
-            <span>الكمية المراد سحبها:</span>
-            <span class="text-[10px] text-amber-300">(الحدود: 2,000 - 5,000 CFT)</span>
+            <span id="modalAmountLabel">Withdrawal Amount:</span>
+            <span id="modalAmountLimitsLabel" class="text-[10px] text-amber-300">(Limits: 2,000 - 5,000 CFT)</span>
           </div>
           <div class="relative flex items-center">
             <input id="withdrawCftInput" type="number" min="2000" max="5000" step="100" placeholder="2000" value="2000" oninput="calculateWithdrawFee()" class="w-full bg-slate-900 border-2 border-emerald-500 rounded-xl py-2 px-3 text-yellow-300 text-lg font-black text-center focus:outline-none focus:border-yellow-400" />
-            <span class="absolute left-3 text-emerald-300 font-black text-xs pointer-events-none">CFT</span>
+            <span class="absolute right-3 text-emerald-300 font-black text-xs pointer-events-none">CFT</span>
           </div>
           <!-- Quick Amount Buttons -->
           <div class="grid grid-cols-4 gap-1.5 mt-2">
             <button type="button" onclick="setWithdrawAmount(2000)" class="py-1 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 font-bold text-[10px] border border-emerald-600 active:scale-95 transition-all">2,000</button>
             <button type="button" onclick="setWithdrawAmount(3500)" class="py-1 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 font-bold text-[10px] border border-emerald-600 active:scale-95 transition-all">3,500</button>
             <button type="button" onclick="setWithdrawAmount(5000)" class="py-1 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 font-bold text-[10px] border border-emerald-600 active:scale-95 transition-all">5,000</button>
-            <button type="button" onclick="setWithdrawMaxAmount()" class="py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-black text-[10px] border border-yellow-400 active:scale-95 transition-all">الحد الأقصى</button>
+            <button id="modalBtnMaxLabel" type="button" onclick="setWithdrawMaxAmount()" class="py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-black text-[10px] border border-yellow-400 active:scale-95 transition-all">Max</button>
           </div>
         </div>
 
         <!-- Net Calculation Breakdown -->
-        <div class="w-full bg-amber-950/60 border border-amber-600/40 rounded-2xl p-2.5 mb-3 text-[11px] text-right space-y-1">
+        <div class="w-full bg-amber-950/60 border border-amber-600/40 rounded-2xl p-2.5 mb-3 text-[11px] text-left space-y-1">
           <div class="flex items-center justify-between text-slate-300">
-            <span>الكمية الإجمالية المسحوبة:</span>
+            <span id="modalGrossLabel">Total Requested Amount:</span>
             <span id="withdrawBreakdownGross" class="font-bold text-white">2,000 CFT</span>
           </div>
           <div class="flex items-center justify-between text-amber-300">
-            <span>مصاريف ورسوم شبكة TON:</span>
+            <span id="modalFeeLabel">TON Network Fee:</span>
             <span>- 70 CFT</span>
           </div>
           <div class="border-t border-amber-600/40 pt-1 flex items-center justify-between font-black text-emerald-300 text-xs">
-            <span>الصافي الذي ستستلمه في محفظتك:</span>
+            <span id="modalNetLabel">Net You Will Receive:</span>
             <span id="withdrawBreakdownNet" class="text-sm text-yellow-300">1,930 CFT</span>
           </div>
         </div>
 
         <!-- Notice & Queue Info -->
-        <p class="text-[9.5px] text-slate-400 text-center leading-relaxed mb-3">
-          ⚡ يتم توثيق وحفظ طلب السحب تلقائياً في قائمة الانتظار المعتمدة (<span class="font-mono text-emerald-300">Withdrawals Queue</span>) بالسيرفر السحابي تمهيداً للإرسال المباشر لمحفظتك.
+        <p id="modalNoticeText" class="text-[9.5px] text-slate-400 text-center leading-relaxed mb-3">
+          ⚡ Your withdrawal request is automatically recorded in the Official Cloud Ledger for direct dispatch to your TON wallet.
         </p>
 
         <!-- Submit Button -->
         <button id="confirmWithdrawBtn" type="button" onclick="submitWithdrawalRequest()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
-          <span>🚀</span> تأكيد وإرسال طلب السحب (Submit Request)
+          <span>🚀</span> <span id="confirmWithdrawBtnText">Confirm & Submit Withdrawal</span>
         </button>
       </div>
     </div>
@@ -8044,6 +8044,7 @@
     const WITHDRAWAL_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000; // 3 Days (72 Hours)
 
     function updateWithdrawalCountdown() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       const now = Date.now();
       const diff = Math.max(0, WITHDRAWAL_LAUNCH_TIMESTAMP - now);
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -8064,10 +8065,10 @@
 
       if (statusTag) {
         if (diff <= 0) {
-          statusTag.textContent = '🎉 السحب مفتوح الآن!';
+          statusTag.textContent = isAr ? '🎉 السحب مفتوح الآن!' : '🎉 Withdrawal Open Now!';
           statusTag.className = 'text-lime-400 font-black text-[11px] animate-pulse';
         } else {
-          statusTag.textContent = `متبقي ${days} يوم و ${hours} س`;
+          statusTag.textContent = isAr ? `متبقي ${days} يوم و ${hours} س` : `${days}d ${hours}h Remaining`;
         }
       }
 
@@ -8084,9 +8085,9 @@
       if (mSecs) mSecs.textContent = String(secs).padStart(2, '0');
       if (mTag) {
         if (diff <= 0) {
-          mTag.textContent = '🎉 السحب مفتوح الآن!';
+          mTag.textContent = isAr ? '🎉 السحب مفتوح الآن!' : '🎉 Withdrawal Open Now!';
         } else {
-          mTag.textContent = `متبقي ${days} يوم و ${hours} ساعة`;
+          mTag.textContent = isAr ? `متبقي ${days} يوم و ${hours} ساعة` : `${days}d ${hours}h Remaining`;
         }
       }
     }
@@ -8095,22 +8096,24 @@
     setInterval(updateWithdrawalCountdown, 1000);
 
     function updateWithdrawalConditionsUI() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+
       // Main Card 3 checklist
       const lvlEl = document.getElementById('withdrawCondLvl');
       if (lvlEl) {
         if (userLevel >= 5) {
-          lvlEl.innerHTML = `<span class="text-emerald-400 font-black">✓ Lv. ${userLevel} (مؤهل)</span>`;
+          lvlEl.innerHTML = `<span class="text-emerald-400 font-black">✓ Lv. ${userLevel} (${isAr ? 'مؤهل' : 'Eligible'})</span>`;
         } else {
-          lvlEl.innerHTML = `<span class="text-amber-300 font-bold">Lv. ${userLevel} / 5 (مطلوب 5)</span>`;
+          lvlEl.innerHTML = `<span class="text-amber-300 font-bold">Lv. ${userLevel} / 5 (${isAr ? 'مطلوب 5' : 'Req. 5'})</span>`;
         }
       }
 
       const adsEl = document.getElementById('withdrawCondAds');
       if (adsEl) {
         if (totalAdsWatchedCount >= 10) {
-          adsEl.innerHTML = `<span class="text-emerald-400 font-black">✓ ${totalAdsWatchedCount} / 10 (مؤهل)</span>`;
+          adsEl.innerHTML = `<span class="text-emerald-400 font-black">✓ ${totalAdsWatchedCount} / 10 (${isAr ? 'مؤهل' : 'Eligible'})</span>`;
         } else {
-          adsEl.innerHTML = `<span class="text-amber-300 font-bold">${totalAdsWatchedCount} / 10 إعلانات</span>`;
+          adsEl.innerHTML = `<span class="text-amber-300 font-bold">${totalAdsWatchedCount} / 10 ${isAr ? 'إعلانات' : 'Videos'}</span>`;
         }
       }
 
@@ -8119,9 +8122,9 @@
         const elapsed = Date.now() - (lastWithdrawalTimestamp || 0);
         if (elapsed < WITHDRAWAL_COOLDOWN_MS) {
           const remainingHours = Math.ceil((WITHDRAWAL_COOLDOWN_MS - elapsed) / (1000 * 60 * 60));
-          cooldownEl.innerHTML = `<span class="text-amber-400 font-bold">⏳ متبقي ${remainingHours} ساعة</span>`;
+          cooldownEl.innerHTML = `<span class="text-amber-400 font-bold">⏳ ${isAr ? 'متبقي ' + remainingHours + ' ساعة' : remainingHours + 'h remaining'}</span>`;
         } else {
-          cooldownEl.innerHTML = `<span class="text-emerald-400 font-black">✓ متاح الآن</span>`;
+          cooldownEl.innerHTML = `<span class="text-emerald-400 font-black">✓ ${isAr ? 'متاح الآن' : 'Available Now'}</span>`;
         }
       }
 
@@ -8134,15 +8137,15 @@
       const mFarmLvl = document.getElementById('modalReqFarmLvl');
       if (mFarmLvl) {
         mFarmLvl.innerHTML = userLevel >= 5 
-          ? `<span class="text-emerald-400 font-black">✓ Lv. ${userLevel} (مؤهل)</span>`
-          : `<span class="text-amber-300 font-bold">Lv. ${userLevel} / 5 (غير مكتمل)</span>`;
+          ? `<span class="text-emerald-400 font-black">✓ Lv. ${userLevel} (${isAr ? 'مؤهل' : 'Eligible'})</span>`
+          : `<span class="text-amber-300 font-bold">Lv. ${userLevel} / 5 (${isAr ? 'غير مكتمل' : 'Not Met'})</span>`;
       }
 
       const mAdsWatched = document.getElementById('modalReqAdsWatched');
       if (mAdsWatched) {
         mAdsWatched.innerHTML = totalAdsWatchedCount >= 10
-          ? `<span class="text-emerald-400 font-black">✓ ${totalAdsWatchedCount} / 10 (مؤهل)</span>`
-          : `<span class="text-amber-300 font-bold">${totalAdsWatchedCount} / 10 (غير مكتمل)</span>`;
+          ? `<span class="text-emerald-400 font-black">✓ ${totalAdsWatchedCount} / 10 (${isAr ? 'مؤهل' : 'Eligible'})</span>`
+          : `<span class="text-amber-300 font-bold">${totalAdsWatchedCount} / 10 (${isAr ? 'غير مكتمل' : 'Not Met'})</span>`;
       }
 
       const mCooldown = document.getElementById('modalReqCooldown');
@@ -8150,9 +8153,9 @@
         const elapsed = Date.now() - (lastWithdrawalTimestamp || 0);
         if (elapsed < WITHDRAWAL_COOLDOWN_MS) {
           const remainingHours = Math.ceil((WITHDRAWAL_COOLDOWN_MS - elapsed) / (1000 * 60 * 60));
-          mCooldown.innerHTML = `<span class="text-amber-400 font-bold">⏳ متبقي ${remainingHours} ساعة</span>`;
+          mCooldown.innerHTML = `<span class="text-amber-400 font-bold">⏳ ${isAr ? 'متبقي ' + remainingHours + ' ساعة' : remainingHours + 'h remaining'}</span>`;
         } else {
-          mCooldown.innerHTML = `<span class="text-emerald-400 font-black">✓ متاح الآن</span>`;
+          mCooldown.innerHTML = `<span class="text-emerald-400 font-black">✓ ${isAr ? 'متاح الآن' : 'Available Now'}</span>`;
         }
       }
 
@@ -8168,14 +8171,14 @@
           mAddr.textContent = connectedWalletAddress;
           mAddr.className = 'font-mono text-[10.5px] text-yellow-300 break-all bg-black/60 p-1.5 rounded-xl border border-yellow-500/30 text-center select-all';
           if (mBadge) {
-            mBadge.textContent = '✓ متصلة';
+            mBadge.textContent = isAr ? '✓ متصلة' : '✓ Connected';
             mBadge.className = 'text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]';
           }
         } else {
-          mAddr.textContent = '⚠️ لم يتم ربط محفظة TON بعد';
+          mAddr.textContent = isAr ? '⚠️ لم يتم ربط محفظة TON بعد' : '⚠️ No TON Wallet Connected Yet';
           mAddr.className = 'font-bold text-[11px] text-amber-400 bg-black/60 p-1.5 rounded-xl border border-amber-500/30 text-center';
           if (mBadge) {
-            mBadge.textContent = 'غير متصلة';
+            mBadge.textContent = isAr ? 'غير متصلة' : 'Not Connected';
             mBadge.className = 'text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500 text-[9.5px]';
           }
         }
@@ -8242,10 +8245,13 @@
 
     async function submitWithdrawalRequest() {
       try { playSound('click'); } catch(e){}
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
 
       // 1. TON Wallet Check
       if (!isWalletConnected || !connectedWalletAddress) {
-        alert('⚠️ خطأ: محفظة TON غير متصلة! يرجى ربط المحفظة أولاً.');
+        alert(isAr 
+          ? '⚠️ خطأ: محفظة TON غير متصلة! يرجى ربط المحفظة أولاً من قسم المحفظة بالأسفل.' 
+          : '⚠️ Error: TON Wallet not connected! Please connect your wallet first in the Wallet tab below.');
         if (tonConnectUI) {
           try { tonConnectUI.openModal(); } catch(e){}
         }
@@ -8254,13 +8260,17 @@
 
       // 2. Farm Level Check (Lv. 5+)
       if (userLevel < 5) {
-        alert(`❌ لم يتحقق شرط المستوى!\n\nيجب أن يكون مستوى المزرعة الرئيسية 5 على الأقل.\nمستواك الحالي: Lv. ${userLevel}\nقم بترقية المزرعة الآن للتأهل للسحب.`);
+        alert(isAr
+          ? `❌ لم يتحقق شرط المستوى!\n\nيجب أن يكون مستوى المزرعة الرئيسية 5 على الأقل.\nمستواك الحالي: Lv. ${userLevel}\nقم بترقية المزرعة الآن للتأهل للسحب.`
+          : `❌ Level Requirement Not Met!\n\nMain Farm level must be Level 5 or higher.\nYour Level: Lv. ${userLevel}\nUpgrade your farm to qualify.`);
         return;
       }
 
       // 3. Watched Ads Check (10+)
       if (totalAdsWatchedCount < 10) {
-        alert(`❌ لم يتحقق شرط مشاهدة الفيديوهات!\n\nمطلوب مشاهدة 10 فيديوهات أو إعلانات على الأقل لدعم شبكة اللعبة وتأهيل السحب.\nشاهدت حالياً: ${totalAdsWatchedCount} / 10\nيمكنك مشاهدة إعلانات من عجلة الحظ، الصندوق اليومي، أو مزارع الحيوانات!`);
+        alert(isAr
+          ? `❌ لم يتحقق شرط مشاهدة الفيديوهات!\n\nمطلوب مشاهدة 10 فيديوهات أو إعلانات على الأقل لتأهيل السحب.\nشاهدت حالياً: ${totalAdsWatchedCount} / 10\nيمكنك مشاهدة إعلانات من عجلة الحظ، الصندوق اليومي، أو مزارع الحيوانات!`
+          : `❌ Video Requirement Not Met!\n\nYou must watch at least 10 video ads to qualify for withdrawal.\nCurrent: ${totalAdsWatchedCount} / 10 Videos\nWatch videos from the Fortune Wheel, Mystery Box, or Animal Barns!`);
         return;
       }
 
@@ -8268,7 +8278,9 @@
       const elapsed = Date.now() - (lastWithdrawalTimestamp || 0);
       if (elapsed < WITHDRAWAL_COOLDOWN_MS) {
         const remainingHours = Math.ceil((WITHDRAWAL_COOLDOWN_MS - elapsed) / (1000 * 60 * 60));
-        alert(`⏳ فترة التهدئة نشطة!\n\nيُسمح بطلب سحب واحد فقط كل 3 أيام لضمان أمان الشبكة وتنظيم السيولة.\nمتبقي على طلبك التالي: ${remainingHours} ساعة.`);
+        alert(isAr
+          ? `⏳ فترة التهدئة نشطة!\n\nيُسمح بطلب سحب واحد فقط كل 3 أيام لضمان أمان الشبكة وتنظيم السيولة.\nمتبقي على طلبك التالي: ${remainingHours} ساعة.`
+          : `⏳ Withdrawal Cooldown Active!\n\nOnly 1 withdrawal is permitted every 3 days for security and liquidity.\nRemaining: ${remainingHours} hours.`);
         return;
       }
 
@@ -8277,18 +8289,20 @@
       const amount = Math.floor(Number(input ? input.value : 0));
 
       if (isNaN(amount) || amount < WITHDRAW_MIN) {
-        alert(`⚠️ الحد الأدنى للسحب هو ${WITHDRAW_MIN.toLocaleString()} CFT!`);
+        alert(isAr ? `⚠️ الحد الأدنى للسحب هو ${WITHDRAW_MIN.toLocaleString()} CFT!` : `⚠️ Minimum withdrawal is ${WITHDRAW_MIN.toLocaleString()} CFT!`);
         return;
       }
 
       if (amount > WITHDRAW_MAX) {
-        alert(`⚠️ الحد الأقصى للسحب في المرة الواحدة هو ${WITHDRAW_MAX.toLocaleString()} CFT!`);
+        alert(isAr ? `⚠️ الحد الأقصى للسحب في المرة الواحدة هو ${WITHDRAW_MAX.toLocaleString()} CFT!` : `⚠️ Maximum withdrawal per request is ${WITHDRAW_MAX.toLocaleString()} CFT!`);
         return;
       }
 
       // 6. Sufficient Balance Check
       if (cftBalance < amount) {
-        alert(`⚠️ رصيد CFT غير كافٍ!\n\nالكمية المطلوبة: ${amount.toLocaleString()} CFT\nرصيدك الحالي: ${cftBalance.toFixed(2)} CFT\nواصل جمع العملات للتأهل.`);
+        alert(isAr 
+          ? `⚠️ رصيد CFT غير كافٍ!\n\nالكمية المطلوبة: ${amount.toLocaleString()} CFT\nرصيدك الحالي: ${cftBalance.toFixed(2)} CFT\nواصل جمع العملات للتأهل.`
+          : `⚠️ Insufficient CFT Balance!\n\nRequested: ${amount.toLocaleString()} CFT\nYour Balance: ${cftBalance.toFixed(2)} CFT\nKeep farming to earn more.`);
         return;
       }
 
@@ -8297,18 +8311,24 @@
       const uname = tgUser?.username || '';
       const fname = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ') || (uname || 'Farmer');
 
-      const confirmMsg = `هل تؤكد إرسال طلب سحب ${amount.toLocaleString()} CFT إلى محفظتك؟\n\n` +
-                         `• رسوم الشبكة: ${WITHDRAW_FEE} CFT\n` +
-                         `• الصافي المستلم: ${netAmount.toLocaleString()} CFT\n` +
-                         `• المحفظة: ${shortenAddress(connectedWalletAddress)}\n\n` +
-                         `سيتم خصم الرصيد فوراً وإدراج طلبك في قائمة الانتظار الرسمية (Withdrawal Queue).`;
+      const confirmMsg = isAr
+        ? `هل تؤكد إرسال طلب سحب ${amount.toLocaleString()} CFT إلى محفظتك؟\n\n` +
+          `• رسوم الشبكة: ${WITHDRAW_FEE} CFT\n` +
+          `• الصافي المستلم: ${netAmount.toLocaleString()} CFT\n` +
+          `• المحفظة: ${shortenAddress(connectedWalletAddress)}\n\n` +
+          `سيتم خصم الرصيد فوراً وإدراج طلبك في قائمة الانتظار الرسمية (Withdrawal Queue).`
+        : `Confirm withdrawal of ${amount.toLocaleString()} CFT to your TON wallet?\n\n` +
+          `• Network Fee: ${WITHDRAW_FEE} CFT\n` +
+          `• Net You Receive: ${netAmount.toLocaleString()} CFT\n` +
+          `• Destination Wallet: ${shortenAddress(connectedWalletAddress)}\n\n` +
+          `Your balance will be locked immediately and queued in the Official Cloud Ledger.`;
 
       if (!confirm(confirmMsg)) return;
 
       const submitBtn = document.getElementById('confirmWithdrawBtn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '⏳ جاري تسجيل طلب السحب...';
+        submitBtn.innerHTML = isAr ? '⏳ جاري تسجيل طلب السحب...' : '⏳ Submitting Withdrawal...';
       }
 
       try {
@@ -8350,21 +8370,29 @@
         try { playSound('fanfare'); } catch(e){}
         closeWithdrawalModal();
 
-        alert(`🎉 تم تسجيل طلب السحب بنجاح!\n\n` +
-              `• الكمية: ${amount.toLocaleString()} CFT\n` +
-              `• الرسوم: 70 CFT\n` +
-              `• الصافي: ${netAmount.toLocaleString()} CFT\n` +
-              `• المحفظة: ${connectedWalletAddress}\n` +
-              `• الحالة: معلق (Pending Queue)\n\n` +
-              `تم حفظ الطلب في قاعدة البيانات السحابية وسيتم إرسال العملات إلى محفظتك عند موعد السحب.`);
+        alert(isAr
+          ? `🎉 تم تسجيل طلب السحب بنجاح!\n\n` +
+            `• الكمية: ${amount.toLocaleString()} CFT\n` +
+            `• الرسوم: 70 CFT\n` +
+            `• الصافي: ${netAmount.toLocaleString()} CFT\n` +
+            `• المحفظة: ${connectedWalletAddress}\n` +
+            `• الحالة: معلق (Pending Queue)\n\n` +
+            `تم حفظ الطلب في قاعدة البيانات السحابية وسيتم إرسال العملات إلى محفظتك عند موعد السحب.`
+          : `🎉 Withdrawal Request Submitted Successfully!\n\n` +
+            `• Amount: ${amount.toLocaleString()} CFT\n` +
+            `• Fee: 70 CFT\n` +
+            `• Net: ${netAmount.toLocaleString()} CFT\n` +
+            `• Destination: ${connectedWalletAddress}\n` +
+            `• Status: Pending (Official Queue)\n\n` +
+            `Your request is secured in the Cloud Database and will be dispatched to your TON wallet at launch.`);
 
       } catch (err) {
         console.error('Withdrawal submission error:', err);
-        alert('حدث خطأ أثناء معالجة طلب السحب، يرجى المحاولة لاحقاً: ' + err.message);
+        alert(isAr ? 'حدث خطأ أثناء معالجة طلب السحب: ' + err.message : 'Error processing withdrawal request: ' + err.message);
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = '<span>🚀</span> تأكيد وإرسال طلب السحب (Submit Request)';
+          submitBtn.innerHTML = `<span>🚀</span> <span id="confirmWithdrawBtnText">${isAr ? 'تأكيد وإرسال طلب السحب (Submit Request)' : 'Confirm & Submit Withdrawal'}</span>`;
         }
       }
     }
@@ -10386,6 +10414,88 @@
       try { initCrazyFarm2State(); } catch(e){}
       try { initCrazyFarm3State(); } catch(e){}
       try { updateJurassicBadges(); } catch(e){}
+
+      // 6. CFT Withdrawal Banner (Card 3) & Modal Localization
+      const cftWithdrawMainTitle = document.getElementById('cftWithdrawMainTitle');
+      const cftWithdrawSubTitle = document.getElementById('cftWithdrawSubTitle');
+      const cftWithdrawableLabel = document.getElementById('cftWithdrawableLabel');
+      const withdrawCountdownLabel = document.getElementById('withdrawCountdownLabel');
+      const withdrawCountDaysLabel = document.getElementById('withdrawCountDaysLabel');
+      const withdrawCountHoursLabel = document.getElementById('withdrawCountHoursLabel');
+      const withdrawCountMinsLabel = document.getElementById('withdrawCountMinsLabel');
+      const withdrawCountSecsLabel = document.getElementById('withdrawCountSecsLabel');
+      const withdrawCondLvlLabel = document.getElementById('withdrawCondLvlLabel');
+      const withdrawCondAdsLabel = document.getElementById('withdrawCondAdsLabel');
+      const withdrawCondLimitsLabel = document.getElementById('withdrawCondLimitsLabel');
+      const withdrawCondFeeLabel = document.getElementById('withdrawCondFeeLabel');
+      const withdrawCondCooldownLabel = document.getElementById('withdrawCondCooldownLabel');
+      const withdrawActionBtnText = document.getElementById('withdrawActionBtnText');
+
+      if (cftWithdrawMainTitle) cftWithdrawMainTitle.innerText = isAr ? 'السحب الرسمي لعملة CFT' : 'CFT Official Withdrawal';
+      if (cftWithdrawSubTitle) cftWithdrawSubTitle.innerText = isAr ? 'سحب الأرباح المباشر إلى محفظة TON' : 'Direct CFT profit withdrawal to TON wallet';
+      if (cftWithdrawableLabel) cftWithdrawableLabel.innerText = isAr ? '💎 الرصيد القابل للسحب:' : '💎 Withdrawable Balance:';
+      if (withdrawCountdownLabel) withdrawCountdownLabel.innerHTML = isAr ? '<span>⏳</span> موعد فتح السحب:' : '<span>⏳</span> Withdrawal Launch:';
+      if (withdrawCountDaysLabel) withdrawCountDaysLabel.innerText = isAr ? 'أيام' : 'Days';
+      if (withdrawCountHoursLabel) withdrawCountHoursLabel.innerText = isAr ? 'ساعات' : 'Hours';
+      if (withdrawCountMinsLabel) withdrawCountMinsLabel.innerText = isAr ? 'دقائق' : 'Mins';
+      if (withdrawCountSecsLabel) withdrawCountSecsLabel.innerText = isAr ? 'ثوانٍ' : 'Secs';
+
+      if (withdrawCondLvlLabel) withdrawCondLvlLabel.innerHTML = isAr ? '<span>🌾</span> مستوى المزرعة الرئيسية:' : '<span>🌾</span> Main Farm Level:';
+      if (withdrawCondAdsLabel) withdrawCondAdsLabel.innerHTML = isAr ? '<span>📺</span> مشاهدة الفيديوهات:' : '<span>📺</span> Video Ads Watched:';
+      if (withdrawCondLimitsLabel) withdrawCondLimitsLabel.innerHTML = isAr ? '<span>💰</span> حدود السحب:' : '<span>💰</span> Withdrawal Limits:';
+      if (withdrawCondFeeLabel) withdrawCondFeeLabel.innerHTML = isAr ? '<span>⛽</span> مصاريف السحب:' : '<span>⛽</span> Network Fee:';
+      if (withdrawCondCooldownLabel) withdrawCondCooldownLabel.innerHTML = isAr ? '<span>⏱️</span> معدل السحب:' : '<span>⏱️</span> Withdrawal Cooldown:';
+      if (withdrawActionBtnText) withdrawActionBtnText.innerText = isAr ? 'طلب سحب CFT (Withdraw)' : 'Request CFT Withdrawal';
+
+      // Modal Localization
+      const modalWithdrawTitle = document.getElementById('modalWithdrawTitle');
+      const modalWithdrawSubTitle = document.getElementById('modalWithdrawSubTitle');
+      const modalWithdrawCountdownLabel = document.getElementById('modalWithdrawCountdownLabel');
+      const modalCountDaysLabel = document.getElementById('modalCountDaysLabel');
+      const modalCountHoursLabel = document.getElementById('modalCountHoursLabel');
+      const modalCountMinsLabel = document.getElementById('modalCountMinsLabel');
+      const modalCountSecsLabel = document.getElementById('modalCountSecsLabel');
+      const modalWalletLabel = document.getElementById('modalWalletLabel');
+      const modalReqTitle = document.getElementById('modalReqTitle');
+      const modalReqFarmLvlLabel = document.getElementById('modalReqFarmLvlLabel');
+      const modalReqAdsLabel = document.getElementById('modalReqAdsLabel');
+      const modalReqCooldownLabel = document.getElementById('modalReqCooldownLabel');
+      const modalReqBalanceLabel = document.getElementById('modalReqBalanceLabel');
+      const modalAmountLabel = document.getElementById('modalAmountLabel');
+      const modalAmountLimitsLabel = document.getElementById('modalAmountLimitsLabel');
+      const modalBtnMaxLabel = document.getElementById('modalBtnMaxLabel');
+      const modalGrossLabel = document.getElementById('modalGrossLabel');
+      const modalFeeLabel = document.getElementById('modalFeeLabel');
+      const modalNetLabel = document.getElementById('modalNetLabel');
+      const modalNoticeText = document.getElementById('modalNoticeText');
+      const confirmWithdrawBtnText = document.getElementById('confirmWithdrawBtnText');
+
+      if (modalWithdrawTitle) modalWithdrawTitle.innerText = isAr ? 'طلب سحب Crazy Farm Token' : 'Request CFT Withdrawal';
+      if (modalWithdrawSubTitle) modalWithdrawSubTitle.innerText = isAr ? 'السحب المباشر لعملات CFT إلى محفظة TON الرسمية' : 'Direct CFT withdrawal to your verified TON wallet';
+      if (modalWithdrawCountdownLabel) modalWithdrawCountdownLabel.innerHTML = isAr ? '<span>⏳</span> موعد فتح السحب الرسمي:' : '<span>⏳</span> Official Launch Countdown:';
+      if (modalCountDaysLabel) modalCountDaysLabel.innerText = isAr ? 'أيام' : 'Days';
+      if (modalCountHoursLabel) modalCountHoursLabel.innerText = isAr ? 'ساعات' : 'Hours';
+      if (modalCountMinsLabel) modalCountMinsLabel.innerText = isAr ? 'دقائق' : 'Mins';
+      if (modalCountSecsLabel) modalCountSecsLabel.innerText = isAr ? 'ثوانٍ' : 'Secs';
+      if (modalWalletLabel) modalWalletLabel.innerText = isAr ? 'محفظة السحب (TON Wallet):' : 'Withdrawal TON Wallet:';
+      if (modalReqTitle) modalReqTitle.innerText = isAr ? '📋 حالة شروط السحب المؤهلة:' : '📋 Withdrawal Eligibility Status:';
+      if (modalReqFarmLvlLabel) modalReqFarmLvlLabel.innerText = isAr ? '🌾 المزرعة الرئيسية (مستوى 5+):' : '🌾 Main Farm (Lv. 5+):';
+      if (modalReqAdsLabel) modalReqAdsLabel.innerText = isAr ? '📺 مشاهدة 10 فيديوهات:' : '📺 Watch 10 Video Ads:';
+      if (modalReqCooldownLabel) modalReqCooldownLabel.innerText = isAr ? '⏱️ فترة التهدئة (مرة كل 3 أيام):' : '⏱️ Cooldown (Once every 3 days):';
+      if (modalReqBalanceLabel) modalReqBalanceLabel.innerText = isAr ? '💎 رصيدك الحالي القابل للسحب:' : '💎 Your Withdrawable CFT:';
+      if (modalAmountLabel) modalAmountLabel.innerText = isAr ? 'الكمية المراد سحبها:' : 'Withdrawal Amount:';
+      if (modalAmountLimitsLabel) modalAmountLimitsLabel.innerText = isAr ? '(الحدود: 2,000 - 5,000 CFT)' : '(Limits: 2,000 - 5,000 CFT)';
+      if (modalBtnMaxLabel) modalBtnMaxLabel.innerText = isAr ? 'الحد الأقصى' : 'Max';
+      if (modalGrossLabel) modalGrossLabel.innerText = isAr ? 'الكمية الإجمالية المسحوبة:' : 'Total Requested Amount:';
+      if (modalFeeLabel) modalFeeLabel.innerText = isAr ? 'مصاريف ورسوم شبكة TON:' : 'TON Network Fee:';
+      if (modalNetLabel) modalNetLabel.innerText = isAr ? 'الصافي الذي ستستلمه في محفظتك:' : 'Net You Will Receive:';
+      if (modalNoticeText) modalNoticeText.innerText = isAr 
+        ? '⚡ يتم توثيق وحفظ طلب السحب تلقائياً في قائمة الانتظار المعتمدة (Withdrawals Queue) بالسيرفر السحابي تمهيداً للإرسال المباشر لمحفظتك.' 
+        : '⚡ Your withdrawal request is automatically recorded in the Official Cloud Ledger for direct dispatch to your TON wallet.';
+      if (confirmWithdrawBtnText) confirmWithdrawBtnText.innerText = isAr ? 'تأكيد وإرسال طلب السحب (Submit Request)' : 'Confirm & Submit Withdrawal';
+
+      try { updateWithdrawalCountdown(); } catch(e){}
+      try { updateWithdrawalConditionsUI(); } catch(e){}
     }
 
     function openSupport() {
