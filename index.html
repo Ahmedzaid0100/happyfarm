@@ -1271,6 +1271,51 @@
           </button>
         </div>
 
+        <!-- CARD 3.5: CFT Smart Contract & Quick Buy/Verify -->
+        <div class="bg-gradient-to-r from-amber-950/90 via-slate-900 to-amber-950/90 border-2 border-amber-500/60 rounded-3xl p-3.5 shadow-xl text-white">
+          <!-- Header with Token Badge -->
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <img src="assets/cft_gold_coin.png" alt="CFT" class="w-7 h-7 rounded-full border border-yellow-300 shadow" />
+              <div>
+                <h4 id="cftContractBannerTitle" class="font-black text-xs text-yellow-300">CFT Smart Contract</h4>
+                <p id="cftContractBannerSubtitle" class="text-[9.5px] text-slate-300">Verified Jetton on TON Blockchain</p>
+              </div>
+            </div>
+            <span id="cftContractBadge" class="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500">
+              ✓ Verified Jetton
+            </span>
+          </div>
+
+          <!-- Contract Address Box with 1-Click Copy -->
+          <div class="bg-black/60 rounded-xl p-2 mb-2.5 flex items-center justify-between border border-amber-500/30 gap-2">
+            <div class="flex items-center gap-1.5 overflow-hidden">
+              <span class="text-xs">📜</span>
+              <span id="cftContractDisplayShort" class="font-mono text-[11px] text-amber-200 truncate select-all">
+                EQDejQtJcXIVVIueqxZq...HK7NoP-
+              </span>
+            </div>
+            <button id="copyContractBtn" onclick="copyCftContractAddress()" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-amber-950 font-black text-[10px] flex items-center gap-1 active:scale-95 transition-all shrink-0 shadow cursor-pointer">
+              <span id="copyContractBtnIcon">📋</span>
+              <span id="copyContractBtnText">Copy</span>
+            </button>
+          </div>
+
+          <!-- Action Buttons: Buy CFT & Explorer -->
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Buy CFT Button -->
+            <button onclick="openBuyCftModal()" class="py-2.5 rounded-xl bg-gradient-to-b from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md border-b-2 border-amber-700 active:scale-95 transition-all cursor-pointer">
+              <span>🛒</span>
+              <span id="buyCftBannerBtnText">Buy CFT (شراء)</span>
+            </button>
+            <!-- View on Tonscan Explorer -->
+            <a href="https://tonscan.org/jetton/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all">
+              <span>🔍</span>
+              <span id="tonscanBtnText">Tonscan Explorer</span>
+            </a>
+          </div>
+        </div>
+
         <!-- CARD 4: TON Wallet -->
         <div class="bg-gradient-to-b from-[#0a1929] to-[#050d17] border-2 border-[#1e5a9e] rounded-3xl p-4 shadow-xl text-white">
           <!-- Header -->
@@ -3312,6 +3357,87 @@
         <button id="confirmWithdrawBtn" type="button" onclick="submitWithdrawalRequest()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
           <span>🚀</span> <span id="confirmWithdrawBtnText">Confirm & Submit Withdrawal</span>
         </button>
+      </div>
+    </div>
+
+    <!-- ==================== BUY CFT MODAL ==================== -->
+    <div id="buyCftModal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4 select-none">
+      <div class="relative w-full max-w-[420px] wood-board border-2 border-yellow-400 rounded-3xl p-4 sm:p-5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
+        <!-- Close Top-Right -->
+        <button type="button" onclick="closeBuyCftModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer z-50" title="Close">&#10005;</button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-2 justify-center mb-1 mt-1">
+          <img src="assets/cft_gold_coin.png" alt="CFT" class="w-8 h-8 rounded-full border border-yellow-300 shadow" />
+          <h3 id="buyCftModalTitle" class="text-lg sm:text-xl font-black text-yellow-300 drop-shadow">
+            Buy Crazy Farm Token (CFT)
+          </h3>
+        </div>
+        <p id="buyCftModalSubTitle" class="text-[11px] text-amber-200/90 font-bold mb-3">Official Smart Contract & Verified DEX Swaps</p>
+
+        <!-- Contract Details Box -->
+        <div class="w-full bg-black/60 border border-amber-500/50 rounded-2xl p-3 mb-3 text-left">
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 mb-1">
+            <span id="buyCftContractLabel">Contract Address (Jetton Master):</span>
+            <span class="text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]">✓ Verified</span>
+          </div>
+          <div class="font-mono text-[10.5px] text-yellow-300 break-all bg-black/70 p-2 rounded-xl border border-yellow-500/30 text-center select-all mb-2">
+            EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-
+          </div>
+          <button onclick="copyCftContractAddress()" class="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-amber-950 font-black text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all cursor-pointer">
+            <span>📋</span> <span id="buyModalCopyText">Copy Contract Address</span>
+          </button>
+        </div>
+
+        <!-- How to Buy Cards -->
+        <div class="w-full space-y-2 mb-3 text-left text-xs">
+          <!-- DEX Swap: DeDust.io -->
+          <a href="https://dedust.io/swap/TON/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="block w-full bg-gradient-to-r from-blue-950 to-indigo-950/90 hover:from-blue-900 hover:to-indigo-900 border border-blue-400/50 rounded-2xl p-2.5 transition-all shadow active:scale-98">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🪐</span>
+                <div>
+                  <div class="font-black text-blue-200">Trade on DeDust.io</div>
+                  <div class="text-[10px] text-slate-300">Swap TON ⇄ CFT instantly on DEX</div>
+                </div>
+              </div>
+              <span class="text-blue-300 text-sm font-black">↗</span>
+            </div>
+          </a>
+
+          <!-- DEX Swap: STON.fi -->
+          <a href="https://app.ston.fi/swap?chartVisible=false&ft=TON&tt=EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="block w-full bg-gradient-to-r from-cyan-950 to-teal-950/90 hover:from-cyan-900 hover:to-teal-900 border border-cyan-400/50 rounded-2xl p-2.5 transition-all shadow active:scale-98">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">💎</span>
+                <div>
+                  <div class="font-black text-cyan-200">Trade on STON.fi</div>
+                  <div class="text-[10px] text-slate-300">Leading TON decentralized exchange</div>
+                </div>
+              </div>
+              <span class="text-cyan-300 text-sm font-black">↗</span>
+            </div>
+          </a>
+
+          <!-- Direct In-Wallet / OTC Community Support -->
+          <a href="https://t.me/crazyfarmgamey" target="_blank" rel="noopener noreferrer" class="block w-full bg-gradient-to-r from-emerald-950 to-green-950/90 hover:from-emerald-900 hover:to-green-900 border border-emerald-400/50 rounded-2xl p-2.5 transition-all shadow active:scale-98">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">✈️</span>
+                <div>
+                  <div class="font-black text-emerald-200">Official Telegram Community</div>
+                  <div class="text-[10px] text-slate-300">Announcements, OTC presale & support</div>
+                </div>
+              </div>
+              <span class="text-emerald-300 text-sm font-black">↗</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Tokenomics Info Notice -->
+        <p id="buyModalNotice" class="text-[10px] text-slate-300 text-center leading-relaxed mb-1">
+          💡 You can add CFT to your Tonkeeper wallet by copying the contract address above and pasting it into your wallet search bar.
+        </p>
       </div>
     </div>
 
@@ -8247,6 +8373,67 @@
       }
     }
 
+    function copyCftContractAddress() {
+      try { playSound('click'); } catch(e){}
+      const addr = CFT_JETTON_CONTRACT_ADDRESS;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(onCopySuccess).catch(() => fallbackCopy(addr));
+      } else {
+        fallbackCopy(addr);
+      }
+    }
+
+    function onCopySuccess() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const btnText = document.getElementById('copyContractBtnText');
+      const btnIcon = document.getElementById('copyContractBtnIcon');
+      const buyModalCopyText = document.getElementById('buyModalCopyText');
+      if (btnText) btnText.textContent = isAr ? 'تم النسخ ✓' : 'Copied! ✓';
+      if (btnIcon) btnIcon.textContent = '✓';
+      if (buyModalCopyText) buyModalCopyText.textContent = isAr ? 'تم نسخ العنوان ✓' : 'Address Copied! ✓';
+      showWalletToast(isAr ? '📋 تم نسخ عنوان عقد CFT إلى الحافظة!' : '📋 CFT Contract address copied to clipboard!');
+      setTimeout(() => {
+        if (btnText) btnText.textContent = isAr ? 'نسخ' : 'Copy';
+        if (btnIcon) btnIcon.textContent = '📋';
+        if (buyModalCopyText) buyModalCopyText.textContent = isAr ? 'نسخ عنوان العقد' : 'Copy Contract Address';
+      }, 2500);
+    }
+
+    function fallbackCopy(text) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        onCopySuccess();
+      } catch(e) {
+        prompt('Copy CFT Contract Address:', text);
+      }
+    }
+
+    function openBuyCftModal() {
+      try { playSound('click'); } catch(e){}
+      const modal = document.getElementById('buyCftModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeBuyCftModal() {
+      try { playSound('click'); } catch(e){}
+      const modal = document.getElementById('buyCftModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
     async function submitWithdrawalRequest() {
       try { playSound('click'); } catch(e){}
       const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
@@ -10497,6 +10684,35 @@
         ? '⚡ يتم توثيق وحفظ طلب السحب تلقائياً في قائمة الانتظار المعتمدة (Withdrawals Queue) بالسيرفر السحابي تمهيداً للإرسال المباشر لمحفظتك.' 
         : '⚡ Your withdrawal request is automatically recorded in the Official Cloud Ledger for direct dispatch to your TON wallet.';
       if (confirmWithdrawBtnText) confirmWithdrawBtnText.innerText = isAr ? 'تأكيد وإرسال طلب السحب (Submit Request)' : 'Confirm & Submit Withdrawal';
+
+      // 7. CFT Smart Contract Banner & Buy Modal Localization
+      const cftContractBannerTitle = document.getElementById('cftContractBannerTitle');
+      const cftContractBannerSubtitle = document.getElementById('cftContractBannerSubtitle');
+      const cftContractBadge = document.getElementById('cftContractBadge');
+      const copyContractBtnText = document.getElementById('copyContractBtnText');
+      const buyCftBannerBtnText = document.getElementById('buyCftBannerBtnText');
+      const tonscanBtnText = document.getElementById('tonscanBtnText');
+
+      if (cftContractBannerTitle) cftContractBannerTitle.innerText = isAr ? 'عقد عملة CFT الذكي' : 'CFT Smart Contract';
+      if (cftContractBannerSubtitle) cftContractBannerSubtitle.innerText = isAr ? 'عملة موثقة رسمياً على بلوكتشين TON' : 'Verified Jetton on TON Blockchain';
+      if (cftContractBadge) cftContractBadge.innerText = isAr ? '✓ توكن موثق' : '✓ Verified Jetton';
+      if (copyContractBtnText) copyContractBtnText.innerText = isAr ? 'نسخ' : 'Copy';
+      if (buyCftBannerBtnText) buyCftBannerBtnText.innerText = isAr ? 'شراء CFT (Buy)' : 'Buy CFT (شراء)';
+      if (tonscanBtnText) tonscanBtnText.innerText = isAr ? 'مستكشف Tonscan' : 'Tonscan Explorer';
+
+      const buyCftModalTitle = document.getElementById('buyCftModalTitle');
+      const buyCftModalSubTitle = document.getElementById('buyCftModalSubTitle');
+      const buyCftContractLabel = document.getElementById('buyCftContractLabel');
+      const buyModalCopyText = document.getElementById('buyModalCopyText');
+      const buyModalNotice = document.getElementById('buyModalNotice');
+
+      if (buyCftModalTitle) buyCftModalTitle.innerText = isAr ? 'شراء عملة Crazy Farm Token' : 'Buy Crazy Farm Token (CFT)';
+      if (buyCftModalSubTitle) buyCftModalSubTitle.innerText = isAr ? 'العقد الرسمي ومنصات التداول المعتمدة' : 'Official Smart Contract & Verified DEX Swaps';
+      if (buyCftContractLabel) buyCftContractLabel.innerText = isAr ? 'عنوان العقد الذكي (Jetton Master):' : 'Contract Address (Jetton Master):';
+      if (buyModalCopyText) buyModalCopyText.innerText = isAr ? 'نسخ عنوان العقد' : 'Copy Contract Address';
+      if (buyModalNotice) buyModalNotice.innerText = isAr 
+        ? '💡 يمكنك إضافة عملة CFT إلى محفظة Tonkeeper بنسخ العنوان أعلاه ولصقه في خانة البحث بالمحفظة.' 
+        : '💡 You can add CFT to your Tonkeeper wallet by copying the contract address above and pasting it into your wallet search bar.';
 
       try { updateWithdrawalCountdown(); } catch(e){}
       try { updateWithdrawalConditionsUI(); } catch(e){}
