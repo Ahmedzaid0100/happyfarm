@@ -8139,36 +8139,6 @@
       }
     }
 
-      // 2. If wallet is not connected, prompt user to connect via TonConnect or pay via Tonkeeper
-      const choiceConnect = confirm(isAr 
-        ? `💎 لشراء باقة ${packageName} (${tonPrice} TON):\n\nاضغط "موافق (OK)" لربط محفظتك والدفع المباشر، أو "إلغاء (Cancel)" للدفع عبر تطبيق Tonkeeper.`
-        : `💎 Purchase ${packageName} (${tonPrice} TON):\n\nClick "OK" to connect your TON wallet for instant payment, or "Cancel" to open Tonkeeper app.`);
-
-      if (choiceConnect) {
-        if (tonConnectUI) {
-          try { await tonConnectUI.openModal(); } catch(e){}
-        } else {
-          switchTab('wallet');
-        }
-        return;
-      }
-
-      // 3. Deeplink payment fallback via Tonkeeper / Wallet
-      const transferUrl = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
-
-      try {
-        if (window.Telegram?.WebApp?.openLink) {
-          window.Telegram.WebApp.openLink(transferUrl);
-        } else {
-          window.open(transferUrl, '_blank');
-        }
-      } catch(e) {
-        window.open(transferUrl, '_blank');
-      }
-
-      showWalletToast(isAr ? '💎 تم فتح تطبيق Tonkeeper لإتمام التحويل...' : '💎 Opening Tonkeeper to complete transfer...');
-    }
-
     // ==================== BOOSTS SHOP SYSTEM ====================
     let activeBoosts = {};
     try {
@@ -10646,7 +10616,6 @@
       }
       try { playSound('pop'); } catch(e){}
       showWalletToast('⚠️ Ad was closed before completion. No reward earned.');
-    }
     }
     // ==================== END AD ENGINE ====================
 
