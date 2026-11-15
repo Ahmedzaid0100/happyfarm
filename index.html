@@ -7509,6 +7509,15 @@
     function shareInviteLink() {
       playSound('click');
       const refUrl = 'https://t.me/happyfarmHFCbot?start=ref_' + getEffectiveTelegramId();
+      const uLang = ((window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || navigator.language || '').toLowerCase());
+      const isAr = uLang.startsWith('ar');
+      const shareMsg = isAr
+        ? 'انضم معي في مزرعة Crazy Farm على تيليجرام! اجمع النقاط واكسب عملات الإيردروب القادم على شبكة TON! 🌾🚀'
+        : 'Join me in Crazy Farm on Telegram! Farm points & earn tokens for the upcoming TON airdrop! 🌾🚀';
+      const text = encodeURIComponent(shareMsg);
+      const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`;
+
+      // 1. Copy to clipboard
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(refUrl).catch(() => {});
       } else {
@@ -7523,16 +7532,28 @@
           document.body.removeChild(ta);
         } catch(e){}
       }
+
+      // 2. Open Native Phone Share Sheet (WhatsApp, Telegram, X, Facebook, etc.)
+      if (navigator.share) {
+        navigator.share({
+          title: 'Crazy Farm',
+          text: shareMsg,
+          url: refUrl
+        }).catch(() => {
+          if (window.Telegram?.WebApp?.openTelegramLink) {
+            window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+          } else {
+            window.open(tgShareUrl, '_blank');
+          }
+        });
+        return;
+      }
+
+      // 3. Telegram WebApp or Browser fallback
       if (window.Telegram?.WebApp?.openTelegramLink) {
-        const uLang = ((window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || navigator.language || '').toLowerCase());
-        const isAr = uLang.startsWith('ar');
-        const shareMsg = isAr
-          ? 'انضم معي في مزرعة Crazy Farm على تيليجرام! اجمع النقاط واكسب عملات الإيردروب القادم على شبكة TON! 🌾🚀'
-          : 'Join me in Crazy Farm on Telegram! Farm points & earn tokens for the upcoming TON airdrop! 🌾🚀';
-        const text = encodeURIComponent(shareMsg);
-        window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${text}`);
+        window.Telegram.WebApp.openTelegramLink(tgShareUrl);
       } else {
-        alert(`🎉 Referral Link Copied:\n\n${refUrl}\n\nShare with friends to reach the next milestone!`);
+        window.open(tgShareUrl, '_blank');
       }
     }
 
@@ -8041,7 +8062,8 @@
     }
 
     // ==================== TON BOOST PACKAGES (SILVER, GOLD, DIAMOND) ====================
-    const OWNER_TON_WALLET = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ';
+    // Official Bounceable TON Recipient Address (EQ format required by TonConnect for transfers)
+    const OWNER_TON_WALLET = 'EQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3Dqzw';
 
     function buyTonPackage(packageKey, tonPrice, pointsReward, packageName) {
       if (!ActionLock.run('ton_package_' + packageKey, 1000, () => _doBuyTonPackage(packageKey, tonPrice, pointsReward, packageName))) return;
@@ -8051,7 +8073,7 @@
       playSound('click');
       const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
-      const nanoAmount = Math.round(tonPrice * 1000000000);
+      const nanoAmount = String(Math.round(tonPrice * 1000000000));
       const memo = 'CrazyFarm_Pkg_' + packageKey + '_' + tId;
 
       if (!tonConnectUI) {
@@ -8067,13 +8089,13 @@
             messages: [
               {
                 address: OWNER_TON_WALLET,
-                amount: String(nanoAmount)
+                amount: nanoAmount
               }
             ]
           };
 
           const result = await tonConnectUI.sendTransaction(transaction);
-          if (result) {
+          if (result && (result.boc || typeof result === 'object')) {
             points += pointsReward;
             try { localStorage.setItem('crazyfarm_points', points); } catch(e){}
             try { playSound('fanfare'); } catch(e){}
