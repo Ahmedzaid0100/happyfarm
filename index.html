@@ -10359,6 +10359,12 @@
         .then((result) => {
           clearAdSafetyTimer();
           isAdLoadingOrShowing = false;
+          // Strictly verify that the ad was watched till the end
+          if (result && result.done === false) {
+            console.warn('⚠️ Adsgram ad closed early without completion:', result);
+            showWalletToast('⚠️ You closed the ad before finishing! Watch till the end to earn the reward.');
+            return;
+          }
           console.log('🎉 Adsgram Rewarded completed successfully!', result);
           try { playSound('fanfare'); } catch(e){}
           if (typeof onSuccess === 'function') onSuccess();
@@ -10369,18 +10375,17 @@
 
           // Check if user manually closed/dismissed the ad before completion
           const isUserClosed = result && (
-            result.done === false && (
-              result.description === 'User closed ad' ||
-              result.description === 'User closed the ad' ||
-              result.state === 'destroy' ||
-              result.state === 'dismiss'
-            ) && !result.error
+            result.done === false ||
+            result.description === 'User closed ad' ||
+            result.description === 'User closed the ad' ||
+            result.state === 'destroy' ||
+            result.state === 'dismiss'
           );
 
-          if (isUserClosed) {
+          if (isUserClosed && !result.error) {
             console.log('ℹ️ User voluntarily closed Adsgram ad before completion.');
-            showWalletToast('⚠️ Ad was closed before completion.');
-            return; // Player voluntarily closed ad: DO NOT cascade!
+            showWalletToast('⚠️ You closed the ad before finishing! Watch full ad to advance.');
+            return; // Player voluntarily closed ad: DO NOT cascade and DO NOT reward!
           }
 
           console.warn('⚠️ Adsgram ad unavailable or no inventory:', result);
@@ -10404,6 +10409,7 @@
         isAdLoadingOrShowing = true;
         setAdSafetyTimer();
         showWalletToast('🎬 Loading Monetag sponsor ad...');
+        const adStartTime = Date.now();
 
         try {
           const adPromise = rewardedFn();
@@ -10412,6 +10418,12 @@
               .then(() => {
                 clearAdSafetyTimer();
                 isAdLoadingOrShowing = false;
+                const duration = (Date.now() - adStartTime) / 1000;
+                if (duration < 5) {
+                  console.warn(`⚠️ Monetag ad closed too quickly (${duration.toFixed(1)}s), skipping reward.`);
+                  showWalletToast('⚠️ You closed the ad before watching! Watch the ad to earn your reward.');
+                  return;
+                }
                 console.log('🎉 Monetag Rewarded Video completed successfully!');
                 try { playSound('fanfare'); } catch(e){}
                 if (typeof onSuccess === 'function') onSuccess();
@@ -10420,12 +10432,19 @@
                 console.warn('⚠️ Monetag video format unavailable, trying Rewarded Pop (Zone 12182126)...', err);
                 if (typeof popupFn === 'function') {
                   try {
+                    const popStartTime = Date.now();
                     const popPromise = popupFn('pop') || popupFn();
                     if (popPromise && typeof popPromise.then === 'function') {
                       popPromise
                         .then(() => {
                           clearAdSafetyTimer();
                           isAdLoadingOrShowing = false;
+                          const popDuration = (Date.now() - popStartTime) / 1000;
+                          if (popDuration < 5) {
+                            console.warn(`⚠️ Monetag Pop closed too quickly (${popDuration.toFixed(1)}s), skipping reward.`);
+                            showWalletToast('⚠️ You closed the ad before watching! Watch the ad to earn your reward.');
+                            return;
+                          }
                           console.log('🎉 Monetag Rewarded Popup completed successfully!');
                           try { playSound('fanfare'); } catch(e){}
                           if (typeof onSuccess === 'function') onSuccess();
@@ -10449,8 +10468,8 @@
           } else {
             clearAdSafetyTimer();
             isAdLoadingOrShowing = false;
-            try { playSound('fanfare'); } catch(e){}
-            if (typeof onSuccess === 'function') onSuccess();
+            console.warn('⚠️ Monetag did not return a valid promise, cascading to TADS...');
+            if (typeof onFail === 'function') onFail(new Error('Monetag no promise'));
           }
         } catch(e) {
           clearAdSafetyTimer();
@@ -10589,14 +10608,16 @@
       }
       if (bar) bar.style.width = '0%';
 
-      let progress = 0;
-      fallbackInterval = setInterval(() => {
-        progress += 33.34;
-        if (bar) bar.style.width = Math.min(progress, 100) + '%';
-        const left = Math.ceil((100 - progress) / 33.34);
-        if (countdown) countdown.innerText = Math.max(left, 0) + ' seconds remaining';
+      let secondsRemaining = 5;
+      if (countdown) countdown.innerText = secondsRemaining + ' seconds remaining';
 
-        if (progress >= 100) {
+      fallbackInterval = setInterval(() => {
+        secondsRemaining--;
+        const pct = ((5 - secondsRemaining) / 5) * 100;
+        if (bar) bar.style.width = Math.min(pct, 100) + '%';
+        if (countdown) countdown.innerText = Math.max(secondsRemaining, 0) + ' seconds remaining';
+
+        if (secondsRemaining <= 0) {
           clearInterval(fallbackInterval);
           fallbackInterval = null;
           isAdLoadingOrShowing = false;
@@ -10609,7 +10630,7 @@
             if (typeof onSuccess === 'function') onSuccess();
           }, 300);
         }
-      }, 700);
+      }, 1000);
     }
 
     function cancelFallbackAdModal() {
@@ -10624,6 +10645,8 @@
         modal.style.display = 'none';
       }
       try { playSound('pop'); } catch(e){}
+      showWalletToast('⚠️ Ad was closed before completion. No reward earned.');
+    }
     }
     // ==================== END AD ENGINE ====================
 
