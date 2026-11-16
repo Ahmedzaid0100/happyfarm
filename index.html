@@ -3500,21 +3500,27 @@
             <span id="pkgModalDirectLinksLabel">أو الفتح المباشر في أي محفظة (روابط سريعة):</span>
             <span class="text-[9.5px] text-amber-300 font-mono">Universal URI</span>
           </div>
-          <div class="grid grid-cols-3 gap-1.5">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             <!-- Universal ton:// -->
-            <button onclick="openUniversalTonLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-blue-400/40 active:scale-95 cursor-pointer">
+            <button onclick="openUniversalTonLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-0.5 shadow border border-blue-400/40 active:scale-95 cursor-pointer">
               <span class="text-base">💎</span>
               <span class="font-black">محفظة الهاتف</span>
               <span class="text-[8px] opacity-80">(ton://)</span>
             </button>
+            <!-- Binance Web3 Wallet -->
+            <button onclick="openBinanceWalletLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-bold text-[10px] flex flex-col items-center justify-center gap-0.5 shadow border border-yellow-300/60 active:scale-95 cursor-pointer">
+              <span class="text-base">🟡</span>
+              <span class="font-black">Binance</span>
+              <span class="text-[8px] opacity-90">Web3 App</span>
+            </button>
             <!-- MyTonWallet -->
-            <button onclick="openMyTonWalletLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-purple-700 to-indigo-900 hover:from-purple-600 hover:to-indigo-800 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-purple-400/40 active:scale-95 cursor-pointer">
+            <button onclick="openMyTonWalletLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-purple-700 to-indigo-900 hover:from-purple-600 hover:to-indigo-800 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-0.5 shadow border border-purple-400/40 active:scale-95 cursor-pointer">
               <span class="text-base">🟣</span>
               <span class="font-black">MyTonWallet</span>
               <span class="text-[8px] opacity-80">Direct App</span>
             </button>
             <!-- Tonkeeper -->
-            <button onclick="openTonkeeperLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-sky-600 to-cyan-800 hover:from-sky-500 hover:to-cyan-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-sky-400/40 active:scale-95 cursor-pointer">
+            <button onclick="openTonkeeperLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-sky-600 to-cyan-800 hover:from-sky-500 hover:to-cyan-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-0.5 shadow border border-sky-400/40 active:scale-95 cursor-pointer">
               <span class="text-base">🔵</span>
               <span class="font-black">Tonkeeper</span>
               <span class="text-[8px] opacity-80">Direct App</span>
@@ -8219,7 +8225,8 @@
 
     // ==================== TON BOOST PACKAGES (SILVER, GOLD, DIAMOND) ====================
     // Official TON Recipient Wallet Address
-    const OWNER_TON_WALLET = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ';
+    const OWNER_TON_WALLET = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ'; // User-friendly Non-Bounceable
+    const OWNER_TON_WALLET_BOUNCEABLE = 'EQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DrcM'; // Official Bounceable (EQ) format recognized by Binance & TonConnect as standard Wallet Transfer
 
     let currentTonPackage = null;
     let tonPaymentTimeout = null;
@@ -8289,17 +8296,19 @@
       if (walletStatusEl && connectPayBtnText) {
         if (tonConnectUI && tonConnectUI.connected) {
           const userAddr = tonConnectUI.account?.address || '';
+          const walletObj = tonConnectUI.wallet;
+          const walletName = walletObj?.name || (walletObj?.appName === 'binanceWeb3Wallet' ? 'Binance Wallet' : 'TON Wallet');
           const shortAddr = userAddr.length > 10 ? (userAddr.slice(0, 4) + '...' + userAddr.slice(-4)) : '✓';
-          walletStatusEl.innerText = isAr ? `متصل (${shortAddr})` : `Connected (${shortAddr})`;
+          walletStatusEl.innerText = isAr ? `متصل (${walletName})` : `Connected (${walletName})`;
           walletStatusEl.className = 'text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]';
           connectPayBtnText.innerText = isAr 
-            ? `⚡ دفع ${tonPrice} TON بالمحفظة المتصلة` 
-            : `⚡ Pay ${tonPrice} TON with Connected Wallet`;
+            ? `⚡ دفع ${tonPrice} TON بمحفظة ${walletName}` 
+            : `⚡ Pay ${tonPrice} TON with ${walletName}`;
         } else {
           walletStatusEl.innerText = isAr ? 'غير متصل' : 'Not Connected';
           walletStatusEl.className = 'text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-600 text-[9.5px]';
           connectPayBtnText.innerText = isAr 
-            ? '🔗 ربط المحفظة للدفع (Tonkeeper, MyTonWallet, @wallet...)' 
+            ? '🔗 ربط المحفظة للدفع (Binance, Tonkeeper, MyTonWallet, @wallet...)' 
             : '🔗 Connect TON Wallet to Pay';
         }
       }
@@ -8330,7 +8339,16 @@
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
       const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
-      const url = 'ton://transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      const url = 'ton://transfer/' + OWNER_TON_WALLET_BOUNCEABLE + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      openExternalOrTgLink(url);
+    }
+
+    function openBinanceWalletLink() {
+      if (!currentTonPackage) return;
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+      const url = 'ton://transfer/' + OWNER_TON_WALLET_BOUNCEABLE + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
       openExternalOrTgLink(url);
     }
 
@@ -8339,7 +8357,7 @@
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
       const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
-      const url = 'https://my.tonwallet.org/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      const url = 'https://my.tonwallet.org/transfer/' + OWNER_TON_WALLET_BOUNCEABLE + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
       openExternalOrTgLink(url);
     }
 
@@ -8348,11 +8366,33 @@
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
       const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
-      const url = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      const url = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET_BOUNCEABLE + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
       openExternalOrTgLink(url);
     }
 
     function openTargetWalletApp() {
+      const connectedWallet = tonConnectUI?.wallet;
+      const walletName = connectedWallet?.name || connectedWallet?.appName || '';
+      if (/binance/i.test(walletName)) {
+        if (connectedWallet?.universalLink) {
+          openExternalOrTgLink(connectedWallet.universalLink);
+          return;
+        }
+        if (connectedWallet?.deepLink) {
+          openExternalOrTgLink(connectedWallet.deepLink);
+          return;
+        }
+        openBinanceWalletLink();
+        return;
+      }
+      if (connectedWallet?.universalLink) {
+        openExternalOrTgLink(connectedWallet.universalLink);
+        return;
+      }
+      if (connectedWallet?.deepLink) {
+        openExternalOrTgLink(connectedWallet.deepLink);
+        return;
+      }
       openUniversalTonLink();
     }
 
@@ -8397,7 +8437,6 @@
       if (!tonConnectUI || !tonConnectUI.connected) {
         try {
           await tonConnectUI.openModal();
-          // After modal closes or state updates, refresh display
           setTimeout(() => {
             if (currentTonPackage) {
               openTonPackageModal(currentTonPackage.packageKey, currentTonPackage.tonPrice, currentTonPackage.pointsReward, currentTonPackage.packageName);
@@ -8412,13 +8451,34 @@
       // 2. Connected: Prepare transaction with timeout & helper button
       const pendingNotice = document.getElementById('pkgModalPendingNotice');
       if (pendingNotice) pendingNotice.classList.remove('hidden');
-      showWalletToast(isAr ? '💎 جاري إرسال المعاملة إلى محفظتك...' : '💎 Sending transaction to your wallet...');
 
+      const connectedWallet = tonConnectUI.wallet;
+      const walletName = connectedWallet?.name || 'Wallet';
+      const isBinance = /binance/i.test(walletName);
+
+      const pendingTextEl = document.getElementById('pkgModalPendingText');
+      const openWalletBtnText = document.getElementById('pkgModalOpenWalletText');
+      if (pendingTextEl) {
+        pendingTextEl.innerText = isAr 
+          ? (isBinance ? 'جاري انتظار تأكيد المعاملة في محفظة بينانس (Binance)...' : `جاري انتظار تأكيد المعاملة في تطبيق ${walletName}...`)
+          : `Waiting for confirmation in ${walletName}...`;
+      }
+      if (openWalletBtnText) {
+        openWalletBtnText.innerText = isAr 
+          ? (isBinance ? '📲 فتح تطبيق Binance لتأكيد الدفع' : `📲 فتح تطبيق ${walletName} للتأكيد`)
+          : `📲 Open ${walletName} to Approve`;
+      }
+
+      showWalletToast(isAr 
+        ? (isBinance ? '💎 جاري إرسال المعاملة إلى محفظة Binance...' : `💎 جاري إرسال المعاملة إلى محفظتك...`) 
+        : `💎 Sending transaction to your wallet...`);
+
+      // Standard Bounceable (EQ) format ensures Binance, OKX, and all multi-chain wallets recognize this as a simple Wallet Transfer (Send TON), NOT a smart contract call!
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 600,
         messages: [
           {
-            address: OWNER_TON_WALLET,
+            address: OWNER_TON_WALLET_BOUNCEABLE,
             amount: nanoAmount
           }
         ]
