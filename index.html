@@ -13,7 +13,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Adsgram Official Telegram Mini App Advertising SDK (Block/Unit ID: 59929) -->
+  <!-- Adsgram Official Telegram Mini App Advertising SDK (Pending New Block ID) -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <!-- Monetag Official Telegram Ads Monetization SDK: Rewarded Interstitial and Rewarded Popup (User-Action Only) -->
   <script src="https://libtl.com/sdk.js" data-zone="12182125" data-sdk="show_12182125"></script>
@@ -3208,13 +3208,10 @@
 
         <!-- TON Connect Buttons -->
         <div class="space-y-3">
-          <button onclick="connectTonkeeper()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-xs flex items-center justify-center gap-2 border border-blue-400 shadow-md active:scale-95 transition-transform">
-            <span>💎</span> Connect Tonkeeper
+          <button onclick="connectTONWallet()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-xs flex items-center justify-center gap-2 border border-blue-400 shadow-md active:scale-95 transition-transform cursor-pointer">
+            <span>💎</span> Connect TON Wallet (Tonkeeper / MyTonWallet / @wallet)
           </button>
-          <button onclick="connectTelegramWallet()" class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 font-bold text-xs flex items-center justify-center gap-2 border border-sky-300 shadow-md active:scale-95 transition-transform">
-            <span>✈️</span> Connect Telegram Wallet (@wallet)
-          </button>
-          <button onclick="openWithdrawalModal()" class="w-full py-2.5 rounded-xl btn-3d-green font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform">
+          <button onclick="openWithdrawalModal()" class="w-full py-2.5 rounded-xl btn-3d-green font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform cursor-pointer">
             <span>🚀</span> طلب سحب CFT (Withdraw)
           </button>
         </div>
@@ -3332,7 +3329,7 @@
     <div id="cftWithdrawalModal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4 select-none">
       <div class="relative w-full max-w-[420px] wood-board border-2 border-emerald-400 rounded-3xl p-4 sm:p-5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
         <!-- Close Top-Right -->
-        <button type="button" onclick="closeWithdrawalModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer z-50" title="Close">&#10005;</button>
+        <button type="button" onclick="closeWithdrawalModal()" ontouchend="closeWithdrawalModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
 
         <!-- Header -->
         <div class="flex items-center gap-2 justify-center mb-1 mt-1">
@@ -3451,11 +3448,111 @@
       </div>
     </div>
 
+    <!-- ==================== TON PACKAGE CHECKOUT MODAL (UNIVERSAL WALLET SUPPORT) ==================== -->
+    <div id="tonPackageModal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4 select-none">
+      <div class="relative w-full max-w-[430px] wood-board border-2 border-yellow-400 rounded-3xl p-4 sm:p-5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
+        <!-- Close Top-Right -->
+        <button type="button" onclick="closeTonPackageModal()" ontouchend="closeTonPackageModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-2.5 justify-center mb-2 mt-1">
+          <span id="pkgModalIcon" class="text-3xl">🥇</span>
+          <div class="text-left">
+            <h3 id="pkgModalTitle" class="text-base sm:text-lg font-black text-yellow-300 drop-shadow">
+              Gold Package
+            </h3>
+            <p id="pkgModalSubtitle" class="text-[11px] text-amber-200/90 font-bold">
+              +250,000 Points • 3 TON
+            </p>
+          </div>
+        </div>
+
+        <!-- Section 1: In-App TonConnect (All Wallets) -->
+        <div class="w-full bg-black/60 border border-amber-500/50 rounded-2xl p-3 mb-2.5 text-left">
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 mb-2">
+            <span id="pkgModalTonConnectLabel">⚡ الدفع الفوري بالمحفظة (TonConnect):</span>
+            <span id="pkgModalWalletStatus" class="text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]">جاهز</span>
+          </div>
+
+          <!-- Dynamic Pay / Connect Button -->
+          <button id="pkgModalConnectPayBtn" onclick="executeTonConnectPayment()" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-amber-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg border-b-2 border-amber-700 active:scale-95 transition-all cursor-pointer">
+            <span>⚡</span> <span id="pkgModalConnectPayBtnText">دفع الآن بالمحفظة المتصلة</span>
+          </button>
+
+          <!-- Status / Helper notice if pending -->
+          <div id="pkgModalPendingNotice" class="hidden mt-2 p-2.5 rounded-xl bg-blue-950/90 border border-blue-400/50 text-[10.5px] text-blue-200 flex flex-col gap-2">
+            <div class="flex items-center gap-2 font-bold">
+              <span class="animate-spin">⏳</span>
+              <span id="pkgModalPendingText">جاري انتظار تأكيد المعاملة في تطبيق محفظتك...</span>
+            </div>
+            <p id="pkgModalPendingSubText" class="text-[9.5px] text-slate-300">
+              إذا لم يفتح تطبيق المحفظة تلقائياً، اضغط على الزر أدناه لفتحه وتأكيد الدفع فوراً:
+            </p>
+            <button id="pkgModalOpenWalletBtn" onclick="openTargetWalletApp()" class="w-full py-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-white font-black text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow">
+              <span>📲</span> <span id="pkgModalOpenWalletText">فتح تطبيق المحفظة للتأكيد</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Universal & Direct Wallet Deeplinks -->
+        <div class="w-full bg-black/50 border border-slate-700/80 rounded-2xl p-3 mb-2.5 text-left">
+          <div class="text-[11px] font-bold text-slate-300 mb-2 flex items-center justify-between">
+            <span id="pkgModalDirectLinksLabel">أو الفتح المباشر في أي محفظة (روابط سريعة):</span>
+            <span class="text-[9.5px] text-amber-300 font-mono">Universal URI</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5">
+            <!-- Universal ton:// -->
+            <button onclick="openUniversalTonLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-blue-400/40 active:scale-95 cursor-pointer">
+              <span class="text-base">💎</span>
+              <span class="font-black">محفظة الهاتف</span>
+              <span class="text-[8px] opacity-80">(ton://)</span>
+            </button>
+            <!-- MyTonWallet -->
+            <button onclick="openMyTonWalletLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-purple-700 to-indigo-900 hover:from-purple-600 hover:to-indigo-800 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-purple-400/40 active:scale-95 cursor-pointer">
+              <span class="text-base">🟣</span>
+              <span class="font-black">MyTonWallet</span>
+              <span class="text-[8px] opacity-80">Direct App</span>
+            </button>
+            <!-- Tonkeeper -->
+            <button onclick="openTonkeeperLink()" class="py-2.5 px-1 rounded-xl bg-gradient-to-b from-sky-600 to-cyan-800 hover:from-sky-500 hover:to-cyan-700 text-white font-bold text-[10px] flex flex-col items-center justify-center gap-1 shadow border border-sky-400/40 active:scale-95 cursor-pointer">
+              <span class="text-base">🔵</span>
+              <span class="font-black">Tonkeeper</span>
+              <span class="text-[8px] opacity-80">Direct App</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Manual Transfer & Copy -->
+        <div class="w-full bg-black/60 border border-amber-900/60 rounded-2xl p-2.5 mb-2.5 text-left text-[10px] space-y-1.5">
+          <div class="text-amber-300 font-bold flex items-center justify-between">
+            <span id="pkgModalManualLabel">التحويل اليدوي (العنوان وكود الملاحظة):</span>
+            <span class="text-[9px] text-slate-400">نسخ بضغطة واحدة</span>
+          </div>
+          <div class="flex items-center justify-between bg-black/70 p-1.5 rounded-lg border border-slate-700">
+            <span class="text-slate-300 font-mono text-[9px] truncate max-w-[210px]" id="pkgModalWalletAddressDisplay">UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ</span>
+            <button onclick="copyTonWalletAddress()" class="px-2 py-0.5 rounded bg-amber-500 text-amber-950 font-black text-[9px] shrink-0 active:scale-95 cursor-pointer">نسخ العنوان</button>
+          </div>
+          <div class="flex items-center justify-between bg-black/70 p-1.5 rounded-lg border border-slate-700">
+            <span class="text-yellow-300 font-mono text-[9.5px] truncate max-w-[210px]" id="pkgModalMemoDisplay">CrazyFarm_Pkg</span>
+            <button onclick="copyTonMemo()" class="px-2 py-0.5 rounded bg-yellow-400 text-amber-950 font-black text-[9px] shrink-0 active:scale-95 cursor-pointer">نسخ Memo</button>
+          </div>
+          <p id="pkgModalMemoWarning" class="text-[9px] text-amber-200/80 leading-tight">
+            ⚠️ هام: اكتب كود الـ Memo أعلاه في خانة التعليق (Comment/Memo) عند التحويل من محفظتك لربط الباقة بحسابك تلقائياً!
+          </p>
+        </div>
+
+        <!-- Bottom Action: I Paid / Refresh -->
+        <button onclick="confirmManualPaymentDone()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow active:scale-95 transition-all cursor-pointer">
+          <span>✓</span> <span id="pkgModalDoneBtnText">أتممت التحويل / تحقق من النقاط</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ==================== BUY CFT MODAL ==================== -->
     <div id="buyCftModal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4 select-none">
       <div class="relative w-full max-w-[420px] wood-board border-2 border-yellow-400 rounded-3xl p-4 sm:p-5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[96vh] overflow-y-auto">
         <!-- Close Top-Right -->
-        <button type="button" onclick="closeBuyCftModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer z-50" title="Close">&#10005;</button>
+        <button type="button" onclick="closeBuyCftModal()" ontouchend="closeBuyCftModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
 
         <!-- Header -->
         <div class="flex items-center gap-2 justify-center mb-1 mt-1">
@@ -8124,76 +8221,259 @@
     // Official TON Recipient Wallet Address
     const OWNER_TON_WALLET = 'UQCTXhPQzNU7_kL-JiFe1BfcGYiubi1y4axkN71hQXV3DurJ';
 
-    function buyTonPackage(packageKey, tonPrice, pointsReward, packageName) {
-      if (!ActionLock.run('ton_package_' + packageKey, 1000, () => _doBuyTonPackage(packageKey, tonPrice, pointsReward, packageName))) return;
+    let currentTonPackage = null;
+    let tonPaymentTimeout = null;
+
+    function openExternalOrTgLink(url) {
+      if (!url) return;
+      try {
+        if (window.Telegram?.WebApp?.openLink) {
+          window.Telegram.WebApp.openLink(url);
+          return;
+        }
+      } catch(e) {}
+      try {
+        window.open(url, '_blank');
+      } catch(e) {
+        window.location.href = url;
+      }
     }
 
-    async function _doBuyTonPackage(packageKey, tonPrice, pointsReward, packageName) {
+    function buyTonPackage(packageKey, tonPrice, pointsReward, packageName) {
+      currentTonPackage = { packageKey, tonPrice, pointsReward, packageName };
+      openTonPackageModal(packageKey, tonPrice, pointsReward, packageName);
+    }
+
+    function openTonPackageModal(packageKey, tonPrice, pointsReward, packageName) {
       playSound('click');
       const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
       const nanoAmount = String(Math.round(tonPrice * 1000000000));
       const memo = 'CrazyFarm_Pkg_' + packageKey + '_' + tId;
-      const tonkeeperUrl = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
 
-      // 1. If TonConnect is connected, attempt in-app transfer
-      if (tonConnectUI && tonConnectUI.connected) {
-        try {
-          showWalletToast(isAr ? '💎 جاري تجهيز معاملة TON...' : '💎 Preparing TON Transaction...');
-          const transaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 600,
-            messages: [
-              {
-                address: OWNER_TON_WALLET,
-                amount: nanoAmount
-              }
-            ]
-          };
+      const modal = document.getElementById('tonPackageModal');
+      const iconEl = document.getElementById('pkgModalIcon');
+      const titleEl = document.getElementById('pkgModalTitle');
+      const subtitleEl = document.getElementById('pkgModalSubtitle');
+      const walletStatusEl = document.getElementById('pkgModalWalletStatus');
+      const connectPayBtn = document.getElementById('pkgModalConnectPayBtn');
+      const connectPayBtnText = document.getElementById('pkgModalConnectPayBtnText');
+      const pendingNotice = document.getElementById('pkgModalPendingNotice');
+      const walletAddressDisplay = document.getElementById('pkgModalWalletAddressDisplay');
+      const memoDisplay = document.getElementById('pkgModalMemoDisplay');
 
-          const result = await tonConnectUI.sendTransaction(transaction);
-          if (result && (result.boc || typeof result === 'object')) {
-            points += pointsReward;
-            try { localStorage.setItem('crazyfarm_points', points); } catch(e){}
-            try { playSound('fanfare'); } catch(e){}
-            playSound('coin');
-            updateDisplays();
-            if (typeof queueCloudSave === 'function') queueCloudSave();
-            
-            showWalletToast(isAr 
-              ? `🎉 تم تفعيل ${packageName} بنجاح! (+${pointsReward.toLocaleString()} نقطة)`
-              : `🎉 ${packageName} Activated! (+${pointsReward.toLocaleString()} Pts)`);
-            alert(isAr 
-              ? `🎉 تم تأكيد الدفع بنجاح!\n\nتمت إضافة باقة ${packageName} إلى حسابك!\n+${pointsReward.toLocaleString()} نقطة مزرعة!`
-              : `🎉 Payment Confirmed!\n\n${packageName} has been credited to your account!\n+${pointsReward.toLocaleString()} Farm Points added!`);
-            return;
-          }
-        } catch(err) {
-          console.warn('TonConnect transaction declined or fallback needed:', err);
-          // If in-app fails or was cancelled, smoothly fallback to opening Tonkeeper direct transfer link
-          const tryTonkeeper = confirm(isAr 
-            ? `⚠️ تعذر إتمام المعاملة التلقائية داخل التطبيق.\n\nهل ترغب في فتح تطبيق Tonkeeper للتحويل المباشر بمبلغ (${tonPrice} TON)؟`
-            : `⚠️ In-app transaction was cancelled or declined.\n\nWould you like to open Tonkeeper app to send (${tonPrice} TON) directly?`);
-          if (tryTonkeeper) {
-            if (window.Telegram?.WebApp?.openLink) {
-              window.Telegram.WebApp.openLink(tonkeeperUrl);
-            } else {
-              window.open(tonkeeperUrl, '_blank');
-            }
-          }
-          return;
+      // Set Icon
+      if (iconEl) {
+        if (packageKey === 'silver') iconEl.innerText = '🥈';
+        else if (packageKey === 'gold') iconEl.innerText = '🥇';
+        else if (packageKey === 'diamond') iconEl.innerText = '💎';
+        else iconEl.innerText = '🌾';
+      }
+
+      // Set Title & Subtitle
+      if (titleEl) {
+        titleEl.innerText = packageName;
+      }
+      if (subtitleEl) {
+        subtitleEl.innerText = isAr 
+          ? `+${pointsReward.toLocaleString()} نقطة مزرعة • ${tonPrice} TON`
+          : `+${pointsReward.toLocaleString()} Farm Points • ${tonPrice} TON`;
+      }
+
+      // Set Displays
+      if (walletAddressDisplay) walletAddressDisplay.innerText = OWNER_TON_WALLET;
+      if (memoDisplay) memoDisplay.innerText = memo;
+      if (pendingNotice) pendingNotice.classList.add('hidden');
+
+      // Update TonConnect UI Button & Status
+      if (walletStatusEl && connectPayBtnText) {
+        if (tonConnectUI && tonConnectUI.connected) {
+          const userAddr = tonConnectUI.account?.address || '';
+          const shortAddr = userAddr.length > 10 ? (userAddr.slice(0, 4) + '...' + userAddr.slice(-4)) : '✓';
+          walletStatusEl.innerText = isAr ? `متصل (${shortAddr})` : `Connected (${shortAddr})`;
+          walletStatusEl.className = 'text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500 text-[9.5px]';
+          connectPayBtnText.innerText = isAr 
+            ? `⚡ دفع ${tonPrice} TON بالمحفظة المتصلة` 
+            : `⚡ Pay ${tonPrice} TON with Connected Wallet`;
+        } else {
+          walletStatusEl.innerText = isAr ? 'غير متصل' : 'Not Connected';
+          walletStatusEl.className = 'text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-600 text-[9.5px]';
+          connectPayBtnText.innerText = isAr 
+            ? '🔗 ربط المحفظة للدفع (Tonkeeper, MyTonWallet, @wallet...)' 
+            : '🔗 Connect TON Wallet to Pay';
         }
       }
 
-      // 2. Direct Deeplink to Tonkeeper for unconnected users
-      const choice = confirm(isAr 
-        ? `💎 شراء باقة ${packageName} (${tonPrice} TON):\n\nاضغط "موافق (OK)" لفتح تطبيق Tonkeeper وتحويل ${tonPrice} TON مباشرة، أو "إلغاء" للعودة.`
-        : `💎 Purchase ${packageName} (${tonPrice} TON):\n\nClick "OK" to open Tonkeeper app and send ${tonPrice} TON directly, or "Cancel" to return.`);
-      
-      if (choice) {
-        if (window.Telegram?.WebApp?.openLink) {
-          window.Telegram.WebApp.openLink(tonkeeperUrl);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeTonPackageModal() {
+      if (tonPaymentTimeout) {
+        clearTimeout(tonPaymentTimeout);
+        tonPaymentTimeout = null;
+      }
+      const pendingNotice = document.getElementById('pkgModalPendingNotice');
+      if (pendingNotice) pendingNotice.classList.add('hidden');
+      const modal = document.getElementById('tonPackageModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      try { playSound('click'); } catch(e){}
+    }
+
+    function openUniversalTonLink() {
+      if (!currentTonPackage) return;
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+      const url = 'ton://transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      openExternalOrTgLink(url);
+    }
+
+    function openMyTonWalletLink() {
+      if (!currentTonPackage) return;
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+      const url = 'https://my.tonwallet.org/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      openExternalOrTgLink(url);
+    }
+
+    function openTonkeeperLink() {
+      if (!currentTonPackage) return;
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+      const url = 'https://app.tonkeeper.com/transfer/' + OWNER_TON_WALLET + '?amount=' + nanoAmount + '&text=' + encodeURIComponent(memo);
+      openExternalOrTgLink(url);
+    }
+
+    function openTargetWalletApp() {
+      openUniversalTonLink();
+    }
+
+    function copyTonWalletAddress() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(OWNER_TON_WALLET);
+      }
+      showWalletToast(isAr ? '✓ تم نسخ عنوان المحفظة!' : '✓ Wallet address copied!');
+      try { playSound('pop'); } catch(e){}
+    }
+
+    function copyTonMemo() {
+      if (!currentTonPackage) return;
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(memo);
+      }
+      showWalletToast(isAr ? '✓ تم نسخ كود Memo!' : '✓ Memo code copied!');
+      try { playSound('pop'); } catch(e){}
+    }
+
+    function confirmManualPaymentDone() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      try { playSound('fanfare'); } catch(e){}
+      alert(isAr 
+        ? '💎 تم استلام طلب التحقق!\n\nبمجرد اكتمال تحويلك وتأكيده على بلوكتشين TON عبر كود الـ Memo، ستتم إضافة النقاط إلى حسابك تلقائياً.'
+        : '💎 Verification request logged!\n\nOnce your on-chain transfer with Memo is confirmed on TON blockchain, points will be credited automatically.');
+      closeTonPackageModal();
+    }
+
+    async function executeTonConnectPayment() {
+      if (!currentTonPackage) return;
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const tId = typeof getEffectiveTelegramId === 'function' ? getEffectiveTelegramId() : 849275;
+      const nanoAmount = String(Math.round(currentTonPackage.tonPrice * 1000000000));
+      const memo = 'CrazyFarm_Pkg_' + currentTonPackage.packageKey + '_' + tId;
+
+      // 1. If not connected, open TonConnect modal for user to pick ANY wallet
+      if (!tonConnectUI || !tonConnectUI.connected) {
+        try {
+          await tonConnectUI.openModal();
+          // After modal closes or state updates, refresh display
+          setTimeout(() => {
+            if (currentTonPackage) {
+              openTonPackageModal(currentTonPackage.packageKey, currentTonPackage.tonPrice, currentTonPackage.pointsReward, currentTonPackage.packageName);
+            }
+          }, 1500);
+        } catch(e) {
+          console.warn('TonConnect openModal error:', e);
+        }
+        return;
+      }
+
+      // 2. Connected: Prepare transaction with timeout & helper button
+      const pendingNotice = document.getElementById('pkgModalPendingNotice');
+      if (pendingNotice) pendingNotice.classList.remove('hidden');
+      showWalletToast(isAr ? '💎 جاري إرسال المعاملة إلى محفظتك...' : '💎 Sending transaction to your wallet...');
+
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 600,
+        messages: [
+          {
+            address: OWNER_TON_WALLET,
+            amount: nanoAmount
+          }
+        ]
+      };
+
+      // 30-second safe timeout promise to prevent hanging on external wallets
+      const timeoutPromise = new Promise((_, reject) => {
+        tonPaymentTimeout = setTimeout(() => {
+          reject(new Error('PAYMENT_TIMEOUT'));
+        }, 30000);
+      });
+
+      try {
+        const result = await Promise.race([
+          tonConnectUI.sendTransaction(transaction),
+          timeoutPromise
+        ]);
+
+        if (tonPaymentTimeout) {
+          clearTimeout(tonPaymentTimeout);
+          tonPaymentTimeout = null;
+        }
+
+        if (result && (result.boc || typeof result === 'object')) {
+          points += currentTonPackage.pointsReward;
+          try { localStorage.setItem('crazyfarm_points', points); } catch(e){}
+          try { playSound('fanfare'); } catch(e){}
+          playSound('coin');
+          updateDisplays();
+          if (typeof queueCloudSave === 'function') queueCloudSave();
+
+          if (pendingNotice) pendingNotice.classList.add('hidden');
+          closeTonPackageModal();
+
+          showWalletToast(isAr 
+            ? `🎉 تم تفعيل ${currentTonPackage.packageName} بنجاح! (+${currentTonPackage.pointsReward.toLocaleString()} نقطة)`
+            : `🎉 ${currentTonPackage.packageName} Activated! (+${currentTonPackage.pointsReward.toLocaleString()} Pts)`);
+          alert(isAr 
+            ? `🎉 تم تأكيد الدفع بنجاح!\n\nتمت إضافة باقة ${currentTonPackage.packageName} إلى حسابك!\n+${currentTonPackage.pointsReward.toLocaleString()} نقطة مزرعة!`
+            : `🎉 Payment Confirmed!\n\n${currentTonPackage.packageName} has been credited to your account!\n+${currentTonPackage.pointsReward.toLocaleString()} Farm Points added!`);
+        }
+      } catch(err) {
+        if (tonPaymentTimeout) {
+          clearTimeout(tonPaymentTimeout);
+          tonPaymentTimeout = null;
+        }
+        if (pendingNotice) pendingNotice.classList.add('hidden');
+        console.warn('TonConnect payment error or timeout:', err);
+
+        if (err && err.message === 'PAYMENT_TIMEOUT') {
+          alert(isAr 
+            ? '⏳ انتهت مهلة الانتظار التلقائية.\n\nإذا قمت بتأكيد المعاملة من داخل تطبيق محفظتك، اضغط "أتممت التحويل / تحقق من النقاط"، أو استخدم الروابط المباشرة أدناه.'
+            : '⏳ Wallet approval timed out.\n\nIf you approved the transfer inside your wallet app, click "I Have Sent The Payment", or use the direct buttons below.');
         } else {
-          window.open(tonkeeperUrl, '_blank');
+          showWalletToast(isAr ? '⚠️ تم إلغاء المعاملة أو رفضها بالمحفظة' : '⚠️ Transaction was cancelled or declined');
         }
       }
     }
@@ -10341,12 +10621,15 @@
 
     // -------------------------------------------------------------
     // PRIORITY 1: ADSGRAM (Official Telegram Mini App Rewarded SDK)
-    // Block / Unit ID: 59929
+    // Official Approved Block ID: 60124
     // -------------------------------------------------------------
-    const ADSGRAM_BLOCK_ID = "59929";
+    const ADSGRAM_BLOCK_ID = "60124"; // Official Approved Adsgram Block ID
     let adsgramController = null;
 
     function getAdsgramController() {
+      if (!ADSGRAM_BLOCK_ID || ADSGRAM_BLOCK_ID.trim() === "") {
+        return null;
+      }
       if (!adsgramController && window.Adsgram && typeof window.Adsgram.init === 'function') {
         try {
           adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
@@ -10897,8 +11180,8 @@
       if (buyCftContractLabel) buyCftContractLabel.innerText = isAr ? 'عنوان العقد الذكي (Jetton Master):' : 'Contract Address (Jetton Master):';
       if (buyModalCopyText) buyModalCopyText.innerText = isAr ? 'نسخ عنوان العقد' : 'Copy Contract Address';
       if (buyModalNotice) buyModalNotice.innerText = isAr 
-        ? '💡 يمكنك إضافة عملة CFT إلى محفظة Tonkeeper بنسخ العنوان أعلاه ولصقه في خانة البحث بالمحفظة.' 
-        : '💡 You can add CFT to your Tonkeeper wallet by copying the contract address above and pasting it into your wallet search bar.';
+        ? '💡 يمكنك إضافة عملة CFT إلى أي محفظة TON (مثل Tonkeeper أو MyTonWallet أو محفظة تليجرام) بنسخ عنوان العقد أعلاه ولصقه في خانة البحث بالمحفظة.' 
+        : '💡 You can add CFT to any TON wallet (Tonkeeper, MyTonWallet, Telegram @wallet, etc.) by copying the contract address above and pasting it into your wallet search bar.';
 
       // 8. On-Chain Contract Proofs Localization
       const contractProofTitle = document.getElementById('contractProofTitle');
@@ -10924,6 +11207,25 @@
       if (txMintDesc) txMintDesc.innerText = isAr ? 'تم سك معروض العملة وتوزيعه بالكامل على بلوكتشين TON' : 'Initial CFT Token Supply Minted & Allocated on TON Blockchain';
       if (txRevokeTitle) txRevokeTitle.innerText = isAr ? 'Mint Closed / Rug-Proof (إغلاق السك والتثبيت)' : 'Mint Closed / Rug-Proof (Admin Revoked)';
       if (txRevokeDesc) txRevokeDesc.innerText = isAr ? 'تم إغلاق السك والتنازل عن العقد للأبد لضمان الأمان 100%' : 'Admin Rights Revoked & Minting Closed Permanently (100% Safe)';
+
+      // 9. TON Package Checkout Modal Localization
+      const pkgModalTonConnectLabel = document.getElementById('pkgModalTonConnectLabel');
+      const pkgModalDirectLinksLabel = document.getElementById('pkgModalDirectLinksLabel');
+      const pkgModalManualLabel = document.getElementById('pkgModalManualLabel');
+      const pkgModalMemoWarning = document.getElementById('pkgModalMemoWarning');
+      const pkgModalDoneBtnText = document.getElementById('pkgModalDoneBtnText');
+      const pkgModalPendingText = document.getElementById('pkgModalPendingText');
+      const pkgModalOpenWalletText = document.getElementById('pkgModalOpenWalletText');
+
+      if (pkgModalTonConnectLabel) pkgModalTonConnectLabel.innerText = isAr ? '⚡ الدفع الفوري بالمحفظة (TonConnect):' : '⚡ Instant Wallet Payment (TonConnect):';
+      if (pkgModalDirectLinksLabel) pkgModalDirectLinksLabel.innerText = isAr ? 'أو الفتح المباشر في أي محفظة (روابط سريعة):' : 'Or Open Directly in Your Wallet App:';
+      if (pkgModalManualLabel) pkgModalManualLabel.innerText = isAr ? 'التحويل اليدوي (العنوان وكود الملاحظة):' : 'Manual Transfer (Address & Memo):';
+      if (pkgModalMemoWarning) pkgModalMemoWarning.innerText = isAr 
+        ? '⚠️ هام: اكتب كود الـ Memo أعلاه في خانة التعليق (Comment/Memo) عند التحويل من محفظتك لربط الباقة بحسابك تلقائياً!' 
+        : '⚠️ Important: Always include the Memo above in your transfer Comment/Memo to credit your account automatically!';
+      if (pkgModalDoneBtnText) pkgModalDoneBtnText.innerText = isAr ? 'أتممت التحويل / تحقق من النقاط' : 'I Have Sent The Payment / Check Points';
+      if (pkgModalPendingText) pkgModalPendingText.innerText = isAr ? 'جاري انتظار تأكيد المعاملة في تطبيق محفظتك...' : 'Waiting for confirmation in your wallet app...';
+      if (pkgModalOpenWalletText) pkgModalOpenWalletText.innerText = isAr ? 'فتح تطبيق المحفظة للتأكيد' : 'Open Wallet App to Approve';
 
       try { updateWithdrawalCountdown(); } catch(e){}
       try { updateWithdrawalConditionsUI(); } catch(e){}
