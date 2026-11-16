@@ -1331,92 +1331,77 @@
           </div>
         </div>
 
-        <!-- CARD 3.6: OFFICIAL LIVE TON PAYOUTS & PROOF OF TRANSACTIONS (ADSGRAM CLAUSE 8 COMPLIANT) -->
+        <!-- CARD 3.6: OFFICIAL ON-CHAIN CONTRACT PROOFS (MINT & REVOKE ADMIN VERIFIED) -->
         <div class="bg-gradient-to-b from-[#0f2316] via-[#09180f] to-[#040e08] border-2 border-emerald-500/70 rounded-3xl p-3.5 shadow-2xl text-white relative overflow-hidden">
           <div class="absolute -top-8 -right-8 w-28 h-28 bg-emerald-500/15 rounded-full blur-xl pointer-events-none"></div>
 
           <!-- Header -->
-          <div class="flex items-center justify-between mb-2 pb-2 border-b border-emerald-800/60 relative z-10">
+          <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-emerald-800/60 relative z-10">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-base shadow-md border border-emerald-300">
-                💎
+                📜
               </div>
               <div>
-                <h4 id="payoutProofTitle" class="font-black text-xs text-emerald-300 flex items-center gap-1.5">
-                  <span>Live TON Payouts &amp; Proof</span>
-                  <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ On-Chain</span>
+                <h4 id="contractProofTitle" class="font-black text-xs text-emerald-300 flex items-center gap-1.5">
+                  <span>Official On-Chain Proofs</span>
+                  <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ 100% Verified</span>
                 </h4>
-                <p id="payoutProofSubtitle" class="text-[9px] text-slate-300">Publicly verified CFT token transactions on TON Blockchain</p>
+                <p id="contractProofSubtitle" class="text-[9px] text-slate-300">Immutable smart contract transactions recorded on TON Blockchain</p>
               </div>
             </div>
-            <a href="https://t.me/crazyfarmgamey" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-sky-900/80 hover:bg-sky-800 text-sky-200 border border-sky-400/50 text-[9.5px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow shrink-0">
-              <span>📢</span>
-              <span id="payoutChannelBtnText">Channel Proofs</span>
+            <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-sky-900/80 hover:bg-sky-800 text-sky-200 border border-sky-400/50 text-[9.5px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow shrink-0">
+              <span>🔍</span>
+              <span id="contractTonviewerBtnText">Tonviewer</span>
             </a>
           </div>
 
-          <!-- Live On-Chain Payouts Table -->
-          <div class="space-y-1.5 mb-2.5 relative z-10">
-            <!-- Row 1 -->
-            <div class="bg-black/60 rounded-xl p-2 border border-emerald-900/80 flex items-center justify-between text-[10px]">
-              <div class="flex items-center gap-1.5 min-w-0">
-                <span class="text-xs">👤</span>
-                <div class="truncate">
-                  <div class="font-mono text-emerald-300 font-bold">UQDP...74aB</div>
-                  <div class="text-[8.5px] text-slate-400">Today, 14:22 UTC</div>
-                </div>
+          <!-- Real Verified Transactions List -->
+          <div class="space-y-2 mb-2.5 relative z-10">
+            <!-- 1. Mint Transaction -->
+            <a href="https://tonviewer.com/transaction/bcc381cc6792edabe2b8a3ae536b85ad1483786a40be5ffceff61b185d74b2bf" target="_blank" rel="noopener noreferrer" class="block bg-black/60 hover:bg-black/80 rounded-xl p-2.5 border border-emerald-900/80 hover:border-emerald-500/60 transition-all text-[10.5px]">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-black text-amber-300 flex items-center gap-1">
+                  <span>🪙</span>
+                  <span id="txMintTitle">Genesis Mint (عملية السك)</span>
+                </span>
+                <span class="text-[9px] bg-emerald-950 text-emerald-300 px-1.5 py-0.2 rounded-md font-bold border border-emerald-500/50">Completed ✓</span>
               </div>
-              <div class="text-right shrink-0">
-                <div class="font-black text-yellow-300">+3,500 CFT</div>
-                <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="text-[8.5px] text-sky-300 hover:underline flex items-center justify-end gap-0.5 font-bold">
-                  <span>Tonviewer</span> <span>↗</span>
-                </a>
+              <div class="text-[9px] text-slate-300 mb-1" id="txMintDesc">
+                Initial CFT Token Supply Minted &amp; Allocated on TON Blockchain
               </div>
-            </div>
+              <div class="flex items-center justify-between text-[9px] text-sky-300 font-mono">
+                <span class="truncate max-w-[200px]">Tx: bcc381cc6792edab...d74b2bf</span>
+                <span class="font-bold underline shrink-0">Verify Tx ↗</span>
+              </div>
+            </a>
 
-            <!-- Row 2 -->
-            <div class="bg-black/60 rounded-xl p-2 border border-emerald-900/80 flex items-center justify-between text-[10px]">
-              <div class="flex items-center gap-1.5 min-w-0">
-                <span class="text-xs">👤</span>
-                <div class="truncate">
-                  <div class="font-mono text-emerald-300 font-bold">EQBM...91kX</div>
-                  <div class="text-[8.5px] text-slate-400">Today, 11:05 UTC</div>
-                </div>
+            <!-- 2. Admin Revoked / Mint Closed -->
+            <a href="https://tonviewer.com/transaction/fb631d5528759273a6099128be1f7d75a6d3f4cc82055fad1564e3954321b7da" target="_blank" rel="noopener noreferrer" class="block bg-black/60 hover:bg-black/80 rounded-xl p-2.5 border border-emerald-900/80 hover:border-emerald-500/60 transition-all text-[10.5px]">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-black text-emerald-300 flex items-center gap-1">
+                  <span>🔒</span>
+                  <span id="txRevokeTitle">Mint Closed / Rug-Proof (إغلاق السك)</span>
+                </span>
+                <span class="text-[9px] bg-emerald-950 text-emerald-300 px-1.5 py-0.2 rounded-md font-bold border border-emerald-500/50">Immutable ✓</span>
               </div>
-              <div class="text-right shrink-0">
-                <div class="font-black text-yellow-300">+5,000 CFT</div>
-                <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="text-[8.5px] text-sky-300 hover:underline flex items-center justify-end gap-0.5 font-bold">
-                  <span>Tonviewer</span> <span>↗</span>
-                </a>
+              <div class="text-[9px] text-slate-300 mb-1" id="txRevokeDesc">
+                Admin Rights Revoked &amp; Minting Closed Permanently (100% Safe)
               </div>
-            </div>
-
-            <!-- Row 3 -->
-            <div class="bg-black/60 rounded-xl p-2 border border-emerald-900/80 flex items-center justify-between text-[10px]">
-              <div class="flex items-center gap-1.5 min-w-0">
-                <span class="text-xs">👤</span>
-                <div class="truncate">
-                  <div class="font-mono text-emerald-300 font-bold">UQCF...18Lm</div>
-                  <div class="text-[8.5px] text-slate-400">Yesterday, 19:40 UTC</div>
-                </div>
+              <div class="flex items-center justify-between text-[9px] text-sky-300 font-mono">
+                <span class="truncate max-w-[200px]">Tx: fb631d5528759273...321b7da</span>
+                <span class="font-bold underline shrink-0">Verify Tx ↗</span>
               </div>
-              <div class="text-right shrink-0">
-                <div class="font-black text-yellow-300">+2,200 CFT</div>
-                <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="text-[8.5px] text-sky-300 hover:underline flex items-center justify-end gap-0.5 font-bold">
-                  <span>Tonviewer</span> <span>↗</span>
-                </a>
-              </div>
-            </div>
+            </a>
           </div>
 
           <!-- Bottom Explorer Bar -->
           <div class="bg-emerald-950/70 border border-emerald-600/50 rounded-xl p-2 flex items-center justify-between text-[9.5px] relative z-10">
             <span class="text-slate-200 flex items-center gap-1">
               <span>🛡️</span>
-              <span id="payoutProofNotice">100% On-Chain Verifiable via TON Jetton Master</span>
+              <span id="contractProofNotice">100% Real On-Chain Transactions Verified on TON</span>
             </span>
-            <a href="https://tonviewer.com/EQDejQtJcXIVVIueqxZq84lyWhb-PwPd3Htb6dZg2HK7NoP-" target="_blank" rel="noopener noreferrer" class="text-yellow-300 hover:text-yellow-200 font-black underline shrink-0">
-              Explorer ↗
+            <a href="https://t.me/crazyfarmgamey" target="_blank" rel="noopener noreferrer" class="text-yellow-300 hover:text-yellow-200 font-black underline shrink-0">
+              @crazyfarmgamey ↗
             </a>
           </div>
         </div>
@@ -10915,22 +10900,30 @@
         ? '💡 يمكنك إضافة عملة CFT إلى محفظة Tonkeeper بنسخ العنوان أعلاه ولصقه في خانة البحث بالمحفظة.' 
         : '💡 You can add CFT to your Tonkeeper wallet by copying the contract address above and pasting it into your wallet search bar.';
 
-      // 8. Live Payouts & Proof Section Localization
-      const payoutProofTitle = document.getElementById('payoutProofTitle');
-      const payoutProofSubtitle = document.getElementById('payoutProofSubtitle');
-      const payoutChannelBtnText = document.getElementById('payoutChannelBtnText');
-      const payoutProofNotice = document.getElementById('payoutProofNotice');
+      // 8. On-Chain Contract Proofs Localization
+      const contractProofTitle = document.getElementById('contractProofTitle');
+      const contractProofSubtitle = document.getElementById('contractProofSubtitle');
+      const contractTonviewerBtnText = document.getElementById('contractTonviewerBtnText');
+      const contractProofNotice = document.getElementById('contractProofNotice');
+      const txMintTitle = document.getElementById('txMintTitle');
+      const txMintDesc = document.getElementById('txMintDesc');
+      const txRevokeTitle = document.getElementById('txRevokeTitle');
+      const txRevokeDesc = document.getElementById('txRevokeDesc');
 
-      if (payoutProofTitle) payoutProofTitle.innerHTML = isAr 
-        ? '<span>إثباتات السحب وعمليات البلوكتشين</span> <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ موثق On-Chain</span>' 
-        : '<span>Live TON Payouts &amp; Proof</span> <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ On-Chain</span>';
-      if (payoutProofSubtitle) payoutProofSubtitle.innerText = isAr 
-        ? 'سجل المعاملات الموثقة على بلوكتشين TON وسحوبات توكن CFT' 
-        : 'Publicly verified CFT token transactions on TON Blockchain';
-      if (payoutChannelBtnText) payoutChannelBtnText.innerText = isAr ? 'قناة الإثباتات' : 'Channel Proofs';
-      if (payoutProofNotice) payoutProofNotice.innerText = isAr 
-        ? 'معاملات موثقة ومؤكدة 100% عبر عقد CFT الرسمي' 
-        : '100% On-Chain Verifiable via TON Jetton Master';
+      if (contractProofTitle) contractProofTitle.innerHTML = isAr 
+        ? '<span>إثباتات العقد على البلوكتشين</span> <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ موثق 100%</span>' 
+        : '<span>Official On-Chain Proofs</span> <span class="text-[8.5px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/60 font-bold">✓ 100% Verified</span>';
+      if (contractProofSubtitle) contractProofSubtitle.innerText = isAr 
+        ? 'معاملات العقد الذكي غير القابلة للتغيير والموثقة على بلوكتشين TON' 
+        : 'Immutable smart contract transactions recorded on TON Blockchain';
+      if (contractTonviewerBtnText) contractTonviewerBtnText.innerText = isAr ? 'مستكشف Tonviewer' : 'Tonviewer';
+      if (contractProofNotice) contractProofNotice.innerText = isAr 
+        ? 'معاملات حقيقية 100% موثقة ومؤكدة على شبكة TON' 
+        : '100% Real On-Chain Transactions Verified on TON';
+      if (txMintTitle) txMintTitle.innerText = isAr ? 'Genesis Mint (عملية السك وتأسيس السيولة)' : 'Genesis Mint (Initial Supply)';
+      if (txMintDesc) txMintDesc.innerText = isAr ? 'تم سك معروض العملة وتوزيعه بالكامل على بلوكتشين TON' : 'Initial CFT Token Supply Minted & Allocated on TON Blockchain';
+      if (txRevokeTitle) txRevokeTitle.innerText = isAr ? 'Mint Closed / Rug-Proof (إغلاق السك والتثبيت)' : 'Mint Closed / Rug-Proof (Admin Revoked)';
+      if (txRevokeDesc) txRevokeDesc.innerText = isAr ? 'تم إغلاق السك والتنازل عن العقد للأبد لضمان الأمان 100%' : 'Admin Rights Revoked & Minting Closed Permanently (100% Safe)';
 
       try { updateWithdrawalCountdown(); } catch(e){}
       try { updateWithdrawalConditionsUI(); } catch(e){}
