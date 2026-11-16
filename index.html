@@ -3479,6 +3479,14 @@
             <span>⚡</span> <span id="pkgModalConnectPayBtnText">دفع الآن بالمحفظة المتصلة</span>
           </button>
 
+          <!-- Reassurance Note for Binance and Other Wallets -->
+          <div class="mt-2 flex items-start gap-1.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left">
+            <span class="text-xs shrink-0">💡</span>
+            <p id="pkgModalBinanceTip" class="text-[9px] text-amber-200/90 leading-tight">
+              تظهر المعاملة في بعض المحافظ (مثل Binance Web3) كـ «تفاعل مع عقد / Contract Interaction» لأن كافة محافظ شبكة TON مصممة كعقود ذكية. التحويل آمن ومباشر 100% كـ TON بدون أي شروط أو خصومات إضافية.
+            </p>
+          </div>
+
           <!-- Status / Helper notice if pending -->
           <div id="pkgModalPendingNotice" class="hidden mt-2 p-2.5 rounded-xl bg-blue-950/90 border border-blue-400/50 text-[10.5px] text-blue-200 flex flex-col gap-2">
             <div class="flex items-center gap-2 font-bold">
@@ -8292,6 +8300,13 @@
       if (memoDisplay) memoDisplay.innerText = memo;
       if (pendingNotice) pendingNotice.classList.add('hidden');
 
+      const binanceTipEl = document.getElementById('pkgModalBinanceTip');
+      if (binanceTipEl) {
+        binanceTipEl.innerText = isAr 
+          ? 'تظهر المعاملة في بعض المحافظ (مثل Binance Web3) كـ «تفاعل مع عقد / Contract Interaction» لأن كافة محافظ شبكة TON مصممة كعقود ذكية. التحويل آمن ومباشر 100% كـ TON بدون أي شروط أو خصومات إضافية.'
+          : "Some wallets (such as Binance Web3) label external payments as 'Contract Interaction' because all TON wallets are smart contracts. Your transfer is 100% safe and sends TON directly.";
+      }
+
       // Update TonConnect UI Button & Status
       if (walletStatusEl && connectPayBtnText) {
         if (tonConnectUI && tonConnectUI.connected) {
@@ -11276,6 +11291,7 @@
       const pkgModalDoneBtnText = document.getElementById('pkgModalDoneBtnText');
       const pkgModalPendingText = document.getElementById('pkgModalPendingText');
       const pkgModalOpenWalletText = document.getElementById('pkgModalOpenWalletText');
+      const pkgModalBinanceTip = document.getElementById('pkgModalBinanceTip');
 
       if (pkgModalTonConnectLabel) pkgModalTonConnectLabel.innerText = isAr ? '⚡ الدفع الفوري بالمحفظة (TonConnect):' : '⚡ Instant Wallet Payment (TonConnect):';
       if (pkgModalDirectLinksLabel) pkgModalDirectLinksLabel.innerText = isAr ? 'أو الفتح المباشر في أي محفظة (روابط سريعة):' : 'Or Open Directly in Your Wallet App:';
@@ -11286,6 +11302,9 @@
       if (pkgModalDoneBtnText) pkgModalDoneBtnText.innerText = isAr ? 'أتممت التحويل / تحقق من النقاط' : 'I Have Sent The Payment / Check Points';
       if (pkgModalPendingText) pkgModalPendingText.innerText = isAr ? 'جاري انتظار تأكيد المعاملة في تطبيق محفظتك...' : 'Waiting for confirmation in your wallet app...';
       if (pkgModalOpenWalletText) pkgModalOpenWalletText.innerText = isAr ? 'فتح تطبيق المحفظة للتأكيد' : 'Open Wallet App to Approve';
+      if (pkgModalBinanceTip) pkgModalBinanceTip.innerText = isAr 
+        ? 'تظهر المعاملة في بعض المحافظ (مثل Binance Web3) كـ «تفاعل مع عقد / Contract Interaction» لأن كافة محافظ شبكة TON مصممة كعقود ذكية. التحويل آمن ومباشر 100% كـ TON بدون أي شروط أو خصومات إضافية.' 
+        : "Some wallets (such as Binance Web3) label external payments as 'Contract Interaction' because all TON wallets are smart contracts. Your transfer is 100% safe and sends TON directly.";
 
       try { updateWithdrawalCountdown(); } catch(e){}
       try { updateWithdrawalConditionsUI(); } catch(e){}
