@@ -8104,7 +8104,7 @@
 
     function copyRefLink() {
       playSound('click');
-      const rUrl = 'https://t.me/happyfarmHFCbot?start=ref_' + getEffectiveTelegramId();
+      const rUrl = 'https://t.me/happyfarmHFCbot?startapp=ref_' + getEffectiveTelegramId();
       if (navigator.clipboard) {
         navigator.clipboard.writeText(rUrl).catch(() => {});
       }
@@ -8332,13 +8332,15 @@
       initTonConnect();
       renderInviteTasks();
       updateAvailableTasksCounter();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
 
       showWalletToast(`🎉 Claimed +${m.reward.toLocaleString()} Farm Points from ${m.target} Friends Invite Milestone!`);
     }
 
     function shareInviteLink() {
       playSound('click');
-      const refUrl = 'https://t.me/happyfarmHFCbot?start=ref_' + getEffectiveTelegramId();
+      const myId = getEffectiveTelegramId();
+      const refUrl = 'https://t.me/happyfarmHFCbot?startapp=ref_' + myId;
       const uLang = ((window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || navigator.language || '').toLowerCase());
       const isAr = uLang.startsWith('ar');
       const shareMsg = isAr
@@ -8420,6 +8422,7 @@
     function syncTasksView() {
       refreshDailyCheckInState();
       try { if (typeof syncOthersView === 'function') syncOthersView(); } catch(e){}
+      try { if (typeof refreshInvitedFriendsFromCloud === 'function') refreshInvitedFriendsFromCloud(); } catch(e){}
       // 1. Update Streak text
       const streakEl = document.getElementById('currentCheckInDay');
       if (streakEl) streakEl.innerText = checkInStreak;
@@ -12190,11 +12193,37 @@
       }
     }
 
+    async function refreshInvitedFriendsFromCloud() {
+      if (!dbClient) return;
+      const tId = getEffectiveTelegramId();
+      try {
+        const { data, error } = await dbClient
+          .from('players')
+          .select('farms_data')
+          .eq('telegram_id', tId)
+          .maybeSingle();
+
+        if (!error && data && data.farms_data) {
+          const fd = data.farms_data;
+          const cloudListCount = (Array.isArray(fd.referred_users) ? fd.referred_users.length : 0);
+          const cloudCount = Math.max(Number(fd.invited_friends_count) || 0, cloudListCount);
+          if (cloudCount > invitedFriendsCount) {
+            invitedFriendsCount = cloudCount;
+            localStorage.setItem('crazyfarm_invited_friends_count', String(invitedFriendsCount));
+            if (typeof renderInviteTasks === 'function') renderInviteTasks();
+            if (typeof updateAvailableTasksCounter === 'function') updateAvailableTasksCounter();
+          }
+        }
+      } catch(e){}
+    }
+
     async function recordReferralToCloud(inviterId, myId) {
       if (!dbClient) return;
       try {
         const inviterNum = parseInt(inviterId, 10);
-        if (!inviterNum) return;
+        const myIdNum = parseInt(myId, 10) || myId;
+        if (!inviterNum || isNaN(inviterNum)) return;
+        if (inviterNum === myIdNum || String(inviterNum) === String(myId)) return;
 
         const { data, error } = await dbClient
           .from('players')
@@ -12207,8 +12236,16 @@
           return;
         }
 
-        const currentFarms = data?.farms_data || {};
-        const newCount = ((currentFarms && currentFarms.invited_friends_count) ? Number(currentFarms.invited_friends_count) : 0) + 1;
+        const currentFarms = (data && typeof data.farms_data === 'object' && data.farms_data !== null) ? data.farms_data : {};
+        if (!Array.isArray(currentFarms.referred_users)) {
+          currentFarms.referred_users = [];
+        }
+
+        if (!currentFarms.referred_users.includes(myIdNum) && !currentFarms.referred_users.includes(String(myId))) {
+          currentFarms.referred_users.push(myIdNum);
+        }
+
+        const newCount = Math.max(Number(currentFarms.invited_friends_count) || 0, currentFarms.referred_users.length);
         currentFarms.invited_friends_count = newCount;
 
         await dbClient
@@ -12216,7 +12253,16 @@
           .update({ farms_data: currentFarms })
           .eq('telegram_id', inviterNum);
 
-        console.log('🎉 Credited referral to inviter ID:', inviterNum, 'New friends count:', newCount);
+        console.log('🎉 Successfully credited referral to inviter ID:', inviterNum, 'New friends count:', newCount);
+
+        // Instant Welcome Bonus for the new referred player
+        points += 1000;
+        try {
+          localStorage.setItem('crazyfarm_points', String(points));
+          localStorage.setItem('crazyfarm_farm_points', String(points));
+        } catch(e){}
+        updateDisplays();
+        showWalletToast('🎉 Welcome to Crazy Farm! +1,000 Points bonus for joining via invite! 🌾');
       } catch (err) {
         console.warn('Record referral error:', err);
       }
@@ -12224,18 +12270,35 @@
 
     function checkIncomingReferral() {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
         const tg = window.Telegram?.WebApp;
-        const startParam = tg?.initDataUnsafe?.start_param || urlParams.get('tgWebAppStartParam') || urlParams.get('start_param') || urlParams.get('ref') || urlParams.get('startapp');
+        let startParam = tg?.initDataUnsafe?.start_param;
 
-        if (startParam && startParam.startsWith('ref_')) {
-          const inviterId = startParam.replace('ref_', '').trim();
+        if (!startParam && window.location.search) {
+          const urlParams = new URLSearchParams(window.location.search);
+          startParam = urlParams.get('tgWebAppStartParam') || urlParams.get('start_param') || urlParams.get('startapp') || urlParams.get('ref') || urlParams.get('start');
+        }
+
+        if (!startParam && window.location.hash) {
+          try {
+            const hashStr = window.location.hash.replace(/^#/, '');
+            const hashParams = new URLSearchParams(hashStr);
+            startParam = hashParams.get('tgWebAppStartParam') || hashParams.get('start_param') || hashParams.get('startapp');
+            if (!startParam && hashParams.get('tgWebAppData')) {
+              const appData = new URLSearchParams(decodeURIComponent(hashParams.get('tgWebAppData')));
+              startParam = appData.get('start_param');
+            }
+          } catch(he){}
+        }
+
+        if (startParam) {
+          const cleanParam = String(startParam).trim();
+          const inviterId = cleanParam.replace(/^ref_/, '').trim();
           const myId = String(getEffectiveTelegramId());
           const alreadyReferred = localStorage.getItem('happyfarm_referred_by');
 
-          if (inviterId && inviterId !== myId && !alreadyReferred) {
+          if (inviterId && /^\d+$/.test(inviterId) && inviterId !== myId && !alreadyReferred) {
             localStorage.setItem('happyfarm_referred_by', inviterId);
-            console.log('🎉 New player joined via referral link from inviter:', inviterId);
+            console.log('🎉 New player joined via referral link from inviter:', inviterId, 'My ID:', myId);
             recordReferralToCloud(inviterId, myId);
           }
         }
@@ -12286,7 +12349,7 @@
         is_vip: isDogVipActive,
         farms_data: {
           watched: watchedAnimalFarms,
-          invited_friends_count: invitedFriendsCount,
+          invited_friends_count: Math.max(invitedFriendsCount, Number(localStorage.getItem('crazyfarm_invited_friends_count')) || 0),
           bee_mined: beeMinedPoints,
           bee_last_collect: lastBeeCollectTimestamp,
           crazy_box_free: lastCrazyBoxFreeTimestamp,
