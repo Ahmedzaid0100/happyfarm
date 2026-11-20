@@ -116,8 +116,46 @@ def is_arabic_user(lang_code):
         return False
     return str(lang_code).lower().startswith("ar")
 
-def send_welcome_message(chat_id, first_name, username, lang_code=None):
+def record_referral_in_supabase(inviter_id, new_user_id):
+    """Credits referral in Supabase when a player starts the bot with a referral parameter."""
+    if not inviter_id or not new_user_id:
+        return
+    try:
+        inviter_num = int(str(inviter_id).replace("ref_", "").strip())
+        new_id_num = int(new_user_id)
+        if inviter_num == new_id_num:
+            return
+
+        url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}&select=farms_data"
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}"
+        }
+        resp = session.get(url, headers=headers, timeout=12) if USE_REQUESTS and session else None
+        if resp and resp.status_code == 200:
+            rows = resp.json()
+            if rows:
+                fd = rows[0].get("farms_data") or {}
+                referred = fd.get("referred_users") or []
+                if new_id_num not in referred and str(new_id_num) not in referred:
+                    referred.append(new_id_num)
+                fd["referred_users"] = referred
+                fd["invited_friends_count"] = max(int(fd.get("invited_friends_count", 0)), len(referred))
+
+                patch_url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}"
+                patch_headers = {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_KEY}",
+                    "Content-Type": "application/json"
+                }
+                session.patch(patch_url, headers=patch_headers, json={"farms_data": fd}, timeout=12)
+                print(f"🎉 [Bot] Recorded referral: Inviter {inviter_num} now has {fd['invited_friends_count']} friends (Referred by: {new_id_num})")
+    except Exception as e:
+        print(f"[Bot] Error recording referral: {e}")
+
+def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=None):
     is_ar = is_arabic_user(lang_code)
+    app_url = f"{WEBAPP_URL}?tgWebAppStartParam=ref_{ref_id}" if ref_id else WEBAPP_URL
 
     if is_ar:
         welcome_text = (
@@ -127,7 +165,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None):
             "• 🐝 <b>مزرعة النحل:</b> تعدين مجاني فوري لنقاط FARM وتطوير مستواك.\n"
             "• 🐶 <b>سباق الجري RUN 3D:</b> تفادي العوائق واكسب مكافآت ونقاط فورية!\n"
             "• ⚔️ <b>حلبة قتال الحيوانات PVP:</b> معارك تكتيكية (3v3 و 5v5 و 7v7) وجوائز كبرى.\n"
-            "• 🚀 <b>معززات الإعلانات اليومية:</b> أكمل 3 إعلانات واكسب +3,000 نقطة وعملات CFT يومياً!\n"
+            "• 🚀 <b>معززات الإعلانات اليومية:</b> أكمل 3 إعلانات واكسب +10,000 نقطة وعملات CFT يومياً!\n"
             "• 💎 <b>إيردروب TON:</b> اربط محفظتك لتأكيد حصتك من عملات CFC في حدث التوزيع (TGE).\n\n"
             f"📢 <b>قناتنا الرسمية:</b> انضم لمتابعة التحديثات والجوائز:\n👉 {CHANNEL_URL}\n\n"
             "👇 <b>اضغط على الزر أدناه لبدء اللعب الآن مباشرة:</b>"
@@ -137,7 +175,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None):
                 [
                     {
                         "text": "🎮 العب الآن | Play Crazy Farm",
-                        "web_app": {"url": WEBAPP_URL}
+                        "web_app": {"url": app_url}
                     }
                 ],
                 [
@@ -166,7 +204,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None):
             "• 🐝 <b>Bee Farm:</b> Free automatic mining of Farm Points & hive upgrades.\n"
             "• 🐶 <b>3D RUN Sprint:</b> Dodge obstacles, collect rewards & sprint to victory!\n"
             "• ⚔️ <b>PVP Animal Arena:</b> Tactical squad battles (3v3, 5v5, 7v7) with big prizes.\n"
-            "• 🚀 <b>Daily Mega Boosters:</b> Complete 3-ad chains to claim +3,000 Pts & CFT coins daily!\n"
+            "• 🚀 <b>Daily Mega Boosters:</b> Complete 3-ad chains to claim +10,000 Pts & CFT coins daily!\n"
             "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFC tokens at TGE.\n\n"
             f"📢 <b>Official Channel:</b> Join for announcements & airdrop updates:\n👉 {CHANNEL_URL}\n\n"
             "👇 <b>Tap the button below to start playing:</b>"
@@ -176,7 +214,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None):
                 [
                     {
                         "text": "🎮 Play Crazy Farm",
-                        "web_app": {"url": WEBAPP_URL}
+                        "web_app": {"url": app_url}
                     }
                 ],
                 [
@@ -443,7 +481,15 @@ def run_bot_polling():
 
                         if text.startswith("/start"):
                             print(f"📥 /start from: {first_name} (@{username}, Lang: {lang_code}, ID: {user.get('id')})")
-                            send_welcome_message(chat_id, first_name, username, lang_code)
+                            parts = text.split()
+                            ref_id = None
+                            if len(parts) > 1:
+                                raw_ref = parts[1].strip()
+                                clean_ref = raw_ref.replace("ref_", "").strip()
+                                if clean_ref.isdigit():
+                                    ref_id = clean_ref
+                                    record_referral_in_supabase(ref_id, user.get("id"))
+                            send_welcome_message(chat_id, first_name, username, lang_code, ref_id)
 
                     # Handle Callback Queries
                     elif "callback_query" in update:
