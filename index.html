@@ -4526,6 +4526,9 @@
     }
 
     function claimDailyMission(missionId) {
+      if (!ActionLock.run('daily_mission_' + missionId, 1200, () => _doClaimDailyMission(missionId))) return;
+    }
+    function _doClaimDailyMission(missionId) {
       if (!dailyActivityState) initDailyActivity();
       const mission = DAILY_ACTIVITY_CONFIG.missions.find(m => m.id === missionId);
       if (!mission) return;
@@ -4673,9 +4676,32 @@
       const chest = DAILY_ACTIVITY_CONFIG.chests.find(c => c.id === chestId);
       if (!chest) return;
 
+      // Anti-Cheat Check 1: Already claimed?
+      if (dailyActivityState.claimedChests && dailyActivityState.claimedChests[chestId]) {
+        console.warn('🛡️ [Anti-Cheat] Chest already claimed today:', chestId);
+        return;
+      }
+
+      // Anti-Cheat Check 2: Are activity points sufficient?
+      const earnedPts = calculateEarnedActivityPoints();
+      if (earnedPts < chest.pts) {
+        console.warn('🛡️ [Anti-Cheat] Chest requirement not met! Required:', chest.pts, 'Current:', earnedPts);
+        return;
+      }
+
+      // Anti-Cheat Check 3: ActionLock protection
+      if (!ActionLock.run('chest_claim_' + chestId, 2000, () => _doDeliverChestReward(chest, chestId, isTriple))) return;
+    }
+
+    function _doDeliverChestReward(chest, chestId, isTriple) {
       const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
       const ptsReward = isTriple ? (chest.rewardPts * 3) : chest.rewardPts;
       const cftReward = isTriple ? (chest.rewardCft * 3) : chest.rewardCft;
+
+      // Mark claimed FIRST before adding balance to eliminate race condition
+      if (!dailyActivityState.claimedChests) dailyActivityState.claimedChests = {};
+      dailyActivityState.claimedChests[chestId] = true;
+      saveDailyActivityState();
 
       points += ptsReward;
       try {
@@ -4691,10 +4717,6 @@
           localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
         } catch(e){}
       }
-
-      if (!dailyActivityState.claimedChests) dailyActivityState.claimedChests = {};
-      dailyActivityState.claimedChests[chestId] = true;
-      saveDailyActivityState();
 
       closeChestRewardModal();
       playSound('fanfare');
@@ -10622,9 +10644,9 @@
     }
     function _doWatchMoreCollectWithAd() {
       hideWatchMoreCollectModal();
-      if (otherAdsWatched >= 5) return;
-      const baseReward = adPointRewards[otherAdsWatched];
-      const boostReward = adTripleRewards[otherAdsWatched] || (baseReward * 3);
+      if (otherAdsWatched >= 5 || otherAdsWatched < 0) return;
+      const baseReward = Number(adPointRewards[otherAdsWatched]) || 200;
+      const boostReward = Number(adTripleRewards[otherAdsWatched]) || (baseReward * 3);
       const isStep5 = (otherAdsWatched === 4);
 
       showUniversalAd(() => {
@@ -10661,9 +10683,9 @@
     }
     function _doWatchMoreCollectFree() {
       hideWatchMoreCollectModal();
-      if (otherAdsWatched >= 5) return;
+      if (otherAdsWatched >= 5 || otherAdsWatched < 0) return;
       playSound('click');
-      const baseReward = adPointRewards[otherAdsWatched];
+      const baseReward = Number(adPointRewards[otherAdsWatched]) || 200;
       const isStep5 = (otherAdsWatched === 4);
 
       points += baseReward;
@@ -11134,13 +11156,24 @@
       if (!ActionLock.run('pts_booster_claim', 1500, () => _doClaimAdsPointsBoosterReward())) return;
     }
     function _doClaimAdsPointsBoosterReward() {
+      if (isAdsPointsBoosterClaimedToday()) {
+        console.warn('🛡️ [Anti-Cheat] Points booster already claimed today');
+        return;
+      }
+      const curStep = sanitizeNumber(localStorage.getItem('crazyfarm_ads_points_step'), 0, 0, 3);
+      if (curStep < 3) {
+        console.warn('🛡️ [Anti-Cheat] Points booster step requirement not met:', curStep);
+        return;
+      }
+      // Set claimed state immediately before reward mutation
+      adsPointsBoosterStep = 3;
+      localStorage.setItem('crazyfarm_ads_points_step', '3');
+      localStorage.setItem('crazyfarm_ads_points_day', getBoosterTodayStr());
+
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       points += 10000;
-      adsPointsBoosterStep = 3;
       localStorage.setItem('crazyfarm_points', String(points));
-      localStorage.setItem('crazyfarm_ads_points_step', '3');
-      localStorage.setItem('crazyfarm_ads_points_day', getBoosterTodayStr());
       updateDisplays();
       updateAdsPointsBoosterUI();
       queueCloudSave();
@@ -11282,17 +11315,28 @@
       if (!ActionLock.run('cft_booster_claim', 1500, () => _doClaimAdsCftBoosterReward())) return;
     }
     function _doClaimAdsCftBoosterReward() {
+      if (isAdsCftBoosterClaimedToday()) {
+        console.warn('🛡️ [Anti-Cheat] CFT booster already claimed today');
+        return;
+      }
+      const curStep = sanitizeNumber(localStorage.getItem('crazyfarm_ads_cft_step'), 0, 0, 3);
+      if (curStep < 3) {
+        console.warn('🛡️ [Anti-Cheat] CFT booster step requirement not met:', curStep);
+        return;
+      }
+      // Set claimed state immediately before reward mutation
+      adsCftBoosterStep = 3;
+      localStorage.setItem('crazyfarm_ads_cft_step', '3');
+      localStorage.setItem('crazyfarm_ads_cft_day', getBoosterTodayStr());
+
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       points += 10000;
       cftBalance += 3;
       hfcBalance = Math.floor(cftBalance);
-      adsCftBoosterStep = 3;
       localStorage.setItem('crazyfarm_points', String(points));
       localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
       localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
-      localStorage.setItem('crazyfarm_ads_cft_step', '3');
-      localStorage.setItem('crazyfarm_ads_cft_day', getBoosterTodayStr());
       updateDisplays();
       syncWalletView();
       updateAdsCftBoosterUI();
