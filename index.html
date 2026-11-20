@@ -373,6 +373,17 @@
           </div>
 
           <!-- ==================== SIDE HOTSPOTS ==================== -->
+          <!-- 4a. Daily Activity Hotspot (Directly Above Battles - Enlarged & Lowered) -->
+          <div id="homeDailyActivityBtn" onclick="openDailyActivityModal()" class="absolute z-20 cursor-pointer flex flex-col items-center justify-center active:scale-90 transition-transform" style="left: 3.0%; top: 7.8%; width: 20.0%; height: 12.0%;" title="Daily Quests & Activity">
+            <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 p-0.5 shadow-[0_4px_16px_rgba(0,0,0,0.6)] border-2 border-yellow-200 flex items-center justify-center animate-pulse">
+              <div class="w-full h-full rounded-full bg-[#351a06]/95 flex flex-col items-center justify-center shadow-inner">
+                <span class="text-2xl sm:text-3xl filter drop-shadow">&#128203;</span>
+                <span class="text-[8.5px] font-black text-yellow-300 uppercase tracking-tight leading-none mt-0.5 drop-shadow">QUESTS</span>
+              </div>
+              <span id="dailyActivityBadge" class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-amber-600 text-white font-black text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full border border-white shadow-md">0/5</span>
+            </div>
+          </div>
+
           <!-- 4. Battles Hotspot (Left Top Swords Ring) -->
           <div onclick="openBattlesModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 3.5%; top: 17.5%; width: 18.5%; height: 11.0%;" title="Farm Battles Arena"></div>
 
@@ -2009,6 +2020,132 @@
     <div id="coinAnimationContainer" class="fixed inset-0 pointer-events-none z-50"></div>
 
     <!-- ==================== MODALS ==================== -->
+
+    <!-- ==================== DAILY ACTIVITY / QUESTS MODAL ==================== -->
+    <div id="dailyActivityModal" onclick="if(event.target === this) closeDailyActivityModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4 select-none pointer-events-none">
+      <div class="relative w-full max-w-sm sm:max-w-md wood-board border-2 border-amber-500/90 rounded-3xl p-3 sm:p-4 shadow-2xl text-white animate-in fade-in zoom-in duration-200 pointer-events-auto flex flex-col max-h-[92vh] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-2 border-b border-amber-800/80 mb-2.5 shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl animate-bounce">&#128203;</span>
+            <div>
+              <h3 id="dailyQuestsModalTitle" class="text-sm sm:text-base font-black text-yellow-300 uppercase tracking-wide leading-none drop-shadow" style="font-family: 'Fredoka', cursive;">
+                Daily Quests &amp; Activity
+              </h3>
+              <div class="flex items-center gap-1 mt-0.5">
+                <span id="dailyQuestTimerLabel" class="text-[9.5px] text-amber-200/90 font-bold">&#9203; Resets in:</span>
+                <span id="dailyQuestCountdownTimer" class="text-[9.5px] font-black text-lime-400 font-mono tracking-wider">00:00:00</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" onclick="closeDailyActivityModal()" class="w-8 h-8 rounded-full bg-red-600/90 hover:bg-red-500 text-white font-black text-sm flex items-center justify-center border border-white/60 active:scale-90 transition-transform cursor-pointer shadow">&#10005;</button>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="overflow-y-auto space-y-3 pr-0.5 custom-scrollbar" style="max-height: calc(92vh - 80px);">
+          
+          <!-- 1. Milestone Progress Section (5 Chests) -->
+          <div class="bg-black/45 border border-amber-600/70 rounded-2xl p-2.5 sm:p-3 shadow-inner relative">
+            <div class="flex items-center justify-between mb-2 px-1">
+              <span id="dailyActivityPointsTitle" class="text-[11px] font-black text-amber-200 uppercase tracking-wide flex items-center gap-1">
+                <span>&#11088;</span> Daily Activity Points
+              </span>
+              <span class="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-[11px] px-2.5 py-0.5 rounded-full shadow">
+                <span id="dailyActivityPtsDisplay">0</span> / 100 &#11088;
+              </span>
+            </div>
+
+            <!-- Progress Bar with Milestone Chests -->
+            <div class="relative w-full pt-8 pb-3 px-2">
+              <!-- Background Bar Track -->
+              <div class="w-full h-3.5 bg-black/70 rounded-full border border-amber-800/80 overflow-hidden relative shadow-inner">
+                <div id="dailyActivityBarFill" class="h-full bg-gradient-to-r from-yellow-500 via-amber-400 to-lime-400 rounded-full transition-all duration-500 shadow-md" style="width: 0%;"></div>
+              </div>
+
+              <!-- 5 Chest Nodes along the Track -->
+              <!-- Chest 1: 20 pts -->
+              <div id="chestNode-1" onclick="handleChestClick(1)" class="absolute top-1 flex flex-col items-center cursor-pointer transition-transform" style="left: 20%; transform: translateX(-50%);">
+                <div id="chestIcon-1" class="text-xl sm:text-2xl filter drop-shadow hover:scale-110 active:scale-95 transition-transform">&#129685;</div>
+                <span id="chestPts-1" class="text-[8.5px] font-black text-amber-300 bg-amber-950/90 border border-amber-600/70 rounded-full px-1.5 py-0.2 mt-0.5">20</span>
+              </div>
+
+              <!-- Chest 2: 40 pts -->
+              <div id="chestNode-2" onclick="handleChestClick(2)" class="absolute top-1 flex flex-col items-center cursor-pointer transition-transform" style="left: 40%; transform: translateX(-50%);">
+                <div id="chestIcon-2" class="text-xl sm:text-2xl filter drop-shadow hover:scale-110 active:scale-95 transition-transform">&#129352;</div>
+                <span id="chestPts-2" class="text-[8.5px] font-black text-amber-300 bg-amber-950/90 border border-amber-600/70 rounded-full px-1.5 py-0.2 mt-0.5">40</span>
+              </div>
+
+              <!-- Chest 3: 60 pts -->
+              <div id="chestNode-3" onclick="handleChestClick(3)" class="absolute top-1 flex flex-col items-center cursor-pointer transition-transform" style="left: 60%; transform: translateX(-50%);">
+                <div id="chestIcon-3" class="text-xl sm:text-2xl filter drop-shadow hover:scale-110 active:scale-95 transition-transform">&#129351;</div>
+                <span id="chestPts-3" class="text-[8.5px] font-black text-amber-300 bg-amber-950/90 border border-amber-600/70 rounded-full px-1.5 py-0.2 mt-0.5">60</span>
+              </div>
+
+              <!-- Chest 4: 80 pts -->
+              <div id="chestNode-4" onclick="handleChestClick(4)" class="absolute top-1 flex flex-col items-center cursor-pointer transition-transform" style="left: 80%; transform: translateX(-50%);">
+                <div id="chestIcon-4" class="text-xl sm:text-2xl filter drop-shadow hover:scale-110 active:scale-95 transition-transform">&#128142;</div>
+                <span id="chestPts-4" class="text-[8.5px] font-black text-amber-300 bg-amber-950/90 border border-amber-600/70 rounded-full px-1.5 py-0.2 mt-0.5">80</span>
+              </div>
+
+              <!-- Chest 5: 100 pts (Grand) -->
+              <div id="chestNode-5" onclick="handleChestClick(5)" class="absolute top-1 flex flex-col items-center cursor-pointer transition-transform" style="left: 97%; transform: translateX(-50%);">
+                <div id="chestIcon-5" class="text-2xl sm:text-3xl filter drop-shadow hover:scale-110 active:scale-95 transition-transform">&#128081;</div>
+                <span id="chestPts-5" class="text-[8.5px] font-black text-yellow-300 bg-amber-950/90 border border-yellow-400 rounded-full px-1.5 py-0.2 mt-0.5">100</span>
+              </div>
+            </div>
+
+            <!-- Hint text -->
+            <div id="dailyQuestsHintText" class="text-center text-[10px] text-amber-200/80 font-semibold mt-1">
+              &#128161; Reach milestones to unlock chests &amp; claim 3X rewards! &#10024;
+            </div>
+          </div>
+
+          <!-- 2. Missions Checklist -->
+          <div class="space-y-2" id="dailyMissionsListContainer">
+            <!-- Rendered dynamically by renderDailyMissionsList() -->
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CHEST REWARD CLAIM MODAL (WITH 3X AD MULTIPLIER) ==================== -->
+    <div id="chestRewardModal" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 select-none pointer-events-none">
+      <div class="relative w-full max-w-xs sm:max-w-sm wood-board border-2 border-yellow-400 rounded-3xl p-4 shadow-2xl text-white animate-in zoom-in duration-200 pointer-events-auto text-center">
+        
+        <!-- Big Animated Chest Icon -->
+        <div id="chestRewardEmoji" class="text-6xl my-2 filter drop-shadow animate-bounce">&#127873;</div>
+        
+        <h3 id="chestRewardTitle" class="text-lg font-black text-yellow-300 uppercase tracking-wide drop-shadow" style="font-family: 'Fredoka', cursive;">
+          Chest Unlocked!
+        </h3>
+        <p id="chestRewardSubTitle" class="text-[11px] text-amber-200 font-bold mb-3">Choose how to claim your daily reward:</p>
+
+        <!-- Reward Details Box -->
+        <div class="bg-black/50 border border-amber-600/80 rounded-2xl p-3 mb-3">
+          <div id="chestRewardBaseLabel" class="text-[10.5px] text-amber-300 font-bold">Base Reward:</div>
+          <div id="chestRewardBaseText" class="text-lg font-black text-yellow-200 mt-0.5 drop-shadow">+2,000 &#127806;</div>
+          <div id="chestRewardCftText" class="text-xs font-black text-lime-300 mt-0.5 hidden">+1 CFT &#128142;</div>
+        </div>
+
+        <!-- 3X AD Multiplier Action Button -->
+        <button type="button" onclick="claimChestRewardWithAd()" class="btn-3d-yellow w-full py-3 rounded-2xl text-amber-950 font-black text-xs sm:text-sm flex flex-col items-center justify-center gap-0.5 shadow-xl active:scale-95 transition-transform cursor-pointer border border-yellow-200 animate-pulse mb-2">
+          <span id="chestReward3xBtnHeader" class="flex items-center gap-1.5 uppercase tracking-wide">
+            <span>&#127916;</span> Watch Ad for 3X Boost!
+          </span>
+          <span id="chestReward3xText" class="text-[11px] font-extrabold text-amber-900 leading-tight">
+            Claim +6,000 &#127806;
+          </span>
+        </button>
+
+        <!-- Normal Claim Button -->
+        <button id="chestRewardNormalBtn" type="button" onclick="claimChestRewardNormal()" class="w-full py-2 rounded-xl bg-black/40 hover:bg-black/60 text-amber-300/80 font-bold text-xs border border-amber-800/60 active:scale-95 transition-all cursor-pointer">
+          Claim Normal (No Ad)
+        </button>
+
+      </div>
+    </div>
 
     <!-- ==================== HOME BATTLES SELECTION MODAL ==================== -->
     <div id="homeBattlesModal" onclick="if(event.target === this) closeBattlesModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
@@ -4236,6 +4373,7 @@
     function startSprintFromBanner() {
       playSound('click');
       closeModal('runPrepModal');
+      if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('sprint', 1);
       startRunSprintGame();
     }
 
@@ -4273,6 +4411,508 @@
       if (m) {
         m.classList.add('hidden', 'pointer-events-none');
         m.style.display = 'none';
+      }
+    }
+
+    // ==================== DAILY ACTIVITY & 5 CHESTS SYSTEM (BILINGUAL EN/AR) ====================
+    const DAILY_ACTIVITY_CONFIG = {
+      chests: [
+        { id: 1, pts: 20, rewardPts: 2000, rewardCft: 0, nameEn: 'Bronze Chest 🪵', nameAr: 'الصندوق البرونزي 🪵', emoji: '🪵' },
+        { id: 2, pts: 40, rewardPts: 4000, rewardCft: 0, nameEn: 'Silver Chest 🥈', nameAr: 'الصندوق الفضي 🥈', emoji: '🥈' },
+        { id: 3, pts: 60, rewardPts: 6000, rewardCft: 0, nameEn: 'Gold Chest 🥇', nameAr: 'الصندوق الذهبي 🥇', emoji: '🥇' },
+        { id: 4, pts: 80, rewardPts: 8000, rewardCft: 0, nameEn: 'Diamond Chest 💎', nameAr: 'الصندوق الماسي 💎', emoji: '💎' },
+        { id: 5, pts: 100, rewardPts: 10000, rewardCft: 1, nameEn: 'Apex Grand Chest 👑', nameAr: 'الصندوق الأسطوري الخارق 👑', emoji: '👑' }
+      ],
+      missions: [
+        { id: 'login', icon: '📅', titleEn: 'Daily Check-in', titleAr: 'تسجيل الدخول اليومي', descEn: 'Log in to your farm today', descAr: 'افتح اللعبة وسجل دخولك اليوم', target: 1, actPts: 10, rewardPts: 500, actionType: 'login' },
+        { id: 'ads', icon: '🎬', titleEn: 'Super Ad Supporter', titleAr: 'داعم المزرعة السوبر', descEn: 'Watch 3 ads to support the farm', descAr: 'شاهد 3 إعلانات لدعم وتطوير المزرعة', target: 3, actPts: 30, rewardPts: 2000, actionType: 'ad' },
+        { id: 'harvest', icon: '🌾', titleEn: 'Active Harvester', titleAr: 'المزارع النشط', descEn: 'Harvest any 3 animal farms', descAr: 'احصد من أي 3 حظائر حيوانات', target: 3, actPts: 20, rewardPts: 800, actionType: 'harvest' },
+        { id: 'wheel', icon: '🎡', titleEn: 'Fortune Spin', titleAr: 'عجلة الحظ', descEn: 'Spin the Fortune Wheel once', descAr: 'قم بتدوير عجلة الحظ مرة واحدة', target: 1, actPts: 15, rewardPts: 600, actionType: 'wheel' },
+        { id: 'battle', icon: '⚔️', titleEn: 'Arena Champion', titleAr: 'بطل المعارك', descEn: 'Fight 1 battle in 3D Arena', descAr: 'خض معركة واحدة في حلبة 3D Battle', target: 1, actPts: 15, rewardPts: 800, actionType: 'battle' },
+        { id: 'sprint', icon: '🏃', titleEn: '15s Run Rush', titleAr: 'سباق الركض السريع', descEn: 'Play 1 round of 15s Run Sprint', descAr: 'العب جولة واحدة في سباق 15s Run Sprint', target: 1, actPts: 10, rewardPts: 500, actionType: 'sprint' }
+      ]
+    };
+
+    let dailyActivityState = null;
+    let currentPendingChestId = null;
+    let dailyQuestCountdownInterval = null;
+
+    function getTodayUtcDateStr() {
+      try {
+        return new Date().toISOString().slice(0, 10);
+      } catch(e) {
+        return '2026-11-20';
+      }
+    }
+
+    function initDailyActivity() {
+      const today = getTodayUtcDateStr();
+      try {
+        const raw = localStorage.getItem('crazyfarm_daily_activity_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.date === today) {
+            dailyActivityState = parsed;
+          }
+        }
+      } catch(e){}
+
+      if (!dailyActivityState || dailyActivityState.date !== today) {
+        dailyActivityState = {
+          date: today,
+          progress: {
+            login: 1, // automatic on launch
+            ads: 0,
+            harvest: 0,
+            wheel: 0,
+            battle: 0,
+            sprint: 0
+          },
+          claimedMissions: {},
+          claimedChests: {}
+        };
+        saveDailyActivityState();
+      } else {
+        if (!dailyActivityState.progress) {
+          dailyActivityState.progress = { login: 1, ads: 0, harvest: 0, wheel: 0, battle: 0, sprint: 0 };
+        }
+        if (!dailyActivityState.progress.login) {
+          dailyActivityState.progress.login = 1;
+          saveDailyActivityState();
+        }
+      }
+
+      startDailyQuestCountdown();
+      updateDailyActivityUI();
+    }
+
+    function saveDailyActivityState() {
+      if (!dailyActivityState) return;
+      try {
+        localStorage.setItem('crazyfarm_daily_activity_v1', JSON.stringify(dailyActivityState));
+      } catch(e){}
+    }
+
+    function calculateEarnedActivityPoints() {
+      if (!dailyActivityState) return 0;
+      let total = 0;
+      DAILY_ACTIVITY_CONFIG.missions.forEach(m => {
+        if (dailyActivityState.claimedMissions && dailyActivityState.claimedMissions[m.id]) {
+          total += m.actPts;
+        }
+      });
+      return Math.min(100, total);
+    }
+
+    function recordDailyActivityProgress(type, amount = 1) {
+      if (!dailyActivityState) initDailyActivity();
+      if (!dailyActivityState || !dailyActivityState.progress) return;
+
+      const mission = DAILY_ACTIVITY_CONFIG.missions.find(m => m.id === type);
+      if (!mission) return;
+
+      const cur = Number(dailyActivityState.progress[type]) || 0;
+      if (cur < mission.target) {
+        dailyActivityState.progress[type] = Math.min(mission.target, cur + amount);
+        saveDailyActivityState();
+        updateDailyActivityUI();
+        if (dailyActivityState.progress[type] >= mission.target) {
+          const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+          const toastMsg = isAr ? ('📋 اكتملت مهمة: ' + mission.titleAr + '! ادخل واستلم مكافأتك 🎁') : ('📋 Mission completed: ' + mission.titleEn + '! Claim your reward 🎁');
+          showWalletToast(toastMsg);
+          try { playSound('chime'); } catch(e){}
+        }
+      }
+    }
+
+    function claimDailyMission(missionId) {
+      if (!dailyActivityState) initDailyActivity();
+      const mission = DAILY_ACTIVITY_CONFIG.missions.find(m => m.id === missionId);
+      if (!mission) return;
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const cur = Number(dailyActivityState.progress[missionId]) || 0;
+      if (cur < mission.target) {
+        showWalletToast(isAr ? '⚠️ لم تكتمل المهمة بعد! أتمم الشرط أولاً.' : '⚠️ Quest incomplete! Finish the objective first.');
+        return;
+      }
+      if (dailyActivityState.claimedMissions && dailyActivityState.claimedMissions[missionId]) {
+        showWalletToast(isAr ? '✅ تم استلام مكافأة هذه المهمة بالفعل اليوم!' : '✅ Already claimed today!');
+        return;
+      }
+
+      if (!dailyActivityState.claimedMissions) dailyActivityState.claimedMissions = {};
+      dailyActivityState.claimedMissions[missionId] = true;
+      saveDailyActivityState();
+
+      points += mission.rewardPts;
+      try {
+        localStorage.setItem('crazyfarm_points', points);
+        localStorage.setItem('crazyfarm_farm_points', points);
+      } catch(e){}
+
+      playSound('coin');
+      const toastSuccess = isAr 
+        ? ('🎉 استلمت +' + mission.rewardPts.toLocaleString() + ' 🌾 و +' + mission.actPts + ' نقطة نشاط ⭐!')
+        : ('🎉 Claimed +' + mission.rewardPts.toLocaleString() + ' 🌾 & +' + mission.actPts + ' Activity Points ⭐!');
+      showWalletToast(toastSuccess);
+      
+      updateDisplays();
+      updateDailyActivityUI();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+    }
+
+    function handleChestClick(chestId) {
+      if (!dailyActivityState) initDailyActivity();
+      const chest = DAILY_ACTIVITY_CONFIG.chests.find(c => c.id === chestId);
+      if (!chest) return;
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const earnedPts = calculateEarnedActivityPoints();
+      const isClaimed = !!(dailyActivityState.claimedChests && dailyActivityState.claimedChests[chestId]);
+
+      if (isClaimed) {
+        playSound('click');
+        showWalletToast(isAr ? ('✅ تم فتح واستلام مكافأة ' + chest.nameAr + ' اليوم بالفعل!') : ('✅ ' + chest.nameEn + ' already claimed today!'));
+        return;
+      }
+
+      if (earnedPts < chest.pts) {
+        playSound('click');
+        showWalletToast(isAr ? ('🔒 يتطلب ' + chest.pts + ' نقطة نشاط لفتحه! (لديك الآن ' + earnedPts + ' ⭐)') : ('🔒 Requires ' + chest.pts + ' Activity Points! (You have ' + earnedPts + ' ⭐)'));
+        return;
+      }
+
+      openChestRewardModal(chestId);
+    }
+
+    function openChestRewardModal(chestId) {
+      const chest = DAILY_ACTIVITY_CONFIG.chests.find(c => c.id === chestId);
+      if (!chest) return;
+
+      currentPendingChestId = chestId;
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+
+      const modal = document.getElementById('chestRewardModal');
+      const emojiEl = document.getElementById('chestRewardEmoji');
+      const titleEl = document.getElementById('chestRewardTitle');
+      const subTitleEl = document.getElementById('chestRewardSubTitle');
+      const baseLabelEl = document.getElementById('chestRewardBaseLabel');
+      const baseText = document.getElementById('chestRewardBaseText');
+      const cftText = document.getElementById('chestRewardCftText');
+      const tripleHeaderEl = document.getElementById('chestReward3xBtnHeader');
+      const tripleText = document.getElementById('chestReward3xText');
+      const normalBtn = document.getElementById('chestRewardNormalBtn');
+
+      if (emojiEl) emojiEl.innerText = chest.emoji || '🎁';
+      if (titleEl) titleEl.innerText = isAr ? ('مبروك! فتحت ' + chest.nameAr) : ('Congrats! Unlocked ' + chest.nameEn);
+      if (subTitleEl) subTitleEl.innerText = isAr ? 'اختر طريقة استلام مكافأتك اليومية:' : 'Choose how to claim your daily reward:';
+      if (baseLabelEl) baseLabelEl.innerText = isAr ? 'المكافأة الأساسية:' : 'Base Reward:';
+      if (baseText) baseText.innerText = '+' + chest.rewardPts.toLocaleString() + ' 🌾';
+
+      if (cftText) {
+        if (chest.rewardCft > 0) {
+          cftText.innerText = '+' + chest.rewardCft + ' CFT 💎';
+          cftText.classList.remove('hidden');
+        } else {
+          cftText.classList.add('hidden');
+        }
+      }
+
+      if (tripleHeaderEl) {
+        tripleHeaderEl.innerHTML = isAr ? '<span>🎬</span> شاهد إعلان لمضاعفة 3X!' : '<span>🎬</span> Watch Ad for 3X Boost!';
+      }
+
+      if (tripleText) {
+        const triplePts = (chest.rewardPts * 3).toLocaleString();
+        const tripleCft = chest.rewardCft > 0 ? (' & +' + (chest.rewardCft * 3) + ' CFT 💎') : '';
+        tripleText.innerText = isAr ? ('احصل على +' + triplePts + ' 🌾' + tripleCft) : ('Claim +' + triplePts + ' 🌾' + tripleCft);
+      }
+
+      if (normalBtn) {
+        normalBtn.innerText = isAr ? 'استلام عادي بدون إعلان' : 'Claim Normal (No Ad)';
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden', 'pointer-events-none');
+        modal.style.display = 'flex';
+        playSound('fanfare');
+        try { triggerHaptic('success'); } catch(e){}
+      }
+    }
+
+    function closeChestRewardModal() {
+      const modal = document.getElementById('chestRewardModal');
+      if (modal) {
+        modal.classList.add('hidden', 'pointer-events-none');
+        modal.style.display = 'none';
+      }
+      currentPendingChestId = null;
+    }
+
+    function claimChestRewardNormal() {
+      if (!currentPendingChestId) return;
+      deliverChestReward(currentPendingChestId, false);
+    }
+
+    function claimChestRewardWithAd() {
+      if (!currentPendingChestId) return;
+      const cid = currentPendingChestId;
+      playSound('click');
+      if (typeof showUniversalAd === 'function') {
+        showUniversalAd(() => {
+          deliverChestReward(cid, true);
+        }, 'Daily Chest 3x Multiplier Boost');
+      } else {
+        deliverChestReward(cid, true);
+      }
+    }
+
+    function deliverChestReward(chestId, isTriple = false) {
+      if (!dailyActivityState) initDailyActivity();
+      const chest = DAILY_ACTIVITY_CONFIG.chests.find(c => c.id === chestId);
+      if (!chest) return;
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const ptsReward = isTriple ? (chest.rewardPts * 3) : chest.rewardPts;
+      const cftReward = isTriple ? (chest.rewardCft * 3) : chest.rewardCft;
+
+      points += ptsReward;
+      try {
+        localStorage.setItem('crazyfarm_points', points);
+        localStorage.setItem('crazyfarm_farm_points', points);
+      } catch(e){}
+
+      if (cftReward > 0) {
+        cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + cftReward;
+        hfcBalance = Math.floor(cftBalance);
+        try {
+          localStorage.setItem('crazyfarm_cft_balance', cftBalance);
+          localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
+        } catch(e){}
+      }
+
+      if (!dailyActivityState.claimedChests) dailyActivityState.claimedChests = {};
+      dailyActivityState.claimedChests[chestId] = true;
+      saveDailyActivityState();
+
+      closeChestRewardModal();
+      playSound('fanfare');
+      try { triggerHaptic('heavy'); } catch(e){}
+
+      const cftMsg = cftReward > 0 ? (' & +' + cftReward + ' CFT 💎') : '';
+      const boostMsg = isTriple ? (isAr ? ' (مضاعفة 3X فائقة! 🔥)' : ' (3X Ultra Boost! 🔥)') : '!';
+      const toastSuccess = isAr 
+        ? ('🎉 مبروك! استلمت +' + ptsReward.toLocaleString() + ' 🌾' + cftMsg + boostMsg)
+        : ('🎉 Congrats! Claimed +' + ptsReward.toLocaleString() + ' 🌾' + cftMsg + boostMsg);
+      showWalletToast(toastSuccess);
+
+      updateDisplays();
+      updateDailyActivityUI();
+      if (typeof queueCloudSave === 'function') queueCloudSave();
+    }
+
+    function openDailyActivityModal() {
+      playSound('click');
+      if (!dailyActivityState) initDailyActivity();
+      updateDailyActivityUI();
+      const m = document.getElementById('dailyActivityModal');
+      if (m) {
+        m.classList.remove('hidden', 'pointer-events-none');
+        m.style.display = 'flex';
+      }
+    }
+
+    function closeDailyActivityModal() {
+      const m = document.getElementById('dailyActivityModal');
+      if (m) {
+        m.classList.add('hidden', 'pointer-events-none');
+        m.style.display = 'none';
+      }
+    }
+
+    function startDailyQuestCountdown() {
+      if (dailyQuestCountdownInterval) clearInterval(dailyQuestCountdownInterval);
+      
+      const updateTimer = () => {
+        const now = new Date();
+        const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+        const diff = Math.max(0, Math.floor((tomorrow - now) / 1000));
+        const hrs = String(Math.floor(diff / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+        const secs = String(diff % 60).padStart(2, '0');
+        
+        const timerEl = document.getElementById('dailyQuestCountdownTimer');
+        if (timerEl) timerEl.innerText = `${hrs}:${mins}:${secs}`;
+
+        // Auto-check for day rollover
+        if (diff <= 1) {
+          setTimeout(() => {
+            initDailyActivity();
+          }, 1500);
+        }
+      };
+
+      updateTimer();
+      dailyQuestCountdownInterval = setInterval(updateTimer, 1000);
+    }
+
+    function executeDailyMissionAction(actionType) {
+      playSound('click');
+      closeDailyActivityModal();
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+
+      if (actionType === 'login') {
+        openDailyLoginModal();
+      } else if (actionType === 'ad') {
+        if (typeof showUniversalAd === 'function') {
+          showUniversalAd(() => {
+            showWalletToast(isAr ? '🎬 تم احتساب مشاهدة الإعلان بنجاح!' : '🎬 Sponsored ad watched successfully!');
+          }, 'Daily Quest 3-Ad Mission');
+        } else {
+          recordDailyActivityProgress('ads', 1);
+        }
+      } else if (actionType === 'harvest') {
+        switchTab('farms');
+        showWalletToast(isAr ? '🌾 ادخل أي حظيرة جاهزة للحصاد واجمع محصولها!' : '🌾 Tap any ready farm enclosure to harvest!');
+      } else if (actionType === 'wheel') {
+        openFortuneWheelModal();
+      } else if (actionType === 'battle') {
+        openBattlesModal();
+      } else if (actionType === 'sprint') {
+        openRunGameDirect();
+      }
+    }
+
+    function updateDailyActivityUI() {
+      if (!dailyActivityState) return;
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const earnedPts = calculateEarnedActivityPoints();
+      
+      // Update modal titles for language
+      const modalTitleEl = document.getElementById('dailyQuestsModalTitle');
+      const timerLabelEl = document.getElementById('dailyQuestTimerLabel');
+      const ptsTitleEl = document.getElementById('dailyActivityPointsTitle');
+      const hintTextEl = document.getElementById('dailyQuestsHintText');
+
+      if (modalTitleEl) modalTitleEl.innerText = isAr ? 'مهام وأنشطة اليوم' : 'Daily Quests & Activity';
+      if (timerLabelEl) timerLabelEl.innerHTML = isAr ? '⏱️ تتجدد خلال:' : '⏱️ Resets in:';
+      if (ptsTitleEl) ptsTitleEl.innerHTML = isAr ? '<span>⭐</span> نقاط النشاط اليومية' : '<span>⭐</span> Daily Activity Points';
+      if (hintTextEl) hintTextEl.innerHTML = isAr ? '💡 اضغط على أي صندوق يكتمل لفتحه ومضاعفة جائزته 3X! ✨' : '💡 Reach milestones to unlock chests & claim 3X rewards! ✨';
+
+      // Update points display & progress bar
+      const ptsDisplay = document.getElementById('dailyActivityPtsDisplay');
+      if (ptsDisplay) ptsDisplay.innerText = earnedPts;
+
+      const barFill = document.getElementById('dailyActivityBarFill');
+      if (barFill) barFill.style.width = earnedPts + '%';
+
+      // Update 5 Chest Nodes
+      let claimableChestsCount = 0;
+      DAILY_ACTIVITY_CONFIG.chests.forEach(c => {
+        const node = document.getElementById('chestNode-' + c.id);
+        const icon = document.getElementById('chestIcon-' + c.id);
+        const badge = document.getElementById('chestPts-' + c.id);
+        const isClaimed = !!(dailyActivityState.claimedChests && dailyActivityState.claimedChests[c.id]);
+        const isUnlocked = earnedPts >= c.pts;
+
+        if (node && icon) {
+          if (isClaimed) {
+            icon.innerText = '📭';
+            node.classList.remove('animate-bounce');
+            node.classList.add('opacity-60');
+            if (badge) {
+              badge.innerText = isAr ? '✓ مستلم' : '✓ Claimed';
+              badge.className = 'text-[7.5px] font-black text-lime-300 bg-emerald-950/90 border border-emerald-500 rounded-full px-1.5 py-0.2 mt-0.5';
+            }
+          } else if (isUnlocked) {
+            claimableChestsCount++;
+            icon.innerText = c.emoji;
+            node.classList.add('animate-bounce');
+            node.classList.remove('opacity-60');
+            if (badge) {
+              badge.innerText = isAr ? 'افتح 🎁' : 'OPEN 🎁';
+              badge.className = 'text-[8px] font-black text-amber-950 bg-gradient-to-r from-yellow-300 to-amber-400 border border-yellow-200 rounded-full px-1.5 py-0.2 mt-0.5 shadow animate-pulse';
+            }
+          } else {
+            icon.innerText = c.emoji;
+            node.classList.remove('animate-bounce');
+            node.classList.remove('opacity-60');
+            if (badge) {
+              badge.innerText = c.pts;
+              badge.className = 'text-[8.5px] font-black text-amber-300 bg-amber-950/90 border border-amber-600/70 rounded-full px-1.5 py-0.2 mt-0.5';
+            }
+          }
+        }
+      });
+
+      // Update Missions List Container
+      const listContainer = document.getElementById('dailyMissionsListContainer');
+      if (listContainer) {
+        let listHtml = '';
+        let readyToClaimMissionsCount = 0;
+
+        DAILY_ACTIVITY_CONFIG.missions.forEach(m => {
+          const cur = Number(dailyActivityState.progress[m.id]) || 0;
+          const isDone = cur >= m.target;
+          const isClaimed = !!(dailyActivityState.claimedMissions && dailyActivityState.claimedMissions[m.id]);
+
+          if (isDone && !isClaimed) readyToClaimMissionsCount++;
+
+          const mTitle = isAr ? m.titleAr : m.titleEn;
+          const mDesc = isAr ? m.descAr : m.descEn;
+          const ptsUnit = isAr ? 'نقطة' : 'Pts';
+
+          let btnHtml = '';
+          if (isClaimed) {
+            btnHtml = `<span class="bg-black/50 text-lime-400 border border-emerald-600/70 text-[10px] font-black px-2.5 py-1.5 rounded-xl shrink-0">${isAr ? 'مكتمل ✓' : 'Claimed ✓'}</span>`;
+          } else if (isDone) {
+            btnHtml = `<button type="button" onclick="claimDailyMission('${m.id}')" class="btn-3d-green text-white text-[10.5px] font-black px-3 py-1.5 rounded-xl shadow-lg active:scale-95 transition-transform animate-bounce shrink-0 cursor-pointer">${isAr ? 'استلام 🎁' : 'CLAIM 🎁'}</button>`;
+          } else {
+            btnHtml = `<button type="button" onclick="executeDailyMissionAction('${m.actionType}')" class="btn-3d-yellow text-amber-950 text-[10.5px] font-black px-3 py-1.5 rounded-xl shadow-md active:scale-95 transition-transform shrink-0 cursor-pointer">${isAr ? 'انطلق ➔' : 'GO ➔'}</button>`;
+          }
+
+          listHtml += `
+            <div class="bg-black/40 border ${isDone ? 'border-amber-500/80' : 'border-amber-800/60'} rounded-2xl p-2.5 flex items-center justify-between gap-2 shadow-sm transition-all">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-amber-950/70 border border-amber-700/80 flex items-center justify-center text-xl shrink-0 shadow-inner">
+                  ${m.icon}
+                </div>
+                <div class="min-w-0 text-left">
+                  <div class="font-black text-xs text-yellow-200 leading-tight truncate flex items-center gap-1.5">
+                    <span>${mTitle}</span>
+                    <span class="text-[8.5px] bg-amber-900/80 text-yellow-300 px-1.5 py-0.2 rounded-md font-extrabold border border-amber-600/60">+${m.actPts} ⭐</span>
+                  </div>
+                  <div class="text-[9.5px] text-amber-200/90 font-medium leading-tight truncate mt-0.5">
+                    ${mDesc} (${cur}/${m.target})
+                  </div>
+                  <div class="text-[10px] text-yellow-300 font-extrabold flex items-center gap-1 mt-0.5">
+                    <span>🌾</span> +${m.rewardPts.toLocaleString()} ${ptsUnit}
+                  </div>
+                </div>
+              </div>
+              ${btnHtml}
+            </div>
+          `;
+        });
+
+        listContainer.innerHTML = listHtml;
+
+        // Update Home Hotspot Badge
+        const homeBadge = document.getElementById('dailyActivityBadge');
+        if (homeBadge) {
+          const totalAlerts = claimableChestsCount + readyToClaimMissionsCount;
+          if (totalAlerts > 0) {
+            homeBadge.innerText = totalAlerts + ' 🎁';
+            homeBadge.className = 'absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full border border-white shadow-md animate-bounce';
+          } else {
+            const claimedCount = Object.keys(dailyActivityState.claimedChests || {}).length;
+            homeBadge.innerText = claimedCount + '/5';
+            homeBadge.className = 'absolute -top-1 -right-1 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-black text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full border border-white shadow-md';
+          }
+        }
       }
     }
 
@@ -5088,10 +5728,12 @@
 
         if (mode === 'run') {
           startRunSprintGame();
+          if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('sprint', 1);
           return;
         }
 
         const m = parseInt(mode, 10) || 3;
+        if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('battle', 1);
         currentBattleMode = m;
         isBattleInProgress = false;
 
@@ -6298,6 +6940,7 @@
 
       if (typeof updateAdsPointsBoosterUI === 'function') updateAdsPointsBoosterUI();
       if (typeof updateAdsCftBoosterUI === 'function') updateAdsCftBoosterUI();
+      if (typeof updateDailyActivityUI === 'function') updateDailyActivityUI();
     }
 
     // Upgrade Cost mirrors Main Farm economy (100 levels)
@@ -6720,6 +7363,7 @@
 
       playSound(isDouble ? 'fanfare' : 'coin');
       saveAnimalFarmsState();
+      if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('harvest', 1);
       updateDisplays();
       queueCloudSave();
       renderAdFarmAction(key);
@@ -10190,6 +10834,7 @@
       if (isFortuneWheelSpinning) return;
       isFortuneWheelSpinning = true;
       playSound('click');
+      if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('wheel', 1);
       updateFortuneWheelUI();
 
       const centerBtn = document.getElementById('wheelCenterSpinBtn');
@@ -10930,6 +11575,7 @@
         totalAdsWatchedCount++;
         try { localStorage.setItem('crazyfarm_ads_watched_total', totalAdsWatchedCount); } catch(e){}
         if (typeof updateWithdrawalConditionsUI === 'function') updateWithdrawalConditionsUI();
+        if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('ads', 1);
         queueCloudSave();
         if (typeof onSuccess === 'function') onSuccess();
       };
@@ -11296,6 +11942,7 @@
 
       try { updateWithdrawalCountdown(); } catch(e){}
       try { updateWithdrawalConditionsUI(); } catch(e){}
+      try { updateDailyActivityUI(); } catch(e){}
     }
 
     function openSupport() {
@@ -13616,6 +14263,7 @@ window.addEventListener('load', () => {
         try { initCrazyFarm3State(); } catch(e){}
         updateJurassicBadges();
         try { checkOnboardingStatus(); } catch(e){}
+        try { initDailyActivity(); } catch(e){}
       }, 300);
     } catch(e){}
 
