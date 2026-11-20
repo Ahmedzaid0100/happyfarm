@@ -1,4 +1,4 @@
-﻿snap_*
+snap_*
 *.tmp
 *.log
 .env
@@ -7,3 +7,10 @@
 *.token
 __pycache__/
 *.pyc
+*.ps1
+*payload*.json
+*result*.json
+check_db.ps1
+deploy.ps1
+serve.ps1
+bot_daemon.ps1
