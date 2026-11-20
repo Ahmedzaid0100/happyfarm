@@ -6643,10 +6643,7 @@
           };
         });
         localStorage.setItem('crazyfarm_animal_farms_v2', JSON.stringify(data));
-        if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+      } catch(e) {}
     }
 
     function loadAnimalFarmsState() {
@@ -6672,10 +6669,7 @@
             }
           });
         }
-        if (urlParams.get('testTab')) {
-        switchTab(urlParams.get('testTab'));
-      }
-    } catch(e) {}
+      } catch(e) {}
     }
 
     // Start 24-Hour Farm Mining (Green Farm Button -> Golden FARMING Button)
@@ -9133,9 +9127,6 @@
       connectedWalletAddress = address.trim();
       try {
         localStorage.setItem('crazyfarm_ton_wallet', connectedWalletAddress);
-        if (urlParams.get('testTab')) {
-          switchTab(urlParams.get('testTab'));
-        }
       } catch(e) {}
 
       updateWalletConnectionUI();
@@ -9156,9 +9147,6 @@
       connectedWalletAddress = '';
       try {
         localStorage.removeItem('crazyfarm_ton_wallet');
-        if (urlParams.get('testTab')) {
-          switchTab(urlParams.get('testTab'));
-        }
       } catch(e) {}
 
       updateWalletConnectionUI();
@@ -11559,16 +11547,6 @@
             recordReferralToCloud(inviterId, myId);
           }
         }
-
-        // Developer simulation hook: ?simFriendJoined=1 (dev environments only)
-        const isDevEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-        if (isDevEnv && urlParams.get('simFriendJoined')) {
-          const addCount = parseInt(urlParams.get('simFriendJoined'), 10) || 1;
-          invitedFriendsCount += addCount;
-          saveTasksState();
-          renderInviteTasks();
-          showWalletToast(`👥 Friend joined via invite link! (${invitedFriendsCount} Friends)`);
-        }
       } catch(e) {
         console.warn('Referral check error:', e);
       }
@@ -11698,85 +11676,7 @@
     if (document.getElementById('othersView')) document.getElementById('othersView').style.display = 'none';
     if (document.getElementById('profileView')) document.getElementById('profileView').style.display = 'none';
 
-    // Auto-test query hook (dev / automated testing only)
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isDevEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-
-      if (isDevEnv) {
-        if (urlParams.get('farmAds')) {
-          totalFarmAdsWatched = parseInt(urlParams.get('farmAds')) || 0;
-        }
-        if (urlParams.get('testCrazyBox')) {
-          setTimeout(() => { openCrazyBox(); }, 300);
-        }
-        if (urlParams.get('testCrazyBoxFree')) {
-          lastCrazyBoxFreeTimestamp = 0;
-          lastCrazyBoxPointsTimestamp = 0;
-          updateCrazyBoxUI();
-        }
-        if (urlParams.get('testCrazyBoxCooldown')) {
-          lastCrazyBoxFreeTimestamp = Date.now() - (2 * 3600 * 1000);
-          lastCrazyBoxPointsTimestamp = 0;
-          updateCrazyBoxUI();
-        }
-        if (urlParams.get('testCrazyBoxDone')) {
-          lastCrazyBoxFreeTimestamp = Date.now() - (2 * 3600 * 1000);
-          lastCrazyBoxPointsTimestamp = Date.now() - (1 * 3600 * 1000);
-          updateCrazyBoxUI();
-        }
-        if (urlParams.get('testLevel')) {
-          userLevel = parseInt(urlParams.get('testLevel'), 10) || 1;
-          updateDisplays();
-        }
-        if (urlParams.get('testPoints')) {
-          points = parseInt(urlParams.get('testPoints'), 10) || 0;
-          updateDisplays();
-        }
-        if (urlParams.get('testAdModal')) {
-          setTimeout(() => { showUniversalAd(() => {}, 'Reward Ad'); }, 300);
-        }
-        if (urlParams.get('testWatchModal')) {
-          otherAdsWatched = parseInt(urlParams.get('testWatchModal'), 10) || 0;
-          setTimeout(() => { showWatchMoreCollectModal(); }, 350);
-        }
-        if (urlParams.get('testWheel')) {
-          setTimeout(() => { openFortuneWheelModal(); }, 350);
-        }
-        if (urlParams.get('testCooldown')) {
-          pvpCooldowns = {
-            3: Date.now() - (15 * 60 * 1000),
-            5: 0,
-            7: Date.now() - (30 * 60 * 1000),
-            run: Date.now() - (60 * 60 * 1000)
-          };
-          updatePvpButtonsUI();
-        }
-        if (urlParams.get('openPrep')) {
-          const pMode = parseInt(urlParams.get('openPrep')) || 3;
-          setTimeout(() => { openBattlePrep(pMode); }, 300);
-        }
-        if (urlParams.get('testArena')) {
-          const tMode = parseInt(urlParams.get('testArena')) || 3;
-          setTimeout(() => {
-            enterBattleArena(tMode);
-            if (urlParams.get('testFight')) {
-              setTimeout(() => { startLiveBattleRound(); }, 400);
-            }
-          }, 300);
-        }
-        if (urlParams.get('testRun')) {
-          setTimeout(() => { startRunSprintGame(); }, 300);
-        }
-        if (urlParams.get('testRunVictory')) {
-          setTimeout(() => { startRunSprintGame(); setTimeout(() => { triggerRunVictory(); }, 400); }, 300);
-        }
-        if (urlParams.get('testTab')) {
-          switchTab(urlParams.get('testTab'));
-        }
-      }
-    } catch(e) {}
-      // =========================================================================
+    // =========================================================================
     // ==================== 40s 3D FARM SPRINT (RUN MODE) WEBGL ENGINE ====================
     // =========================================================================
     var RUN_GAME_DURATION = 40.0;
