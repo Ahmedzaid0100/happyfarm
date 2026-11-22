@@ -6206,6 +6206,56 @@
         // ==================== TELEGRAM WEB APP SDK ====================
     let tgUser = null;
 
+    function extractTelegramUser(tg) {
+      if (!tg) tg = window.Telegram?.WebApp;
+      let user = tg?.initDataUnsafe?.user;
+
+      // 1. Try parsing tg.initData string
+      if (!user && tg?.initData) {
+        try {
+          const p = new URLSearchParams(tg.initData);
+          const uStr = p.get('user');
+          if (uStr) user = JSON.parse(uStr);
+        } catch(e){}
+      }
+
+      // 2. Try parsing window.location.hash (#tgWebAppData=...)
+      if (!user && window.location.hash) {
+        try {
+          const hash = window.location.hash.replace(/^#/, '');
+          const p = new URLSearchParams(hash);
+          const raw = p.get('tgWebAppData') || hash;
+          const dp = new URLSearchParams(raw);
+          const uStr = dp.get('user');
+          if (uStr) user = JSON.parse(uStr);
+        } catch(e){}
+      }
+
+      // 3. Try parsing window.location.search (?tgWebAppData=...)
+      if (!user && window.location.search) {
+        try {
+          const sp = new URLSearchParams(window.location.search);
+          const raw = sp.get('tgWebAppData');
+          if (raw) {
+            const dp = new URLSearchParams(raw);
+            const uStr = dp.get('user');
+            if (uStr) user = JSON.parse(uStr);
+          }
+        } catch(e){}
+      }
+
+      // 4. Fallback to cached Telegram user in localStorage
+      if (user && user.id) {
+        try { localStorage.setItem('crazyfarm_cached_tg_user', JSON.stringify(user)); } catch(e){}
+      } else {
+        try {
+          const cached = localStorage.getItem('crazyfarm_cached_tg_user');
+          if (cached) user = JSON.parse(cached);
+        } catch(e){}
+      }
+      return user || null;
+    }
+
     function initTelegram() {
       const tg = window.Telegram?.WebApp;
       if (!tg) return;
@@ -6221,9 +6271,9 @@
         if (tg.setBackgroundColor) tg.setBackgroundColor('#60b848');
 
         // Extract real Telegram User data
-        tgUser = tg.initDataUnsafe?.user;
+        tgUser = extractTelegramUser(tg);
         if (tgUser) {
-          const displayName = tgUser.first_name || tgUser.username || 'Farmer';
+          const displayName = tgUser.first_name || tgUser.username || localStorage.getItem('crazyfarm_custom_player_name') || 'Farmer';
           const fullName = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || displayName;
 
           // Header Player Name
@@ -11732,9 +11782,20 @@
       const current = nameEl ? nameEl.innerText : 'Farmer123';
       const newName = prompt('Enter your farmer nickname:', current);
       if (newName && newName.trim() !== '') {
-        if (nameEl) nameEl.innerText = newName.trim();
-        try { playSound('fanfare'); } catch(e){}
-        alert(`✅ Nickname updated to: ${newName.trim()}`);
+        const cleanName = newName.trim();
+        if (nameEl) nameEl.innerText = cleanName;
+        const headerName = document.getElementById('headerPlayerNameText');
+        if (headerName) headerName.innerText = cleanName;
+        try {
+          localStorage.setItem('crazyfarm_custom_player_name', cleanName);
+          playSound('fanfare');
+        } catch(e){}
+        if (dbClient) {
+          dbClient.from('players').update({ full_name: cleanName }).eq('telegram_id', getEffectiveTelegramId()).then(() => {
+            console.log('✅ Custom name synced to cloud');
+          });
+        }
+        showWalletToast(`✅ Nickname updated to: ${cleanName}`);
       }
     }
 
@@ -12082,6 +12143,18 @@
             connectedWalletAddress = data.wallet_address;
             isWalletConnected = true;
           }
+
+          // Restore and display verified real name from database
+          const dbRealName = (data.full_name && data.full_name !== 'Farmer') ? data.full_name : ((data.username && data.username !== 'Farmer') ? ('@' + data.username) : null);
+          if (dbRealName) {
+            try {
+              localStorage.setItem('crazyfarm_custom_player_name', dbRealName);
+              const headerName = document.getElementById('headerPlayerNameText');
+              if (headerName) headerName.innerText = dbRealName;
+              const profName = document.getElementById('profUserName');
+              if (profName) profName.innerText = dbRealName;
+            } catch(e){}
+          }
           const friendsCount = (data.farms_data && data.farms_data.invited_friends_count !== undefined) 
             ? data.farms_data.invited_friends_count 
             : data.invited_friends_count;
@@ -12312,8 +12385,10 @@
     async function savePlayerDataToCloud(isInitial = false) {
       if (!dbClient) return;
       const tId = getEffectiveTelegramId();
-      const uname = tgUser?.username || tgUser?.first_name || 'Farmer';
-      const fname = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ') || uname;
+      const hasRealTg = tgUser && (tgUser.first_name || tgUser.username);
+      const customName = localStorage.getItem('crazyfarm_custom_player_name');
+      const uname = hasRealTg ? (tgUser.username || tgUser.first_name) : (customName || null);
+      const fname = hasRealTg ? ([tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || uname) : (customName || null);
 
       // ==================== ANTI-CHEAT VELOCITY & INTEGRITY CHECK ====================
       const antiCheatResult = AntiCheat.validateStateBeforeCloudSave(points, cftBalance, userLevel, tId);
@@ -12343,8 +12418,6 @@
 
       const payload = {
         telegram_id: tId,
-        username: uname,
-        full_name: fname,
         points: points,
         hfc_balance: hfcBalance,
         user_level: userLevel,
@@ -12376,6 +12449,19 @@
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
       };
+
+      // CRITICAL FIX: Only set username and full_name if we actually have real user info!
+      // This prevents ever overwriting real player names in Supabase with fallback 'Farmer'
+      if (uname && uname !== 'Farmer') {
+        payload.username = uname;
+      }
+      if (fname && fname !== 'Farmer') {
+        payload.full_name = fname;
+      }
+      if (isInitial && !payload.username) {
+        payload.username = 'Farmer';
+        payload.full_name = 'Farmer';
+      }
 
       // LocalStorage dual-save
       try {
