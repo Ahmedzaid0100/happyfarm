@@ -721,18 +721,33 @@
             <div id="cf3AnimalsContainer" class="absolute inset-0 z-20 pointer-events-auto">
               <!-- 1. Dinosaur (Top-Left Pen) -->
               <div id="hotspot-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 12%; width: 44%; height: 24%;" title="T-Rex Emperor Enclosure"></div>
+              <div id="mapBadge-cf3-dinosaur" onclick="openJurassicMinerModal('dinosaur')" class="absolute bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 24%; top: 32%; transform: translateX(-50%);">
+                <span id="mapBadgeText-cf3-dinosaur">3.00 CFT ⚡</span>
+              </div>
 
               <!-- 2. Phoenix (Top-Right Pen) -->
               <div id="hotspot-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 54%; top: 12%; width: 44%; height: 24%;" title="Fire Phoenix Nest"></div>
+              <div id="mapBadge-cf3-phoenix" onclick="openJurassicMinerModal('phoenix')" class="absolute bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 76%; top: 32%; transform: translateX(-50%);">
+                <span id="mapBadgeText-cf3-phoenix">1.50 CFT ⚡</span>
+              </div>
 
               <!-- 3. Anaconda (Center Pen) -->
               <div id="hotspot-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 12%; top: 36%; width: 76%; height: 20%;" title="Titan Anaconda Swamp"></div>
+              <div id="mapBadge-cf3-anaconda" onclick="openJurassicMinerModal('anaconda')" class="absolute bg-gradient-to-r from-lime-500 via-emerald-400 to-green-500 text-emerald-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-lime-200 shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 50%; top: 52%; transform: translateX(-50%);">
+                <span id="mapBadgeText-cf3-anaconda">0.75 CFT ⚡</span>
+              </div>
 
               <!-- 4. Dragon (Bottom-Left Pen) -->
               <div id="hotspot-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 2%; top: 56%; width: 46%; height: 26%;" title="Ancient Dragon Lair"></div>
+              <div id="mapBadge-cf3-dragon" onclick="openJurassicMinerModal('dragon')" class="absolute bg-gradient-to-r from-red-500 via-rose-400 to-amber-500 text-amber-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-rose-200 shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 25%; top: 78%; transform: translateX(-50%);">
+                <span id="mapBadgeText-cf3-dragon">2.25 CFT ⚡</span>
+              </div>
 
               <!-- 5. Dolphin (Bottom-Right Lagoon) -->
               <div id="hotspot-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute cursor-pointer active:scale-95 transition-transform" style="left: 52%; top: 56%; width: 46%; height: 26%;" title="Mystic Dolphin Lagoon"></div>
+              <div id="mapBadge-cf3-dolphin" onclick="openJurassicMinerModal('dolphin')" class="absolute bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 text-blue-950 font-black text-[9px] px-2 py-0.5 rounded-full border border-cyan-200 shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center gap-1 z-20 cursor-pointer select-none whitespace-nowrap active:scale-95 transition-transform" style="left: 75%; top: 78%; transform: translateX(-50%);">
+                <span id="mapBadgeText-cf3-dolphin">0.30 CFT + 50k 🌾 ⚡</span>
+              </div>
             </div>
 
             <!-- Mysterious Cloud / Volcanic Fog Overlay for Jurassic Farm (15M Unlock) -->
@@ -6347,9 +6362,9 @@
         return hashStr(`${p}|${c}|${l}|${id}|${SALT}`);
       }
 
-      // Hard ceilings on plausible progression deltas between cloud syncs (generous for multi-harvest/booster claims)
+      // Hard ceilings on plausible progression deltas between cloud syncs (generous for multi-harvest/booster/jurassic claims)
       const MAX_POINTS_DELTA_PER_SYNC = 500000; // max reasonable points gained in one sync window
-      const MAX_CFT_DELTA_PER_SYNC = 15.0;      // max reasonable CFT gained in one sync window
+      const MAX_CFT_DELTA_PER_SYNC = 100.0;     // max reasonable CFT gained in one sync window (accommodates multi-Jurassic Apex claims)
 
       return {
         initBaseline(pts, cft) {
@@ -6989,6 +7004,7 @@
       updatePvpButtonsUI();
       if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
       if (typeof updateFortuneWheelUI === 'function') updateFortuneWheelUI();
+      if (typeof updateJurassicBadges === 'function') updateJurassicBadges();
 
       // Ensure Animal Farms are initialized and rendered
       if (typeof adFarms !== 'undefined' && !window._animalFarmsLoaded) {
@@ -7342,6 +7358,7 @@
       updatePvpButtonsUI();
       if (typeof updateCrazyBoxUI === 'function') updateCrazyBoxUI();
       if (typeof updateFortuneWheelUI === 'function') updateFortuneWheelUI();
+      if (typeof updateJurassicBadges === 'function') updateJurassicBadges();
 
       // Real-time 8-Hour Animal Farms Countdown & Status
       if (typeof adFarms !== 'undefined') {
@@ -12297,6 +12314,9 @@
           refreshDailyCheckInState();
 
           updateDisplays();
+          if (typeof initCrazyFarm2State === 'function') initCrazyFarm2State();
+          if (typeof initCrazyFarm3State === 'function') initCrazyFarm3State();
+          if (typeof updateJurassicBadges === 'function') updateJurassicBadges();
           syncWalletView();
           initTonConnect();
           updateWithdrawalConditionsUI();
