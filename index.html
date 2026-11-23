@@ -393,7 +393,7 @@
           <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.0%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Daily Check-In"></div>
 
           <!-- 6. Gift Hotspot (Right Top Gift Box Ring) -->
-          <div onclick="openGiftModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 77.0%; top: 16.5%; width: 22.0%; height: 13.0%;" title="Daily Mystery Gift Box"></div>
+          <div onclick="event.stopPropagation(); openGiftModal();" ontouchend="event.stopPropagation(); openGiftModal();" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform pointer-events-auto" style="left: 77.0%; top: 16.5%; width: 22.0%; height: 13.0%;" title="Daily Mystery Gift Box"></div>
 
           <!-- 7. Run Hotspot (Right Bottom Sneaker Ring - Completely Dedicated to Dog Runner) -->
           <div onclick="openRunGameDirect()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Dog Run Sprint"></div>
@@ -2526,7 +2526,7 @@
     </div>
     <!-- ==================== HOME GIFT (CRAZY BOX) MODAL ==================== -->
     <div id="homeGiftModal" onclick="if(event.target === this) closeGiftModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
-      <div class="relative w-full max-w-sm wood-board border-2 border-yellow-400/90 rounded-3xl p-5 shadow-2xl text-white animate-in fade-in zoom-in duration-200 text-center">
+      <div class="relative w-full max-w-sm wood-board border-2 border-yellow-400/90 rounded-3xl p-5 shadow-2xl text-white animate-in fade-in zoom-in duration-200 text-center pointer-events-auto">
         <!-- Header -->
         <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
           <div class="flex items-center gap-2">
@@ -3226,7 +3226,7 @@
               <span class="text-xs">🌾</span>
               <span id="runCoinsCollected" class="text-yellow-300 font-black text-[10px]">+0</span>
             </div>
-            <button type="button" onclick="exitRunSprintGame()" ontouchend="exitRunSprintGame()" class="w-9 h-9 bg-red-600 hover:bg-red-500 text-white font-black rounded-full border-2 border-white/70 flex items-center justify-center text-base shadow-lg active:scale-90 cursor-pointer pointer-events-auto z-50">
+            <button type="button" onclick="event.stopPropagation(); exitRunSprintGame();" ontouchend="event.stopPropagation(); exitRunSprintGame();" class="w-9 h-9 bg-red-600 hover:bg-red-500 text-white font-black rounded-full border-2 border-white/70 flex items-center justify-center text-base shadow-lg active:scale-90 cursor-pointer pointer-events-auto z-50">
               &#10005;
             </button>
           </div>
@@ -4393,7 +4393,7 @@
       updatePvpButtonsUI();
     }
 
-    const BATTLE_COOLDOWN_MS = 8 * 60 * 60 * 1000; // 8 hours cooldown
+    const BATTLE_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes quick cooldown
     let pvpCooldowns = { 3: 0, 5: 0, 7: 0, run: 0 };
     try {
       const saved = localStorage.getItem('crazyfarm_pvp_cooldowns');
@@ -4412,13 +4412,21 @@
 
     function isBattleOnCooldown(mode) {
       if (mode === 'run') return false; // RUN Sprint is always open and free with no cooldown
-      const lastTime = pvpCooldowns[mode] || 0;
-      return (Date.now() - lastTime) < BATTLE_COOLDOWN_MS;
+      const lastTime = Number(pvpCooldowns[mode]) || 0;
+      const now = Date.now();
+      if (!lastTime || lastTime <= 0 || lastTime > now) {
+        pvpCooldowns[mode] = 0;
+        return false;
+      }
+      return (now - lastTime) < BATTLE_COOLDOWN_MS;
     }
 
     function getBattleCooldownRemaining(mode) {
-      const lastTime = pvpCooldowns[mode] || 0;
-      const rem = BATTLE_COOLDOWN_MS - (Date.now() - lastTime);
+      if (mode === 'run') return 0;
+      const lastTime = Number(pvpCooldowns[mode]) || 0;
+      const now = Date.now();
+      if (!lastTime || lastTime <= 0 || lastTime > now) return 0;
+      const rem = BATTLE_COOLDOWN_MS - (now - lastTime);
       return Math.max(0, rem);
     }
 
@@ -6551,6 +6559,494 @@
       savePlayerPoints(points - deducted, triggerSync);
       return true;
     }
+
+    // ==================== JURASSIC MINERS ECOSYSTEM (5 PREHISTORIC CFT MINERS - 3X RATES) ====================
+    const JURASSIC_CYCLE_MS = 24 * 3600 * 1000; // 24 Hours in ms
+
+    const JURASSIC_MINERS = {
+      dinosaur: {
+        id: 'dinosaur',
+        name: 'T-Rex Emperor',
+        emoji: '🦖',
+        image: 'assets/farms/jurassic_dinosaur.jpg',
+        tier: 'Apex Legendary',
+        tierColor: 'from-amber-500 to-red-600',
+        badgeBorder: 'border-amber-400',
+        textColor: 'text-yellow-300',
+        mineAsset: 'CFT',
+        baseRate: 3.00, // CFT per 24h (3x of 1.00)
+        rateBoostPerLvl: 1.50, // (3x of 0.50) -> Lv 10: 16.50 CFT
+        upgradeCosts: [
+          2000000,  // Lv 2 (2M)
+          4500000,  // Lv 3 (4.5M)
+          8000000,  // Lv 4 (8M)
+          14000000, // Lv 5 (14M)
+          22000000, // Lv 6 (22M)
+          32000000, // Lv 7 (32M)
+          45000000, // Lv 8 (45M)
+          60000000, // Lv 9 (60M)
+          80000000  // Lv 10 (80M)
+        ],
+        desc: 'Apex predator of the sanctuary, yielding 3.00 CFT daily at Level 1 up to 16.50 CFT at Max Level 10!'
+      },
+      dragon: {
+        id: 'dragon',
+        name: 'Ancient Dragon',
+        emoji: '🐉',
+        image: 'assets/farms/jurassic_dragon.jpg',
+        tier: 'Ancient Mythic',
+        tierColor: 'from-red-600 to-amber-600',
+        badgeBorder: 'border-red-400',
+        textColor: 'text-rose-300',
+        mineAsset: 'CFT',
+        baseRate: 2.25, // CFT per 24h (3x of 0.75)
+        rateBoostPerLvl: 0.90, // (3x of 0.30) -> Lv 10: 10.35 CFT
+        upgradeCosts: [
+          1000000,  // Lv 2 (1M)
+          2500000,  // Lv 3 (2.5M)
+          5000000,  // Lv 4 (5M)
+          8000000,  // Lv 5 (8M)
+          13000000, // Lv 6 (13M)
+          20000000, // Lv 7 (20M)
+          28000000, // Lv 8 (28M)
+          38000000, // Lv 9 (38M)
+          50000000  // Lv 10 (50M)
+        ],
+        desc: 'Volcanic ancient beast channeling blazing dragonfire, yielding 2.25 CFT daily up to 10.35 CFT at Level 10!'
+      },
+      phoenix: {
+        id: 'phoenix',
+        name: 'Fire Phoenix',
+        emoji: '🦅',
+        image: 'assets/farms/jurassic_phoenix.jpg',
+        tier: 'Eternal Mythic',
+        tierColor: 'from-orange-500 to-yellow-500',
+        badgeBorder: 'border-orange-400',
+        textColor: 'text-amber-200',
+        mineAsset: 'CFT',
+        baseRate: 1.50, // CFT per 24h (3x of 0.50)
+        rateBoostPerLvl: 0.60, // (3x of 0.20) -> Lv 10: 6.90 CFT
+        upgradeCosts: [
+          600000,   // Lv 2 (600k)
+          1500000,  // Lv 3 (1.5M)
+          3000000,  // Lv 4 (3M)
+          5000000,  // Lv 5 (5M)
+          8000000,  // Lv 6 (8M)
+          12000000, // Lv 7 (12M)
+          18000000, // Lv 8 (18M)
+          25000000, // Lv 9 (25M)
+          35000000  // Lv 10 (35M)
+        ],
+        desc: 'Legendary firebird reborn from ashes, producing 1.50 CFT daily up to 6.90 CFT at Level 10!'
+      },
+      anaconda: {
+        id: 'anaconda',
+        name: 'Titan Anaconda',
+        emoji: '🐍',
+        image: 'assets/farms/jurassic_anaconda.jpg',
+        tier: 'Prime Beast',
+        tierColor: 'from-yellow-600 to-lime-600',
+        badgeBorder: 'border-lime-400',
+        textColor: 'text-lime-300',
+        mineAsset: 'CFT',
+        baseRate: 0.75, // CFT per 24h (3x of 0.25)
+        rateBoostPerLvl: 0.30, // (3x of 0.10) -> Lv 10: 3.45 CFT
+        upgradeCosts: [
+          300000,   // Lv 2 (300k)
+          700000,   // Lv 3 (700k)
+          1500000,  // Lv 4 (1.5M)
+          2500000,  // Lv 5 (2.5M)
+          4500000,  // Lv 6 (4.5M)
+          7000000,  // Lv 7 (7M)
+          11000000, // Lv 8 (11M)
+          16000000, // Lv 9 (16M)
+          22000000  // Lv 10 (22M)
+        ],
+        desc: 'Prime titan serpent guarding mineral swamps, yielding 0.75 CFT daily up to 3.45 CFT at Level 10.'
+      },
+      dolphin: {
+        id: 'dolphin',
+        name: 'Mystic Dolphin',
+        emoji: '🐬',
+        image: 'assets/farms/jurassic_dolphin.jpg',
+        tier: 'Aquatic Guardian',
+        tierColor: 'from-cyan-500 to-blue-600',
+        badgeBorder: 'border-cyan-400',
+        textColor: 'text-cyan-200',
+        mineAsset: 'CFT',
+        baseRate: 0.30, // CFT per 24h (3x of 0.10)
+        rateBoostPerLvl: 0.15, // (3x of 0.05) -> Lv 10: 1.65 CFT
+        pointsYieldTable: [
+          50000,   // Lv 1: 50k
+          75000,   // Lv 2: 75k
+          110000,  // Lv 3: 110k
+          150000,  // Lv 4: 150k
+          200000,  // Lv 5: 200k
+          260000,  // Lv 6: 260k
+          330000,  // Lv 7: 330k
+          400000,  // Lv 8: 400k
+          450000,  // Lv 9: 450k
+          500000   // Lv 10: 500k Max
+        ],
+        upgradeCosts: [
+          100000,  // Lv 2 (100k)
+          200000,  // Lv 3 (200k)
+          400000,  // Lv 4 (400k)
+          800000,  // Lv 5 (800k)
+          1500000, // Lv 6 (1.5M)
+          2500000, // Lv 7 (2.5M)
+          4000000, // Lv 8 (4M)
+          6000000, // Lv 9 (6M)
+          9000000  // Lv 10 (9M)
+        ],
+        desc: 'Aquatic guardian of the lagoon, yielding up to 1.65 CFT plus an abundant 500,000 Farm Points daily to supercharge your farm!'
+      }
+    };
+
+    let currentJurassicModalKey = 'dinosaur';
+
+    function getJurassicMinerLevel(key) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
+        const val = parseInt(stored[key], 10);
+        return (!isNaN(val) && val >= 1) ? Math.min(val, 10) : 1;
+      } catch(e) {
+        return 1;
+      }
+    }
+
+    function setJurassicMinerLevel(key, lvl) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
+        stored[key] = Math.min(Math.max(lvl, 1), 10);
+        localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(stored));
+      } catch(e) {}
+    }
+
+    function getJurassicMinerRate(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m) return '0.00';
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      const val = m.baseRate + (actualLvl - 1) * m.rateBoostPerLvl;
+      return val.toFixed(2);
+    }
+
+    function getJurassicMinerPointsRate(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m || !m.pointsYieldTable) return 0;
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      const idx = Math.min(Math.max(actualLvl - 1, 0), m.pointsYieldTable.length - 1);
+      return m.pointsYieldTable[idx] || 0;
+    }
+
+    function getJurassicMinerUpgradeCost(key, lvl) {
+      const m = JURASSIC_MINERS[key];
+      if (!m) return null;
+      const actualLvl = lvl || getJurassicMinerLevel(key);
+      if (actualLvl >= 10) return null; // Max Level
+      const idx = actualLvl - 1;
+      return m.upgradeCosts[idx] || 10000000;
+    }
+
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return '00:00:00';
+      const totalSec = Math.floor(ms / 1000);
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return `${h}h ${m}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+
+    function getJurassicMiningState(key) {
+      const start = Number(localStorage.getItem('crazyfarm_jurassic_mine_start_' + key)) || 0;
+      if (start === 0) return { state: 'idle' };
+      const elapsed = Date.now() - start;
+      if (elapsed >= JURASSIC_CYCLE_MS) {
+        return { state: 'claimable', elapsed };
+      }
+      return { state: 'mining', remaining: JURASSIC_CYCLE_MS - elapsed, elapsed };
+    }
+
+    let lastJurassicModalCloseTime = 0;
+
+    function openJurassicMinerModal(key) {
+      // Prevent mobile ghost-clicks immediately after closing
+      if (Date.now() - lastJurassicModalCloseTime < 450) {
+        console.log('Ignored ghost-click on Jurassic animal hotspot:', key);
+        return;
+      }
+      if (!isCrazyFarm3Unlocked) {
+        try { playSound('click'); } catch(e){}
+        showWalletToast('🔒 Unlock Jurassic Farm with 15,000,000 points (15M 🌾) first!');
+        return;
+      }
+      const miner = JURASSIC_MINERS[key];
+      if (!miner) return;
+      currentJurassicModalKey = key;
+
+      // Temporarily disable map hotspots underneath to prevent touch leaking through
+      const cf3Container = document.getElementById('cf3AnimalsContainer');
+      if (cf3Container) cf3Container.style.pointerEvents = 'none';
+
+      const lvl = getJurassicMinerLevel(key);
+      const rate = getJurassicMinerRate(key, lvl);
+      const nextBoost = miner.rateBoostPerLvl.toFixed(2);
+      const upgradeCost = getJurassicMinerUpgradeCost(key, lvl);
+
+      const modal = document.getElementById('jurassicMinerModal');
+      const iconEl = document.getElementById('jmModalIcon');
+      const nameEl = document.getElementById('jmModalName');
+      const tierEl = document.getElementById('jmModalTier');
+      const lvlEl = document.getElementById('jmModalLevel');
+      const rateEl = document.getElementById('jmModalMiningRate');
+      const nextBoostEl = document.getElementById('jmModalNextBoost');
+      const descEl = document.getElementById('jmModalDesc');
+      const costEl = document.getElementById('jmModalUpgradeCost');
+      const upgradeBtn = document.getElementById('jmModalUpgradeBtn');
+      const imgEl = document.getElementById('jmModalImg');
+
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const AR_NAMES = {
+        dinosaur: 'إمبراطور الديناصورات (T-Rex)',
+        dragon: 'التنين المجنح الأسطوري (Dragon)',
+        phoenix: 'طائر العنقاء الناري (Phoenix)',
+        anaconda: 'الأناكندا العملاقة (Anaconda)',
+        dolphin: 'الدولفين السحري (Dolphin)'
+      };
+      const AR_TIERS = {
+        'Apex Legendary': 'رتبة قمة الأساطير 👑',
+        'Ancient Mythic': 'رتبة الميثيك العتيق 🔥',
+        'Eternal Mythic': 'رتبة الخلود الأبدي 🦅',
+        'Prime Beast': 'رتبة الوحش الأولي 🐍',
+        'Aquatic Guardian': 'حارس الأعماق المائية 🐬'
+      };
+
+      if (iconEl) iconEl.innerText = miner.emoji;
+      if (nameEl) nameEl.innerText = isAr ? (AR_NAMES[key] || miner.name) : miner.name;
+      if (tierEl) tierEl.innerText = isAr ? (AR_TIERS[miner.tier] || miner.tier) : miner.tier;
+      if (lvlEl) lvlEl.innerText = isAr ? (lvl >= 10 ? 'مستوى 10 👑' : 'مستوى ' + lvl) : (lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl);
+
+      if (key === 'dolphin') {
+        const curPts = getJurassicMinerPointsRate('dolphin', lvl);
+        const nextPts = lvl < 10 ? getJurassicMinerPointsRate('dolphin', lvl + 1) : curPts;
+        const ptsDiff = nextPts - curPts;
+        const curPtsStr = curPts >= 1000 ? (curPts / 1000) + 'k' : curPts;
+        const diffPtsStr = ptsDiff >= 1000 ? (ptsDiff / 1000) + 'k' : ptsDiff;
+        if (rateEl) rateEl.innerHTML = `<span>${rate} CFT</span> <span class="text-lime-300 font-extrabold">+ ${curPtsStr} 🌾</span> <span class="text-[10px] text-amber-200">/ ${isAr ? '24 ساعة' : '24h'}</span>`;
+        if (nextBoostEl) {
+          nextBoostEl.innerHTML = lvl >= 10 
+            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
+            : `+${nextBoost} CFT & <span class="text-lime-300 font-black">+${diffPtsStr} 🌾</span>`;
+        }
+      } else {
+        if (rateEl) rateEl.innerText = rate + (isAr ? ' CFT / 24 ساعة' : ' CFT / 24h');
+        if (nextBoostEl) {
+          nextBoostEl.innerText = lvl >= 10 
+            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
+            : ('+' + nextBoost + (isAr ? ' CFT / يومياً' : ' CFT / day'));
+        }
+      }
+
+      if (descEl) descEl.innerText = miner.desc;
+      if (imgEl && miner.image) imgEl.src = miner.image;
+
+      if (upgradeBtn && costEl) {
+        if (lvl >= 10) {
+          costEl.innerText = isAr ? 'أقصى مستوى (مستوى 10 👑)' : 'MAX LEVEL (Lv. 10 👑)';
+          upgradeBtn.classList.add('opacity-60', 'pointer-events-none');
+        } else {
+          costEl.innerText = (isAr ? 'مستوى ' : 'Lv. ') + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
+          upgradeBtn.classList.remove('opacity-60', 'pointer-events-none');
+        }
+      }
+
+      updateJurassicMinerModalActionUI(key);
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      try { playSound('click'); } catch(e){}
+    }
+
+    function updateJurassicMinerModalActionUI(key) {
+      const mineBtn = document.getElementById('jmModalMineBtn');
+      const actionLabel = document.getElementById('jmModalMineActionLabel');
+      const statusLabel = document.getElementById('jmModalMineStatus');
+      if (!mineBtn || !actionLabel || !statusLabel) return;
+
+      const miner = JURASSIC_MINERS[key];
+      const lvl = getJurassicMinerLevel(key);
+      const rate = getJurassicMinerRate(key, lvl);
+      const miningState = getJurassicMiningState(key);
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+
+      if (miningState.state === 'idle') {
+        mineBtn.className = 'btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300';
+        actionLabel.innerHTML = isAr ? '<span>⛏️</span> بدء التعدين 24 ساعة' : '<span>⛏️</span> START 24H MINING';
+        statusLabel.innerText = isAr ? 'جاهز للتعدين' : 'Ready to Mine';
+      } else if (miningState.state === 'mining') {
+        mineBtn.className = 'py-2.5 px-2 rounded-2xl text-amber-200 font-black text-xs flex flex-col items-center justify-center cursor-pointer bg-slate-900 border border-amber-500/70 shadow-lg';
+        actionLabel.innerHTML = isAr ? '<span>⏳</span> التعدين قيد التشغيل' : '<span>⏳</span> MINING ACTIVE';
+        statusLabel.innerText = formatTimeRemaining(miningState.remaining);
+      } else if (miningState.state === 'claimable') {
+        mineBtn.className = 'btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xl border border-yellow-200 animate-bounce';
+        actionLabel.innerHTML = isAr ? '<span>💎</span> استلام المكافأة' : '<span>💎</span> CLAIM REWARD';
+        if (key === 'dolphin') {
+          const ptsBonus = getJurassicMinerPointsRate('dolphin', lvl);
+          const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k' : ptsBonus;
+          statusLabel.innerText = isAr ? ('+' + rate + ' CFT و +' + ptsStr + ' 🌾 جاهز!') : ('+' + rate + ' CFT & +' + ptsStr + ' 🌾 Ready!');
+        } else {
+          statusLabel.innerText = isAr ? ('+' + rate + ' CFT جاهز للاستلام!') : ('+' + rate + ' CFT Ready!');
+        }
+      }
+    }
+
+    function closeJurassicMinerModal() {
+      lastJurassicModalCloseTime = Date.now();
+      currentJurassicModalKey = null;
+      try { playSound('pop'); } catch(e){}
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+      }
+      const modal = document.getElementById('jurassicMinerModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      // Re-enable map hotspots after touch ghost-click window has safely passed
+      setTimeout(() => {
+        const cf3Container = document.getElementById('cf3AnimalsContainer');
+        if (cf3Container) cf3Container.style.pointerEvents = 'auto';
+      }, 450);
+    }
+
+    function upgradeJurassicMinerFromModal() {
+      if (!currentJurassicModalKey) return;
+      const key = currentJurassicModalKey;
+      const lvl = getJurassicMinerLevel(key);
+      if (lvl >= 10) {
+        try { playSound('error'); } catch(e){}
+        showWalletToast('🏆 Enclosure reached Max Level 10!');
+        return;
+      }
+      const cost = getJurassicMinerUpgradeCost(key, lvl);
+      if (points < cost) {
+        try { playSound('error'); } catch(e){}
+        showWalletToast('🌾 Insufficient points! Need ' + cost.toLocaleString() + ' Farm Points.');
+        return;
+      }
+      deductPlayerPoints(cost, 'jurassic_upgrade', false);
+      
+      const newLvl = lvl + 1;
+      setJurassicMinerLevel(key, newLvl);
+      updateDisplays();
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      if (typeof savePlayerDataToCloud === 'function') {
+        savePlayerDataToCloud();
+      } else if (typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
+
+      try { playSound('level_up'); } catch(e){}
+      showWalletToast('🚀 Upgraded ' + JURASSIC_MINERS[key].name + ' to Level ' + newLvl + '!');
+      openJurassicMinerModal(key);
+      updateJurassicBadges();
+    }
+
+    function triggerJurassicMiningFromModal() {
+      if (!currentJurassicModalKey) return;
+      const key = currentJurassicModalKey;
+      const miner = JURASSIC_MINERS[key];
+      const miningState = getJurassicMiningState(key);
+
+      if (miningState.state === 'idle') {
+        localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now()));
+        try { playSound('chime'); } catch(e){}
+        showWalletToast('⛏️ 24h Mining started for ' + miner.name + '! Check back in 24 hours.');
+        openJurassicMinerModal(key);
+        updateJurassicBadges();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
+      } else if (miningState.state === 'mining') {
+        try { playSound('click'); } catch(e){}
+        showWalletToast('⏳ Mining is active! Remaining: ' + formatTimeRemaining(miningState.remaining));
+      } else if (miningState.state === 'claimable') {
+        const rate = parseFloat(getJurassicMinerRate(key));
+        cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + rate;
+        hfcBalance = Math.floor(cftBalance);
+        localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+        localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+        localStorage.removeItem('crazyfarm_jurassic_mine_start_' + key);
+
+        let claimedBonusPoints = 0;
+        if (key === 'dolphin') {
+          claimedBonusPoints = getJurassicMinerPointsRate('dolphin');
+          addPlayerPoints(claimedBonusPoints, 'dolphin_mining', false);
+        }
+
+        try { playSound('fanfare'); } catch(e){}
+        try { playSound('coin'); } catch(e){}
+        if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
+
+        updateDisplays();
+        if (typeof syncWalletView === 'function') syncWalletView();
+        if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+        if (typeof savePlayerDataToCloud === 'function') {
+          savePlayerDataToCloud();
+        } else if (typeof queueCloudSave === 'function') {
+          queueCloudSave();
+        }
+
+        if (claimedBonusPoints > 0) {
+          showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!`);
+        } else {
+          showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
+        }
+        openJurassicMinerModal(key);
+        updateJurassicBadges();
+      }
+    }
+
+    function updateJurassicBadges() {
+      const keys = ['dinosaur', 'dragon', 'phoenix', 'anaconda', 'dolphin'];
+      keys.forEach(k => {
+        const lvl = getJurassicMinerLevel(k);
+        const rate = getJurassicMinerRate(k, lvl);
+        const ptsBonus = (k === 'dolphin') ? getJurassicMinerPointsRate(k, lvl) : 0;
+        const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k 🌾' : ptsBonus + ' 🌾';
+        const miningState = getJurassicMiningState(k);
+        const badgeTxt = document.getElementById('mapBadgeText-cf3-' + k);
+        const badgeEl = document.getElementById('mapBadge-cf3-' + k);
+
+        if (badgeTxt) {
+          if (miningState.state === 'claimable') {
+            badgeTxt.innerText = (k === 'dolphin') ? `🎁 ${rate} CFT + ${ptsStr}` : `🎁 ${rate} CFT!`;
+            if (badgeEl) {
+              badgeEl.classList.remove('animate-bounce');
+              badgeEl.classList.add('animate-pulse', 'ring-2', 'ring-yellow-300');
+            }
+          } else if (miningState.state === 'mining') {
+            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⛏️` : `${rate} CFT ⛏️`;
+            if (badgeEl) {
+              badgeEl.classList.remove('animate-bounce', 'animate-pulse', 'ring-2', 'ring-yellow-300');
+            }
+          } else {
+            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⚡` : `${rate} CFT ⚡`;
+            if (badgeEl) {
+              badgeEl.classList.remove('animate-bounce', 'animate-pulse', 'ring-2', 'ring-yellow-300');
+            }
+          }
+        }
+      });
+    }
+
+    // Live 1s interval for countdown ticking in modal
+    setInterval(() => {
+      const modal = document.getElementById('jurassicMinerModal');
+      if (modal && modal.style.display !== 'none' && currentJurassicModalKey) {
+        updateJurassicMinerModalActionUI(currentJurassicModalKey);
+      }
+    }, 1000);
 
     // Animal Farms System (All 15 animal farms are 24-Hour cycles)
     const ANIMAL_FARM_DURATION_SEC = 24 * 3600;
@@ -13811,494 +14307,6 @@ window.addEventListener('load', () => {
 
       closeGiftModal();
     }
-
-    // ==================== JURASSIC MINERS ECOSYSTEM (5 PREHISTORIC CFT MINERS - 3X RATES) ====================
-    const JURASSIC_CYCLE_MS = 24 * 3600 * 1000; // 24 Hours in ms
-
-    const JURASSIC_MINERS = {
-      dinosaur: {
-        id: 'dinosaur',
-        name: 'T-Rex Emperor',
-        emoji: '🦖',
-        image: 'assets/farms/jurassic_dinosaur.jpg',
-        tier: 'Apex Legendary',
-        tierColor: 'from-amber-500 to-red-600',
-        badgeBorder: 'border-amber-400',
-        textColor: 'text-yellow-300',
-        mineAsset: 'CFT',
-        baseRate: 3.00, // CFT per 24h (3x of 1.00)
-        rateBoostPerLvl: 1.50, // (3x of 0.50) -> Lv 10: 16.50 CFT
-        upgradeCosts: [
-          2000000,  // Lv 2 (2M)
-          4500000,  // Lv 3 (4.5M)
-          8000000,  // Lv 4 (8M)
-          14000000, // Lv 5 (14M)
-          22000000, // Lv 6 (22M)
-          32000000, // Lv 7 (32M)
-          45000000, // Lv 8 (45M)
-          60000000, // Lv 9 (60M)
-          80000000  // Lv 10 (80M)
-        ],
-        desc: 'Apex predator of the sanctuary, yielding 3.00 CFT daily at Level 1 up to 16.50 CFT at Max Level 10!'
-      },
-      dragon: {
-        id: 'dragon',
-        name: 'Ancient Dragon',
-        emoji: '🐉',
-        image: 'assets/farms/jurassic_dragon.jpg',
-        tier: 'Ancient Mythic',
-        tierColor: 'from-red-600 to-amber-600',
-        badgeBorder: 'border-red-400',
-        textColor: 'text-rose-300',
-        mineAsset: 'CFT',
-        baseRate: 2.25, // CFT per 24h (3x of 0.75)
-        rateBoostPerLvl: 0.90, // (3x of 0.30) -> Lv 10: 10.35 CFT
-        upgradeCosts: [
-          1000000,  // Lv 2 (1M)
-          2500000,  // Lv 3 (2.5M)
-          5000000,  // Lv 4 (5M)
-          8000000,  // Lv 5 (8M)
-          13000000, // Lv 6 (13M)
-          20000000, // Lv 7 (20M)
-          28000000, // Lv 8 (28M)
-          38000000, // Lv 9 (38M)
-          50000000  // Lv 10 (50M)
-        ],
-        desc: 'Volcanic ancient beast channeling blazing dragonfire, yielding 2.25 CFT daily up to 10.35 CFT at Level 10!'
-      },
-      phoenix: {
-        id: 'phoenix',
-        name: 'Fire Phoenix',
-        emoji: '🦅',
-        image: 'assets/farms/jurassic_phoenix.jpg',
-        tier: 'Eternal Mythic',
-        tierColor: 'from-orange-500 to-yellow-500',
-        badgeBorder: 'border-orange-400',
-        textColor: 'text-amber-200',
-        mineAsset: 'CFT',
-        baseRate: 1.50, // CFT per 24h (3x of 0.50)
-        rateBoostPerLvl: 0.60, // (3x of 0.20) -> Lv 10: 6.90 CFT
-        upgradeCosts: [
-          600000,   // Lv 2 (600k)
-          1500000,  // Lv 3 (1.5M)
-          3000000,  // Lv 4 (3M)
-          5000000,  // Lv 5 (5M)
-          8000000,  // Lv 6 (8M)
-          12000000, // Lv 7 (12M)
-          18000000, // Lv 8 (18M)
-          25000000, // Lv 9 (25M)
-          35000000  // Lv 10 (35M)
-        ],
-        desc: 'Legendary firebird reborn from ashes, producing 1.50 CFT daily up to 6.90 CFT at Level 10!'
-      },
-      anaconda: {
-        id: 'anaconda',
-        name: 'Titan Anaconda',
-        emoji: '🐍',
-        image: 'assets/farms/jurassic_anaconda.jpg',
-        tier: 'Prime Beast',
-        tierColor: 'from-yellow-600 to-lime-600',
-        badgeBorder: 'border-lime-400',
-        textColor: 'text-lime-300',
-        mineAsset: 'CFT',
-        baseRate: 0.75, // CFT per 24h (3x of 0.25)
-        rateBoostPerLvl: 0.30, // (3x of 0.10) -> Lv 10: 3.45 CFT
-        upgradeCosts: [
-          300000,   // Lv 2 (300k)
-          700000,   // Lv 3 (700k)
-          1500000,  // Lv 4 (1.5M)
-          2500000,  // Lv 5 (2.5M)
-          4500000,  // Lv 6 (4.5M)
-          7000000,  // Lv 7 (7M)
-          11000000, // Lv 8 (11M)
-          16000000, // Lv 9 (16M)
-          22000000  // Lv 10 (22M)
-        ],
-        desc: 'Prime titan serpent guarding mineral swamps, yielding 0.75 CFT daily up to 3.45 CFT at Level 10.'
-      },
-      dolphin: {
-        id: 'dolphin',
-        name: 'Mystic Dolphin',
-        emoji: '🐬',
-        image: 'assets/farms/jurassic_dolphin.jpg',
-        tier: 'Aquatic Guardian',
-        tierColor: 'from-cyan-500 to-blue-600',
-        badgeBorder: 'border-cyan-400',
-        textColor: 'text-cyan-200',
-        mineAsset: 'CFT',
-        baseRate: 0.30, // CFT per 24h (3x of 0.10)
-        rateBoostPerLvl: 0.15, // (3x of 0.05) -> Lv 10: 1.65 CFT
-        pointsYieldTable: [
-          50000,   // Lv 1: 50k
-          75000,   // Lv 2: 75k
-          110000,  // Lv 3: 110k
-          150000,  // Lv 4: 150k
-          200000,  // Lv 5: 200k
-          260000,  // Lv 6: 260k
-          330000,  // Lv 7: 330k
-          400000,  // Lv 8: 400k
-          450000,  // Lv 9: 450k
-          500000   // Lv 10: 500k Max
-        ],
-        upgradeCosts: [
-          100000,  // Lv 2 (100k)
-          200000,  // Lv 3 (200k)
-          400000,  // Lv 4 (400k)
-          800000,  // Lv 5 (800k)
-          1500000, // Lv 6 (1.5M)
-          2500000, // Lv 7 (2.5M)
-          4000000, // Lv 8 (4M)
-          6000000, // Lv 9 (6M)
-          9000000  // Lv 10 (9M)
-        ],
-        desc: 'Aquatic guardian of the lagoon, yielding up to 1.65 CFT plus an abundant 500,000 Farm Points daily to supercharge your farm!'
-      }
-    };
-
-    let currentJurassicModalKey = 'dinosaur';
-
-    function getJurassicMinerLevel(key) {
-      try {
-        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
-        const val = parseInt(stored[key], 10);
-        return (!isNaN(val) && val >= 1) ? Math.min(val, 10) : 1;
-      } catch(e) {
-        return 1;
-      }
-    }
-
-    function setJurassicMinerLevel(key, lvl) {
-      try {
-        const stored = JSON.parse(localStorage.getItem('crazyfarm_jurassic_levels') || '{}');
-        stored[key] = Math.min(Math.max(lvl, 1), 10);
-        localStorage.setItem('crazyfarm_jurassic_levels', JSON.stringify(stored));
-      } catch(e) {}
-    }
-
-    function getJurassicMinerRate(key, lvl) {
-      const m = JURASSIC_MINERS[key];
-      if (!m) return '0.00';
-      const actualLvl = lvl || getJurassicMinerLevel(key);
-      const val = m.baseRate + (actualLvl - 1) * m.rateBoostPerLvl;
-      return val.toFixed(2);
-    }
-
-    function getJurassicMinerPointsRate(key, lvl) {
-      const m = JURASSIC_MINERS[key];
-      if (!m || !m.pointsYieldTable) return 0;
-      const actualLvl = lvl || getJurassicMinerLevel(key);
-      const idx = Math.min(Math.max(actualLvl - 1, 0), m.pointsYieldTable.length - 1);
-      return m.pointsYieldTable[idx] || 0;
-    }
-
-    function getJurassicMinerUpgradeCost(key, lvl) {
-      const m = JURASSIC_MINERS[key];
-      if (!m) return null;
-      const actualLvl = lvl || getJurassicMinerLevel(key);
-      if (actualLvl >= 10) return null; // Max Level
-      const idx = actualLvl - 1;
-      return m.upgradeCosts[idx] || 10000000;
-    }
-
-    function formatTimeRemaining(ms) {
-      if (ms <= 0) return '00:00:00';
-      const totalSec = Math.floor(ms / 1000);
-      const h = Math.floor(totalSec / 3600);
-      const m = Math.floor((totalSec % 3600) / 60);
-      const s = totalSec % 60;
-      return `${h}h ${m}m ${s < 10 ? '0' : ''}${s}s`;
-    }
-
-    function getJurassicMiningState(key) {
-      const start = Number(localStorage.getItem('crazyfarm_jurassic_mine_start_' + key)) || 0;
-      if (start === 0) return { state: 'idle' };
-      const elapsed = Date.now() - start;
-      if (elapsed >= JURASSIC_CYCLE_MS) {
-        return { state: 'claimable', elapsed };
-      }
-      return { state: 'mining', remaining: JURASSIC_CYCLE_MS - elapsed, elapsed };
-    }
-
-    let lastJurassicModalCloseTime = 0;
-
-    function openJurassicMinerModal(key) {
-      // Prevent mobile ghost-clicks immediately after closing
-      if (Date.now() - lastJurassicModalCloseTime < 450) {
-        console.log('Ignored ghost-click on Jurassic animal hotspot:', key);
-        return;
-      }
-      if (!isCrazyFarm3Unlocked) {
-        try { playSound('click'); } catch(e){}
-        showWalletToast('🔒 Unlock Jurassic Farm with 15,000,000 points (15M 🌾) first!');
-        return;
-      }
-      const miner = JURASSIC_MINERS[key];
-      if (!miner) return;
-      currentJurassicModalKey = key;
-
-      // Temporarily disable map hotspots underneath to prevent touch leaking through
-      const cf3Container = document.getElementById('cf3AnimalsContainer');
-      if (cf3Container) cf3Container.style.pointerEvents = 'none';
-
-      const lvl = getJurassicMinerLevel(key);
-      const rate = getJurassicMinerRate(key, lvl);
-      const nextBoost = miner.rateBoostPerLvl.toFixed(2);
-      const upgradeCost = getJurassicMinerUpgradeCost(key, lvl);
-
-      const modal = document.getElementById('jurassicMinerModal');
-      const iconEl = document.getElementById('jmModalIcon');
-      const nameEl = document.getElementById('jmModalName');
-      const tierEl = document.getElementById('jmModalTier');
-      const lvlEl = document.getElementById('jmModalLevel');
-      const rateEl = document.getElementById('jmModalMiningRate');
-      const nextBoostEl = document.getElementById('jmModalNextBoost');
-      const descEl = document.getElementById('jmModalDesc');
-      const costEl = document.getElementById('jmModalUpgradeCost');
-      const upgradeBtn = document.getElementById('jmModalUpgradeBtn');
-      const imgEl = document.getElementById('jmModalImg');
-
-      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
-      const AR_NAMES = {
-        dinosaur: 'إمبراطور الديناصورات (T-Rex)',
-        dragon: 'التنين المجنح الأسطوري (Dragon)',
-        phoenix: 'طائر العنقاء الناري (Phoenix)',
-        anaconda: 'الأناكندا العملاقة (Anaconda)',
-        dolphin: 'الدولفين السحري (Dolphin)'
-      };
-      const AR_TIERS = {
-        'Apex Legendary': 'رتبة قمة الأساطير 👑',
-        'Ancient Mythic': 'رتبة الميثيك العتيق 🔥',
-        'Eternal Mythic': 'رتبة الخلود الأبدي 🦅',
-        'Prime Beast': 'رتبة الوحش الأولي 🐍',
-        'Aquatic Guardian': 'حارس الأعماق المائية 🐬'
-      };
-
-      if (iconEl) iconEl.innerText = miner.emoji;
-      if (nameEl) nameEl.innerText = isAr ? (AR_NAMES[key] || miner.name) : miner.name;
-      if (tierEl) tierEl.innerText = isAr ? (AR_TIERS[miner.tier] || miner.tier) : miner.tier;
-      if (lvlEl) lvlEl.innerText = isAr ? (lvl >= 10 ? 'مستوى 10 👑' : 'مستوى ' + lvl) : (lvl >= 10 ? 'Lv. 10 👑' : 'Lv. ' + lvl);
-
-      if (key === 'dolphin') {
-        const curPts = getJurassicMinerPointsRate('dolphin', lvl);
-        const nextPts = lvl < 10 ? getJurassicMinerPointsRate('dolphin', lvl + 1) : curPts;
-        const ptsDiff = nextPts - curPts;
-        const curPtsStr = curPts >= 1000 ? (curPts / 1000) + 'k' : curPts;
-        const diffPtsStr = ptsDiff >= 1000 ? (ptsDiff / 1000) + 'k' : ptsDiff;
-        if (rateEl) rateEl.innerHTML = `<span>${rate} CFT</span> <span class="text-lime-300 font-extrabold">+ ${curPtsStr} 🌾</span> <span class="text-[10px] text-amber-200">/ ${isAr ? '24 ساعة' : '24h'}</span>`;
-        if (nextBoostEl) {
-          nextBoostEl.innerHTML = lvl >= 10 
-            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
-            : `+${nextBoost} CFT & <span class="text-lime-300 font-black">+${diffPtsStr} 🌾</span>`;
-        }
-      } else {
-        if (rateEl) rateEl.innerText = rate + (isAr ? ' CFT / 24 ساعة' : ' CFT / 24h');
-        if (nextBoostEl) {
-          nextBoostEl.innerText = lvl >= 10 
-            ? (isAr ? 'تم الوصول لأقصى مستوى 👑' : 'MAX LEVEL REACHED 👑') 
-            : ('+' + nextBoost + (isAr ? ' CFT / يومياً' : ' CFT / day'));
-        }
-      }
-
-      if (descEl) descEl.innerText = miner.desc;
-      if (imgEl && miner.image) imgEl.src = miner.image;
-
-      if (upgradeBtn && costEl) {
-        if (lvl >= 10) {
-          costEl.innerText = isAr ? 'أقصى مستوى (مستوى 10 👑)' : 'MAX LEVEL (Lv. 10 👑)';
-          upgradeBtn.classList.add('opacity-60', 'pointer-events-none');
-        } else {
-          costEl.innerText = (isAr ? 'مستوى ' : 'Lv. ') + (lvl + 1) + ' (' + upgradeCost.toLocaleString() + ' 🌾)';
-          upgradeBtn.classList.remove('opacity-60', 'pointer-events-none');
-        }
-      }
-
-      updateJurassicMinerModalActionUI(key);
-
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
-      try { playSound('click'); } catch(e){}
-    }
-
-    function updateJurassicMinerModalActionUI(key) {
-      const mineBtn = document.getElementById('jmModalMineBtn');
-      const actionLabel = document.getElementById('jmModalMineActionLabel');
-      const statusLabel = document.getElementById('jmModalMineStatus');
-      if (!mineBtn || !actionLabel || !statusLabel) return;
-
-      const miner = JURASSIC_MINERS[key];
-      const lvl = getJurassicMinerLevel(key);
-      const rate = getJurassicMinerRate(key, lvl);
-      const miningState = getJurassicMiningState(key);
-      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
-
-      if (miningState.state === 'idle') {
-        mineBtn.className = 'btn-3d-green py-2.5 px-2 rounded-2xl text-white font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-xl border border-emerald-300';
-        actionLabel.innerHTML = isAr ? '<span>⛏️</span> بدء التعدين 24 ساعة' : '<span>⛏️</span> START 24H MINING';
-        statusLabel.innerText = isAr ? 'جاهز للتعدين' : 'Ready to Mine';
-      } else if (miningState.state === 'mining') {
-        mineBtn.className = 'py-2.5 px-2 rounded-2xl text-amber-200 font-black text-xs flex flex-col items-center justify-center cursor-pointer bg-slate-900 border border-amber-500/70 shadow-lg';
-        actionLabel.innerHTML = isAr ? '<span>⏳</span> التعدين قيد التشغيل' : '<span>⏳</span> MINING ACTIVE';
-        statusLabel.innerText = formatTimeRemaining(miningState.remaining);
-      } else if (miningState.state === 'claimable') {
-        mineBtn.className = 'btn-3d-yellow py-2.5 px-2 rounded-2xl text-amber-950 font-black text-xs flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xl border border-yellow-200 animate-bounce';
-        actionLabel.innerHTML = isAr ? '<span>💎</span> استلام المكافأة' : '<span>💎</span> CLAIM REWARD';
-        if (key === 'dolphin') {
-          const ptsBonus = getJurassicMinerPointsRate('dolphin', lvl);
-          const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k' : ptsBonus;
-          statusLabel.innerText = isAr ? ('+' + rate + ' CFT و +' + ptsStr + ' 🌾 جاهز!') : ('+' + rate + ' CFT & +' + ptsStr + ' 🌾 Ready!');
-        } else {
-          statusLabel.innerText = isAr ? ('+' + rate + ' CFT جاهز للاستلام!') : ('+' + rate + ' CFT Ready!');
-        }
-      }
-    }
-
-    function closeJurassicMinerModal() {
-      lastJurassicModalCloseTime = Date.now();
-      currentJurassicModalKey = null;
-      try { playSound('pop'); } catch(e){}
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        try { window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
-      }
-      const modal = document.getElementById('jurassicMinerModal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-      }
-      // Re-enable map hotspots after touch ghost-click window has safely passed
-      setTimeout(() => {
-        const cf3Container = document.getElementById('cf3AnimalsContainer');
-        if (cf3Container) cf3Container.style.pointerEvents = 'auto';
-      }, 450);
-    }
-
-    function upgradeJurassicMinerFromModal() {
-      if (!currentJurassicModalKey) return;
-      const key = currentJurassicModalKey;
-      const lvl = getJurassicMinerLevel(key);
-      if (lvl >= 10) {
-        try { playSound('error'); } catch(e){}
-        showWalletToast('🏆 Enclosure reached Max Level 10!');
-        return;
-      }
-      const cost = getJurassicMinerUpgradeCost(key, lvl);
-      if (points < cost) {
-        try { playSound('error'); } catch(e){}
-        showWalletToast('🌾 Insufficient points! Need ' + cost.toLocaleString() + ' Farm Points.');
-        return;
-      }
-      deductPlayerPoints(cost, 'jurassic_upgrade', false);
-      
-      const newLvl = lvl + 1;
-      setJurassicMinerLevel(key, newLvl);
-      updateDisplays();
-      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
-      if (typeof savePlayerDataToCloud === 'function') {
-        savePlayerDataToCloud();
-      } else if (typeof queueCloudSave === 'function') {
-        queueCloudSave();
-      }
-
-      try { playSound('level_up'); } catch(e){}
-      showWalletToast('🚀 Upgraded ' + JURASSIC_MINERS[key].name + ' to Level ' + newLvl + '!');
-      openJurassicMinerModal(key);
-      updateJurassicBadges();
-    }
-
-    function triggerJurassicMiningFromModal() {
-      if (!currentJurassicModalKey) return;
-      const key = currentJurassicModalKey;
-      const miner = JURASSIC_MINERS[key];
-      const miningState = getJurassicMiningState(key);
-
-      if (miningState.state === 'idle') {
-        localStorage.setItem('crazyfarm_jurassic_mine_start_' + key, String(Date.now()));
-        try { playSound('chime'); } catch(e){}
-        showWalletToast('⛏️ 24h Mining started for ' + miner.name + '! Check back in 24 hours.');
-        openJurassicMinerModal(key);
-        updateJurassicBadges();
-        if (typeof queueCloudSave === 'function') queueCloudSave();
-      } else if (miningState.state === 'mining') {
-        try { playSound('click'); } catch(e){}
-        showWalletToast('⏳ Mining is active! Remaining: ' + formatTimeRemaining(miningState.remaining));
-      } else if (miningState.state === 'claimable') {
-        const rate = parseFloat(getJurassicMinerRate(key));
-        cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + rate;
-        hfcBalance = Math.floor(cftBalance);
-        localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
-        localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
-        localStorage.removeItem('crazyfarm_jurassic_mine_start_' + key);
-
-        let claimedBonusPoints = 0;
-        if (key === 'dolphin') {
-          claimedBonusPoints = getJurassicMinerPointsRate('dolphin');
-          addPlayerPoints(claimedBonusPoints, 'dolphin_mining', false);
-        }
-
-        try { playSound('fanfare'); } catch(e){}
-        try { playSound('coin'); } catch(e){}
-        if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
-
-        updateDisplays();
-        if (typeof syncWalletView === 'function') syncWalletView();
-        if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
-        if (typeof savePlayerDataToCloud === 'function') {
-          savePlayerDataToCloud();
-        } else if (typeof queueCloudSave === 'function') {
-          queueCloudSave();
-        }
-
-        if (claimedBonusPoints > 0) {
-          showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!`);
-        } else {
-          showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
-        }
-        openJurassicMinerModal(key);
-        updateJurassicBadges();
-      }
-    }
-
-    function updateJurassicBadges() {
-      const keys = ['dinosaur', 'dragon', 'phoenix', 'anaconda', 'dolphin'];
-      keys.forEach(k => {
-        const lvl = getJurassicMinerLevel(k);
-        const rate = getJurassicMinerRate(k, lvl);
-        const ptsBonus = (k === 'dolphin') ? getJurassicMinerPointsRate(k, lvl) : 0;
-        const ptsStr = ptsBonus >= 1000 ? (ptsBonus / 1000) + 'k 🌾' : ptsBonus + ' 🌾';
-        const miningState = getJurassicMiningState(k);
-        const badgeTxt = document.getElementById('mapBadgeText-cf3-' + k);
-        const badgeEl = document.getElementById('mapBadge-cf3-' + k);
-
-        if (badgeTxt) {
-          if (miningState.state === 'claimable') {
-            badgeTxt.innerText = (k === 'dolphin') ? `🎁 ${rate} CFT + ${ptsStr}` : `🎁 ${rate} CFT!`;
-            if (badgeEl) {
-              badgeEl.classList.remove('animate-bounce');
-              badgeEl.classList.add('animate-pulse', 'ring-2', 'ring-yellow-300');
-            }
-          } else if (miningState.state === 'mining') {
-            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⛏️` : `${rate} CFT ⛏️`;
-            if (badgeEl) {
-              badgeEl.classList.remove('animate-bounce', 'animate-pulse', 'ring-2', 'ring-yellow-300');
-            }
-          } else {
-            badgeTxt.innerText = (k === 'dolphin') ? `${rate} CFT + ${ptsStr} ⚡` : `${rate} CFT ⚡`;
-            if (badgeEl) {
-              badgeEl.classList.remove('animate-bounce', 'animate-pulse', 'ring-2', 'ring-yellow-300');
-            }
-          }
-        }
-      });
-    }
-
-    // Live 1s interval for countdown ticking in modal
-    setInterval(() => {
-      const modal = document.getElementById('jurassicMinerModal');
-      if (modal && modal.style.display !== 'none' && currentJurassicModalKey) {
-        updateJurassicMinerModalActionUI(currentJurassicModalKey);
-      }
-    }, 1000);
 
     // ==================== ONBOARDING STORY INTRO SYSTEM ====================
     let currentOnboardingIndex = 0;
