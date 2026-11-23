@@ -43,7 +43,7 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 if not BOT_TOKEN:
     print("[CRITICAL ERROR] TELEGRAM_BOT_TOKEN is not set in environment or .env file!")
 
-WEBAPP_URL = os.getenv("WEBAPP_URL", "https://ahmedzaid0100.github.io/happyfarm/")
+WEBAPP_URL = os.getenv("WEBAPP_URL", "https://crazyfarm.space/")
 CHANNEL_URL = os.getenv("CHANNEL_URL", "https://t.me/crazyfarmgamey")
 
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -152,6 +152,36 @@ def record_referral_in_supabase(inviter_id, new_user_id):
                 print(f"🎉 [Bot] Recorded referral: Inviter {inviter_num} now has {fd['invited_friends_count']} friends (Referred by: {new_id_num})")
     except Exception as e:
         print(f"[Bot] Error recording referral: {e}")
+
+def sync_player_profile_in_supabase(user_id, username, first_name, last_name=None):
+    """Registers or updates player's real name and username in Supabase when they interact with the bot."""
+    if not user_id:
+        return
+    try:
+        display_name = " ".join(filter(None, [first_name, last_name])).strip() or username or "Farmer"
+        uname = username or first_name or "Farmer"
+        
+        url = f"{SUPABASE_URL}/rest/v1/players"
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates"
+        }
+        payload = {
+            "telegram_id": int(user_id),
+            "username": uname,
+            "full_name": display_name,
+            "last_active": time.strftime("%Y-%m-%dT%H:%M:%S+00:00", time.gmtime())
+        }
+        if USE_REQUESTS and session:
+            resp = session.post(url, headers=headers, json=payload, timeout=10)
+            if resp.status_code in (200, 201, 204):
+                print(f"✅ [Bot] Synced real Telegram profile for {display_name} (@{uname}, ID: {user_id})")
+            else:
+                print(f"[Bot] Profile sync status: {resp.status_code} - {resp.text}")
+    except Exception as e:
+        print(f"[Bot] Error syncing player profile: {e}")
 
 def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=None):
     is_ar = is_arabic_user(lang_code)
@@ -481,6 +511,7 @@ def run_bot_polling():
 
                         if text.startswith("/start"):
                             print(f"📥 /start from: {first_name} (@{username}, Lang: {lang_code}, ID: {user.get('id')})")
+                            sync_player_profile_in_supabase(user.get("id"), username, first_name, user.get("last_name"))
                             parts = text.split()
                             ref_id = None
                             if len(parts) > 1:

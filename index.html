@@ -4518,7 +4518,7 @@
       missions: [
         { id: 'login', icon: '📅', titleEn: 'Daily Check-in', titleAr: 'تسجيل الدخول اليومي', descEn: 'Log in to your farm today', descAr: 'افتح اللعبة وسجل دخولك اليوم', target: 1, actPts: 10, rewardPts: 500, actionType: 'login' },
         { id: 'ads', icon: '🎬', titleEn: 'Super Ad Supporter', titleAr: 'داعم المزرعة السوبر', descEn: 'Watch 3 ads to support the farm', descAr: 'شاهد 3 إعلانات لدعم وتطوير المزرعة', target: 3, actPts: 30, rewardPts: 2000, actionType: 'ad' },
-        { id: 'harvest', icon: '🌾', titleEn: 'Active Harvester', titleAr: 'المزارع النشط', descEn: 'Harvest any 3 animal farms', descAr: 'احصد من أي 3 حظائر حيوانات', target: 3, actPts: 20, rewardPts: 800, actionType: 'harvest' },
+        { id: 'harvest', icon: '🌾', titleEn: 'Active Harvester', titleAr: 'المزارع النشط', descEn: 'Harvest any 3 farms (Animals, Bee or Jurassic)', descAr: 'احصد 3 مرات من أي حظيرة أو مزرعة النحل أو الجوراسيك', target: 3, actPts: 20, rewardPts: 800, actionType: 'harvest' },
         { id: 'wheel', icon: '🎡', titleEn: 'Fortune Spin', titleAr: 'عجلة الحظ', descEn: 'Spin the Fortune Wheel once', descAr: 'قم بتدوير عجلة الحظ مرة واحدة', target: 1, actPts: 15, rewardPts: 600, actionType: 'wheel' },
         { id: 'battle', icon: '⚔️', titleEn: 'Arena Champion', titleAr: 'بطل المعارك', descEn: 'Fight 1 battle in 3D Arena', descAr: 'خض معركة واحدة في حلبة 3D Battle', target: 1, actPts: 15, rewardPts: 800, actionType: 'battle' },
         { id: 'sprint', icon: '🏃', titleEn: '15s Run Rush', titleAr: 'سباق الركض السريع', descEn: 'Play 1 round of 15s Run Sprint', descAr: 'العب جولة واحدة في سباق 15s Run Sprint', target: 1, actPts: 10, rewardPts: 500, actionType: 'sprint' }
@@ -4598,23 +4598,26 @@
 
     function recordDailyActivityProgress(type, amount = 1) {
       if (!dailyActivityState) initDailyActivity();
-      if (!dailyActivityState || !dailyActivityState.progress) return;
+      if (!dailyActivityState || !dailyActivityState.progress) return null;
 
       const mission = DAILY_ACTIVITY_CONFIG.missions.find(m => m.id === type);
-      if (!mission) return;
+      if (!mission) return null;
 
       const cur = Number(dailyActivityState.progress[type]) || 0;
       if (cur < mission.target) {
         dailyActivityState.progress[type] = Math.min(mission.target, cur + amount);
         saveDailyActivityState();
         updateDailyActivityUI();
-        if (dailyActivityState.progress[type] >= mission.target) {
+        const completed = dailyActivityState.progress[type] >= mission.target;
+        if (completed) {
           const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
           const toastMsg = isAr ? ('📋 اكتملت مهمة: ' + mission.titleAr + '! ادخل واستلم مكافأتك 🎁') : ('📋 Mission completed: ' + mission.titleEn + '! Claim your reward 🎁');
           showWalletToast(toastMsg);
           try { playSound('chime'); } catch(e){}
         }
+        return { cur: dailyActivityState.progress[type], target: mission.target, completed: completed };
       }
+      return { cur: cur, target: mission.target, completed: true };
     }
 
     function claimDailyMission(missionId) {
@@ -6985,6 +6988,19 @@
         try { playSound('coin'); } catch(e){}
         if (typeof triggerCoinBurstAnimation === 'function') triggerCoinBurstAnimation();
 
+        let jurProgSuffix = '';
+        if (typeof recordDailyActivityProgress === 'function') {
+          const prog = recordDailyActivityProgress('harvest', 1);
+          if (prog) {
+            const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+            if (prog.completed) {
+              jurProgSuffix = isAr ? ' | 🌾 اكتملت مهمة الحصاد! 🎁' : ' | 🌾 Active Harvester Complete! 🎁';
+            } else {
+              jurProgSuffix = isAr ? (' | 🌾 الحصاد اليومي: ' + prog.cur + '/' + prog.target) : (' | 🌾 Active Harvester: ' + prog.cur + '/' + prog.target);
+            }
+          }
+        }
+
         updateDisplays();
         if (typeof syncWalletView === 'function') syncWalletView();
         if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
@@ -6995,9 +7011,9 @@
         }
 
         if (claimedBonusPoints > 0) {
-          showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!`);
+          showWalletToast(`💎 Claimed +${rate.toFixed(2)} CFT & +${claimedBonusPoints.toLocaleString()} 🌾 Points from Mystic Dolphin!` + jurProgSuffix);
         } else {
-          showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!');
+          showWalletToast('💎 Claimed +' + rate.toFixed(2) + ' CFT from ' + miner.name + '!' + jurProgSuffix);
         }
         openJurassicMinerModal(key);
         updateJurassicBadges();
@@ -7739,6 +7755,19 @@
         localStorage.setItem('crazyfarm_last_crazy_box_points', lastCrazyBoxPointsTimestamp);
       } catch(e){}
 
+      let beeProgSuffix = '';
+      if (typeof recordDailyActivityProgress === 'function') {
+        const prog = recordDailyActivityProgress('harvest', 1);
+        if (prog) {
+          const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+          if (prog.completed) {
+            beeProgSuffix = isAr ? ' | 🌾 اكتملت مهمة الحصاد! 🎁' : ' | 🌾 Active Harvester Complete! 🎁';
+          } else {
+            beeProgSuffix = isAr ? (' | 🌾 الحصاد اليومي: ' + prog.cur + '/' + prog.target) : (' | 🌾 Active Harvester: ' + prog.cur + '/' + prog.target);
+          }
+        }
+      }
+
       queueCloudSave();
       updateDisplays();
 
@@ -7754,7 +7783,7 @@
         setTimeout(() => { floater.remove(); }, 1200);
       }
 
-      showWalletToast('\u{1F389} Claimed +' + dailyRate + ' Farm Points! New 24h cycle started.');
+      showWalletToast('🎉 Claimed +' + dailyRate + ' Farm Points! New 24h cycle started.' + beeProgSuffix);
     }
 
     function toggleBeeSound() {
@@ -8020,7 +8049,7 @@
     // Collect Farm Reward (Collect = normal points, Collect 2x = Ad for Double points - Chicken & Duck only)
     function collectFarmReward(key, isDouble = false) { if (!ActionLock.run("farm_" + key, 1000, () => _doCollectFarmReward(key, isDouble))) return; } function _doCollectFarmReward(key, isDouble = false) {
       const farm = adFarms[key];
-      if (!farm || farm.state !== 'ready_to_collect') return;
+      if (!farm || (farm.state !== 'ready_to_collect' && farm.state !== 'claimable')) return;
 
       const canDouble = (key === 'chicken' || key === 'duck');
       if (isDouble && canDouble) {
@@ -8046,7 +8075,20 @@
 
       playSound(isDouble ? 'fanfare' : 'coin');
       saveAnimalFarmsState();
-      if (typeof recordDailyActivityProgress === 'function') recordDailyActivityProgress('harvest', 1);
+
+      let progToastSuffix = '';
+      if (typeof recordDailyActivityProgress === 'function') {
+        const prog = recordDailyActivityProgress('harvest', 1);
+        if (prog) {
+          const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+          if (prog.completed) {
+            progToastSuffix = isAr ? ' | 🌾 اكتملت مهمة الحصاد! 🎁' : ' | 🌾 Active Harvester Complete! 🎁';
+          } else {
+            progToastSuffix = isAr ? (' | 🌾 الحصاد اليومي: ' + prog.cur + '/' + prog.target) : (' | 🌾 Active Harvester: ' + prog.cur + '/' + prog.target);
+          }
+        }
+      }
+
       updateDisplays();
       queueCloudSave();
       renderAdFarmAction(key);
@@ -8063,7 +8105,7 @@
         setTimeout(() => floater.remove(), 1000);
       }
 
-      showWalletToast('&#127881; Collected +' + earned + ' points from ' + farm.name + (isDouble ? ' (2x Double Reward!)' : '!'));
+      showWalletToast('🎉 Collected +' + earned + ' points from ' + farm.name + (isDouble ? ' (2x Double Reward!)' : '!') + progToastSuffix);
     }
 
     // ==================== FARM COLLECT MODAL ====================
@@ -12854,6 +12896,29 @@
               try { localStorage.setItem('crazyfarm_comp_100k_v1', 'true'); } catch(e){}
             }
 
+            if (data.farms_data.daily_activity && typeof data.farms_data.daily_activity === 'object') {
+              try {
+                const cloudDaily = data.farms_data.daily_activity;
+                const today = getTodayUtcDateStr();
+                if (cloudDaily && cloudDaily.date === today) {
+                  if (!dailyActivityState || dailyActivityState.date !== today) {
+                    dailyActivityState = cloudDaily;
+                  } else {
+                    Object.keys(cloudDaily.progress || {}).forEach(k => {
+                      dailyActivityState.progress[k] = Math.max(
+                        Number(dailyActivityState.progress[k]) || 0,
+                        Number(cloudDaily.progress[k]) || 0
+                      );
+                    });
+                    dailyActivityState.claimedMissions = Object.assign({}, cloudDaily.claimedMissions, dailyActivityState.claimedMissions);
+                    dailyActivityState.claimedChests = Object.assign({}, cloudDaily.claimedChests, dailyActivityState.claimedChests);
+                  }
+                  saveDailyActivityState();
+                  updateDailyActivityUI();
+                }
+              } catch(e){}
+            }
+
             calculateOfflineBeeMining();
           }
           // Sync loaded cloud state to local storage
@@ -13128,6 +13193,7 @@
           onboarding_seen: localStorage.getItem('crazyfarm_onboarding_seen') === 'true',
           ads_watched_total: totalAdsWatchedCount,
           last_withdrawal_time: lastWithdrawalTimestamp,
+          daily_activity: dailyActivityState,
           maintenance_compensation_100k: (localStorage.getItem('crazyfarm_comp_100k_v1') === 'true')
         },
         wallet_address: connectedWalletAddress || '',
