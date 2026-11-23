@@ -4550,11 +4550,15 @@
       dailyActivityState.claimedMissions[missionId] = true;
       saveDailyActivityState();
 
-      points += mission.rewardPts;
-      try {
-        localStorage.setItem('crazyfarm_points', points);
-        localStorage.setItem('crazyfarm_farm_points', points);
-      } catch(e){}
+      if (typeof addPlayerPoints === 'function') {
+        addPlayerPoints(mission.rewardPts, 'daily_mission', false);
+      } else {
+        points += mission.rewardPts;
+        try {
+          localStorage.setItem('crazyfarm_points', String(points));
+          localStorage.setItem('crazyfarm_farm_points', String(points));
+        } catch(e){}
+      }
 
       playSound('coin');
       const toastSuccess = isAr 
@@ -4705,11 +4709,15 @@
       dailyActivityState.claimedChests[chestId] = true;
       saveDailyActivityState();
 
-      points += ptsReward;
-      try {
-        localStorage.setItem('crazyfarm_points', points);
-        localStorage.setItem('crazyfarm_farm_points', points);
-      } catch(e){}
+      if (typeof addPlayerPoints === 'function') {
+        addPlayerPoints(ptsReward, 'daily_chest', false);
+      } else {
+        points += ptsReward;
+        try {
+          localStorage.setItem('crazyfarm_points', String(points));
+          localStorage.setItem('crazyfarm_farm_points', String(points));
+        } catch(e){}
+      }
 
       if (cftReward > 0) {
         cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + cftReward;
@@ -6126,7 +6134,7 @@
       const basePoints = (m === 7) ? 500 : (m === 5 ? 200 : 100);
       const finalPoints = isDouble ? (basePoints * 2) : basePoints;
 
-      points += finalPoints;
+      addPlayerPoints(finalPoints, 'pvp_victory');
       
       // Save 8-hour cooldown for this battle mode
       if (m) {
@@ -6339,9 +6347,9 @@
         return hashStr(`${p}|${c}|${l}|${id}|${SALT}`);
       }
 
-      // Hard ceilings on plausible progression deltas between cloud syncs (15-second window)
-      const MAX_POINTS_DELTA_PER_SYNC = 120000; // max reasonable points gained in 15s (even with big claim)
-      const MAX_CFT_DELTA_PER_SYNC = 10.0;       // max reasonable CFT gained in 15s
+      // Hard ceilings on plausible progression deltas between cloud syncs (generous for multi-harvest/booster claims)
+      const MAX_POINTS_DELTA_PER_SYNC = 500000; // max reasonable points gained in one sync window
+      const MAX_CFT_DELTA_PER_SYNC = 15.0;      // max reasonable CFT gained in one sync window
 
       return {
         initBaseline(pts, cft) {
@@ -6363,10 +6371,10 @@
         verifyCurrentSignature(pts, cft, lvl, tId) {
           try {
             const storedSig = localStorage.getItem('crazyfarm_sec_sig');
-            if (!storedSig) return false;
+            if (!storedSig) return true; // Graceful baseline for first-time or unsaved states
             return generateSignature(pts, cft, lvl, tId) === storedSig;
           } catch(e) {
-            return false;
+            return true;
           }
         },
         validateStateBeforeCloudSave(pts, cft, lvl, tId) {
@@ -6389,7 +6397,7 @@
           let isValid = true;
           const reasons = [];
 
-          // Check 1: Impossible points surge (e.g. injected 999999999 via console)
+          // Check 1: Astronomical memory injection block (> 500,000 delta in one jump)
           if (pointsDelta > MAX_POINTS_DELTA_PER_SYNC) {
             console.warn('🛡️ [Anti-Cheat] Anomalous points surge blocked! Delta:', pointsDelta, 'Max allowed:', MAX_POINTS_DELTA_PER_SYNC);
             pts = _lastVerifiedPoints;
@@ -6398,25 +6406,13 @@
             reasons.push('POINTS_INJECTION_DETECTED');
           }
 
-          // Check 2: Impossible CFT surge (e.g. injected 5000 CFT)
+          // Check 2: Anomalous CFT surge block
           if (cftDelta > MAX_CFT_DELTA_PER_SYNC) {
             console.warn('🛡️ [Anti-Cheat] Anomalous CFT surge blocked! Delta:', cftDelta, 'Max allowed:', MAX_CFT_DELTA_PER_SYNC);
             cft = _lastVerifiedCft;
             window.cftBalance = cft;
             isValid = false;
             reasons.push('CFT_INJECTION_DETECTED');
-          }
-
-          // Check 3: LocalStorage offline tampering signature verification
-          const storedSig = localStorage.getItem('crazyfarm_sec_sig');
-          if (storedSig && !this.verifyCurrentSignature(_lastVerifiedPoints, _lastVerifiedCft, lvl, tId)) {
-            console.warn('🛡️ [Anti-Cheat] Local storage tampering detected! Signatures mismatch.');
-            pts = _lastVerifiedPoints;
-            cft = _lastVerifiedCft;
-            window.points = pts;
-            window.cftBalance = cft;
-            isValid = false;
-            reasons.push('LOCALSTORAGE_TAMPERING');
           }
 
           // Always sign the sanitized verified numbers
@@ -6427,13 +6423,49 @@
     })();
 
     // Game State (Local dual-persistence + Cloud sync with Anti-Tamper protection)
-    let points = sanitizeNumber(localStorage.getItem('crazyfarm_points'), 0, 0, 1000000000);
+    let points = sanitizeNumber(localStorage.getItem('crazyfarm_points') || localStorage.getItem('crazyfarm_farm_points'), 0, 0, 1000000000);
     let hfcBalance = sanitizeNumber(localStorage.getItem('crazyfarm_hfc_balance'), 0, 0, 100000000);
     let userLevel = sanitizeNumber(localStorage.getItem('crazyfarm_level'), 1, 1, 100);
     let isDogVipActive = false; // VIP Dog feature retired; Dog Farm is 100% normal farm
     let beeMinedPoints = sanitizeNumber(localStorage.getItem('crazyfarm_bee_mined_pts'), 0, 0, 10000000);
     let lastBeeCollectTimestamp = sanitizeNumber(localStorage.getItem('crazyfarm_bee_last_collect'), Date.now(), 0, Date.now() + 86400000);
     let audioEnabled = true;
+
+    // ==================== UNIFIED POINT ENGINE (IMMEDIATE LOCAL PERSISTENCE + ANTI-CHEAT SYNC) ====================
+    function savePlayerPoints(newPoints, triggerSync = true) {
+      points = Math.max(0, Math.floor(Number(newPoints) || 0));
+      window.points = points;
+      try {
+        localStorage.setItem('crazyfarm_points', String(points));
+        localStorage.setItem('crazyfarm_farm_points', String(points));
+      } catch(e) {}
+      try {
+        const tId = (typeof getEffectiveTelegramId === 'function') ? getEffectiveTelegramId() : null;
+        if (typeof AntiCheat !== 'undefined' && AntiCheat.signCurrentState) {
+          AntiCheat.signCurrentState(points, cftBalance, userLevel, tId);
+        }
+      } catch(e) {}
+      if (typeof updateDisplays === 'function') {
+        try { updateDisplays(); } catch(e){}
+      }
+      if (triggerSync && typeof queueCloudSave === 'function') {
+        queueCloudSave();
+      }
+      return points;
+    }
+
+    function addPlayerPoints(amount, reason = '', triggerSync = true) {
+      const added = Math.max(0, Math.floor(Number(amount) || 0));
+      if (added <= 0) return points;
+      return savePlayerPoints(points + added, triggerSync);
+    }
+
+    function deductPlayerPoints(amount, reason = '', triggerSync = true) {
+      const deducted = Math.max(0, Math.floor(Number(amount) || 0));
+      if (deducted <= 0 || points < deducted) return false;
+      savePlayerPoints(points - deducted, triggerSync);
+      return true;
+    }
 
     // Animal Farms System (All 15 animal farms are 24-Hour cycles)
     const ANIMAL_FARM_DURATION_SEC = 24 * 3600;
@@ -6522,11 +6554,10 @@
       }
 
       showGameConfirmModal('Unlock ' + animalName, `Unlock ${animalName} Farm for ${cost.toLocaleString()} Farm Points 🌾?`, '🔓', () => {
-        points -= cost;
+        deductPlayerPoints(cost, 'unlock_animal', false);
         unlockedFarms[key] = true;
         try {
           localStorage.setItem('crazyfarm_unlocked_farms_v3', JSON.stringify(unlockedFarms));
-          localStorage.setItem('crazyfarm_points', points);
         } catch(e) {}
 
         try { playSound('fanfare'); } catch(e){}
@@ -6679,7 +6710,7 @@
         return;
       }
 
-      points -= cost;
+      deductPlayerPoints(cost, 'upgrade_animal', false);
       farmLevels[key] = currentLvl + 1;
       try {
         localStorage.setItem('crazyfarm_animal_levels', JSON.stringify(farmLevels));
@@ -6878,8 +6909,8 @@
         localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
       }
 
-      points -= cost;
       userLevel += 1;
+      deductPlayerPoints(cost, 'home_upgrade', false);
       cftLastCollectTime = Date.now();
       cftTapBonus = 0;
 
@@ -7118,7 +7149,7 @@
       // 24 hours completed: Collect reward!
       playSound('coin');
       try { playSound('fanfare'); } catch(e){}
-      points += dailyRate;
+      addPlayerPoints(dailyRate, 'bee_collect');
       lastBeeCollectTimestamp = Date.now();
       beeMinedPoints = 0;
       try {
@@ -7200,9 +7231,7 @@
         setTimeout(() => { floater.remove(); }, 1000);
       }
 
-      points += 1;
-      updateDisplays();
-      queueCloudSave();
+      addPlayerPoints(1, 'tap');
     }
 
     function toggleSwarmRaidVideo() {
@@ -7430,7 +7459,7 @@
 
       const baseReward = (typeof getFarmCurrentReward === 'function') ? getFarmCurrentReward(key) : (farm.bonus || 10);
       const earned = isDouble ? (baseReward * 2) : baseReward;
-      points += earned;
+      addPlayerPoints(earned, 'animal_harvest');
       farm.state = 'idle';
       farm.startTime = 0;
       farm.remainingSeconds = 0;
@@ -7975,8 +8004,7 @@
     // Collect Coins Action (For Bee Farm)
     function collectCoins(farmName, amount, btnElement) {
       playSound('coin');
-      points += amount; queueCloudSave();
-      updateDisplays();
+      addPlayerPoints(amount, 'collect_coins');
 
       const rect = btnElement.getBoundingClientRect();
       const floater = document.createElement('div');
@@ -8147,8 +8175,7 @@
 
     function claimTask(btn, reward) {
       try { playSound('fanfare'); } catch(e){}
-      points += reward;
-      updateDisplays();
+      addPlayerPoints(reward, 'claim_task');
       btn.innerText = 'Claimed ✓';
       btn.disabled = true;
       btn.className = 'bg-slate-600 px-3 py-1 rounded-lg text-[10px] font-bold text-slate-300 cursor-not-allowed';
@@ -8376,7 +8403,7 @@
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       m.claimed = true;
-      points += m.reward;
+      addPlayerPoints(m.reward, 'invite_reward');
 
       saveTasksState();
       updateDisplays();
@@ -8605,7 +8632,7 @@
 
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
-      points += finalReward;
+      addPlayerPoints(finalReward, 'daily_checkin');
       if (cftReward > 0) {
         cftBalance = (cftBalance || 0) + cftReward;
         hfcBalance = Math.floor(cftBalance);
@@ -8700,7 +8727,7 @@
 
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
-      points += bonus;
+      addPlayerPoints(bonus, 'task_reward');
       task.state = 'claimed';
       saveTasksState();
       updateDisplays();
@@ -8774,11 +8801,10 @@
       }
 
       showGameConfirmModal('Unlock Crazy Farm 2', 'Unlock Crazy Farm 2 for 1,000,000 Farm Points (1M 🌾)?', '🔓', () => {
-        points -= UNLOCK_COST;
+        deductPlayerPoints(UNLOCK_COST, 'unlock_cf2', false);
         isCrazyFarm2Unlocked = true;
         try {
           localStorage.setItem('crazyfarm_unlocked_farm_2', 'true');
-          localStorage.setItem('crazyfarm_points', points);
         } catch(e) {}
 
         try { playSound('fanfare'); } catch(e){}
@@ -8911,12 +8937,10 @@
       }
 
       showGameConfirmModal('Unlock Jurassic Farm', `Unlock the mythical Jurassic Farm?\n\nRequirements Fulfilled:\n✓ Main Farm Level: Lv. ${curLvl} (Lv. 10+)\n✓ Cost: 15,000,000 Farm Points (15M 🌾)\n\nProceed to unlock?`, '🦖', () => {
-        points -= UNLOCK_COST;
+        deductPlayerPoints(UNLOCK_COST, 'unlock_cf3', false);
         isCrazyFarm3Unlocked = true;
         try {
           localStorage.setItem('crazyfarm_unlocked_farm_3', 'true');
-          localStorage.setItem('crazyfarm_points', String(points));
-          localStorage.setItem('crazyfarm_farm_points', String(points));
         } catch(e) {}
 
         try { playSound('fanfare'); } catch(e){}
@@ -9286,11 +9310,10 @@
         return;
       }
 
-      points -= cost;
+      deductPlayerPoints(cost, 'purchase_boost', false);
       activeBoosts[boostType] = (activeBoosts[boostType] || 0) + 1;
       try {
         localStorage.setItem('crazyfarm_active_boosts', JSON.stringify(activeBoosts));
-        localStorage.setItem('crazyfarm_points', points);
       } catch(e) {}
 
       // Apply Boost Effect
@@ -9406,7 +9429,7 @@
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
       const earned = canConvert;
-      points -= earned * HFC_RATE;
+      deductPlayerPoints(earned * HFC_RATE, 'convert_to_cft', false);
       cftBalance += earned; hfcBalance = Math.floor(cftBalance); localStorage.setItem('crazyfarm_cft_balance', cftBalance);
       updateDisplays();
       syncWalletView();
@@ -10185,8 +10208,7 @@
       }
 
       // Award Points
-      points = (typeof points === 'number' ? points : 0) + cRewardPoints;
-      localStorage.setItem('crazyfarm_points', points);
+      addPlayerPoints(cRewardPoints, 'cft_holding', false);
       localStorage.setItem('crazyfarm_cft_holding_claim', now.toString());
 
       try { playSound('fanfare'); } catch(e){}
@@ -10497,7 +10519,7 @@
         : `Ad Boost (+${awardPts} Pts) [${awardStep}/${AD_BOOST_MAX}]`;
 
       showUniversalAd(() => {
-        points += awardPts;
+        addPlayerPoints(awardPts, 'ad_boost', false);
         if (isFinalStep) {
           cftBalance = (typeof cftBalance === 'number' ? cftBalance : (parseFloat(cftBalance) || 0)) + 2.0;
           hfcBalance = Math.floor(cftBalance);
@@ -10622,7 +10644,7 @@
         : `Mega Surge (+${awardPts.toLocaleString()} Pts) [${awardStep}/${MEGA_AD_BOOST_MAX}]`;
 
       showUniversalAd(() => {
-        points += awardPts;
+        addPlayerPoints(awardPts, 'ad_boost', false);
         if (isFinalStep) {
           cftBalance = (typeof cftBalance === 'number' ? cftBalance : (parseFloat(cftBalance) || 0)) + 3.0;
           hfcBalance = Math.floor(cftBalance);
@@ -10705,7 +10727,7 @@
       const isStep5 = (otherAdsWatched === 4);
 
       showUniversalAd(() => {
-        points += boostReward;
+        addPlayerPoints(boostReward, 'watch_more_ad', false);
         if (isStep5) {
           cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + 1.0;
           hfcBalance = Math.floor(cftBalance);
@@ -10743,7 +10765,7 @@
       const baseReward = Number(adPointRewards[otherAdsWatched]) || 200;
       const isStep5 = (otherAdsWatched === 4);
 
-      points += baseReward;
+      addPlayerPoints(baseReward, 'watch_more_free', false);
       if (isStep5) {
         cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + 1.0;
         hfcBalance = Math.floor(cftBalance);
@@ -10983,7 +11005,7 @@
 
         // Award prize
         if (winningSector.rewardPts > 0) {
-          points += winningSector.rewardPts;
+          addPlayerPoints(winningSector.rewardPts, 'fortune_wheel', false);
         }
         if (winningSector.rewardCft > 0) {
           cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + winningSector.rewardCft;
@@ -11227,11 +11249,8 @@
 
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
-      points += 10000;
-      localStorage.setItem('crazyfarm_points', String(points));
-      updateDisplays();
+      addPlayerPoints(10000, 'ads_points_booster', true);
       updateAdsPointsBoosterUI();
-      queueCloudSave();
       if (window.Telegram?.WebApp?.HapticFeedback) {
         try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
       }
@@ -11386,10 +11405,9 @@
 
       try { playSound('fanfare'); } catch(e){}
       playSound('coin');
-      points += 10000;
+      addPlayerPoints(10000, 'ads_cft_booster', false);
       cftBalance += 3;
       hfcBalance = Math.floor(cftBalance);
-      localStorage.setItem('crazyfarm_points', String(points));
       localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
       localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
       updateDisplays();
@@ -12100,6 +12118,25 @@
       }, 1500);
     }
 
+    // Flush and persist state synchronously when user leaves or minimizes the mini app
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        try {
+          localStorage.setItem('crazyfarm_points', String(points));
+          localStorage.setItem('crazyfarm_farm_points', String(points));
+          if (typeof savePlayerDataToCloud === 'function') {
+            savePlayerDataToCloud();
+          }
+        } catch(e) {}
+      }
+    });
+    window.addEventListener('beforeunload', () => {
+      try {
+        localStorage.setItem('crazyfarm_points', String(points));
+        localStorage.setItem('crazyfarm_farm_points', String(points));
+      } catch(e) {}
+    });
+
     async function loadPlayerDataFromCloud() {
       if (!dbClient) return;
       const tId = getEffectiveTelegramId();
@@ -12120,24 +12157,32 @@
           const cloudCft = Number(data.farms_data?.cft_balance !== undefined ? data.farms_data.cft_balance : (data.hfc_balance || 0));
           const cloudLvl = Number(data.user_level) || 1;
 
-          // Anti-Cheat: Validate local storage signature against cloud baseline
-          const localSigValid = AntiCheat.verifyCurrentSignature(points, cftBalance, userLevel, tId);
-          if (!localSigValid || points > cloudPts + 120000 || cftBalance > cloudCft + 10) {
-            if (!localSigValid && (points !== 0 || cftBalance !== 0)) {
-              console.warn('🛡️ [Anti-Cheat] Local untrusted/tampered data discarded. Restoring verified cloud balance.');
+          // Harmonize local and cloud progress:
+          // Protect and preserve legitimate offline/session gameplay gains
+          const localPointsBeforeSync = points;
+          if (points > cloudPts) {
+            if (points > cloudPts + 5000000) {
+              console.warn('🛡️ [Anti-Cheat] Local points delta exceeds safe ceiling. Restoring cloud baseline.');
+              points = cloudPts;
+            } else {
+              console.log('✅ Preserving local points progression:', points, '(Cloud was:', cloudPts, ')');
             }
-            points = cloudPts;
-            cftBalance = cloudCft;
-            hfcBalance = Math.floor(cftBalance);
-            userLevel = cloudLvl;
           } else {
-            points = Math.max(points, cloudPts);
-            cftBalance = Math.max(cftBalance, cloudCft);
-            hfcBalance = Math.floor(cftBalance);
-            userLevel = Math.max(userLevel, cloudLvl);
+            points = cloudPts;
           }
+
+          cftBalance = Math.max(cftBalance, cloudCft);
+          hfcBalance = Math.floor(cftBalance);
+          userLevel = Math.max(userLevel, cloudLvl);
+
           AntiCheat.initBaseline(points, cftBalance);
           AntiCheat.signCurrentState(points, cftBalance, userLevel, tId);
+          savePlayerPoints(points, false);
+
+          // If local was ahead of cloud, sync the higher balance back up to Supabase
+          if (localPointsBeforeSync > cloudPts && typeof queueCloudSave === 'function') {
+            queueCloudSave();
+          }
           isDogVipActive = false;
           if (data.wallet_address) {
             connectedWalletAddress = data.wallet_address;
@@ -12465,7 +12510,8 @@
 
       // LocalStorage dual-save
       try {
-        localStorage.setItem('crazyfarm_points', points);
+        localStorage.setItem('crazyfarm_points', String(points));
+        localStorage.setItem('crazyfarm_farm_points', String(points));
         localStorage.setItem('crazyfarm_hfc_balance', hfcBalance);
         localStorage.setItem('crazyfarm_cft_balance', cftBalance);
         localStorage.setItem('crazyfarm_cft_last_collect', cftLastCollectTime);
@@ -13360,7 +13406,7 @@
 
       const finalPoints = isDouble ? 100 : 50;
 
-      points += finalPoints;
+      addPlayerPoints(finalPoints, 'run_sprint_win');
 
       updateDisplays();
       syncWalletView();
@@ -13586,10 +13632,8 @@ window.addEventListener('load', () => {
       const baseWin = currentCrazyBoxWin || 500;
       const mult = (multiplier === 2) ? 2 : 1;
       const amount = baseWin * mult;
-      points += amount;
+      addPlayerPoints(amount, 'mystery_gift', false);
 
-      localStorage.setItem('crazyfarm_points', String(points));
-      localStorage.setItem('crazyfarm_farm_points', String(points));
       try { 
         if (mult === 2) playSound('level');
         playSound('coin'); 
@@ -13992,9 +14036,7 @@ window.addEventListener('load', () => {
         showWalletToast('🌾 Insufficient points! Need ' + cost.toLocaleString() + ' Farm Points.');
         return;
       }
-      points -= cost;
-      localStorage.setItem('crazyfarm_points', String(points));
-      localStorage.setItem('crazyfarm_farm_points', String(points));
+      deductPlayerPoints(cost, 'jurassic_upgrade', false);
       
       const newLvl = lvl + 1;
       setJurassicMinerLevel(key, newLvl);
@@ -14039,11 +14081,7 @@ window.addEventListener('load', () => {
         let claimedBonusPoints = 0;
         if (key === 'dolphin') {
           claimedBonusPoints = getJurassicMinerPointsRate('dolphin');
-          points += claimedBonusPoints;
-          try {
-            localStorage.setItem('crazyfarm_points', String(points));
-            localStorage.setItem('crazyfarm_farm_points', String(points));
-          } catch(e){}
+          addPlayerPoints(claimedBonusPoints, 'dolphin_mining', false);
         }
 
         try { playSound('fanfare'); } catch(e){}
