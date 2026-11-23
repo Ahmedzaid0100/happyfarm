@@ -1485,6 +1485,29 @@
           </p>
         </div>
 
+        <!-- ==================== PROMO CODE BANNER ==================== -->
+        <div onclick="openPromoCodeModal()" class="cursor-pointer bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 p-0.5 rounded-3xl shadow-xl active:scale-[0.98] transition-transform select-none">
+          <div class="bg-gradient-to-b from-[#331704] to-[#1c0c02] rounded-[22px] p-3 flex items-center justify-between gap-3 border border-yellow-400/40">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-2xl shadow-md shrink-0 border border-yellow-200">
+                🎟️
+              </div>
+              <div class="text-left min-w-0">
+                <div class="font-black text-sm text-yellow-300 flex items-center gap-1.5 leading-tight truncate">
+                  <span id="promoBannerTitle">Promo Code</span>
+                  <span class="text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider shrink-0">NEW</span>
+                </div>
+                <p id="promoBannerSub" class="text-[10.5px] text-amber-200/90 font-medium leading-tight mt-0.5 truncate">
+                  Have an exclusive gift code? Redeem it here!
+                </p>
+              </div>
+            </div>
+            <button type="button" class="btn-3d-yellow shrink-0 text-amber-950 font-black text-xs px-3.5 py-2 rounded-xl shadow cursor-pointer">
+              <span id="promoBannerBtn">ENTER</span>
+            </button>
+          </div>
+        </div>
+
         <!-- ==================== TOP CARD: WATCH MORE EARN MORE ==================== -->
         <div class="bg-gradient-to-b from-[#874312] via-[#612b07] to-[#3d1802] border-2 border-[#2b1001] rounded-3xl p-3.5 shadow-xl text-white">
           
@@ -2987,6 +3010,46 @@
       </div>
     </div>
 
+    <!-- ==================== PROMO CODE MODAL ==================== -->
+    <div id="promoCodeModal" style="display: none;" onclick="if(event.target === this) closePromoCodeModal()" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[130] hidden flex items-center justify-center p-4 select-none pointer-events-none">
+      <div class="relative w-full max-w-sm wood-board border-4 border-yellow-400 rounded-3xl p-6 shadow-2xl text-white text-center pointer-events-auto animate-scale-up">
+        <!-- Close Top-Right Button -->
+        <button type="button" onclick="event.stopPropagation(); closePromoCodeModal();" ontouchend="event.stopPropagation(); closePromoCodeModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+
+        <!-- Header Animated Icon -->
+        <div class="relative inline-block mb-2">
+          <div class="text-5xl animate-bounce">🎟️</div>
+          <div class="absolute -top-1 -right-2 text-2xl animate-spin" style="animation-duration: 3s;">✨</div>
+        </div>
+        
+        <h3 id="promoModalTitle" class="text-xl font-black text-yellow-300 drop-shadow mb-1" style="font-family: 'Fredoka', cursive;">
+          PROMO CODE 🎁
+        </h3>
+        <p id="promoModalSubtitle" class="text-[11px] font-bold text-amber-200 uppercase tracking-wider mb-4">
+          Redeem Community Rewards
+        </p>
+
+        <!-- Input Box -->
+        <div class="bg-black/60 rounded-2xl p-4 mb-4 border border-amber-600/60 text-center">
+          <label id="promoInputLabel" class="block text-xs text-amber-200 font-semibold mb-2 text-left">
+            Enter your secret code:
+          </label>
+          <div class="relative">
+            <input type="text" id="promoCodeInput" maxlength="25" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. CRAZYFARM2026" class="w-full bg-[#1e0e04] border-2 border-yellow-400/80 rounded-xl px-3.5 py-3 text-center text-yellow-300 font-black text-base placeholder-amber-700/70 focus:outline-none focus:border-yellow-300 transition-colors uppercase tracking-widest shadow-inner" />
+          </div>
+          <p id="promoInputHint" class="text-[10px] text-amber-300/80 mt-2 leading-relaxed">
+            Follow our Telegram channel for exclusive codes!
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="button" id="promoSubmitBtn" onclick="submitPromoCode()" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-sm shadow-2xl active:scale-95 transition-transform cursor-pointer flex items-center justify-center gap-2">
+          <span id="promoSubmitText">REDEEM CODE</span>
+          <span>🚀</span>
+        </button>
+      </div>
+    </div>
+
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
     <div id="battleArenaModal" onclick="if(event.target === this) closeBattleArena()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
@@ -3941,6 +4004,171 @@
         if (window.Telegram?.WebApp?.HapticFeedback) {
           try { window.Telegram.WebApp.HapticFeedback.impactOccurred('medium'); } catch(e){}
         }
+      }
+    }
+
+    // ==================== PROMO CODE CONTROLLERS & ENGINE ====================
+    function openPromoCodeModal() {
+      try { playSound('click'); } catch(e){}
+      const input = document.getElementById('promoCodeInput');
+      if (input) input.value = '';
+      const modal = document.getElementById('promoCodeModal');
+      if (modal) {
+        modal.classList.remove('hidden', 'pointer-events-none');
+        modal.style.display = 'flex';
+        setTimeout(() => { if (input) input.focus(); }, 150);
+      }
+    }
+
+    function closePromoCodeModal() {
+      try { playSound('pop'); } catch(e){}
+      const modal = document.getElementById('promoCodeModal');
+      if (modal) {
+        modal.classList.add('hidden', 'pointer-events-none');
+        modal.style.display = 'none';
+      }
+    }
+
+    async function submitPromoCode() {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const input = document.getElementById('promoCodeInput');
+      if (!input) return;
+
+      const rawCode = (input.value || '').trim().toUpperCase();
+      if (!rawCode) {
+        showWalletToast(isAr ? '⚠️ يرجى إدخال الكود أولاً!' : '⚠️ Please enter a promo code first!');
+        try { playSound('click'); } catch(e){}
+        return;
+      }
+
+      // Security Guard: Strict character check (Alphanumeric, underscore, dash only - max 25 chars)
+      if (!/^[A-Z0-9_-]{3,25}$/.test(rawCode)) {
+        showWalletToast(isAr ? '⚠️ تنسيق الكود غير صحيح! استخدم أحرف وأرقام إنجليزية فقط.' : '⚠️ Invalid code format! Use English letters and numbers only.');
+        try { playSound('click'); } catch(e){}
+        return;
+      }
+
+      // Anti-Spam Lock: Max 1 attempt every 1.5 seconds
+      if (typeof ActionLock !== 'undefined' && ActionLock.run) {
+        if (!ActionLock.run('promo_claim_' + rawCode, 1500, () => _doRedeemPromoCode(rawCode))) return;
+      } else {
+        _doRedeemPromoCode(rawCode);
+      }
+    }
+
+    async function _doRedeemPromoCode(code) {
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const submitBtn = document.getElementById('promoSubmitBtn');
+      const submitText = document.getElementById('promoSubmitText');
+
+      try {
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitText) submitText.innerText = isAr ? 'جاري التحقق...' : 'VERIFYING...';
+
+        // Check local redemption history to prevent double claims
+        const redeemedLocal = JSON.parse(localStorage.getItem('crazyfarm_redeemed_promos') || '{}');
+        if (redeemedLocal[code]) {
+          showWalletToast(isAr ? '✅ لقد استلمت مكافأة هذا الكود بالفعل مسبقاً!' : '✅ You have already claimed this promo code!');
+          try { playSound('click'); } catch(e){}
+          return;
+        }
+
+        // Query Supabase for active promo code (Currently empty - ready for when codes are created)
+        let promoData = null;
+        if (typeof dbClient !== 'undefined' && dbClient) {
+          try {
+            const { data, error } = await dbClient
+              .from('promo_codes')
+              .select('*')
+              .eq('code', code)
+              .eq('is_active', true)
+              .maybeSingle();
+
+            if (!error && data) {
+              promoData = data;
+            }
+          } catch(dbErr) {
+            console.warn('Promo database check note:', dbErr);
+          }
+        }
+
+        // If code is not found or no active codes created yet:
+        if (!promoData) {
+          showWalletToast(isAr ? '❌ هذا الكود غير صالح أو انتهت صلاحيته! تابع قناتنا لمعرفة أحدث الأكواد 🎁' : '❌ Code is invalid or expired! Follow our channel for new codes 🎁');
+          try { playSound('pop'); } catch(e){}
+          if (window.Telegram?.WebApp?.HapticFeedback) {
+            try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('error'); } catch(e){}
+          }
+          return;
+        }
+
+        // Check maximum redemptions if set
+        if (promoData.max_uses && (promoData.current_uses || 0) >= promoData.max_uses) {
+          showWalletToast(isAr ? '⏳ اكتمل الحد الأقصى لمستخدمي هذا الكود!' : '⏳ This promo code reached maximum redemptions!');
+          return;
+        }
+
+        // Check expiration date if set
+        if (promoData.expires_at && new Date(promoData.expires_at) < new Date()) {
+          showWalletToast(isAr ? '⏳ هذا الكود انتهت صلاحيته!' : '⏳ This promo code has expired!');
+          return;
+        }
+
+        // Award Points and/or CFT
+        const rewardPts = Number(promoData.reward_points) || 0;
+        const rewardCft = Number(promoData.reward_cft) || 0;
+
+        if (rewardPts > 0) {
+          if (typeof addPlayerPoints === 'function') {
+            addPlayerPoints(rewardPts, 'promo_code', false);
+          } else {
+            points += rewardPts;
+            try { localStorage.setItem('crazyfarm_points', String(points)); } catch(e){}
+          }
+        }
+
+        if (rewardCft > 0) {
+          cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + rewardCft;
+          hfcBalance = Math.floor(cftBalance);
+          try {
+            localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+            localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+          } catch(e){}
+        }
+
+        // Record successful redemption locally
+        redeemedLocal[code] = Date.now();
+        try {
+          localStorage.setItem('crazyfarm_redeemed_promos', JSON.stringify(redeemedLocal));
+        } catch(e){}
+
+        // Increment database redemption count
+        if (typeof dbClient !== 'undefined' && dbClient && promoData.id) {
+          try {
+            dbClient.from('promo_codes').update({ current_uses: (promoData.current_uses || 0) + 1 }).eq('id', promoData.id);
+          } catch(e){}
+        }
+
+        closePromoCodeModal();
+        try { playSound('fanfare'); } catch(e){}
+        try { playSound('coin'); } catch(e){}
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+        }
+
+        updateDisplays();
+        if (typeof queueCloudSave === 'function') queueCloudSave();
+
+        const ptsStr = rewardPts > 0 ? ('+' + rewardPts.toLocaleString() + ' 🌾') : '';
+        const cftStr = rewardCft > 0 ? (' & +' + rewardCft + ' CFT 💎') : '';
+        showWalletToast(isAr ? ('🎉 مبروك! استلمت هدية الكود: ' + ptsStr + cftStr + ' 🎁') : ('🎉 Congrats! Claimed promo gift: ' + ptsStr + cftStr + ' 🎁'));
+
+      } catch(err) {
+        console.error('Promo claim error:', err);
+        showWalletToast(isAr ? '⚠️ حدث خطأ أثناء تفعيل الكود، يرجى المحاولة لاحقاً.' : '⚠️ Error activating code, please try again.');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.innerText = isAr ? 'استلام المكافأة' : 'REDEEM CODE';
       }
     }
 
@@ -12474,6 +12702,24 @@
       const isAr = (lang === 'ar');
       const langEl = document.getElementById('currentLangDisplay');
       if (langEl) langEl.innerText = isAr ? 'العربية' : 'English';
+
+      // Promo Code UI Multi-Language
+      const pTitle = document.getElementById('promoBannerTitle');
+      const pSub = document.getElementById('promoBannerSub');
+      const pBtn = document.getElementById('promoBannerBtn');
+      const pmTitle = document.getElementById('promoModalTitle');
+      const pmSub = document.getElementById('promoModalSubtitle');
+      const pmLabel = document.getElementById('promoInputLabel');
+      const pmHint = document.getElementById('promoInputHint');
+      const pmSubmit = document.getElementById('promoSubmitText');
+      if (pTitle) pTitle.innerText = isAr ? 'كود الهدية' : 'Promo Code';
+      if (pSub) pSub.innerText = isAr ? 'لديك كود هدية حصري؟ أدخله هنا واكسب جوائز!' : 'Have an exclusive gift code? Redeem it here!';
+      if (pBtn) pBtn.innerText = isAr ? 'إدخال' : 'ENTER';
+      if (pmTitle) pmTitle.innerText = isAr ? 'كود الهدية 🎁' : 'PROMO CODE 🎁';
+      if (pmSub) pmSub.innerText = isAr ? 'استلام مكافآت المجتمع' : 'Redeem Community Rewards';
+      if (pmLabel) pmLabel.innerText = isAr ? 'أدخل الكود السري الخاص بك:' : 'Enter your secret code:';
+      if (pmHint) pmHint.innerText = isAr ? 'تابع قناتنا الرسمية على تيليجرام للحصول على أحدث الأكواد!' : 'Follow our official Telegram channel for exclusive codes!';
+      if (pmSubmit) pmSubmit.innerText = isAr ? 'استلام المكافأة' : 'REDEEM CODE';
 
       // 1. Bottom Navigation Bar
       const navHome = document.getElementById('navHomeLabel');
