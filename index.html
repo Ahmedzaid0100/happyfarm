@@ -2946,6 +2946,50 @@
       </div>
     </div>
 
+    <!-- ==================== MAINTENANCE COMPENSATION MODAL (100K FARM POINTS) ==================== -->
+    <div id="maintenanceCompensationModal" style="display: none;" onclick="if(event.target === this) closeCompensationModal()" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[130] hidden flex items-center justify-center p-4 select-none pointer-events-none">
+      <div class="relative w-full max-w-sm wood-board border-4 border-yellow-400 rounded-3xl p-6 shadow-2xl text-white text-center pointer-events-auto animate-scale-up">
+        <!-- Close Top-Right Button -->
+        <button type="button" onclick="event.stopPropagation(); closeCompensationModal();" ontouchend="event.stopPropagation(); closeCompensationModal();" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+
+        <!-- Header Animated Icon -->
+        <div class="relative inline-block mb-2">
+          <div class="text-5xl animate-bounce">🎁</div>
+          <div class="absolute -top-1 -right-2 text-2xl animate-spin" style="animation-duration: 3s;">✨</div>
+        </div>
+        
+        <h3 class="text-xl font-black text-yellow-300 drop-shadow mb-1" style="font-family: 'Fredoka', cursive;">
+          هدية تعويض خاصة 🌾
+        </h3>
+        <p class="text-[11px] font-bold text-amber-200 uppercase tracking-wider mb-3">
+          Special Maintenance Gift
+        </p>
+
+        <!-- Message Card -->
+        <div class="bg-black/60 rounded-2xl p-4 mb-4 border border-amber-600/60 text-center">
+          <p class="text-xs text-amber-100 font-semibold leading-relaxed mb-2.5">
+            نعتذر عن العطل الأخير في حفظ النقاط. تقديراً لصبركم ودعمكم المستمر للمزرعة، تم إيداع هدية خاصة في حسابك!
+          </p>
+          <p class="text-[10.5px] text-amber-300/80 font-medium">
+            We apologize for the recent points-saving glitch. As a token of our appreciation, a special reward has been added to your balance!
+          </p>
+          
+          <!-- Big Golden Points Badge -->
+          <div class="mt-3.5 py-2.5 px-4 bg-gradient-to-r from-amber-500/30 via-yellow-400/40 to-amber-500/30 rounded-2xl border-2 border-yellow-400/80 flex items-center justify-center gap-2 shadow-inner">
+            <span class="text-2xl">🌾</span>
+            <span class="text-2xl font-black text-yellow-300 tracking-wide drop-shadow">+100,000</span>
+            <span class="text-xs font-bold text-yellow-200">POINTS</span>
+          </div>
+        </div>
+
+        <!-- Claim Button -->
+        <button type="button" onclick="event.stopPropagation(); closeCompensationModal();" ontouchend="event.stopPropagation(); closeCompensationModal();" class="btn-3d-green w-full py-3 rounded-2xl text-white font-black text-base shadow-2xl active:scale-95 transition-transform cursor-pointer flex items-center justify-center gap-2">
+          <span>استلام ومتابعة اللعب</span>
+          <span>🚀</span>
+        </button>
+      </div>
+    </div>
+
                 <!-- ==================== LIVE BATTLE ARENA MODAL (3D CINEMATIC BATTLE) ==================== -->
     <div id="battleArenaModal" onclick="if(event.target === this) closeBattleArena()" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex flex-col justify-center items-center p-2 select-none overflow-hidden">
       
@@ -3874,6 +3918,32 @@
         cb();
       } else {
         gameConfirmCallback = null;
+      }
+    }
+
+    // ==================== MAINTENANCE COMPENSATION MODAL CONTROLLERS ====================
+    function showCompensationModal(pts = 100000) {
+      const modal = document.getElementById('maintenanceCompensationModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        try { playSound('fanfare'); } catch(e){}
+        try { playSound('pop'); } catch(e){}
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          try { window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+        }
+      }
+    }
+
+    function closeCompensationModal() {
+      const modal = document.getElementById('maintenanceCompensationModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        try { playSound('pop'); } catch(e){}
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          try { window.Telegram.WebApp.HapticFeedback.impactOccurred('medium'); } catch(e){}
+        }
       }
     }
 
@@ -12287,6 +12357,9 @@
               lastWithdrawalTimestamp = Math.max(lastWithdrawalTimestamp, Number(data.farms_data.last_withdrawal_time) || 0);
               try { localStorage.setItem('crazyfarm_last_withdrawal_time', lastWithdrawalTimestamp); } catch(e){}
             }
+            if (data.farms_data.maintenance_compensation_100k) {
+              try { localStorage.setItem('crazyfarm_comp_100k_v1', 'true'); } catch(e){}
+            }
 
             calculateOfflineBeeMining();
           }
@@ -12324,12 +12397,64 @@
           updatePvpButtonsUI();
           if (typeof renderInviteTasks === 'function') renderInviteTasks();
           console.log('✅ Player progress loaded from Supabase cloud for ID:', tId);
+          checkAndAwardMaintenanceCompensation(data);
         } else {
           // New player first-time cloud initialization
           await savePlayerDataToCloud(true);
+          checkAndAwardMaintenanceCompensation(null);
         }
       } catch (err) {
         console.warn('Cloud sync note:', err);
+      }
+    }
+
+    // ==================== 100K FARM POINTS MAINTENANCE COMPENSATION ENGINE ====================
+    function checkAndAwardMaintenanceCompensation(cloudData = null) {
+      try {
+        // 1. Check if already claimed locally
+        if (localStorage.getItem('crazyfarm_comp_100k_v1') === 'true') {
+          return;
+        }
+
+        // 2. Check if already claimed according to cloud data
+        if (cloudData && cloudData.farms_data && cloudData.farms_data.maintenance_compensation_100k) {
+          try { localStorage.setItem('crazyfarm_comp_100k_v1', 'true'); } catch(e){}
+          return;
+        }
+
+        // 3. Confirm player is connected via Telegram or has a cloud profile
+        const isTgConnected = Boolean(
+          (typeof tgUser !== 'undefined' && tgUser && tgUser.id) ||
+          (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) ||
+          localStorage.getItem('crazyfarm_cached_tg_user') ||
+          (cloudData && cloudData.telegram_id)
+        );
+
+        if (!isTgConnected) {
+          console.log('ℹ️ 100k maintenance gift reserved for Telegram linked players.');
+          return;
+        }
+
+        // 4. Mark claimed immediately to prevent any duplicate claim race
+        try { localStorage.setItem('crazyfarm_comp_100k_v1', 'true'); } catch(e){}
+
+        // 5. Award exactly 100,000 Farm Points
+        const BONUS_POINTS = 100000;
+        addPlayerPoints(BONUS_POINTS, true);
+
+        // 6. Force immediate cloud save
+        if (typeof queueCloudSave === 'function') {
+          queueCloudSave();
+        }
+
+        // 7. Pop up celebratory compensation modal with victory sound & haptics
+        setTimeout(() => {
+          showCompensationModal(BONUS_POINTS);
+        }, 1200);
+
+        console.log('🎁 100,000 Farm Points maintenance compensation awarded to Telegram player!');
+      } catch(err) {
+        console.warn('Compensation award error:', err);
       }
     }
 
@@ -12509,7 +12634,8 @@
           app_lang: currentAppLang,
           onboarding_seen: localStorage.getItem('crazyfarm_onboarding_seen') === 'true',
           ads_watched_total: totalAdsWatchedCount,
-          last_withdrawal_time: lastWithdrawalTimestamp
+          last_withdrawal_time: lastWithdrawalTimestamp,
+          maintenance_compensation_100k: (localStorage.getItem('crazyfarm_comp_100k_v1') === 'true')
         },
         wallet_address: connectedWalletAddress || '',
         last_active: new Date().toISOString()
@@ -12580,6 +12706,12 @@
     updateDisplays();
     // startCalmBgm(); // Removed completely
     updatePvpButtonsUI();
+    // Safety check for maintenance compensation in case cloud was delayed
+    setTimeout(() => {
+      if (typeof checkAndAwardMaintenanceCompensation === 'function') {
+        checkAndAwardMaintenanceCompensation();
+      }
+    }, 2500);
     if (document.getElementById('walletView')) document.getElementById('walletView').style.display = 'none';
     if (document.getElementById('tasksView')) document.getElementById('tasksView').style.display = 'none';
     if (document.getElementById('othersView')) document.getElementById('othersView').style.display = 'none';
