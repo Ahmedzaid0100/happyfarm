@@ -1308,10 +1308,15 @@
             </div>
           </div>
 
-          <!-- Withdraw Action Button -->
-          <button onclick="openWithdrawalModal()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all">
-            <span>💸</span> <span id="withdrawActionBtnText">Request CFT Withdrawal</span>
-          </button>
+          <!-- Withdraw Action Buttons -->
+          <div class="space-y-2 mt-1">
+            <button onclick="openWithdrawalModal()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all">
+              <span>💸</span> <span id="withdrawActionBtnText">Request CFT Withdrawal</span>
+            </button>
+            <button onclick="openWithdrawalHistoryModal()" class="w-full py-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-amber-950/60 to-slate-900 text-amber-300 hover:text-amber-200 border-2 border-amber-500/50 hover:border-amber-400 font-black text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer">
+              <span>📜</span> <span id="withdrawHistoryBtnText">Withdrawal History &amp; Status</span>
+            </button>
+          </div>
         </div>
 
         <!-- CARD 3.5: CFT Smart Contract & Quick Buy/Verify -->
@@ -3826,6 +3831,57 @@
         <button id="confirmWithdrawBtn" type="button" onclick="submitWithdrawalRequest()" class="w-full py-3 rounded-2xl btn-3d-green text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer">
           <span>🚀</span> <span id="confirmWithdrawBtnText">Confirm & Submit Withdrawal</span>
         </button>
+
+        <!-- View History Link inside Withdrawal Modal -->
+        <button type="button" onclick="closeWithdrawalModal(); openWithdrawalHistoryModal();" class="mt-2.5 text-[11px] text-amber-300 hover:text-amber-200 underline font-bold flex items-center justify-center gap-1 opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
+          <span>📜</span> <span id="modalViewHistoryLinkText">View Withdrawal History &amp; Status</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== WITHDRAWAL HISTORY & STATUS MODAL ==================== -->
+    <div id="withdrawalHistoryModal" style="display: none;" onclick="if(event.target === this) closeWithdrawalHistoryModal();" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4 select-none">
+      <div class="relative w-full max-w-[420px] wood-board border-2 border-amber-500 rounded-3xl p-4 sm:p-5 shadow-2xl text-white text-center pointer-events-auto flex flex-col items-center max-h-[92vh] overflow-hidden">
+        <!-- Close Top-Right -->
+        <button type="button" onclick="closeWithdrawalHistoryModal()" ontouchend="closeWithdrawalHistoryModal()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-lg border border-white/70 active:scale-90 cursor-pointer pointer-events-auto z-50" title="Close">&#10005;</button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-2 justify-center mb-1 mt-1">
+          <span class="text-2xl">📜</span>
+          <h3 id="historyModalTitle" class="text-lg sm:text-xl font-black text-amber-300 drop-shadow">
+            Withdrawal History
+          </h3>
+        </div>
+        <p id="historyModalSubtitle" class="text-[11px] text-amber-200/80 font-bold mb-3">
+          Track your CFT withdrawal requests and live blockchain statuses
+        </p>
+
+        <!-- Summary Stats Strip -->
+        <div class="w-full grid grid-cols-2 gap-2 mb-3 font-sans">
+          <div class="bg-black/50 border border-amber-500/30 rounded-2xl p-2 text-center">
+            <div id="historyStatCountLabel" class="text-[9.5px] text-slate-300 font-bold">Total Requests</div>
+            <div id="historyStatTotalCount" class="text-base font-black text-yellow-300">0</div>
+          </div>
+          <div class="bg-black/50 border border-amber-500/30 rounded-2xl p-2 text-center">
+            <div id="historyStatAmountLabel" class="text-[9.5px] text-slate-300 font-bold">Total Requested CFT</div>
+            <div id="historyStatTotalAmount" class="text-base font-black text-emerald-400">0 CFT</div>
+          </div>
+        </div>
+
+        <!-- Scrollable List Container -->
+        <div id="withdrawalHistoryList" class="w-full space-y-2 overflow-y-auto max-h-[50vh] pr-1 scrollbar-thin">
+          <!-- Dynamically populated or loading/empty state -->
+        </div>
+
+        <!-- Footer / Refresh Action -->
+        <div class="w-full pt-3 mt-2 border-t border-amber-600/30 flex gap-2">
+          <button type="button" onclick="loadWithdrawalHistory(true)" class="flex-1 py-2.5 rounded-2xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md cursor-pointer">
+            <span>🔄</span> <span id="historyRefreshBtnText">Refresh Status</span>
+          </button>
+          <button type="button" onclick="closeWithdrawalHistoryModal()" class="px-5 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs active:scale-95 transition-all shadow-md cursor-pointer">
+            <span id="historyCloseBtnText">Close</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -10616,6 +10672,222 @@
       }
     }
 
+    /* ==================== WITHDRAWAL HISTORY & STATUS LOGIC ==================== */
+    function openWithdrawalHistoryModal() {
+      try { playSound('click'); } catch(e){}
+      const modal = document.getElementById('withdrawalHistoryModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      loadWithdrawalHistory(false);
+    }
+
+    function closeWithdrawalHistoryModal() {
+      try { playSound('click'); } catch(e){}
+      const modal = document.getElementById('withdrawalHistoryModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    async function loadWithdrawalHistory(isManualRefresh = false) {
+      if (isManualRefresh) {
+        try { playSound('click'); } catch(e){}
+      }
+      const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+      const listContainer = document.getElementById('withdrawalHistoryList');
+
+      if (!listContainer) return;
+
+      // 1. Check local cache first for instant display
+      let cachedRecords = [];
+      try {
+        const raw = localStorage.getItem('crazyfarm_withdrawals_cache');
+        if (raw) cachedRecords = JSON.parse(raw);
+      } catch(e) { cachedRecords = []; }
+
+      // If list is empty and we have cache, render cache first
+      if (cachedRecords && cachedRecords.length > 0 && listContainer.children.length === 0) {
+        renderWithdrawalRecords(cachedRecords, isAr, true);
+      } else if (listContainer.children.length === 0 || isManualRefresh) {
+        listContainer.innerHTML = `
+          <div class="py-8 text-center text-amber-200">
+            <div class="inline-block animate-spin text-2xl mb-2">⏳</div>
+            <div class="text-xs font-bold">${isAr ? 'جاري جلب سجل السحوبات من السحابة...' : 'Loading withdrawal records from cloud...'}</div>
+          </div>
+        `;
+      }
+
+      // 2. Fetch fresh records from Supabase
+      try {
+        const tId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || localStorage.getItem('crazyfarm_telegram_id') || 'guest_dev';
+        
+        let fetchedData = null;
+        if (typeof dbClient !== 'undefined' && dbClient) {
+          let query = dbClient.from('withdrawals').select('*');
+          if (tId && tId !== 'guest_dev') {
+            query = query.eq('telegram_id', String(tId));
+          } else if (typeof connectedWalletAddress !== 'undefined' && connectedWalletAddress) {
+            query = query.eq('wallet_address', connectedWalletAddress);
+          } else {
+            query = query.eq('telegram_id', 'guest_dev');
+          }
+
+          const { data, error } = await query.order('created_at', { ascending: false }).limit(50);
+          if (!error && Array.isArray(data)) {
+            fetchedData = data;
+          }
+        }
+
+        // Merge or fallback to cachedRecords
+        const recordsToDisplay = (fetchedData !== null) ? fetchedData : cachedRecords;
+
+        // Save updated records to cache
+        if (fetchedData !== null) {
+          try {
+            localStorage.setItem('crazyfarm_withdrawals_cache', JSON.stringify(fetchedData));
+          } catch(e){}
+        }
+
+        renderWithdrawalRecords(recordsToDisplay, isAr, false);
+
+        if (isManualRefresh) {
+          showWalletToast(isAr ? '🔄 تم تحديث سجل السحوبات بنجاح' : '🔄 Withdrawal history updated!');
+        }
+      } catch (err) {
+        console.warn('Withdrawal history fetch notice:', err);
+        if (cachedRecords && cachedRecords.length > 0) {
+          renderWithdrawalRecords(cachedRecords, isAr, false);
+        } else {
+          listContainer.innerHTML = `
+            <div class="py-6 px-3 text-center text-rose-300 bg-rose-950/40 rounded-2xl border border-rose-800">
+              <div class="text-2xl mb-1">⚠️</div>
+              <div class="text-xs font-bold mb-1">${isAr ? 'تعذر جلب السجل حالياً' : 'Could not load history right now'}</div>
+              <p class="text-[10px] text-slate-300">${isAr ? 'يرجى التحقق من الاتصال بالإنترنت والضغط على تحديث.' : 'Please check your connection and tap Refresh.'}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderWithdrawalRecords(records, isAr, isPreliminaryCache = false) {
+      const listContainer = document.getElementById('withdrawalHistoryList');
+      const totalCountEl = document.getElementById('historyStatTotalCount');
+      const totalAmountEl = document.getElementById('historyStatTotalAmount');
+      if (!listContainer) return;
+
+      if (!records || records.length === 0) {
+        if (totalCountEl) totalCountEl.innerText = '0';
+        if (totalAmountEl) totalAmountEl.innerText = '0 CFT';
+        listContainer.innerHTML = `
+          <div class="py-8 px-4 text-center text-slate-300 bg-black/40 rounded-2xl border border-amber-600/30">
+            <div class="text-4xl mb-2">📜</div>
+            <div class="font-black text-amber-200 text-sm mb-1">${isAr ? 'لا توجد طلبات سحب سابقة' : 'No Withdrawal Requests Yet'}</div>
+            <p class="text-[11px] text-slate-400 max-w-[260px] mx-auto leading-relaxed">
+              ${isAr ? 'عند قيامك بطلب سحب رصيدك من CFT، سيظهر طلبك وحالته اللحظية هنا.' : 'When you submit a CFT withdrawal request, it will be tracked live here.'}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      // Calculate totals
+      let totalAmount = 0;
+      records.forEach(r => {
+        const val = Number(r.amount) || Number(r.net_amount) || Number(r.amount_cft) || 0;
+        totalAmount += val;
+      });
+
+      if (totalCountEl) totalCountEl.innerText = records.length.toString();
+      if (totalAmountEl) totalAmountEl.innerText = totalAmount.toLocaleString() + ' CFT';
+
+      let html = '';
+      records.forEach((rec) => {
+        const amount = Number(rec.amount) || Number(rec.amount_cft) || 0;
+        const net = Number(rec.net_amount) || (amount > 70 ? amount - 70 : amount);
+        const status = (rec.status || 'pending').toLowerCase();
+        const wallet = rec.wallet_address ? shortenAddress(rec.wallet_address) : (typeof connectedWalletAddress !== 'undefined' && connectedWalletAddress ? shortenAddress(connectedWalletAddress) : 'TON Wallet');
+
+        let dateStr = isAr ? 'حديثاً' : 'Recently';
+        if (rec.created_at) {
+          try {
+            const d = new Date(rec.created_at);
+            if (!isNaN(d.getTime())) {
+              dateStr = d.toLocaleDateString(isAr ? 'ar-EG' : 'en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+            }
+          } catch(e){}
+        }
+
+        // Status Badge Logic
+        let badgeClass = '';
+        let badgeIcon = '⏳';
+        let badgeText = isAr ? 'قيد المراجعة' : 'Pending Review';
+        let statusSub = isAr ? 'مدرج في طابور السحب الرسمي' : 'Queued for official dispatch';
+
+        if (status === 'completed' || status === 'approved' || status === 'sent' || status === 'success') {
+          badgeClass = 'bg-emerald-950/90 text-emerald-300 border-emerald-500';
+          badgeIcon = '✅';
+          badgeText = isAr ? 'تم التحويل' : 'Completed';
+          statusSub = isAr ? 'تم إرسال العملات بنجاح للمحفظة' : 'Funds sent to your TON wallet';
+        } else if (status === 'rejected' || status === 'cancelled' || status === 'refunded') {
+          badgeClass = 'bg-rose-950/90 text-rose-300 border-rose-500';
+          badgeIcon = '❌';
+          badgeText = isAr ? 'مرفوض' : 'Rejected';
+          statusSub = rec.reject_reason || (isAr ? 'تم رفض الطلب واسترداد الرصيد' : 'Rejected and refunded');
+        } else {
+          // Default Pending
+          badgeClass = 'bg-amber-950/90 text-amber-300 border-amber-500';
+          badgeIcon = '⏳';
+          badgeText = isAr ? 'قيد المراجعة' : 'Pending Review';
+          statusSub = isAr ? 'مدرج في طابور السحب السحابي' : 'Secured in Cloud Queue';
+        }
+
+        html += `
+          <div class="bg-gradient-to-r from-black/70 via-slate-950/80 to-black/70 border border-amber-500/30 hover:border-amber-400/60 rounded-2xl p-3 text-left transition-all shadow-md">
+            <!-- Top Line: Amount & Status Badge -->
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-1.5">
+                <span class="text-base">💎</span>
+                <div>
+                  <span class="font-black text-white text-sm sm:text-base">${amount > 0 ? amount.toLocaleString() : net.toLocaleString()} CFT</span>
+                  <span class="text-[10px] text-emerald-300 font-bold ml-1">(${isAr ? 'الصافي' : 'Net'}: ${net.toLocaleString()})</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full border ${badgeClass} flex items-center gap-1 shadow">
+                <span>${badgeIcon}</span> <span>${badgeText}</span>
+              </span>
+            </div>
+
+            <!-- Details Line: Wallet & Date -->
+            <div class="flex items-center justify-between text-[10px] text-slate-300 border-t border-white/10 pt-1.5 mt-1 font-sans">
+              <div class="flex items-center gap-1 text-yellow-300 font-mono">
+                <span>👛</span> <span>${wallet}</span>
+              </div>
+              <div class="text-slate-400 font-medium">
+                📅 ${dateStr}
+              </div>
+            </div>
+
+            <!-- Sub status note -->
+            <div class="text-[9.5px] text-slate-400 mt-1 flex items-center gap-1">
+              <span class="text-amber-400">•</span>
+              <span>${statusSub}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = html;
+    }
+
     function copyCftContractAddress() {
       try { playSound('click'); } catch(e){}
       const addr = CFT_JETTON_CONTRACT_ADDRESS;
@@ -10779,6 +11051,21 @@
           }
         }
 
+        // Cache locally for instant history display
+        try {
+          const cached = JSON.parse(localStorage.getItem('crazyfarm_withdrawals_cache') || '[]');
+          cached.unshift({
+            telegram_id: String(tId),
+            wallet_address: connectedWalletAddress,
+            amount: amount,
+            fee: WITHDRAW_FEE,
+            net_amount: netAmount,
+            status: 'pending',
+            created_at: new Date().toISOString()
+          });
+          localStorage.setItem('crazyfarm_withdrawals_cache', JSON.stringify(cached.slice(0, 50)));
+        } catch(e){}
+
         // Deduct balance
         cftBalance -= amount;
         hfcBalance = Math.floor(cftBalance);
@@ -10803,14 +11090,16 @@
             `• الصافي: ${netAmount.toLocaleString()} CFT\n` +
             `• المحفظة: ${connectedWalletAddress}\n` +
             `• الحالة: معلق (Pending Queue)\n\n` +
-            `تم حفظ الطلب في قاعدة البيانات السحابية وسيتم إرسال العملات إلى محفظتك عند موعد السحب.`
+            `تم حفظ الطلب في قاعدة البيانات السحابية وسيتم إرسال العملات إلى محفظتك عند موعد السحب.\n\n` +
+            `💡 يمكنك متابعة حالة طلبك في أي وقت عبر زر "سجل السحوبات" في صفحة المحفظة.`
           : `🎉 Withdrawal Request Submitted Successfully!\n\n` +
             `• Amount: ${amount.toLocaleString()} CFT\n` +
             `• Fee: 70 CFT\n` +
             `• Net: ${netAmount.toLocaleString()} CFT\n` +
             `• Destination: ${connectedWalletAddress}\n` +
             `• Status: Pending (Official Queue)\n\n` +
-            `Your request is secured in the Cloud Database and will be dispatched to your TON wallet at launch.`);
+            `Your request is secured in the Cloud Database and will be dispatched to your TON wallet at launch.\n\n` +
+            `💡 You can track the status of your request anytime via the "Withdrawal History" button in the Wallet tab.`);
 
       } catch (err) {
         console.error('Withdrawal submission error:', err);
@@ -13118,6 +13407,8 @@
       if (withdrawCondFeeLabel) withdrawCondFeeLabel.innerHTML = isAr ? '<span>⛽</span> مصاريف السحب:' : '<span>⛽</span> Network Fee:';
       if (withdrawCondCooldownLabel) withdrawCondCooldownLabel.innerHTML = isAr ? '<span>⏱️</span> معدل السحب:' : '<span>⏱️</span> Withdrawal Cooldown:';
       if (withdrawActionBtnText) withdrawActionBtnText.innerText = isAr ? 'طلب سحب CFT (Withdraw)' : 'Request CFT Withdrawal';
+      const withdrawHistoryBtnText = document.getElementById('withdrawHistoryBtnText');
+      if (withdrawHistoryBtnText) withdrawHistoryBtnText.innerText = isAr ? 'سجل وحالة السحوبات (History)' : 'Withdrawal History & Status';
 
       // Modal Localization
       const modalWithdrawTitle = document.getElementById('modalWithdrawTitle');
@@ -13141,6 +13432,15 @@
       const modalNetLabel = document.getElementById('modalNetLabel');
       const modalNoticeText = document.getElementById('modalNoticeText');
       const confirmWithdrawBtnText = document.getElementById('confirmWithdrawBtnText');
+      const modalViewHistoryLinkText = document.getElementById('modalViewHistoryLinkText');
+
+      // History Modal Elements
+      const historyModalTitle = document.getElementById('historyModalTitle');
+      const historyModalSubtitle = document.getElementById('historyModalSubtitle');
+      const historyStatCountLabel = document.getElementById('historyStatCountLabel');
+      const historyStatAmountLabel = document.getElementById('historyStatAmountLabel');
+      const historyRefreshBtnText = document.getElementById('historyRefreshBtnText');
+      const historyCloseBtnText = document.getElementById('historyCloseBtnText');
 
       if (modalWithdrawTitle) modalWithdrawTitle.innerText = isAr ? 'طلب سحب Crazy Farm Token' : 'Request CFT Withdrawal';
       if (modalWithdrawSubTitle) modalWithdrawSubTitle.innerText = isAr ? 'السحب المباشر لعملات CFT إلى محفظة TON الرسمية' : 'Direct CFT withdrawal to your verified TON wallet';
@@ -13165,6 +13465,14 @@
         ? '⚡ يتم توثيق وحفظ طلب السحب تلقائياً في قائمة الانتظار المعتمدة (Withdrawals Queue) بالسيرفر السحابي تمهيداً للإرسال المباشر لمحفظتك.' 
         : '⚡ Your withdrawal request is automatically recorded in the Official Cloud Ledger for direct dispatch to your TON wallet.';
       if (confirmWithdrawBtnText) confirmWithdrawBtnText.innerText = isAr ? 'تأكيد وإرسال طلب السحب (Submit Request)' : 'Confirm & Submit Withdrawal';
+      if (modalViewHistoryLinkText) modalViewHistoryLinkText.innerText = isAr ? 'عرض سجل وحالة السحوبات 📜' : 'View Withdrawal History & Status 📜';
+
+      if (historyModalTitle) historyModalTitle.innerText = isAr ? 'سجل السحوبات' : 'Withdrawal History';
+      if (historyModalSubtitle) historyModalSubtitle.innerText = isAr ? 'متابعة طلبات سحب عملات CFT وحالتها في البلوكشين' : 'Track your CFT withdrawal requests and live blockchain statuses';
+      if (historyStatCountLabel) historyStatCountLabel.innerText = isAr ? 'إجمالي الطلبات' : 'Total Requests';
+      if (historyStatAmountLabel) historyStatAmountLabel.innerText = isAr ? 'إجمالي عملات CFT' : 'Total Requested CFT';
+      if (historyRefreshBtnText) historyRefreshBtnText.innerText = isAr ? 'تحديث السجل' : 'Refresh Status';
+      if (historyCloseBtnText) historyCloseBtnText.innerText = isAr ? 'إغلاق' : 'Close';
 
       // 7. CFT Smart Contract Banner & Buy Modal Localization
       const cftContractBannerTitle = document.getElementById('cftContractBannerTitle');
