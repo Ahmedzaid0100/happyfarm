@@ -393,7 +393,7 @@
           <div onclick="openDailyLoginModal()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 4.0%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Daily Check-In"></div>
 
           <!-- 6. Gift Hotspot (Right Top Gift Box Ring) -->
-          <div onclick="event.stopPropagation(); openGiftModal();" ontouchend="event.stopPropagation(); openGiftModal();" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform pointer-events-auto" style="left: 77.0%; top: 16.5%; width: 22.0%; height: 13.0%;" title="Daily Mystery Gift Box"></div>
+          <div onclick="openGiftModal(event)" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform pointer-events-auto select-none" style="left: 77.0%; top: 16.5%; width: 22.0%; height: 13.0%; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" title="Daily Mystery Gift Box"></div>
 
           <!-- 7. Run Hotspot (Right Bottom Sneaker Ring - Completely Dedicated to Dog Runner) -->
           <div onclick="openRunGameDirect()" class="absolute z-20 cursor-pointer rounded-full active:scale-90 transition-transform" style="left: 78.5%; top: 31.5%; width: 18.5%; height: 11.8%;" title="Dog Run Sprint"></div>
@@ -2676,7 +2676,7 @@
       </div>
     </div>
     <!-- ==================== HOME GIFT (CRAZY BOX) MODAL ==================== -->
-    <div id="homeGiftModal" onclick="if(event.target === this) closeGiftModal()" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
+    <div id="homeGiftModal" onclick="if(event.target === this) closeGiftModal(event)" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 select-none pointer-events-none">
       <div class="relative w-full max-w-sm wood-board border-2 border-yellow-400/90 rounded-3xl p-5 shadow-2xl text-white animate-in fade-in zoom-in duration-200 text-center pointer-events-auto">
         <!-- Header -->
         <div class="flex items-center justify-between pb-2.5 border-b border-amber-800/80 mb-3">
@@ -15090,9 +15090,19 @@ window.addEventListener('load', () => {
 
     // ==================== HOME GIFT MODAL CONTROLS ====================
     let isClaimingGift = false;
+    let isOpeningGiftLock = false;
+    let isGiftOpeningAction = false;
+    let giftModalOpenTimestamp = 0;
 
-    function openGiftModal() {
+    function openGiftModal(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (isOpeningGiftLock) return;
+      isOpeningGiftLock = true;
+      giftModalOpenTimestamp = Date.now();
+      setTimeout(() => { isOpeningGiftLock = false; }, 350);
+
       isClaimingGift = false;
+      isGiftOpeningAction = false;
       try { playSound('click'); } catch(e){}
       renderGiftModalUI();
       const m = document.getElementById('homeGiftModal');
@@ -15102,8 +15112,13 @@ window.addEventListener('load', () => {
       }
     }
 
-    function closeGiftModal() {
+    function closeGiftModal(e) {
+      if (e && e.target && e.target.id === 'homeGiftModal') {
+        // Prevent accidental ghost-clicks right upon opening
+        if (Date.now() - giftModalOpenTimestamp < 350) return;
+      }
       isClaimingGift = false;
+      isGiftOpeningAction = false;
       try { playSound('click'); } catch(e){}
       const m = document.getElementById('homeGiftModal');
       if (m) {
@@ -15132,6 +15147,10 @@ window.addEventListener('load', () => {
     }
 
     function triggerOpenGift(openType) {
+      if (isGiftOpeningAction) return;
+      isGiftOpeningAction = true;
+      setTimeout(() => { isGiftOpeningAction = false; }, 800);
+
       if (openType === 'ad') {
         showUniversalAd(() => {
           executeOpenGift('ad');
