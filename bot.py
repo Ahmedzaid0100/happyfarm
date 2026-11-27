@@ -196,7 +196,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=N
             "• 🐶 <b>سباق الجري RUN 3D:</b> تفادي العوائق واكسب مكافآت ونقاط فورية!\n"
             "• ⚔️ <b>حلبة قتال الحيوانات PVP:</b> معارك تكتيكية (3v3 و 5v5 و 7v7) وجوائز كبرى.\n"
             "• 🚀 <b>معززات الإعلانات اليومية:</b> أكمل 3 إعلانات واكسب +10,000 نقطة وعملات CFT يومياً!\n"
-            "• 💎 <b>إيردروب TON:</b> اربط محفظتك لتأكيد حصتك من عملات CFC في حدث التوزيع (TGE).\n\n"
+            "• 💎 <b>إيردروب TON:</b> اربط محفظتك لتأكيد حصتك من عملات CFT في حدث التوزيع (TGE).\n\n"
             f"📢 <b>قناتنا الرسمية:</b> انضم لمتابعة التحديثات والجوائز:\n👉 {CHANNEL_URL}\n\n"
             "👇 <b>اضغط على الزر أدناه لبدء اللعب الآن مباشرة:</b>"
         )
@@ -217,7 +217,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=N
                 [
                     {
                         "text": "👥 دعوة الأصدقاء",
-                        "switch_inline_query": "انضم معي في مزرعة Crazy Farm! اجمع النقاط واكسب عملات CFC للإيردروب القادم على شبكة TON! 🌾"
+                        "switch_inline_query": "انضم معي في مزرعة Crazy Farm! اربح 20 عملة CFT فوراً واستعد للإيردروب على شبكة TON! 🌾🪙"
                     },
                     {
                         "text": "❓ كيفية اللعب والربح",
@@ -235,7 +235,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=N
             "• 🐶 <b>3D RUN Sprint:</b> Dodge obstacles, collect rewards & sprint to victory!\n"
             "• ⚔️ <b>PVP Animal Arena:</b> Tactical squad battles (3v3, 5v5, 7v7) with big prizes.\n"
             "• 🚀 <b>Daily Mega Boosters:</b> Complete 3-ad chains to claim +10,000 Pts & CFT coins daily!\n"
-            "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFC tokens at TGE.\n\n"
+            "• 💎 <b>TON Airdrop:</b> Connect your TON wallet to secure your share of CFT tokens at TGE.\n\n"
             f"📢 <b>Official Channel:</b> Join for announcements & airdrop updates:\n👉 {CHANNEL_URL}\n\n"
             "👇 <b>Tap the button below to start playing:</b>"
         )
@@ -256,7 +256,7 @@ def send_welcome_message(chat_id, first_name, username, lang_code=None, ref_id=N
                 [
                     {
                         "text": "👥 Invite Friends",
-                        "switch_inline_query": "Join me in Crazy Farm! Farm points & earn CFC tokens for the upcoming TON airdrop! 🌾"
+                        "switch_inline_query": "Join me in Crazy Farm! Earn 20 CFT tokens instantly & prepare for the TON airdrop! 🌾🪙"
                     },
                     {
                         "text": "❓ How to Play & Rewards",
