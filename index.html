@@ -13900,7 +13900,7 @@
       try {
         const { data, error } = await dbClient
           .from('players')
-          .select('farms_data')
+          .select('farms_data, hfc_balance')
           .eq('telegram_id', tId)
           .maybeSingle();
 
@@ -13913,6 +13913,32 @@
             localStorage.setItem('crazyfarm_invited_friends_count', String(invitedFriendsCount));
             if (typeof renderInviteTasks === 'function') renderInviteTasks();
             if (typeof updateAvailableTasksCounter === 'function') updateAvailableTasksCounter();
+          }
+
+          // Check if newly earned referral CFT coins arrived in cloud
+          const cloudCft = Number(fd.cft_balance !== undefined ? fd.cft_balance : (data.hfc_balance || 0));
+          if (cloudCft > cftBalance) {
+            const addedCft = cloudCft - cftBalance;
+            cftBalance = cloudCft;
+            hfcBalance = Math.floor(cftBalance);
+            try {
+              localStorage.setItem('crazyfarm_cft_balance', String(cftBalance));
+              localStorage.setItem('crazyfarm_hfc_balance', String(hfcBalance));
+            } catch(e){}
+            try {
+              const myTgId = getEffectiveTelegramId();
+              if (typeof AntiCheat !== 'undefined' && AntiCheat.signCurrentState) {
+                AntiCheat.signCurrentState(points, cftBalance, userLevel, myTgId);
+              }
+            } catch(e){}
+            updateDisplays();
+            syncWalletView();
+            initTonConnect();
+            const isAr = (typeof currentAppLang !== 'undefined' && currentAppLang === 'ar');
+            showWalletToast(isAr 
+              ? `🎉 مبروك! انضم صديق جديد عبر رابطك وتمت إضافة +${addedCft} عملة CFT إلى محفظتك! 🪙`
+              : `🎉 Awesome! A friend joined via your invite link, +${addedCft} CFT added to your wallet! 🪙`
+            );
           }
         }
       } catch(e){}
@@ -13928,7 +13954,7 @@
 
         const { data, error } = await dbClient
           .from('players')
-          .select('farms_data')
+          .select('farms_data, hfc_balance')
           .eq('telegram_id', inviterNum)
           .maybeSingle();
 
@@ -13942,19 +13968,29 @@
           currentFarms.referred_users = [];
         }
 
-        if (!currentFarms.referred_users.includes(myIdNum) && !currentFarms.referred_users.includes(String(myId))) {
+        const isNewReferral = (!currentFarms.referred_users.includes(myIdNum) && !currentFarms.referred_users.includes(String(myId)));
+
+        if (isNewReferral) {
           currentFarms.referred_users.push(myIdNum);
+
+          // Add 20 CFT directly to the inviter's cloud account
+          const currentInviterCft = Number(currentFarms.cft_balance !== undefined ? currentFarms.cft_balance : (data?.hfc_balance || 0));
+          const updatedInviterCft = currentInviterCft + 20.0;
+          currentFarms.cft_balance = updatedInviterCft;
+
+          const newCount = Math.max(Number(currentFarms.invited_friends_count) || 0, currentFarms.referred_users.length);
+          currentFarms.invited_friends_count = newCount;
+
+          await dbClient
+            .from('players')
+            .update({ 
+              hfc_balance: Math.floor(updatedInviterCft),
+              farms_data: currentFarms 
+            })
+            .eq('telegram_id', inviterNum);
+
+          console.log('🎉 Successfully credited referral (+20 CFT) to inviter ID:', inviterNum, 'New CFT:', updatedInviterCft, 'New friends count:', newCount);
         }
-
-        const newCount = Math.max(Number(currentFarms.invited_friends_count) || 0, currentFarms.referred_users.length);
-        currentFarms.invited_friends_count = newCount;
-
-        await dbClient
-          .from('players')
-          .update({ farms_data: currentFarms })
-          .eq('telegram_id', inviterNum);
-
-        console.log('🎉 Successfully credited referral to inviter ID:', inviterNum, 'New friends count:', newCount);
 
         // Instant Welcome Bonus for the new referred player (20 CFT Tokens)
         cftBalance = (typeof cftBalance === 'number' ? cftBalance : 0) + 20;

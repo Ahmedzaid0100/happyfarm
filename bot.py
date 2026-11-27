@@ -126,7 +126,7 @@ def record_referral_in_supabase(inviter_id, new_user_id):
         if inviter_num == new_id_num:
             return
 
-        url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}&select=farms_data"
+        url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}&select=farms_data,hfc_balance"
         headers = {
             "apikey": SUPABASE_KEY,
             "Authorization": f"Bearer {SUPABASE_KEY}"
@@ -139,17 +139,50 @@ def record_referral_in_supabase(inviter_id, new_user_id):
                 referred = fd.get("referred_users") or []
                 if new_id_num not in referred and str(new_id_num) not in referred:
                     referred.append(new_id_num)
-                fd["referred_users"] = referred
-                fd["invited_friends_count"] = max(int(fd.get("invited_friends_count", 0)), len(referred))
+                    fd["referred_users"] = referred
+                    fd["invited_friends_count"] = max(int(fd.get("invited_friends_count", 0)), len(referred))
 
-                patch_url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}"
-                patch_headers = {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": f"Bearer {SUPABASE_KEY}",
-                    "Content-Type": "application/json"
-                }
-                session.patch(patch_url, headers=patch_headers, json={"farms_data": fd}, timeout=12)
-                print(f"🎉 [Bot] Recorded referral: Inviter {inviter_num} now has {fd['invited_friends_count']} friends (Referred by: {new_id_num})")
+                    # Deposit +20 CFT directly into the inviter's account
+                    current_cft = float(fd.get("cft_balance", rows[0].get("hfc_balance", 0) or 0))
+                    new_cft = current_cft + 20.0
+                    fd["cft_balance"] = new_cft
+
+                    patch_url = f"{SUPABASE_URL}/rest/v1/players?telegram_id=eq.{inviter_num}"
+                    patch_headers = {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": f"Bearer {SUPABASE_KEY}",
+                        "Content-Type": "application/json"
+                    }
+                    patch_payload = {
+                        "hfc_balance": int(new_cft),
+                        "farms_data": fd
+                    }
+                    session.patch(patch_url, headers=patch_headers, json=patch_payload, timeout=12)
+                    print(f"🎉 [Bot] Recorded referral & deposited +20 CFT: Inviter {inviter_num} now has {new_cft} CFT and {fd['invited_friends_count']} friends (Referred by: {new_id_num})")
+
+                    # Send instant congratulatory Telegram alert to the inviter
+                    try:
+                        alert_text = (
+                            "🎉 <b>مبروك! انضم صديق جديد عبر رابط الدعوة الخاص بك!</b> 🌾\n\n"
+                            "🪙 <b>تم إيداع +20 عملة CFT فوراً في محفظتك وحسابك!</b>\n"
+                            f"👥 إجمالي أصدقائك: <b>{fd['invited_friends_count']}</b>\n\n"
+                            "👇 اضغط على الزر أدناه لتفقد رصيدك في اللعبة:"
+                        )
+                        alert_markup = {
+                            "inline_keyboard": [
+                                [
+                                    {"text": "🎮 فتح اللعبة | Crazy Farm", "web_app": {"url": WEBAPP_URL}}
+                                ]
+                            ]
+                        }
+                        api_request("sendMessage", {
+                            "chat_id": inviter_num,
+                            "text": alert_text,
+                            "parse_mode": "HTML",
+                            "reply_markup": alert_markup
+                        })
+                    except Exception as notify_err:
+                        print(f"[Bot] Failed to send referral alert to inviter: {notify_err}")
     except Exception as e:
         print(f"[Bot] Error recording referral: {e}")
 
